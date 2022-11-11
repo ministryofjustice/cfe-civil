@@ -4,9 +4,6 @@ orbs:
   slack: circleci/slack@4.5.2
 
 executors:
-  basic-executor:
-    docker:
-      - image: cimg/base:2020.01
   cloud-platform-executor:
     docker:
       - image: ministryofjustice/cloud-platform-tools:2.1
@@ -14,25 +11,19 @@ executors:
           GITHUB_TEAM_NAME_SLUG: laa-estimate-eligibility
   linting-executor:
     docker:
-      - image: cimg/ruby:3.1.2-node
+      - image: cimg/ruby:3.2.0-node
         environment:
-          - RAILS_ENV=test
-          - TZ: "Europe/London"
-  notification-executor:
-    docker:
-      - image: 'cibuilds/base:latest'
-        environment:
-          TERM: dumb
-    resource_class: small
+          RAILS_ENV: test
+          TZ: "Europe/London"
   test-executor:
     docker:
-      - image: cimg/ruby:3.1.2-node
+      - image: cimg/ruby:3.2.0-node
         environment:
-          - RAILS_ENV=test
-          - PGHOST=localhost
-          - PGUSER=user
-          - TZ: "Europe/London"
-          - ALLOW_FUTURE_SUBMISSION_DATE: true
+          RAILS_ENV: test
+          PGHOST: localhost
+          PGUSER: user
+          TZ: "Europe/London"
+          ALLOW_FUTURE_SUBMISSION_DATE: true
       - image: cimg/postgres:10.18
         environment:
           - POSTGRES_USER=user
@@ -89,10 +80,6 @@ references:
       command: |
         sudo apt-get update
         sudo apt-get install -y postgresql-client
-  install_git_crypt: &install_git_crypt
-    run:
-      name: Install git-crypt
-      command: sudo apt-get install -y git-crypt
   decrypt_secrets: &decrypt_secrets
     run:
       name: Decrypt secrets file
@@ -191,7 +178,7 @@ jobs:
             bundle exec rails check_swaggerization
 
   build_and_push:
-    executor: basic-executor
+    executor: cloud-platform-executor
     steps:
       - checkout
       - setup_remote_docker:
@@ -267,11 +254,10 @@ jobs:
             ./bin/delete_dependabot_deployment
 
   clean_up_ecr:
-    executor: linting-executor
+    executor: cloud-platform-executor
     steps:
       - checkout
       - setup_remote_docker
-      - *setup_aws_login
       - run:
           name: Delete old images from ecr repo
           command: |
