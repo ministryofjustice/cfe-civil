@@ -15,4 +15,8 @@ private
   def capital_params
     JSON.parse(request.raw_post, symbolize_names: true)
   end
+
+  def capital_params
+    JSON.parse(request.raw_post, symbolize_names: true)
+  end
 end
