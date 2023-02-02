@@ -23,10 +23,7 @@ RSpec.describe CashTransactionsController, type: :request do
       end
 
       it "calls cash transactions creator" do
-        allow(creator_instance).to receive(:success?).and_return(true)
-        allow(creator_class)
-          .to receive(:call)
-               .with(assessment_id:, cash_transaction_params: params).and_return(creator_instance)
+        expect(creator_class).to receive(:call).with(assessment_id:, cash_transaction_params: params)
         post_payload
         expect(response).to have_http_status(:success)
       end
