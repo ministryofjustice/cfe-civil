@@ -13,7 +13,7 @@ info:
       - Retrieve the result using the GET `/assessments/{assessment_id}`
   contact:
     name: Github repository
-    url: https://github.com/ministryofjustice/check-financial-eligibility
+    url: https://github.com/ministryofjustice/cfe-civil
   version: v5
 paths:
   "/assessments/{assessment_id}/applicant":

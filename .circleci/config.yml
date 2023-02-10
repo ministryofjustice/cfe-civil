@@ -27,7 +27,7 @@ executors:
       - image: cimg/postgres:10.18
         environment:
           - POSTGRES_USER=user
-          - POSTGRES_DB=check_financial_eligibility_partner_test
+          - POSTGRES_DB=cfe_civil_test
 
 references:
   build_docker_image: &build_docker_image
@@ -80,6 +80,10 @@ references:
       command: |
         sudo apt-get update
         sudo apt-get install -y postgresql-client
+  install_git_crypt: &install_git_crypt
+    run:
+      name: Install git-crypt
+      command: sudo apt-get install -y git-crypt
   decrypt_secrets: &decrypt_secrets
     run:
       name: Decrypt secrets file
@@ -89,8 +93,8 @@ references:
   restore_gems_cache: &restore_gems_cache
     restore_cache:
       keys:
-        - check-financial-eligibility-partner-{{ checksum "Gemfile.lock" }}
-        - check-financial-eligibility-partner
+        - cfe-civil-{{ checksum "Gemfile.lock" }}
+        - cfe-civil
   install_gems: &install_gems
     run:
       name: Install ruby gems
@@ -99,7 +103,7 @@ references:
         bundle install --without development --path=vendor/bundle --jobs=4 && bundle clean
   save_gems_cache: &save_gems_cache
     save_cache:
-      key: check-financial-eligibility-partner-{{ checksum "Gemfile.lock" }}
+      key: cfe-civil-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
   setup_database: &setup_database
@@ -188,7 +192,7 @@ jobs:
       - *decrypt_secrets
       - *build_docker_image
       - *setup_aws_login
-      - *push_to_ecr
+      # - *push_to_ecr
 
   deploy_uat: &deploy_uat
     executor: cloud-platform-executor
@@ -217,7 +221,7 @@ jobs:
       - deploy:
           name: Helm deploy CFE Partner to Staging
           command: |
-            helm upgrade check-financial-eligibility-partner ./deploy/helm/. \
+            helm upgrade cfe-civil ./deploy/helm/. \
                           --install --wait \
                           --namespace=${K8S_NAMESPACE} \
                           --values ./deploy/helm/values-staging.yaml \
@@ -235,7 +239,7 @@ jobs:
       - deploy:
           name: Helm deploy CFE Partner to Production
           command: |
-            helm upgrade check-financial-eligibility-partner ./deploy/helm/. \
+            helm upgrade cfe-civil ./deploy/helm/. \
                             --install --wait \
                             --namespace=${K8S_NAMESPACE}  \
                             --values ./deploy/helm/values-production.yaml \
@@ -253,15 +257,15 @@ jobs:
           command: |
             ./bin/delete_dependabot_deployment
 
-  clean_up_ecr:
-    executor: cloud-platform-executor
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Delete old images from ecr repo
-          command: |
-            ./bin/clean_up_ecr
+  # clean_up_ecr:
+  #   executor: cloud-platform-executor
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Delete old images from ecr repo
+  #         command: |
+  #           ./bin/clean_up_ecr
 
 #generic-slack-fail-post-step: &generic-slack-fail-post-step
 #  post-steps:
@@ -293,27 +297,27 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
-      - build_and_push:
-          filters:
-            branches:
-              ignore: main
-      #          <<: *generic-slack-fail-post-step
-      - deploy_uat:
-          context: check-financial-eligibility-partner-uat
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - build_and_push
-      - delete_dependabot_deployment:
-          context: check-financial-eligibility-partner-uat
-          filters:
-            branches:
-              only:
-                - /dependabot.*/
-          requires:
-            - deploy_uat
-  #          <<: *generic-slack-fail-post-step
+  #     - build_and_push:
+  #         filters:
+  #           branches:
+  #             ignore: main
+  #     #          <<: *generic-slack-fail-post-step
+  #     - deploy_uat:
+  #         context: cfe-civil-uat
+  #         requires:
+  #           - lint_checks
+  #           - check_swagger
+  #           - unit_tests
+  #           - build_and_push
+  #     - delete_dependabot_deployment:
+  #         context: cfe-civil-uat
+  #         filters:
+  #           branches:
+  #             only:
+  #               - /dependabot.*/
+  #         requires:
+  #           - deploy_uat
+  # #          <<: *generic-slack-fail-post-step
 
   merge_pr:
     jobs:
@@ -337,49 +341,49 @@ workflows:
             branches:
               only: main
       #          <<: *generic-slack-fail-post-step
-      - build_and_push:
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
+      # - build_and_push:
+      #     requires:
+      #       - lint_checks
+      #       - check_swagger
+      #       - unit_tests
       #          <<: *generic-slack-fail-post-step
-      - deploy_main_uat:
-          context: check-financial-eligibility-partner-uat
-          requires:
-            - build_and_push
-      #          <<: *generic-slack-fail-post-step
-      - deploy_staging:
-          context: check-financial-eligibility-partner-staging
-          requires:
-            - build_and_push
-          filters:
-            branches:
-              only:
-                - main
-      - deploy_production_approval:
-          type: approval
-          requires:
-            - build_and_push
-          filters:
-            branches:
-              only:
-                - main
-      - deploy_production:
-          context: check-financial-eligibility-partner-production
-          requires:
-            - deploy_production_approval
-          filters:
-            branches:
-              only:
-                - main
-  #          <<: *generic-slack-fail-post-step
+  #     - deploy_main_uat:
+  #         context: cfe-civil-uat
+  #         requires:
+  #           - build_and_push
+  #     #          <<: *generic-slack-fail-post-step
+  #     - deploy_staging:
+  #         context: cfe-civil-staging
+  #         requires:
+  #           - build_and_push
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
+  #     - deploy_production_approval:
+  #         type: approval
+  #         requires:
+  #           - build_and_push
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
+  #     - deploy_production:
+  #         context: cfe-civil-production
+  #         requires:
+  #           - deploy_production_approval
+  #         filters:
+  #           branches:
+  #             only:
+  #               - main
+  # #          <<: *generic-slack-fail-post-step
 
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 2 * * *"
-          filters:
-            branches:
-              only: main
-    jobs:
-      - clean_up_ecr
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 2 * * *"
+  #         filters:
+  #           branches:
+  #             only: main
+  #   jobs:
+  #     - clean_up_ecr

@@ -34,7 +34,7 @@ RSpec.configure do |config|
         description: api_description,
         contact: {
           name: "Github repository",
-          url: "https://github.com/ministryofjustice/check-financial-eligibility",
+          url: "https://github.com/ministryofjustice/cfe-civil",
         },
         version: "v5",
       },

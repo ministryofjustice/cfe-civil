@@ -2,7 +2,7 @@
 require 'json'
 require 'date'
 
-repo = 'laa-apply-for-legal-aid/check-financial-eligibility-service'
+repo = 'cfe-civil'
 delete_if_older_than = 30 # days
 
 puts 'Identifying images to delete'

@@ -1,14 +1,11 @@
-[![CircleCI](https://circleci.com/gh/ministryofjustice/check-financial-eligibility.svg?style=shield)](https://circleci.com/gh/ministryofjustice/check-financial-eligibility/tree/main)
+[![CircleCI](https://circleci.com/gh/ministryofjustice/cfe-civil.svg?style=shield)](https://circleci.com/gh/ministryofjustice/cfe-civil/tree/main)
 
-# Ministry of Justice
+# Check Financial Eligibility - Civil
 
-## This is a fork of Check Financial Eligibility API
+An API for checking financial eligibility for legal aid in civil cases
 
-The fork is to allow the Estimate Eligibility team to add partner functionality without impacting other users of the API. The intention is to merge this fork back into the main service at a later date.
-
-## Legal Aid Financial Eligibility check API
-
-An API for checking financial eligibility for legal aid
+## This repo is currently in the process of being "unforked"
+The original CFE API is found at https://github.com/ministryofjustice/check-financial-eligibility, and a fork of it was made, with several new features added, at https://github.com/ministryofjustice/check-financial-eligibility. This repo is intended to be the consolidation of both forks. See below for notes on merging the two forks.
 
 ## Architecture Diagram
 
@@ -24,10 +21,10 @@ Current Rswag documentation can be found at `/api-docs`.
 The API version is specified through the accept header, as follows:
 
 ```text
-Accept:application/json;version=3
+Accept:application/json;version=5
 ```
 
-The only currently acceptable version is 3.  If no version is specified, version 3 is assumed if alternative versions are developed.
+The only currently acceptable version is 5
 
 
 ## System architecture
@@ -154,7 +151,7 @@ the named worksheet using the `-w` command line switch.
 
 ## Integration tests (cucumber)
 
-We are exploring the use of cucumber for feature tests, in particular to document features added for the "[EFE](https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid)" client. These cucumber tests are to be found in the `features` folder.
+We are exploring the use of cucumber for feature tests, in particular to document features added for the "[CCQ](https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid)" client. These cucumber tests are to be found in the `features` folder.
 
 Run them with:
 
@@ -178,3 +175,55 @@ on a local machine
 
 4) Run the rake task `rake replay`: this will read the `tmp/api_payloads.yml` file and
    replay the original API calls and payloads enabling you to re-create the conditions.
+
+## Unforking
+So far, we have done a preliminary unfork as follows:
+
+#### 1. Adopting the partner fork as the default option
+
+```zsh
+git remote add cfe-p git@github.com:ministryofjustice/check-financial-eligibility-partner.git
+git pull cfe-p
+git checkout cfe-p/main
+git remote push -u origin main
+```
+
+#### 2. Getting the 'classic' fork into its own branch
+
+```zsh
+git remote add cfe-classic git@github.com:ministryofjustice/check-financial-eligibility.git
+git pull cfe-classic
+git checkout cfe-classic/main
+git checkout -b classic-main
+```
+
+### 3. Merging into the other
+
+First, find out what the most recent common commit was:
+
+```zsh
+git merge-base main classic-main
+```
+
+Then create a new branch whose head is set to that point
+
+```zsh
+git checkout -b root-of-fork
+git reset --hard <output of merge-base>
+```
+
+Then for simplicity, squash all commits to "classic" down into a single commit
+
+```zsh
+git checkout classic-main
+git checkout -b classic-changes-since-fork
+git rebase --interactive root-of-fork
+```
+
+(In the interactive console, turn all commits bar the first one into fixups)
+
+Finally, rebase that against main (which is up to date with the partner fork)
+
+```zsh
+git rebase --interactive main
+```
