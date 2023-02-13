@@ -1,32 +1,31 @@
-FROM ruby:3.2.0-alpine3.17
+FROM ruby:3.2.0-alpine3.17 AS builder
 MAINTAINER apply for legal aid team
 
 ENV RAILS_ENV production
 
 RUN set -ex
 
-RUN apk --no-cache add --virtual build-dependencies \
-                    build-base \
-                    postgresql-dev \
-&& apk --no-cache add postgresql-client
+RUN apk --no-cache add build-base \
+                    postgresql-dev
 
-RUN mkdir /myapp
-WORKDIR /myapp
-
-RUN adduser --disabled-password apply -u 1001
-
-COPY Gemfile /myapp/Gemfile
-COPY Gemfile.lock /myapp/Gemfile.lock
+COPY Gemfile Gemfile
+COPY Gemfile.lock Gemfile.lock
 
 RUN gem update --system
 RUN bundle config --local without test:development && bundle install
 
+
+FROM ruby:3.2.0-alpine3.17
+RUN apk --no-cache add postgresql-client
+
+COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
 COPY . /myapp
 
-RUN apk del build-dependencies
+WORKDIR /myapp
 
 EXPOSE 3000
 
+RUN adduser --disabled-password apply -u 1001
 RUN chown -R apply:apply /myapp
 
 # expect ping environment variables
