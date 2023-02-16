@@ -130,7 +130,7 @@ Please install the following dependencies prior to running the application setup
     ```sh
     bundle exec guard
     ```
-    
+
     Show configuration options for each used plugin
     ```sh
     bundle exec guard show
