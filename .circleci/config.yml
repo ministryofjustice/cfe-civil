@@ -80,16 +80,6 @@ references:
       command: |
         sudo apt-get update
         sudo apt-get install -y postgresql-client
-  install_git_crypt: &install_git_crypt
-    run:
-      name: Install git-crypt
-      command: sudo apt-get install -y git-crypt
-  decrypt_secrets: &decrypt_secrets
-    run:
-      name: Decrypt secrets file
-      command: |
-        echo "${GIT_CRYPT_KEY}" | base64 -d > git-crypt.key
-        git-crypt unlock git-crypt.key
   restore_gems_cache: &restore_gems_cache
     restore_cache:
       keys:
@@ -188,8 +178,6 @@ jobs:
       - setup_remote_docker:
           version: 20.10.7
       - *update_packages
-      - *install_git_crypt
-      - *decrypt_secrets
       - *build_docker_image
       - *setup_aws_login
       # - *push_to_ecr
@@ -201,7 +189,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *decrypt_secrets
       - deploy:
           name: Helm deployment to UAT
           command: |
@@ -217,14 +204,13 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *decrypt_secrets
       - deploy:
           name: Helm deploy CFE Partner to Staging
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
                           --install --wait \
                           --namespace=${K8S_NAMESPACE} \
-                          --values ./deploy/helm/values-staging.yaml \
+                          --values ./deploy/helm/values/staging.yaml \
                           --set image.repository="$ECR_ENDPOINT" \
                           --set image.tag="${CIRCLE_SHA1}"
 
@@ -235,14 +221,13 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *decrypt_secrets
       - deploy:
           name: Helm deploy CFE Partner to Production
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
                             --install --wait \
                             --namespace=${K8S_NAMESPACE}  \
-                            --values ./deploy/helm/values-production.yaml \
+                            --values ./deploy/helm/values/production.yaml \
                             --set image.repository="$ECR_ENDPOINT" \
                             --set image.tag="${CIRCLE_SHA1}" \
 
