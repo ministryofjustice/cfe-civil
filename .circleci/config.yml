@@ -4,6 +4,9 @@ orbs:
   slack: circleci/slack@4.5.2
 
 executors:
+  basic-executor:
+    docker:
+      - image: cimg/base:2020.01
   cloud-platform-executor:
     docker:
       - image: ministryofjustice/cloud-platform-tools:2.1
@@ -11,19 +14,25 @@ executors:
           GITHUB_TEAM_NAME_SLUG: laa-estimate-eligibility
   linting-executor:
     docker:
-      - image: cimg/ruby:3.2.0-node
+      - image: cimg/ruby:3.2.1-node
         environment:
-          RAILS_ENV: test
-          TZ: "Europe/London"
+          - RAILS_ENV=test
+          - TZ: "Europe/London"
+  notification-executor:
+    docker:
+      - image: 'cibuilds/base:latest'
+        environment:
+          TERM: dumb
+    resource_class: small
   test-executor:
     docker:
-      - image: cimg/ruby:3.2.0-node
+      - image: cimg/ruby:3.2.1-node
         environment:
-          RAILS_ENV: test
-          PGHOST: localhost
-          PGUSER: user
-          TZ: "Europe/London"
-          ALLOW_FUTURE_SUBMISSION_DATE: true
+          - RAILS_ENV=test
+          - PGHOST=localhost
+          - PGUSER=user
+          - TZ: "Europe/London"
+          - ALLOW_FUTURE_SUBMISSION_DATE: true
       - image: cimg/postgres:10.18
         environment:
           - POSTGRES_USER=user
@@ -172,7 +181,7 @@ jobs:
             bundle exec rails check_swaggerization
 
   build_and_push:
-    executor: cloud-platform-executor
+    executor: basic-executor
     steps:
       - checkout
       - setup_remote_docker:
@@ -180,7 +189,7 @@ jobs:
       - *update_packages
       - *build_docker_image
       - *setup_aws_login
-      # - *push_to_ecr
+      - *push_to_ecr
 
   deploy_uat: &deploy_uat
     executor: cloud-platform-executor
@@ -242,15 +251,16 @@ jobs:
           command: |
             ./bin/delete_dependabot_deployment
 
-  # clean_up_ecr:
-  #   executor: cloud-platform-executor
-  #   steps:
-  #     - checkout
-  #     - setup_remote_docker
-  #     - run:
-  #         name: Delete old images from ecr repo
-  #         command: |
-  #           ./bin/clean_up_ecr
+  clean_up_ecr:
+    executor: linting-executor
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *setup_aws_login
+      - run:
+          name: Delete old images from ecr repo
+          command: |
+            ./bin/clean_up_ecr
 
 #generic-slack-fail-post-step: &generic-slack-fail-post-step
 #  post-steps:
@@ -282,27 +292,27 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
-  #     - build_and_push:
-  #         filters:
-  #           branches:
-  #             ignore: main
-  #     #          <<: *generic-slack-fail-post-step
-  #     - deploy_uat:
-  #         context: cfe-civil-uat
-  #         requires:
-  #           - lint_checks
-  #           - check_swagger
-  #           - unit_tests
-  #           - build_and_push
-  #     - delete_dependabot_deployment:
-  #         context: cfe-civil-uat
-  #         filters:
-  #           branches:
-  #             only:
-  #               - /dependabot.*/
-  #         requires:
-  #           - deploy_uat
-  # #          <<: *generic-slack-fail-post-step
+      - build_and_push:
+          filters:
+            branches:
+              ignore: main
+      #          <<: *generic-slack-fail-post-step
+      - deploy_uat:
+          context: cfe-civil-uat
+          requires:
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - build_and_push
+      - delete_dependabot_deployment:
+          context: cfe-civil-uat
+          filters:
+            branches:
+              only:
+                - /dependabot.*/
+          requires:
+            - deploy_uat
+  #          <<: *generic-slack-fail-post-step
 
   merge_pr:
     jobs:
@@ -326,49 +336,49 @@ workflows:
             branches:
               only: main
       #          <<: *generic-slack-fail-post-step
-      # - build_and_push:
-      #     requires:
-      #       - lint_checks
-      #       - check_swagger
-      #       - unit_tests
+      - build_and_push:
+          requires:
+            - lint_checks
+            - check_swagger
+            - unit_tests
       #          <<: *generic-slack-fail-post-step
-  #     - deploy_main_uat:
-  #         context: cfe-civil-uat
-  #         requires:
-  #           - build_and_push
-  #     #          <<: *generic-slack-fail-post-step
-  #     - deploy_staging:
-  #         context: cfe-civil-staging
-  #         requires:
-  #           - build_and_push
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  #     - deploy_production_approval:
-  #         type: approval
-  #         requires:
-  #           - build_and_push
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  #     - deploy_production:
-  #         context: cfe-civil-production
-  #         requires:
-  #           - deploy_production_approval
-  #         filters:
-  #           branches:
-  #             only:
-  #               - main
-  # #          <<: *generic-slack-fail-post-step
+      - deploy_main_uat:
+          context: cfe-civil-uat
+          requires:
+            - build_and_push
+      #          <<: *generic-slack-fail-post-step
+      - deploy_staging:
+          context: cfe-civil-staging
+          requires:
+            - build_and_push
+          filters:
+            branches:
+              only:
+                - main
+      - deploy_production_approval:
+          type: approval
+          requires:
+            - build_and_push
+          filters:
+            branches:
+              only:
+                - main
+      - deploy_production:
+          context: cfe-civil-production
+          requires:
+            - deploy_production_approval
+          filters:
+            branches:
+              only:
+                - main
+  #          <<: *generic-slack-fail-post-step
 
-  # nightly:
-  #   triggers:
-  #     - schedule:
-  #         cron: "0 2 * * *"
-  #         filters:
-  #           branches:
-  #             only: main
-  #   jobs:
-  #     - clean_up_ecr
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 2 * * *"
+          filters:
+            branches:
+              only: main
+    jobs:
+      - clean_up_ecr
