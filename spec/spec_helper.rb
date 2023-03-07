@@ -17,6 +17,21 @@ SimpleCov::Formatter::LcovFormatter.config.output_directory = "coverage"
 SimpleCov::Formatter::LcovFormatter.config.lcov_file_name = "lcov.info"
 SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
 
+# This allows both LCOV and HTML formatting -
+# lcov for undercover gem and cc-test-reporter, HTML for humans
+class SimpleCov::Formatter::MergedFormatter
+  def format(result)
+    SimpleCov::Formatter::HTMLFormatter.new.format(result)
+    SimpleCov::Formatter::LcovFormatter.new.format(result)
+  end
+end
+
+SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
+# for cc-test-reporter after-build action
+SimpleCov::Formatter::LcovFormatter.config.output_directory = "coverage"
+SimpleCov::Formatter::LcovFormatter.config.lcov_file_name = "lcov.info"
+SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
+
 unless ENV["NOCOVERAGE"]
   SimpleCov.start do
     add_filter "spec/"
