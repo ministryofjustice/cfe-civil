@@ -106,10 +106,23 @@ for testing new thresholds before they come into affect on production.
 
 Please install the following dependencies prior to running the application setup:
 
-```
-brew install shared-mime-info
-brew install postgresql
-```
+2.  Install these system dependencies:
+
+    ```sh
+    brew install shared-mime-info
+    brew install cmake
+    brew install postgresql
+    # run postgres now AND on every boot
+    brew services start postgresql
+    # run postgres now AND on every boot
+    brew services start postgresql
+    ```
+
+3.  Run the setup script:
+
+    ```sh
+    bin/setup
+    ```
 
 You can run `bin/setup` from the command line to install dependencies and setup the development and test databases.
 
