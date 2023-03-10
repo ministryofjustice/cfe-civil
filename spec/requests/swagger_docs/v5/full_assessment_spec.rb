@@ -29,7 +29,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                         submission_date: {
                           type: :string,
                           format: :date,
-                          example: "2023-02-05",
+                          example: "2022-06-07",
                           description: "Date of the original submission (iso8601 format)",
                         },
                         client_reference_id: {
