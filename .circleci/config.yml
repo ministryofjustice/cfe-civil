@@ -272,11 +272,15 @@ jobs:
           command: |
             ./bin/clean_up_ecr
 
-#generic-slack-fail-post-step: &generic-slack-fail-post-step
-#  post-steps:
-#    - slack/notify:
-#        event: fail
-#        template: basic_fail_1
+  deploy_infrastructure_uat:
+    executor: cloud-platform-executor
+    steps:
+      - checkout
+      - *authenticate_k8s
+      - deploy:
+          name: Deploy UAT infrastructure (Grafana etc)
+          command: |
+            kubectl apply --record=false -f ./infrastructure/uat/
 
 workflows:
   version: 2
@@ -323,6 +327,13 @@ workflows:
           requires:
             - deploy_uat
   #          <<: *generic-slack-fail-post-step
+      - deploy_infrastructure_uat:
+          context: cfe-civil-uat
+          filters:
+            branches:
+              only:
+                - main
+                - lep-38-grafana-dashboards
 
   merge_pr:
     jobs:
@@ -381,7 +392,6 @@ workflows:
             branches:
               only:
                 - main
-  #          <<: *generic-slack-fail-post-step
 
   nightly:
     triggers:
