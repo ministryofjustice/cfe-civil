@@ -7,14 +7,17 @@ RESPONSE_SECTION_MAPPINGS = {
     "total outgoings and allowances" => "result_summary.disposable_income.combined_total_outgoings_and_allowances",
     "partner allowance" => "result_summary.disposable_income.partner_allowance",
     "capital summary" => "result_summary.capital",
+    "partner capital summary" => "result_summary.partner_capital",
     "capital_lower_threshold" => "result_summary.capital.proceeding_types.0.lower_threshold",
     "gross_income_upper_threshold" => "result_summary.gross_income.proceeding_types.1.upper_threshold",
     "gross_income_proceeding_types" => "result_summary.gross_income.proceeding_types",
     "main property" => "assessment.capital.capital_items.properties.main_home",
     "additional property" => "assessment.capital.capital_items.properties.additional_properties.0",
     "vehicle" => "assessment.capital.capital_items.vehicles.0",
-    "partner_capital" => "assessment.partner_capital.capital_items.properties.additional_properties",
+    "partner property" => "assessment.partner_capital.capital_items.properties.additional_properties.0",
     "overall_disposable_income" => "result_summary.partner_disposable_income",
+    "employment" => "result_summary.disposable_income.employment_income",
+    "combined_assessed_capital" => "result_summary.capital.combined_assessed_capital",
   },
 }.freeze
 
@@ -32,13 +35,7 @@ def response_section_for(version, attribute)
   api_mapping[attribute]
 end
 
-# Fetch the json values from within the response based on the mapping defined for the section
-def extract_response_section(response, version, section_name)
-  section_path = response_section_for(version, section_name)
-
-  # Drill down into the JSON and extract the value out. Works with hash and array structures.
-  relevant_section = response
-
+def section_from_path(relevant_section, section_path, section_name)
   section_path.split(".").each do |key|
     key = key.to_i if relevant_section.is_a?(Array)
 
@@ -50,6 +47,21 @@ def extract_response_section(response, version, section_name)
   end
 
   relevant_section
+end
+
+def remove_request_specific_data(response)
+  response.except("timestamp").merge("assessment" => response.fetch("assessment").except("id"))
+end
+
+# Fetch the json values from within the response based on the mapping defined for the section
+def extract_response_section(response, single_shot_response, version, section_name)
+  resp = remove_request_specific_data(response)
+  ss_resp = remove_request_specific_data(single_shot_response)
+  raise "Single shot API error #{Hashdiff.diff(resp, ss_resp)}" if resp != ss_resp
+
+  section_path = response_section_for(version, section_name)
+
+  section_from_path(response, section_path, section_name)
 end
 
 def raise_if_present(failures)

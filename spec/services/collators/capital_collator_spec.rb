@@ -9,7 +9,7 @@ module Collators
     let(:today) { Date.new(2019, 4, 2) }
     let(:pcd_value) { 0 }
     let(:smod_value) { 0 }
-    let(:level_of_representation) { "controlled" }
+    let(:level_of_help) { "controlled" }
 
     describe ".call" do
       subject(:collator) do
@@ -17,7 +17,7 @@ module Collators
                              capital_summary: assessment.capital_summary,
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
-                             level_of_representation:
+                             level_of_help:
       end
 
       it "always returns a hash" do
@@ -32,19 +32,22 @@ module Collators
       end
 
       context "property_assessment" do
+        before do
+          create :property, :main_home, capital_summary: assessment.capital_summary
+        end
+
         it "instantiates and calls the Property Assessment service" do
-          property_service = instance_double Calculators::PropertyCalculator
-          allow(Calculators::PropertyCalculator).to receive(:new).and_return(property_service)
-          allow(property_service).to receive(:call).and_return(23_000.0)
-          collator
+          property_result = Calculators::PropertyCalculator::Result.new(assessed_equity: 23_000.0,
+                                                                        property: assessment.capital_summary.main_home,
+                                                                        smod_allowance: 0)
+          allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_result])
           expect(collator.total_property).to eq 23_000.0
         end
       end
 
       context "vehicle assessment" do
         it "instantiates and calls the Vehicle Assesment service" do
-          allow(Assessors::VehicleAssessor).to receive(:call).and_return(2_500.0)
-          collator
+          allow(Assessors::VehicleAssessor).to receive(:call).and_return([OpenStruct.new(value: 2_500.0)])
           expect(collator.total_vehicle).to eq 2_500.0
         end
       end
@@ -52,7 +55,6 @@ module Collators
       context "non_liquid_capital_assessment" do
         it "instantiates and calls NonLiquidCapitalAssessment" do
           allow(Assessors::NonLiquidCapitalAssessor).to receive(:call).and_return(500)
-          collator
           expect(collator.total_non_liquid).to eq 500.0
         end
       end
@@ -60,17 +62,20 @@ module Collators
       context "summarization of result_fields" do
         let(:pcd_value) { 100_000 }
 
-        it "summarizes the results it gets from the subservices" do
-          property_service = instance_double Calculators::PropertyCalculator
+        before do
+          create :property, :main_home, capital_summary: assessment.capital_summary
+        end
 
-          allow(Calculators::PropertyCalculator).to receive(:new).and_return(property_service)
+        it "summarizes the results it gets from the subservices" do
+          property_result = Calculators::PropertyCalculator::Result.new(assessed_equity: 23_000.0,
+                                                                        property: assessment.capital_summary.main_home,
+                                                                        smod_allowance: 0)
+
+          allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_result])
 
           allow(Assessors::LiquidCapitalAssessor).to receive(:call).and_return(145.83)
           allow(Assessors::NonLiquidCapitalAssessor).to receive(:call).and_return(500)
-          allow(Assessors::VehicleAssessor).to receive(:call).and_return(2_500.0)
-          allow(property_service).to receive(:call).and_return(23_000.0)
-
-          collator
+          allow(Assessors::VehicleAssessor).to receive(:call).and_return([OpenStruct.new(value: 2_500.0)])
 
           expect(collator.total_liquid).to eq 145.83
           expect(collator.total_non_liquid).to eq 500
@@ -80,7 +85,8 @@ module Collators
           expect(collator.total_capital).to eq 26_145.83
           expect(collator.pensioner_capital_disregard).to eq 100_000
           expect(collator.subject_matter_of_dispute_disregard).to eq 0
-          expect(collator.assessed_capital).to eq(-73_854.17)
+          expect(collator.assessed_capital).to eq(-0.0)
+          expect(collator.pensioner_disregard_applied).to eq(26_145.83)
         end
       end
     end

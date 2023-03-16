@@ -38,6 +38,158 @@ RSpec.configure do |config|
         },
         version: "v5",
       },
+      components: {
+        schemas: {
+          ProceedingTypeResult: {
+            type: :object,
+            required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+            properties: {
+              ccms_code: {
+                type: :string,
+                enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                description: "The code expected by CCMS",
+              },
+              client_involvement_type: {
+                type: :string,
+                enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+                example: "A",
+                description: "The client_involvement_type expected by CCMS",
+              },
+              upper_threshold: { type: :number },
+              lower_threshold: { type: :number },
+              result: {
+                type: :string,
+                enum: %w[eligible ineligible contribution_required],
+              },
+            },
+          },
+          Property: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              value: {
+                type: :number,
+                minimum: 0.0,
+              },
+              outstanding_mortgage: {
+                type: :number,
+                minimum: 0.0,
+              },
+              # The minimum has to be zero because we have to have a 'dummy' main home sometimes
+              percentage_owned: {
+                type: :integer,
+                minimum: 0,
+                maximum: 100,
+              },
+              main_home: {
+                type: :boolean,
+              },
+              shared_with_housing_assoc: {
+                type: :boolean,
+              },
+              transaction_allowance: {
+                type: :number,
+                minimum: 0.0,
+              },
+              allowable_outstanding_mortgage: {
+                type: :number,
+                minimum: 0.0,
+              },
+              net_value: {
+                type: :number,
+              },
+              net_equity: {
+                type: :number,
+              },
+              smod_allowance: {
+                type: :number,
+                description: "Amount of subject matter of dispute disregard applied to this property",
+                minimum: 0.0,
+                maximum: 100_000.0,
+              },
+              main_home_equity_disregard: {
+                type: :number,
+                description: "Amount of main home equity disregard applied to this property",
+              },
+              assessed_equity: {
+                type: :number,
+                minimum: 0.0,
+              },
+            },
+          },
+          BankAccounts: {
+            type: :array,
+            description: "Describes the name of the bank account and the lowest balance during the computation period",
+            example: [{ value: 1.01, description: "test name 1", subject_matter_of_dispute: false },
+                      { value: 100.01, description: "test name 2", subject_matter_of_dispute: true }],
+            items: {
+              type: :object,
+              description: "Account detail",
+              required: %i[value],
+              properties: {
+                value: {
+                  type: :number,
+                  format: :decimal,
+                },
+                description: {
+                  type: :string,
+                },
+                subject_matter_of_dispute: {
+                  description: "Whether the contents of this bank account are the subject of a dispute",
+                  type: :boolean,
+                },
+              },
+            },
+          },
+          EmploymentPaymentList: {
+            type: :array,
+            description: "One or more employment payment details",
+            minItems: 1,
+            items: {
+              type: :object,
+              # allow for legacy redundant net_employment_income field
+              additionalProperties: true,
+              description: "Employment payment detail",
+              properties: {
+                client_id: {
+                  type: :string,
+                  description: "Client supplied id to identify the payment",
+                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                },
+                date: {
+                  type: :string,
+                  format: :date,
+                  description: "Date payment received",
+                  example: "1992-07-22",
+                },
+                gross: {
+                  type: :number,
+                  format: :decimal,
+                  description: "Gross payment income received",
+                  example: "101.01",
+                },
+                benefits_in_kind: {
+                  type: :number,
+                  format: :decimal,
+                  description: "Benefit in kind amount received",
+                },
+                tax: {
+                  type: :number,
+                  format: :decimal,
+                  description: "Amount of tax paid - normally negative, but can be positive for a tax refund",
+                  example: "-10.01",
+                },
+                national_insurance: {
+                  type: :number,
+                  format: :decimal,
+                  description: "Amount of national insurance paid - normally negative, but can be positive for a tax refund",
+                  example: "-5.24",
+                },
+              },
+            },
+          },
+        },
+      },
       paths: {},
     },
   }

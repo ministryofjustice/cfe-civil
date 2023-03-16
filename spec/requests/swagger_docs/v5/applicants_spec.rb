@@ -20,7 +20,7 @@ RSpec.describe "applicants", type: :request, swagger_doc: "v5/swagger.yaml" do
                 required: true,
                 schema: {
                   type: :object,
-                  required: %i[date_of_birth involvement_type has_partner_opponent receives_qualifying_benefit],
+                  required: %i[date_of_birth has_partner_opponent receives_qualifying_benefit],
                   properties: {
                     applicant: {
                       type: :object,
@@ -36,6 +36,9 @@ RSpec.describe "applicants", type: :request, swagger_doc: "v5/swagger.yaml" do
                         receives_qualifying_benefit: { type: :boolean,
                                                        example: false,
                                                        description: "Applicant receives qualifying benefit" },
+                        receives_asylum_support: { type: :boolean,
+                                                   example: false,
+                                                   description: "Applicant receives section 4 or section 95 Asylum Support" },
                       },
                     },
                   },

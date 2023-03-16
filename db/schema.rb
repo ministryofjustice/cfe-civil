@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_09_115454) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_25_142836) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -25,6 +25,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_09_115454) do
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "self_employed", default: false
     t.boolean "employed"
+    t.boolean "receives_asylum_support", default: false, null: false
     t.index ["assessment_id"], name: "index_applicants_on_assessment_id"
   end
 
@@ -45,7 +46,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_09_115454) do
     t.string "assessment_result", default: "pending", null: false
     t.text "remarks"
     t.string "version"
-    t.integer "level_of_representation", default: 0
+    t.integer "level_of_help", default: 0, null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
   end
 
@@ -183,6 +184,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_09_115454) do
     t.string "client_id", null: false
     t.string "calculation_method"
     t.string "type", default: "ApplicantEmployment"
+    t.boolean "receiving_only_statutory_sick_or_maternity_pay", default: false
     t.index ["assessment_id"], name: "index_employments_on_assessment_id"
   end
 
@@ -278,7 +280,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_09_115454) do
     t.datetime "updated_at", precision: nil, null: false
     t.uuid "capital_summary_id"
     t.decimal "transaction_allowance", default: "0.0", null: false
-    t.decimal "allowable_outstanding_mortgage", default: "0.0", null: false
     t.decimal "net_value", default: "0.0", null: false
     t.decimal "net_equity", default: "0.0", null: false
     t.decimal "assessed_equity"

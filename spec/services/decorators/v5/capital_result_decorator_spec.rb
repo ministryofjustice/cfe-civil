@@ -24,7 +24,9 @@ module Decorators
                                    total_mortgage_allowance: 750_000,
                                    total_capital: 24_000,
                                    assessed_capital: 9_355,
+                                   total_capital_with_smod: 23_000,
                                    pensioner_capital_disregard: 10_000,
+                                   disputed_non_property_disregard: 5_454,
                                    subject_matter_of_dispute_disregard: 3_000)
       end
       let(:capital_contribution) { 0 }
@@ -34,10 +36,12 @@ module Decorators
         {
           total_liquid: 9_355.23,
           total_non_liquid: 12_553.22,
+          disputed_non_property_disregard: 5_454,
           total_vehicle: 3500,
           total_property: 835_500,
           total_mortgage_allowance: 750_000,
           total_capital: 24_000,
+          total_capital_with_smod: 23_000,
           pensioner_capital_disregard: 10_000,
           subject_matter_of_dispute_disregard: 3_000,
           capital_contribution: 0.0,
@@ -60,6 +64,7 @@ module Decorators
           ],
           combined_assessed_capital: 12_000.0,
           combined_capital_contribution: 0,
+          pensioner_disregard_applied: 0,
         }
       end
 

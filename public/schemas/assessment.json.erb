@@ -9,10 +9,11 @@
       "type": "string"
     },
     "submission_date": {
-      "$ref": "<%= "file://#{@schema_dir}/common.json#date" %>"
+      "type": "string",
+      "format": "date"
     },
-    "level_of_representation": {
-      "enum": <%= Assessment.levels_of_representation.keys %>
+    "level_of_help": {
+      "enum": <%= Assessment.levels_of_help.keys %>
     }
   }
 }

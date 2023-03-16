@@ -143,7 +143,6 @@ module Creators
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
-                    net_employment_income: 898.84,
                   },
                   {
                     client_id: "employment-1-payment-2",
@@ -152,7 +151,6 @@ module Creators
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
-                    net_employment_income: 898.84,
                   },
                   {
                     client_id: "employment-1-payment-3",
@@ -161,7 +159,6 @@ module Creators
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
-                    net_employment_income: 898.84,
                   },
                 ],
               },
@@ -195,7 +192,6 @@ module Creators
                     client_id: "employment-1-payment-1",
                     date: "2021-10-30",
                     national_insurance: -18.66,
-                    net_employment_income: 898.84,
                   },
                 ],
               },
@@ -281,7 +277,7 @@ module Creators
               {
                 name: state_benefit_type.label,
                 payments: [
-                  { date: 3.days.ago.to_date, amount: 266.95, client_id: "abc123" },
+                  { date: 3.days.ago.to_date.to_s, amount: 266.95, client_id: "abc123" },
                 ],
               },
             ],
@@ -449,7 +445,7 @@ module Creators
               {
                 value: 5000,
                 in_regular_use: true,
-                date_of_purchase: 1.year.ago.to_date,
+                date_of_purchase: 1.year.ago.to_date.to_s,
                 loan_amount_outstanding: 0,
               },
             ],
@@ -500,7 +496,7 @@ module Creators
             dependants: [
               {
                 in_full_time_education: false,
-                date_of_birth: 1.year.ago.to_date,
+                date_of_birth: 1.year.ago.to_date.to_s,
                 relationship: "child_relative",
               },
             ],
@@ -527,7 +523,7 @@ module Creators
             dependants: [
               {
                 in_full_time_education: false,
-                date_of_birth: 1.year.ago.to_date,
+                date_of_birth: 1.year.ago.to_date.to_s,
                 relationship: "quirky",
               },
             ],

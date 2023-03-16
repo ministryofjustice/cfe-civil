@@ -53,16 +53,12 @@ module Creators
       other_income_source
     end
 
-    def assessment
-      @assessment ||= Assessment.find_by(id: assessment_id) || (raise CreationError, ["No such assessment id"])
-    end
-
     def normalize(name)
       name.underscore.tr(" ", "_")
     end
 
     def other_incomes
-      @other_incomes ||= JSON.parse(@other_incomes_params, symbolize_names: true).fetch(:other_incomes, nil)
+      @other_incomes ||= @other_incomes_params.fetch(:other_incomes, nil)
     end
 
     def json_validator

@@ -33,8 +33,6 @@ module Creators
     end
 
     def create_state_benefits
-      return if state_benefits.empty?
-
       state_benefits.each do |state_benefit_attributes|
         @result << create_state_benefit(state_benefit_attributes)
       end
@@ -62,7 +60,7 @@ module Creators
     end
 
     def state_benefits
-      @state_benefits ||= JSON.parse(@state_benefits_params, symbolize_names: true)[:state_benefits]
+      @state_benefits ||= @state_benefits_params[:state_benefits]
     end
 
     def json_validator

@@ -18,20 +18,51 @@ module Creators
     def create_eligibility(ptc)
       return if eligibility_record_exists?(ptc)
 
-      @summary.eligibilities.create!(
-        proceeding_type_code: ptc,
-        upper_threshold: upper_threshold(ptc),
-        lower_threshold:,
-        assessment_result: "pending",
-      )
+      if @assessment.level_of_help == "controlled"
+        @summary.eligibilities.create!(
+          proceeding_type_code: ptc,
+          upper_threshold: controlled_threshold(ptc),
+          lower_threshold: controlled_threshold(ptc),
+        )
+      elsif ptc.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+        @summary.eligibilities.create!(
+          proceeding_type_code: ptc,
+          upper_threshold: immigration_threshold,
+          lower_threshold: immigration_threshold,
+        )
+      elsif ptc.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
+        @summary.eligibilities.create!(
+          proceeding_type_code: ptc,
+          upper_threshold: asylum_threshold,
+          lower_threshold: asylum_threshold,
+        )
+      else
+        @summary.eligibilities.create!(
+          proceeding_type_code: ptc,
+          upper_threshold: upper_threshold(ptc),
+          lower_threshold:,
+        )
+      end
+    end
+
+    def immigration_threshold
+      Threshold.value_for(:capital_immigration_upper_tribunal_certificated, at: @assessment.submission_date)
+    end
+
+    def asylum_threshold
+      Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: @assessment.submission_date)
+    end
+
+    def controlled_threshold(ptc)
+      if ptc.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+        Threshold.value_for(:capital_immigration_first_tier_tribunal_controlled, at: @assessment.submission_date)
+      else
+        upper_threshold(ptc)
+      end
     end
 
     def lower_threshold
-      if @assessment.level_of_representation == "controlled"
-        Threshold.value_for(:capital_lower_controlled, at: @assessment.submission_date)
-      else
-        Threshold.value_for(:capital_lower_certificated, at: @assessment.submission_date)
-      end
+      Threshold.value_for(:capital_lower_certificated, at: @assessment.submission_date)
     end
 
     def upper_threshold(ptc)

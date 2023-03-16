@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Full V5 passported spec", :vcr do
+RSpec.describe "Full V5 passported spec" do
   let(:client_id) { "uuid or any unique string" }
 
   before do
@@ -81,8 +81,9 @@ RSpec.describe "Full V5 passported spec", :vcr do
             allowable_outstanding_mortgage: 999.99,
             net_value: 484_000.02,
             net_equity: 59_000.01,
-            main_home_equity_disregard: 100_000.0,
+            main_home_equity_disregard: 59_000.01,
             assessed_equity: 0.0,
+            smod_allowance: 0.0,
             transaction_allowance: 15_000.0,
             shared_with_housing_assoc: true,
             outstanding_mortgage: 999.99 },
@@ -94,6 +95,7 @@ RSpec.describe "Full V5 passported spec", :vcr do
             outstanding_mortgage: 1.0,
             allowable_outstanding_mortgage: 1.0,
             main_home: false,
+            smod_allowance: 0.0,
             percentage_owned: 99.99,
             net_value: 969.01,
             net_equity: 968.91,
@@ -107,6 +109,7 @@ RSpec.describe "Full V5 passported spec", :vcr do
             outstanding_mortgage: 40.0,
             percentage_owned: 80.0,
             main_home: false,
+            smod_allowance: 0.0,
             shared_with_housing_assoc: true,
             transaction_allowance: 300.0,
             allowable_outstanding_mortgage: 40.0,

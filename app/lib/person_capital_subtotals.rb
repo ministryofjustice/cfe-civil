@@ -10,6 +10,11 @@ class PersonCapitalSubtotals
     @total_property = data[:total_property]
     @subject_matter_of_dispute_disregard = data[:subject_matter_of_dispute_disregard]
     @pensioner_capital_disregard = data[:pensioner_capital_disregard]
+    @pensioner_disregard_applied = data[:pensioner_disregard_applied]
+    @total_capital_with_smod = data[:total_capital_with_smod]
+    @main_home = data.fetch(:main_home, PropertySubtotals.new)
+    @additional_properties = data.fetch(:additional_properties, [])
+    @disputed_non_property_disregard = data[:disputed_non_property_disregard]
   end
 
   attr_reader :total_vehicle,
@@ -21,5 +26,10 @@ class PersonCapitalSubtotals
               :total_non_liquid,
               :total_property,
               :subject_matter_of_dispute_disregard,
-              :pensioner_capital_disregard
+              :pensioner_capital_disregard,
+              :main_home,
+              :additional_properties,
+              :pensioner_disregard_applied,
+              :total_capital_with_smod,
+              :disputed_non_property_disregard
 end

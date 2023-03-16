@@ -1,7 +1,23 @@
 require "simplecov"
+require "simplecov-lcov"
 require "vcr"
 
 SimpleCov.minimum_coverage 100 unless ENV["SKIP_COVERAGE"]
+
+# This allows both LCOV and HTML formatting -
+# lcov for undercover gem and cc-test-reporter, HTML for humans
+class SimpleCov::Formatter::MergedFormatter
+  def format(result)
+    SimpleCov::Formatter::HTMLFormatter.new.format(result)
+    SimpleCov::Formatter::LcovFormatter.new.format(result)
+  end
+end
+
+SimpleCov::Formatter::LcovFormatter.config.report_with_single_file = true
+# for cc-test-reporter after-build action
+SimpleCov::Formatter::LcovFormatter.config.output_directory = "coverage"
+SimpleCov::Formatter::LcovFormatter.config.lcov_file_name = "lcov.info"
+SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
 
 unless ENV["NOCOVERAGE"]
   SimpleCov.start do
@@ -10,6 +26,10 @@ unless ENV["NOCOVERAGE"]
     add_filter "lib/integration_helpers"
     add_filter "app/mailers/exception_alert_mailer.rb"
     add_filter "app/lib/exception_notifier/templated_notifier.rb"
+
+    enable_coverage :branch
+    primary_coverage :branch
+    minimum_coverage branch: 98.58, line: 100
   end
 end
 

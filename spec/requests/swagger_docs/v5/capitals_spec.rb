@@ -28,24 +28,31 @@ RSpec.describe "capitals", type: :request, swagger_doc: "v5/swagger.yaml" do
                 required: true,
                 schema: {
                   type: :object,
+                  additionalProperties: false,
+                  required: %i[bank_accounts non_liquid_capital],
                   properties: {
-                    bank_accounts: {
+                    bank_accounts: { "$ref" => "#/components/schemas/BankAccounts" },
+                    non_liquid_capital: {
                       type: :array,
-                      description: "One or more account details",
-                      example: [{ value: 1.01, description: "test name 1", subject_matter_of_dispute: false },
-                                { value: 100.01, description: "test name 2", subject_matter_of_dispute: true }],
+                      description: "One or more assets details",
+                      example: [{ value: 1.01, description: "asset name 1", subject_matter_of_dispute: false },
+                                { value: 100.01, description: "asset name 2", subject_matter_of_dispute: true }],
                       items: {
                         type: :object,
-                        description: "Account detail",
+                        description: "Asset detail",
+                        required: %i[value description],
+                        additionalProperties: false,
                         properties: {
                           value: {
                             type: :number,
                             format: :decimal,
                           },
                           description: {
+                            description: "Definition of a liquid or non-liquid capital item",
                             type: :string,
                           },
                           subject_matter_of_dispute: {
+                            description: "Whether the item is the subject of a dispute",
                             type: :boolean,
                           },
                         },
