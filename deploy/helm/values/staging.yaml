@@ -15,16 +15,16 @@ resources:
 ingress:
   className: modsec
   hosts:
-    - check-financial-eligibility-partner-staging.cloud-platform.service.justice.gov.uk
+    - cfe-civil-staging.cloud-platform.service.justice.gov.uk
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: "check-financial-eligibility-partner-check-financial-partner-check-financial-eligibility-partner-staging-green"
+    external-dns.alpha.kubernetes.io/set-identifier: "cfe-civil-staging-green"
     external-dns.alpha.kubernetes.io/aws-weight: "100"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
 
 deploy:
-  host: check-financial-eligibility-partner-staging.cloud-platform.service.justice.gov.uk
+  host: cfe-civil-staging.cloud-platform.service.justice.gov.uk
 
 postgresql:
   enabled: false
@@ -36,7 +36,7 @@ legalFrameworkApi:
   host: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
 
 sentry:
-  enabled: enabled
+  enabled: not_enabled
 
 notifications:
   errorMessageTemplateId: e6d49396-455c-4aca-aab0-16f8411e76f5

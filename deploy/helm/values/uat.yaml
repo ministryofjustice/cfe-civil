@@ -1,4 +1,4 @@
-# Default values for check-financial-eligibility-partner
+# Default values for cfe-civil
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -31,12 +31,12 @@ postgresql:
       memory: 256Mi
   postgresqlUsername: postgres
   postgresqlPassword: postgres
-  postgresqlDatabase: check_financial_eligibility_partner
+  postgresqlDatabase: cfe_civil
   persistence:
     enabled: false
 
 sentry:
-  enabled: enabled
+  enabled: not_enabled
 
 notifications:
   errorMessageTemplateId: 55ec1022-736a-40bf-b3f4-0fe85de17525
