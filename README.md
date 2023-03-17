@@ -186,8 +186,12 @@ So far, we have done a preliminary unfork as follows:
 git remote add cfe-p git@github.com:ministryofjustice/check-financial-eligibility-partner.git
 git pull cfe-p
 git checkout cfe-p/main
-git remote push -u origin main
+git checkout -b cfe-p-main
+git rebase --interactive main
 ```
+
+(There have been changes to cfe-civil (such this README, and settings for uat/staging/production)) which need to be
+carefully curated to avoid overwriting them from the CFE-Partner versions
 
 #### 2. Getting the 'classic' fork into its own branch
 
