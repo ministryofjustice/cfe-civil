@@ -1,6 +1,11 @@
 require "swagger_helper"
 
 RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml" do
+  before do
+    stub_request(:get, "https://www.gov.uk/bank-holidays.json")
+      .to_return(body: file_fixture("bank-holidays.json").read)
+  end
+
   path "/v2/assessments" do
     post("create") do
       tags "Perform assessment with single call"
@@ -24,7 +29,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                         submission_date: {
                           type: :string,
                           format: :date,
-                          example: "2023-02-05",
+                          example: "2022-06-07",
                           description: "Date of the original submission (iso8601 format)",
                         },
                         client_reference_id: {
@@ -79,43 +84,14 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                         },
                       },
                     },
-                    capitals: {
-                      type: :object,
-                      properties: {
-                        bank_accounts: { "$ref" => "#/components/schemas/BankAccounts" },
-                        non_liquid_capital: {
-                          type: :array,
-                          description: "One or more assets details",
-                          example: [{ value: 1.01, description: "asset name 1", subject_matter_of_dispute: false },
-                                    { value: 100.01, description: "asset name 2", subject_matter_of_dispute: true }],
-                          items: {
-                            type: :object,
-                            description: "Asset detail",
-                            required: %i[description value],
-                            properties: {
-                              value: {
-                                type: :number,
-                                format: :decimal,
-                              },
-                              description: {
-                                type: :string,
-                              },
-                              subject_matter_of_dispute: {
-                                "description": "Whether the item is the subject of a dispute",
-                                type: :boolean,
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    capitals: { "$ref" => "#/components/schemas/Capitals" },
                     cash_transactions: {
                       type: :object,
                       description: "A set of cash income[ings] and outgoings payments by category",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/cash_transactions.json"))
-                                              .gsub("3.months.ago", "2022-01-01")
-                                              .gsub("2.months.ago", "2022-02-01")
-                                              .gsub("1.month.ago", "2022-03-01")),
+                                              .gsub("3.months.ago", "2022-03-01")
+                                              .gsub("2.months.ago", "2022-04-01")
+                                              .gsub("1.month.ago", "2022-05-01")),
                       properties: {
                         income: {
                           type: :array,
@@ -354,53 +330,100 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                     },
                     outgoings: {
                       type: :array,
-                      required: %i[name payments],
                       description: "One or more outgoings categorized by name",
                       items: {
-                        type: :object,
-                        description: "Outgoing payments detail",
-                        properties: {
-                          name: {
-                            type: :string,
-                            enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
-                            description: "Type of outgoing",
-                            example: CFEConstants::VALID_OUTGOING_CATEGORIES.first,
-                          },
-                          payments: {
-                            type: :array,
-                            required: %i[client_id payment_date amount],
-                            description: "One or more outgoing payments detail",
-                            items: {
-                              type: :object,
-                              description: "Payment detail",
-                              properties: {
-                                client_id: {
-                                  type: :string,
-                                  description: "Client identifier for outgoing payment",
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                },
-                                payment_date: {
-                                  type: :string,
-                                  format: :date,
-                                  description: "Date payment made",
-                                  example: "1992-07-22",
-                                },
-                                housing_costs_type: {
-                                  type: :string,
-                                  enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
-                                  description: "Housing cost type (omit for non-housing cost outgoings)",
-                                  example: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES.first,
-                                },
-                                amount: {
-                                  type: :number,
-                                  format: :decimal,
-                                  description: "Amount of payment made",
-                                  example: 101.01,
+                        oneOf: [
+                          {
+                            type: :object,
+                            required: %i[name payments],
+                            additionalProperties: false,
+                            description: "Outgoing payments detail",
+                            properties: {
+                              name: {
+                                type: :string,
+                                enum: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES,
+                                description: "Type of outgoing",
+                                example: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES.first,
+                              },
+                              payments: {
+                                type: :array,
+                                description: "One or more outgoing payments detail",
+                                items: {
+                                  type: :object,
+                                  additionalProperties: false,
+                                  required: %i[client_id payment_date amount],
+                                  description: "Payment detail",
+                                  properties: {
+                                    client_id: {
+                                      type: :string,
+                                      description: "Client identifier for outgoing payment",
+                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                                    },
+                                    payment_date: {
+                                      type: :string,
+                                      format: :date,
+                                      description: "Date payment made",
+                                      example: "1992-07-22",
+                                    },
+                                    amount: {
+                                      type: :number,
+                                      format: :decimal,
+                                      description: "Amount of payment made",
+                                      example: 101.01,
+                                    },
+                                  },
                                 },
                               },
                             },
                           },
-                        },
+                          {
+                            type: :object,
+                            required: %i[name payments],
+                            additionalProperties: false,
+                            description: "Outgoing payments detail",
+                            properties: {
+                              name: {
+                                type: :string,
+                                enum: %w[rent_or_mortgage],
+                                description: "Type of outgoing",
+                              },
+                              payments: {
+                                type: :array,
+                                description: "One or more outgoing payments detail",
+                                items: {
+                                  type: :object,
+                                  additionalProperties: false,
+                                  required: %i[client_id payment_date amount housing_cost_type],
+                                  description: "Payment detail",
+                                  properties: {
+                                    client_id: {
+                                      type: :string,
+                                      description: "Client identifier for outgoing payment",
+                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                                    },
+                                    payment_date: {
+                                      type: :string,
+                                      format: :date,
+                                      description: "Date payment made",
+                                      example: "1992-07-22",
+                                    },
+                                    housing_cost_type: {
+                                      type: :string,
+                                      enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
+                                      description: "Housing cost type",
+                                    },
+                                    amount: {
+                                      type: :number,
+                                      format: :decimal,
+                                      description: "Amount of payment made",
+                                      example: 101.01,
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        ],
                       },
                     },
                     properties: {
@@ -802,36 +825,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                             },
                           },
                         },
-                        capital_items: {
-                          type: :object,
-                          required: %i[bank_accounts non_liquid_capital],
-                          description: "Element's of the applicant's partners capital",
-                          properties: {
-                            bank_accounts: { "$ref" => "#/components/schemas/BankAccounts" },
-                            non_liquid_capital: {
-                              type: :array,
-                              description: "One or more non liquid assets owned by the client's partner",
-                              example: [{ value: 1.01, description: "test name 1", subject_matter_of_dispute: false },
-                                        { value: 100.01, description: "test name 2", subject_matter_of_dispute: true }],
-                              items: {
-                                type: :object,
-                                description: "Asset detail",
-                                properties: {
-                                  value: {
-                                    type: :number,
-                                    format: :decimal,
-                                  },
-                                  description: {
-                                    type: :string,
-                                  },
-                                  subject_matter_of_dispute: {
-                                    type: :boolean,
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
+                        capital_items: { "$ref" => "#/components/schemas/Capitals" },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
@@ -1021,39 +1015,85 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                            type: :array,
                            items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
                          },
-                         total_liquid: { type: :number },
-                         total_non_liquid: { type: :number },
-                         total_vehicle: { type: :number },
-                         total_property: { type: :number },
-                         total_mortgage_allowance: { type: :number },
-                         total_capital: { type: :number },
+                         total_liquid: {
+                           type: :number,
+                           description: "Total value of all client liquid assets in submission",
+                           format: :decimal,
+                         },
+                         total_non_liquid: {
+                           description: "Total value of all client non-liquid assets in submission",
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0.0,
+                         },
+                         total_vehicle: {
+                           description: "Total value of all client vehicle assets in submission",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         total_property: {
+                           description: "Total value of all client property assets in submission",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         total_mortgage_allowance: {
+                           description: "Maxiumum mortgage allowance used in submission. Cases April 2020 will all be set to 999_999_999",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         total_capital: {
+                           description: "Total value of all capital assets in submission",
+                           type: :number,
+                           format: :decimal,
+                         },
                          pensioner_capital_disregard: {
                            type: :number,
+                           format: :decimal,
                            description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
+                           minimum: 0.0,
                          },
                          total_capital_with_smod: {
                            type: :number,
+                           format: :decimal,
                            minimum: 0,
                            description: "Amount of capital with subject matter of dispute deduction applied",
                          },
                          disputed_non_property_disregard: {
                            type: :number,
+                           format: :decimal,
                            minimum: 0,
                            description: "Amount of subject matter of dispute deduction applied for assets other than property",
                          },
                          pensioner_disregard_applied: {
                            type: :number,
+                           format: :decimal,
+                           minimum: 0,
                            description: "Amount of pensioner capital disregard applied to this assessment",
                          },
-                         subject_matter_of_dispute_disregard: { type: :number },
-                         capital_contribution: { type: :number },
+                         subject_matter_of_dispute_disregard: {
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0,
+                           description: "Total amount of subject matter of dispute disregard applied on this submission",
+                         },
+                         capital_contribution: {
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0,
+                           description: "Assessed capital contribution. Will only be non-zero for 'contribution_required' cases",
+                         },
                          assessed_capital: {
                            type: :number,
+                           format: :decimal,
                            minimum: 0,
-                           description: "Amount of assessed capital. Zero if deductions exceed total capital.",
+                           description: "Amount of assessed client capital. Zero if deductions exceed total capital.",
                          },
-                         combined_assessed_capital: { type: :number },
-                         combined_capital_contribution: { type: :number },
+                         combined_assessed_capital: {
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0,
+                           description: "Amount of assessed capital for both client and partner",
+                         },
                        },
                      },
                      partner_capital: {
@@ -1093,12 +1133,15 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                            properties: {
                              liquid: {
                                type: :array,
+                               items: { "$ref" => "#/components/schemas/Asset" },
                              },
                              non_liquid: {
                                type: :array,
+                               items: { "$ref" => "#/components/schemas/Asset" },
                              },
                              vehicles: {
                                type: :array,
+                               items: { "$ref" => "#/components/schemas/Asset" },
                              },
                              properties: {
                                type: :object,
@@ -1135,6 +1178,25 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
             assessment: { submission_date: "2022-06-06" },
             applicant: { date_of_birth: "2001-02-02", has_partner_opponent: false, receives_qualifying_benefit: false, employed: false },
             proceeding_types: [{ ccms_code: "DA001", client_involvement_type: "A" }],
+            outgoings: [
+              { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
+              { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },
+            ],
+            cash_transactions: {
+              outgoings: [
+                { category: "child_care",
+                  payments: [{ amount: 10.00, client_id: "blah", date: "2022-03-01" },
+                             { amount: 10.00, client_id: "blah", date: "2022-04-01" },
+                             { amount: 10.00, client_id: "blah", date: "2022-05-01" }] },
+                { category: "rent_or_mortgage",
+                  payments: [
+                    { amount: 10.00, client_id: "blah", date: "2022-03-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: "blah", date: "2022-04-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: "blah", date: "2022-05-01", housing_cost_type: "rent" },
+                  ] },
+              ],
+              income: [],
+            },
           }
         end
 

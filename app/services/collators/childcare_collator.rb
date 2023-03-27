@@ -1,40 +1,40 @@
 module Collators
   class ChildcareCollator
-    include Transactions
+    Result = Data.define(:cash, :bank)
 
     class << self
-      def call(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
-        new(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:).call
+      def call(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:)
+        new(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:).call
       end
     end
 
-    def initialize(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
-      @disposable_income_summary = disposable_income_summary
+    def initialize(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:)
+      @childcare_outgoings = childcare_outgoings
       @gross_income_summary = gross_income_summary
       @eligible_for_childcare = eligible_for_childcare
+      @assessment_errors = assessment_errors
     end
 
     def call
       # TODO: Return these values instead of persisting them
-      return unless @eligible_for_childcare
-
-      @disposable_income_summary.update!(
-        child_care_bank:,
-        child_care_cash:,
-      )
+      if @eligible_for_childcare
+        Result.new(bank: child_care_bank, cash: child_care_cash)
+      else
+        Result.new(bank: 0, cash: 0)
+      end
     end
 
   private
 
     def child_care_bank
       Calculators::MonthlyEquivalentCalculator.call(
-        assessment_errors: @disposable_income_summary.assessment.assessment_errors,
-        collection: @disposable_income_summary.childcare_outgoings,
+        assessment_errors: @assessment_errors,
+        collection: @childcare_outgoings,
       )
     end
 
     def child_care_cash
-      monthly_cash_transaction_amount_by(gross_income_summary: @gross_income_summary, operation: :debit, category: :child_care)
+      Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category: :child_care)
     end
   end
 end

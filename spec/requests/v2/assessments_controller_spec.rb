@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module V2
-  RSpec.describe AssessmentsController, type: :request do
+  RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" } }
       let(:assessment) { parsed_response.fetch(:assessment).except(:id) }
@@ -25,8 +25,7 @@ module V2
             payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
               {
                 client_id: SecureRandom.uuid,
-                gross: 446.00,
-                net_employment_income: 398.84,
+                gross: 546.00,
                 benefits_in_kind: 16.60,
                 tax: -104.10,
                 national_insurance: -18.66,
@@ -60,7 +59,7 @@ module V2
           },
         ]
       end
-      let(:dependant_params) { attributes_for_list(:dependant, 2, relationship: "child_relative", monthly_income: 0) }
+      let(:dependant_params) { attributes_for_list(:dependant, 2, relationship: "child_relative", monthly_income: 0, date_of_birth: "2014-06-11") }
       let(:bank_1) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
       let(:bank_2) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
       let(:bank_account_params) do
@@ -89,10 +88,18 @@ module V2
           },
         ]
       end
+      let(:irregular_income_payments) do
+        [
+          {
+            income_type: "student_loan",
+            frequency: "annual",
+            amount: 456.78,
+          },
+        ]
+      end
+      let(:irregular_income_params) { { payments: irregular_income_payments } }
 
       before do
-        stub_request(:get, "https://www.gov.uk/bank-holidays.json")
-          .to_return(body: file_fixture("bank-holidays.json").read)
         post v2_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
@@ -104,7 +111,9 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response.except(:errors)).to eq({ success: false })
+          expect(parsed_response)
+            .to eq({ success: false,
+                     errors: ["The property '#/' did not contain a required property of 'submission_date' in schema file://#"] })
         end
       end
 
@@ -233,6 +242,9 @@ module V2
         let(:month3) { current_date.beginning_of_month - 1.month }
         let(:params) do
           {
+            # child_care won't show up unless student loan payments and dependants
+            irregular_incomes: irregular_income_params,
+            dependants: dependant_params,
             cash_transactions:
               {
                 income: [
@@ -244,6 +256,18 @@ module V2
                     category: "friends_or_family",
                     payments: cash_transactions(250.0),
                   },
+                  {
+                    category: "benefits",
+                    payments: cash_transactions(65.12),
+                  },
+                  {
+                    category: "property_or_lodger",
+                    payments: cash_transactions(91.87),
+                  },
+                  {
+                    category: "pension",
+                    payments: cash_transactions(34.12),
+                  },
                 ],
                 outgoings: [
                   {
@@ -254,6 +278,14 @@ module V2
                     category: "child_care",
                     payments: cash_transactions(257.0),
                   },
+                  {
+                    category: "legal_aid",
+                    payments: cash_transactions(44.54),
+                  },
+                  {
+                    category: "rent_or_mortgage",
+                    payments: cash_transactions(87.54),
+                  },
                 ],
               },
           }
@@ -263,9 +295,20 @@ module V2
           expect(assessment.dig(:gross_income, :other_income, :monthly_equivalents))
             .to eq(
               {
-                all_sources: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 0.0, pension: 0.0 },
+                all_sources: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
                 bank_transactions: { friends_or_family: 0.0, maintenance_in: 0.0, property_or_lodger: 0.0, pension: 0.0 },
-                cash_transactions: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 0.0, pension: 0.0 },
+                cash_transactions: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
+              },
+            )
+        end
+
+        it "has disposable income" do
+          expect(assessment.dig(:disposable_income, :monthly_equivalents))
+            .to eq(
+              {
+                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54 },
+                bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0 },
+                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54 },
               },
             )
         end
@@ -329,12 +372,12 @@ module V2
             expect(employment_income)
               .to eq(
                 {
-                  gross_income: 446.0,
+                  gross_income: 546.0,
                   benefits_in_kind: 0.0,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 278.24,
+                  net_employment_income: 378.24,
                 },
               )
           end
@@ -352,27 +395,27 @@ module V2
                     payments: [
                       {
                         date: "2022-05-30",
-                        gross: 446.0,
+                        gross: 546.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 339.84,
+                        net_employment_income: 439.84,
                       },
                       {
                         date: "2022-04-30",
-                        gross: 446.0,
+                        gross: 546.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 339.84,
+                        net_employment_income: 439.84,
                       },
                       {
                         date: "2022-03-30",
-                        gross: 446.0,
+                        gross: 546.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 339.84,
+                        net_employment_income: 439.84,
                       },
                     ],
                   },
@@ -383,9 +426,9 @@ module V2
         end
       end
 
-      context "without dependants or cash transactions or employment income" do
-        let(:payment_date) { 3.weeks.ago.strftime("%Y-%m-%d") }
-        let(:outgoings_params) do
+      context "without dependants, cash transactions or employment income" do
+        let(:payment_date) { "2022-05-15" }
+        let(:child_care_params) do
           [
             {
               name: "child_care",
@@ -395,10 +438,29 @@ module V2
                   amount: Faker::Number.decimal(l_digits: 3, r_digits: 2),
                   client_id: client_ids.first,
                 },
+              ],
+            },
+          ]
+        end
+        let(:outgoings_params) do
+          [
+            {
+              name: "child_care",
+              payments: [
                 {
                   payment_date:,
-                  amount: Faker::Number.decimal(l_digits: 3, r_digits: 2),
-                  client_id: client_ids.last,
+                  amount: 29.12,
+                  client_id: client_ids.first,
+                },
+              ],
+            },
+            {
+              name: "legal_aid",
+              payments: [
+                {
+                  payment_date:,
+                  amount: 19.87,
+                  client_id: client_ids.first,
                 },
               ],
             },
@@ -418,12 +480,6 @@ module V2
                   amount: 351.49,
                   housing_cost_type: "rent",
                   client_id: "hc-r-1",
-                },
-                {
-                  payment_date:,
-                  amount: 351.49,
-                  housing_cost_type: "rent",
-                  client_id: "hc-r-2",
                 },
               ],
             },
@@ -474,25 +530,10 @@ module V2
           ]
         end
 
-        let(:irregular_income_payments) do
-          [
-            {
-              income_type: "student_loan",
-              frequency: "annual",
-              amount: 456.78,
-            },
-          ]
-        end
-        let(:irregular_income_params) do
-          {
-            payments: irregular_income_payments,
-          }
-        end
-
         let(:client_ids) { [SecureRandom.uuid, SecureRandom.uuid, SecureRandom.uuid] }
 
-        let!(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
-        let!(:state_benefit_type2) { create :state_benefit_type, exclude_from_gross_income: false }
+        let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
+        let(:state_benefit_type2) { create :state_benefit_type, exclude_from_gross_income: false }
         let(:state_benefit_params) do
           [
             {
@@ -535,15 +576,22 @@ module V2
                                      frequency: "monthly" }],
             outgoings: outgoings_params,
             partner: {
-              partner: { date_of_birth: "1987-08-08", employed: false },
+              partner: { date_of_birth: "1987-08-08", employed: true },
               irregular_incomes: irregular_income_payments,
               employments: employment_income_params,
-              regular_transactions: [{ category: "maintenance_in",
-                                       operation: "credit",
-                                       amount: 29.99,
-                                       frequency: "monthly" }],
+              regular_transactions: [
+                { category: "maintenance_in",
+                  operation: "credit",
+                  amount: 29.99,
+                  frequency: "monthly" },
+                { category: "child_care",
+                  operation: "debit",
+                  amount: 73.27,
+                  frequency: "monthly" },
+              ],
               state_benefits: state_benefit_params,
               additional_properties: properties_params,
+              outgoings: child_care_params,
               capitals: {
                 bank_accounts: bank_account_params,
                 non_liquid_capital: non_liquid_params,
@@ -575,17 +623,29 @@ module V2
                                                    partner_capital])
           end
 
+          describe "overall_result" do
+            it "is contribution_required" do
+              expect(summary.fetch(:overall_result).except(:proceeding_types))
+                .to eq({
+                  result: "contribution_required",
+                  capital_contribution: 19_636.86,
+                  income_contribution: 377.81,
+                })
+            end
+          end
+
           it "has disposable income" do
-            expect(summary.fetch(:disposable_income).except(:proceeding_types, :income_contribution,
+            expect(summary.fetch(:disposable_income).except(:proceeding_types,
                                                             :combined_total_outgoings_and_allowances,
                                                             :total_disposable_income, :combined_total_disposable_income,
                                                             :total_outgoings_and_allowances))
               .to eq(
                 {
                   dependant_allowance: 0.0,
-                  gross_housing_costs: 234.33,
+                  gross_housing_costs: 117.16,
+                  income_contribution: 377.81,
                   housing_benefit: 0.0,
-                  net_housing_costs: 234.33,
+                  net_housing_costs: 117.16,
                   maintenance_allowance: 333.07,
                   employment_income: {
                     gross_income: 0.0,
@@ -608,15 +668,15 @@ module V2
                 housing_benefit: 0.0,
                 net_housing_costs: 0.0,
                 maintenance_allowance: 0.0,
-                total_outgoings_and_allowances: 974.45,
-                total_disposable_income: -194.375,
+                total_outgoings_and_allowances: 856.31,
+                total_disposable_income: 23.765,
                 employment_income: {
-                  gross_income: 446.0,
+                  gross_income: 546.0,
                   benefits_in_kind: 0.0,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 278.24,
+                  net_employment_income: 378.24,
                 },
                 income_contribution: 0.0,
               },
@@ -624,7 +684,7 @@ module V2
           end
 
           it "has capital" do
-            expect(summary.fetch(:capital).except(:proceeding_types, :capital_contribution, :combined_capital_contribution,
+            expect(summary.fetch(:capital).except(:proceeding_types, :capital_contribution,
                                                   :total_mortgage_allowance, :combined_assessed_capital))
               .to eq({
                 total_liquid: 0.0,
@@ -675,7 +735,7 @@ module V2
 
             it "has outgoings_housing_cost" do
               expect(remarks.fetch(:outgoings_housing_cost)).to eq(
-                { unknown_frequency: ["hc-r-1", "hc-r-2"] },
+                { unknown_frequency: ["hc-r-1"] },
               )
             end
           end
@@ -765,16 +825,12 @@ module V2
             let(:partner_gross_income) { assessment.fetch(:partner_gross_income) }
 
             it "has employment_income" do
-              expect(partner_gross_income.fetch(:employment_income)).to eq(
-                [{ name: "Job 1",
-                   payments: [{ date: "2022-05-30",
-                                gross: 446.0,
-                                benefits_in_kind: 16.6,
-                                tax: -104.1,
-                                national_insurance: -18.66,
-                                net_employment_income: 339.84 },
-                              { date: "2022-04-30", gross: 446.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 339.84 },
-                              { date: "2022-03-30", gross: 446.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 339.84 }] }],
+              expect(partner_gross_income[:employment_income].first.fetch(:payments)).to eq(
+                [
+                  { date: "2022-05-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
+                  { date: "2022-04-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
+                  { date: "2022-03-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
+                ],
               )
             end
 
@@ -832,10 +888,10 @@ module V2
 
           it "has disposable income" do
             expect(assessment.fetch(:disposable_income)).to eq(
-              { monthly_equivalents: { all_sources: { child_care: 0.0, rent_or_mortgage: 234.33, maintenance_out: 333.07, legal_aid: 0.0 },
-                                       bank_transactions: { child_care: 0.0, rent_or_mortgage: 234.33, maintenance_out: 333.07, legal_aid: 0.0 },
+              { monthly_equivalents: { all_sources: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62 },
+                                       bank_transactions: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62 },
                                        cash_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0 } },
-                childcare_allowance: 0.0,
+                childcare_allowance: 9.71,
                 deductions: { dependants_allowance: 0.0, disregarded_state_benefits: 1033.44 } },
             )
           end
@@ -845,7 +901,7 @@ module V2
               {
                 monthly_equivalents: {
                   all_sources: {
-                    child_care: 0.0,
+                    child_care: 73.27,
                     rent_or_mortgage: 0.0,
                     maintenance_out: 0.0,
                     legal_aid: 0.0,
@@ -863,7 +919,7 @@ module V2
                     legal_aid: 0.0,
                   },
                 },
-                childcare_allowance: 0.0,
+                childcare_allowance: 73.27,
                 deductions: { dependants_allowance: 615.28, disregarded_state_benefits: 1033.44 },
               },
             )
