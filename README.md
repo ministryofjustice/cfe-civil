@@ -6,7 +6,7 @@
 An API for checking financial eligibility for legal aid in civil cases
 
 ## This repo is currently in the process of being "unforked"
-The original CFE API is found at https://github.com/ministryofjustice/check-financial-eligibility, and a fork of it was made, with several new features added, at https://github.com/ministryofjustice/check-financial-eligibility. This repo is intended to be the consolidation of both forks. See below for notes on merging the two forks.
+The original CFE API is found at https://github.com/ministryofjustice/check-financial-eligibility, and a fork of it was made, with several new features added, at https://github.com/ministryofjustice/check-financial-eligibility-partner. CFE-Civil is intended to be the consolidation of both forks. See below for notes on merging the two forks.
 
 ## Architecture Diagram
 
