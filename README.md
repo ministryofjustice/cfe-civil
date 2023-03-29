@@ -114,8 +114,6 @@ Please install the following dependencies prior to running the application setup
     brew install postgresql
     # run postgres now AND on every boot
     brew services start postgresql
-    # run postgres now AND on every boot
-    brew services start postgresql
     ```
 
 3.  Run the setup script:
