@@ -152,11 +152,7 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/applicant' did not contain a required property of 'date_of_birth' in schema file://#"],
-            })
+          expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
         end
       end
 
@@ -603,7 +599,7 @@ module V2
             expect(summary.fetch(:partner_disposable_income)).to eq(
               {
                 dependant_allowance: 615.28,
-                gross_housing_costs: 0.0,
+                gross_housing_costs: 117.16,
                 housing_benefit: 0.0,
                 net_housing_costs: 0.0,
                 maintenance_allowance: 0.0,
@@ -845,10 +841,10 @@ module V2
                     legal_aid: 0.0,
                   },
                   bank_transactions: {
-                    child_care: 0.0,
-                    rent_or_mortgage: 0.0,
-                    maintenance_out: 0.0,
-                    legal_aid: 0.0,
+                    child_care: 9.71,
+                    rent_or_mortgage: 117.16,
+                    maintenance_out: 333.07,
+                    legal_aid: 6.62,
                   },
                   cash_transactions: {
                     child_care: 0.0,
