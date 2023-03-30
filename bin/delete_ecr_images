@@ -2,7 +2,7 @@
 require 'json'
 require 'date'
 
-repo = 'cfe-civil'
+repo = 'laa-eligibility-platform/cfe-civil-ecr'
 delete_if_older_than = 30 # days
 
 puts 'Identifying images to delete'

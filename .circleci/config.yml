@@ -224,7 +224,7 @@ jobs:
           docker_layer_caching: true
       - *authenticate_k8s
       - deploy:
-          name: Helm deploy CFE Partner to Staging
+          name: Helm deploy CFE Civil to Staging
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
                           --install --wait \
@@ -241,7 +241,7 @@ jobs:
           docker_layer_caching: true
       - *authenticate_k8s
       - deploy:
-          name: Helm deploy CFE Partner to Production
+          name: Helm deploy CFE Civil to Production
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
                             --install --wait \
