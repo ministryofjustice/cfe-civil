@@ -124,6 +124,18 @@ Please install the following dependencies prior to running the application setup
 
     This installs Ruby gem dependencies and setup the local postgres with the development and test databases.
 
+4.  Guard Monitoring:
+
+    Run Guard through Bundler with
+    ```sh
+    bundle exec guard
+    ```
+    
+    Show configuration options for each used plugin
+    ```sh
+    bundle exec guard show
+    ```
+
 ## Running the API locally
 
 Start rails server:
