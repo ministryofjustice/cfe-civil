@@ -2,10 +2,15 @@ class AssessmentsController < CreationController
   before_action :validate, only: [:create]
 
   def create
-    if assessment_creation_service.success?
-      render json: { success: true, assessment_id: assessment_creation_service.assessment.id, errors: [] }
+    json_validator ||= JsonValidator.new("assessment", assessment_params)
+    if json_validator.valid?
+      if assessment_creation_service.success?
+        render json: { success: true, assessment_id: assessment_creation_service.assessment.id, errors: [] }
+      else
+        render_unprocessable(assessment_creation_service.errors)
+      end
     else
-      render_unprocessable(assessment_creation_service.errors)
+      render_unprocessable(json_validator.errors)
     end
   end
 
