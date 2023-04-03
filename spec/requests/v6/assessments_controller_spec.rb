@@ -111,7 +111,9 @@ module V6
         end
 
         it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/assessment' did not contain a required property of 'submission_date'})
+          expect(parsed_response)
+            .to eq({ success: false,
+                     errors: ["The property '#/' did not contain a required property of 'submission_date' in schema file://#"] })
         end
       end
 

@@ -4,7 +4,7 @@ module V6
 
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                    params: full_assessment_params)
+                                                    params: JSON.parse(request.raw_post, symbolize_names: true))
 
       if create.success?
         calculation_output = Workflows::MainWorkflow.call(create.assessment)
