@@ -38,9 +38,5 @@ module Creators
         end
       end
     end
-
-    def json_validator
-      @json_validator ||= JsonValidator.new("assessment", @assessment_params)
-    end
   end
 end
