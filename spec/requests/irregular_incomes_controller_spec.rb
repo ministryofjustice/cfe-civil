@@ -7,6 +7,7 @@ RSpec.describe IrregularIncomesController, type: :request do
     let(:gross_income_summary) { assessment.gross_income_summary }
     let(:params) { irregular_income_params }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
+    let(:frequency) { "annual" }
 
     subject(:post_payload) { post assessment_irregular_incomes_path(assessment_id), params: params.to_json, headers: }
 
