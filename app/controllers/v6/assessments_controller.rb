@@ -3,19 +3,14 @@ module V6
     before_action :validate, only: [:create]
 
     def create
-      json_validator = JsonSwaggerValidator.new("/v6/assessments", full_assessment_params)
-      if json_validator.valid?
-        create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                      params: full_assessment_params)
+      create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
+                                                    params: full_assessment_params)
 
-        if create.success?
-          calculation_output = Workflows::MainWorkflow.call(create.assessment)
-          render json: Decorators::V5::AssessmentDecorator.new(create.assessment, calculation_output).as_json
-        else
-          render_unprocessable(create.errors)
-        end
+      if create.success?
+        calculation_output = Workflows::MainWorkflow.call(create.assessment)
+        render json: Decorators::V5::AssessmentDecorator.new(create.assessment, calculation_output).as_json
       else
-        render_unprocessable(json_validator.errors)
+        render_unprocessable(create.errors)
       end
     end
 

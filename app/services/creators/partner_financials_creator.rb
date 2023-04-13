@@ -134,17 +134,6 @@ module Creators
       )
     end
 
-    def create_outgoings
-      return if outgoings_params.blank?
-
-      creator = OutgoingsCreator.call(
-        disposable_income_summary: assessment.partner_disposable_income_summary,
-        outgoings_params: { outgoings: outgoings_params },
-      )
-
-      errors.concat(creator.errors)
-    end
-
     def create_dependants
       return Result.new(errors: []).freeze if dependant_params.blank?
 

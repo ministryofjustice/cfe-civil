@@ -37,16 +37,6 @@ module Decorators
       describe "#as_json" do
         subject(:decorator) { described_class.new(assessment.reload, calculation_output).as_json }
 
-        before do
-          partner_financials_params = {
-            partner: {
-              employed: true,
-              date_of_birth: 30.years.ago.to_date.to_s,
-            },
-          }
-          Creators::PartnerFinancialsCreator.call(assessment_id: assessment.id, partner_financials_params:)
-        end
-
         it "has the required keys in the returned hash" do
           expected_keys = %i[
             id
