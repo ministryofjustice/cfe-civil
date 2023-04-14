@@ -35,7 +35,6 @@ gem "business", "~> 2.3"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
-gem "colorize"
 gem "date_validator"
 
 gem "api_error_handler"
@@ -75,6 +74,7 @@ group :development, :test do
   gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "hashdiff"
   gem "pry-byebug"
+  gem "rainbow"
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.0", ">= 6.0.1"
   gem "rswag-specs"
