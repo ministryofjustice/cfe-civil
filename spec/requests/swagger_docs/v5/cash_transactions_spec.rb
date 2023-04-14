@@ -7,9 +7,7 @@ RSpec.describe "cash_transactions", type: :request, swagger_doc: "v5/swagger.yam
       consumes "application/json"
       produces "application/json"
 
-      description <<~DESCRIPTION.chomp
-        Add cash income and outgoings to an assessment.
-      DESCRIPTION
+      description "Add cash income and outgoings to an assessment."
 
       assessment_id_parameter
 
@@ -30,6 +28,8 @@ RSpec.describe "cash_transactions", type: :request, swagger_doc: "v5/swagger.yam
                       items: {
                         type: :object,
                         description: "Income detail",
+                        additionalProperties: false,
+                        required: %i[category payments],
                         properties: {
                           category: {
                             type: :string,
@@ -42,17 +42,15 @@ RSpec.describe "cash_transactions", type: :request, swagger_doc: "v5/swagger.yam
                             items: {
                               type: :object,
                               description: "Payment detail",
+                              additionalProperties: false,
+                              required: %i[amount client_id date],
                               properties: {
                                 date: {
                                   type: :string,
                                   format: :date,
                                   example: "1992-07-22",
                                 },
-                                amount: {
-                                  type: :number,
-                                  format: :decimal,
-                                  example: "101.01",
-                                },
+                                amount: { "$ref" => "#/components/schemas/positive_currency" },
                                 client_id: {
                                   type: :string,
                                   format: :uuid,
@@ -66,37 +64,28 @@ RSpec.describe "cash_transactions", type: :request, swagger_doc: "v5/swagger.yam
                     },
                     outgoings: {
                       type: :array,
-                      description: "One or more outgoing details",
                       items: {
                         type: :object,
-                        description: "Outgoing detail",
+                        additionalProperties: false,
+                        required: %i[category payments],
                         properties: {
                           category: {
+                            description: "The category of the outgoing transaction",
                             type: :string,
-                            enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
-                            example: CFEConstants::VALID_OUTGOING_CATEGORIES.first,
+                            enum: %w[child_care rent_or_mortgage maintenance_out legal_aid],
                           },
                           payments: {
+                            description: "The payments of the outgoing transaction",
                             type: :array,
-                            description: "One or more payment details",
                             items: {
                               type: :object,
-                              description: "Payment detail",
+                              required: %i[amount client_id date],
                               properties: {
+                                amount: { "$ref" => "#/components/schemas/positive_currency" },
+                                client_id: { type: :string },
                                 date: {
-                                  type: :string,
-                                  format: :date,
-                                  example: "1992-07-22",
-                                },
-                                amount: {
-                                  type: :number,
-                                  format: :decimal,
-                                  example: "101.02",
-                                },
-                                client_id: {
-                                  type: :string,
-                                  format: :uuid,
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                                  type: "string",
+                                  format: "date",
                                 },
                               },
                             },

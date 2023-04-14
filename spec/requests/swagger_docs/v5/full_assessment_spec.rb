@@ -1,18 +1,13 @@
 require "swagger_helper"
 
-RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml" do
-  before do
-    stub_request(:get, "https://www.gov.uk/bank-holidays.json")
-      .to_return(body: file_fixture("bank-holidays.json").read)
-  end
-
-  path "/v2/assessments" do
+RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_doc: "v5/swagger.yaml" do
+  path "/v6/assessments" do
     post("create") do
       tags "Perform assessment with single call"
       consumes "application/json"
       produces "application/json"
 
-      description << "Performs a complete assessment"
+      description "Performs a complete assessment"
 
       parameter name: :params,
                 in: :body,
@@ -24,7 +19,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                     assessment: {
                       type: :object,
                       additionalProperties: false,
-                      required: %i[submission_date level_of_help],
+                      required: %i[submission_date],
                       properties: {
                         submission_date: {
                           type: :string,
@@ -41,25 +36,42 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                           type: :string,
                           enum: Assessment.levels_of_help.keys,
                           example: Assessment.levels_of_help.keys.first,
-                          description: "The level of representation required by the client",
+                          description: "The level of representation required by the client. Defaults to 'certificated'",
                         },
                       },
                     },
                     applicant: {
                       type: :object,
+                      additionalProperties: false,
                       required: %i[date_of_birth has_partner_opponent receives_qualifying_benefit],
                       description: "Object describing pertinent applicant details",
                       properties: {
-                        date_of_birth: { type: :string,
-                                         format: :date,
-                                         example: "1992-07-22",
-                                         description: "Applicant date of birth" },
-                        has_partner_opponent: { type: :boolean,
-                                                example: false,
-                                                description: "Applicant has partner opponent" },
-                        receives_qualifying_benefit: { type: :boolean,
-                                                       example: false,
-                                                       description: "Applicant receives qualifying benefit" },
+                        date_of_birth: {
+                          type: :string,
+                          format: :date,
+                          example: "1992-07-22",
+                          description: "Applicant date of birth",
+                        },
+                        has_partner_opponent: {
+                          type: :boolean,
+                          example: false,
+                          description: "Applicant has partner opponent",
+                        },
+                        receives_qualifying_benefit: {
+                          type: :boolean,
+                          example: false,
+                          description: "Applicant receives qualifying benefit",
+                        },
+                        involvement_type: {
+                          type: :string,
+                          "enum": %w[applicant],
+                        },
+                        employed: {
+                          type: :boolean,
+                        },
+                        receives_asylum_support: {
+                          type: :boolean,
+                        },
                       },
                     },
                     proceeding_types: {
@@ -68,10 +80,12 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                       minItems: 1,
                       items: {
                         type: :object,
+                        additionalProperties: false,
                         required: %i[ccms_code client_involvement_type],
                         properties: {
                           ccms_code: {
                             type: :string,
+                            enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
                             example: "DA001",
                             description: "The code expected by CCMS",
                           },
@@ -87,6 +101,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                     capitals: { "$ref" => "#/components/schemas/Capitals" },
                     cash_transactions: {
                       type: :object,
+                      additionalProperties: false,
                       description: "A set of cash income[ings] and outgoings payments by category",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/cash_transactions.json"))
                                               .gsub("3.months.ago", "2022-03-01")
@@ -112,6 +127,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                                 description: "One or more payment details",
                                 items: {
                                   type: :object,
+                                  additionalProperties: false,
                                   description: "Payment detail",
                                   required: %i[amount client_id date],
                                   properties: {
@@ -186,6 +202,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                       description: "One or more dependants details",
                       items: {
                         type: :object,
+                        additionalProperties: false,
                         required: %i[date_of_birth in_full_time_education relationship],
                         properties: {
                           date_of_birth: {
@@ -224,6 +241,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                       description: "One or more employment income details",
                       items: {
                         type: :object,
+                        additionalProperties: false,
                         description: "Employment income detail",
                         required: %i[name client_id payments],
                         properties: {
@@ -246,6 +264,8 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                     irregular_incomes: {
                       type: :object,
                       description: "A set of irregular income payments",
+                      required: %i[payments],
+                      additionalProperties: false,
                       example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
                       properties: {
                         payments: {
@@ -287,6 +307,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                       description: "One or more other regular income payments categorized by source",
                       items: {
                         type: :object,
+                        additionalProperties: false,
                         description: "Other regular income detail",
                         required: %i[source],
                         properties: {
@@ -302,6 +323,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                             items: {
                               type: :object,
                               description: "Payment detail",
+                              additionalProperties: false,
                               required: %i[date amount client_id],
                               properties: {
                                 date: {
@@ -311,10 +333,8 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                                   example: "1992-07-22",
                                 },
                                 amount: {
-                                  type: :number,
-                                  format: :decimal,
+                                  "$ref" => "#/components/schemas/currency",
                                   description: "Amount of payment received",
-                                  example: 101.01,
                                 },
                                 client_id: {
                                   type: :string,
@@ -328,104 +348,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                         },
                       },
                     },
-                    outgoings: {
-                      type: :array,
-                      description: "One or more outgoings categorized by name",
-                      items: {
-                        oneOf: [
-                          {
-                            type: :object,
-                            required: %i[name payments],
-                            additionalProperties: false,
-                            description: "Outgoing payments detail",
-                            properties: {
-                              name: {
-                                type: :string,
-                                enum: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES,
-                                description: "Type of outgoing",
-                                example: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES.first,
-                              },
-                              payments: {
-                                type: :array,
-                                description: "One or more outgoing payments detail",
-                                items: {
-                                  type: :object,
-                                  additionalProperties: false,
-                                  required: %i[client_id payment_date amount],
-                                  description: "Payment detail",
-                                  properties: {
-                                    client_id: {
-                                      type: :string,
-                                      description: "Client identifier for outgoing payment",
-                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                    },
-                                    payment_date: {
-                                      type: :string,
-                                      format: :date,
-                                      description: "Date payment made",
-                                      example: "1992-07-22",
-                                    },
-                                    amount: {
-                                      type: :number,
-                                      format: :decimal,
-                                      description: "Amount of payment made",
-                                      example: 101.01,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                          {
-                            type: :object,
-                            required: %i[name payments],
-                            additionalProperties: false,
-                            description: "Outgoing payments detail",
-                            properties: {
-                              name: {
-                                type: :string,
-                                enum: %w[rent_or_mortgage],
-                                description: "Type of outgoing",
-                              },
-                              payments: {
-                                type: :array,
-                                description: "One or more outgoing payments detail",
-                                items: {
-                                  type: :object,
-                                  additionalProperties: false,
-                                  required: %i[client_id payment_date amount housing_cost_type],
-                                  description: "Payment detail",
-                                  properties: {
-                                    client_id: {
-                                      type: :string,
-                                      description: "Client identifier for outgoing payment",
-                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                    },
-                                    payment_date: {
-                                      type: :string,
-                                      format: :date,
-                                      description: "Date payment made",
-                                      example: "1992-07-22",
-                                    },
-                                    housing_cost_type: {
-                                      type: :string,
-                                      enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
-                                      description: "Housing cost type",
-                                    },
-                                    amount: {
-                                      type: :number,
-                                      format: :decimal,
-                                      description: "Amount of payment made",
-                                      example: 101.01,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        ],
-                      },
-                    },
+                    outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
                     properties: {
                       type: :object,
                       required: %i[main_home],
@@ -1119,6 +1042,12 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                      id: { type: :string },
                      client_reference_id: { type: :string, nullable: true, example: "ref-11-22" },
                      submission_date: { type: :string, format: :date, example: "2022-07-22" },
+                     level_of_help: {
+                       type: :string,
+                       enum: Assessment.levels_of_help.keys,
+                       example: Assessment.levels_of_help.keys.first,
+                       description: "The level of representation required by the client",
+                     },
                      applicant: { type: :object },
                      gross_income: { type: :object },
                      disposable_income: { type: :object },
@@ -1166,7 +1095,7 @@ RSpec.describe "full_assessment", type: :request, swagger_doc: "v5/swagger.yaml"
                  },
                  version: {
                    type: :string,
-                   enum: %w[5],
+                   enum: %w[6],
                  },
                  success: {
                    type: :boolean,

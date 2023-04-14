@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.1"
+ruby "3.2.2"
 
 gem "active_model_serializers", "~> 0.10.13"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -9,7 +9,7 @@ gem "rails", "~> 7.0.4", ">= 7.0.4.3"
 # Use postgresql as the database for Active Record
 gem "pg", ">= 0.18", "< 2.0"
 # Use Puma as the app server
-gem "puma", "~> 6.1"
+gem "puma", "~> 6.2"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 # gem 'jbuilder', '~> 2.5'
 # Use Redis adapter to run Action Cable in production
@@ -85,8 +85,10 @@ end
 
 group :development do
   gem "guard"
+  gem "guard-cucumber"
   gem "guard-rspec"
   gem "guard-rubocop"
+  gem "guard-shell"
   gem "listen", ">= 3.0.5", "< 3.9"
   gem "pry-rescue"
   gem "pry-stack_explorer"

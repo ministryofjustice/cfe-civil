@@ -7,6 +7,7 @@ RSpec.describe IrregularIncomesController, type: :request do
     let(:gross_income_summary) { assessment.gross_income_summary }
     let(:params) { irregular_income_params }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
+    let(:frequency) { "annual" }
 
     subject(:post_payload) { post assessment_irregular_incomes_path(assessment_id), params: params.to_json, headers: }
 
@@ -56,6 +57,67 @@ RSpec.describe IrregularIncomesController, type: :request do
     end
 
     context "invalid_payload" do
+      context "invalid payload - missing frequency" do
+        let(:params) do
+          {
+            payments: [
+              {
+                income_type: "student_loan",
+                amount: 99_999.00,
+              },
+            ],
+          }
+        end
+
+        before do
+          post_payload
+        end
+
+        it "does not creat any records" do
+          expect(IrregularIncomePayment.count).to eq(0)
+        end
+
+        it "returns an error" do
+          expect(parsed_response[:errors]).to include(/The property '#\/payments\/0' did not contain a required property of 'frequency' in schema/)
+        end
+      end
+
+      context "invalid payload - multiple payments" do
+        let(:params) do
+          {
+            payments: [
+              {
+                income_type: "student_loan",
+                frequency:,
+                amount: 123_456.78,
+              },
+              {
+                income_type: "student_loan",
+                frequency:,
+                amount: 123_456.78,
+              },
+              {
+                income_type: "unspecified_source",
+                frequency:,
+                amount: 123_456.78,
+              },
+            ],
+          }
+        end
+
+        before do
+          post_payload
+        end
+
+        it "does not creat any records" do
+          expect(IrregularIncomePayment.count).to eq(0)
+        end
+
+        it "returns an error" do
+          expect(parsed_response[:errors]).to include(/The property '#\/payments' had more items than the allowed 2 in schema/)
+        end
+      end
+
       context "missing income_type in params" do
         let(:params) do
           new_hash = irregular_income_params
@@ -70,7 +132,7 @@ RSpec.describe IrregularIncomesController, type: :request do
 
         it "contains success false in the response body" do
           post_payload
-          expect(parsed_response).to eq(success: false, errors: ["The property '#/payments/0' did not contain a required property of 'income_type' in schema file://public/schemas/irregular_incomes.json"])
+          expect(parsed_response[:errors]).to include(/The property '#\/payments\/0' did not contain a required property of 'income_type' in schema/)
         end
 
         it "does not create irregular income payment record" do
@@ -97,7 +159,8 @@ RSpec.describe IrregularIncomesController, type: :request do
 
         it "contains an error message" do
           post_payload
-          expect(parsed_response).to eq({ success: false, errors: ["The property '#/payments/0/income_type' value \"imagined_type\" did not match one of the following values: student_loan, unspecified_source in schema file://public/schemas/irregular_incomes.json"] })
+          expect(parsed_response[:errors])
+            .to include(/The property '#\/payments\/0\/income_type' value "imagined_type" did not match one of the following values: student_loan, unspecified_source in schema/)
         end
 
         it "does not create irregular income payments record" do

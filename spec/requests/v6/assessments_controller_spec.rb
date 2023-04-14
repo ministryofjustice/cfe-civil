@@ -1,6 +1,6 @@
 require "rails_helper"
 
-module V2
+module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" } }
@@ -100,7 +100,7 @@ module V2
       let(:irregular_income_params) { { payments: irregular_income_payments } }
 
       before do
-        post v2_assessments_path, params: default_params.merge(params).to_json, headers:
+        post v6_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
       context "with an assessment error" do
@@ -111,9 +111,7 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({ success: false,
-                     errors: ["The property '#/' did not contain a required property of 'submission_date' in schema file://#"] })
+          expect(parsed_response[:errors]).to include(%r{The property '#/assessment' did not contain a required property of 'submission_date'})
         end
       end
 
@@ -126,11 +124,8 @@ module V2
 
         it "returns error JSON" do
           codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.join(", ")
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/proceeding_types/0/ccms_code' value \"ZZ\" did not match one of the following values: #{codes} in schema file://#"],
-            })
+          expect(parsed_response[:errors])
+            .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes} in schema/)
         end
       end
 
@@ -142,11 +137,8 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/proceeding_types' did not contain a minimum number of items 1 in schema file://#"],
-            })
+          expect(parsed_response[:errors])
+            .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
         end
       end
 
@@ -162,11 +154,24 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/applicant' did not contain a required property of 'date_of_birth' in schema file://#"],
-            })
+          expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
+        end
+      end
+
+      context "with a future date of birth" do
+        let(:params) do
+          { applicant: { has_partner_opponent: false,
+                         receives_qualifying_benefit: false,
+                         date_of_birth: "2900-01-09",
+                         employed: } }
+        end
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors]).to include(/Date of birth cannot be in future/)
         end
       end
 
@@ -178,11 +183,8 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/dependants' of type object did not match the following type: array in schema file://#"],
-            })
+          expect(parsed_response[:errors])
+            .to include(/The property '#\/dependants' of type object did not match the following type: array in schema/)
         end
       end
 
@@ -191,6 +193,10 @@ module V2
 
         it "returns http success" do
           expect(response).to have_http_status(:success)
+        end
+
+        it "returns a version of 6" do
+          expect(parsed_response.fetch(:version)).to eq("6")
         end
 
         it "has dependant_allowance" do
@@ -228,11 +234,8 @@ module V2
         end
 
         it "returns error JSON" do
-          expect(parsed_response)
-            .to eq({
-              success: false,
-              errors: ["The property '#/income' of type object did not match the following type: array in schema file://public/schemas/cash_transactions.json"],
-            })
+          expect(parsed_response[:errors])
+            .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array in schema/)
         end
       end
 
@@ -428,20 +431,6 @@ module V2
 
       context "without dependants, cash transactions or employment income" do
         let(:payment_date) { "2022-05-15" }
-        let(:child_care_params) do
-          [
-            {
-              name: "child_care",
-              payments: [
-                {
-                  payment_date:,
-                  amount: Faker::Number.decimal(l_digits: 3, r_digits: 2),
-                  client_id: client_ids.first,
-                },
-              ],
-            },
-          ]
-        end
         let(:outgoings_params) do
           [
             {
@@ -591,7 +580,7 @@ module V2
               ],
               state_benefits: state_benefit_params,
               additional_properties: properties_params,
-              outgoings: child_care_params,
+              outgoings: outgoings_params,
               capitals: {
                 bank_accounts: bank_account_params,
                 non_liquid_capital: non_liquid_params,
@@ -607,7 +596,7 @@ module V2
         end
 
         it "contains JSON version and success" do
-          expect(parsed_response.except(:timestamp, :result_summary, :assessment)).to eq({ version: "5", success: true })
+          expect(parsed_response.except(:timestamp, :result_summary, :assessment)).to eq({ version: "6", success: true })
         end
 
         describe "result summary" do
@@ -629,7 +618,7 @@ module V2
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 377.81,
+                  income_contribution: 76.44,
                 })
             end
           end
@@ -643,7 +632,7 @@ module V2
                 {
                   dependant_allowance: 0.0,
                   gross_housing_costs: 117.16,
-                  income_contribution: 377.81,
+                  income_contribution: 76.44,
                   housing_benefit: 0.0,
                   net_housing_costs: 117.16,
                   maintenance_allowance: 333.07,
@@ -664,12 +653,12 @@ module V2
             expect(summary.fetch(:partner_disposable_income)).to eq(
               {
                 dependant_allowance: 615.28,
-                gross_housing_costs: 0.0,
+                gross_housing_costs: 117.16,
                 housing_benefit: 0.0,
-                net_housing_costs: 0.0,
-                maintenance_allowance: 0.0,
-                total_outgoings_and_allowances: 856.31,
-                total_disposable_income: 23.765,
+                net_housing_costs: 117.16,
+                maintenance_allowance: 333.07,
+                total_outgoings_and_allowances: 1322.87,
+                total_disposable_income: -442.795,
                 employment_income: {
                   gross_income: 546.0,
                   benefits_in_kind: 0.0,
@@ -722,7 +711,7 @@ module V2
 
         describe "assessment" do
           it "has the correct keys" do
-            expect(assessment.keys).to match_array(%i[client_reference_id submission_date applicant gross_income partner_gross_income disposable_income partner_disposable_income capital partner_capital remarks])
+            expect(assessment.keys).to match_array(%i[client_reference_id submission_date level_of_help applicant gross_income partner_gross_income disposable_income partner_disposable_income capital partner_capital remarks])
           end
 
           describe "remarks" do
@@ -901,16 +890,16 @@ module V2
               {
                 monthly_equivalents: {
                   all_sources: {
-                    child_care: 73.27,
-                    rent_or_mortgage: 0.0,
-                    maintenance_out: 0.0,
-                    legal_aid: 0.0,
+                    child_care: 82.98,
+                    rent_or_mortgage: 117.16,
+                    maintenance_out: 333.07,
+                    legal_aid: 6.62,
                   },
                   bank_transactions: {
-                    child_care: 0.0,
-                    rent_or_mortgage: 0.0,
-                    maintenance_out: 0.0,
-                    legal_aid: 0.0,
+                    child_care: 9.71,
+                    rent_or_mortgage: 117.16,
+                    maintenance_out: 333.07,
+                    legal_aid: 6.62,
                   },
                   cash_transactions: {
                     child_care: 0.0,
@@ -919,7 +908,7 @@ module V2
                     legal_aid: 0.0,
                   },
                 },
-                childcare_allowance: 73.27,
+                childcare_allowance: 82.98,
                 deductions: { dependants_allowance: 615.28, disregarded_state_benefits: 1033.44 },
               },
             )

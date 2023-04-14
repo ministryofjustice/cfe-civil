@@ -29,9 +29,10 @@ module Decorators
           id: assessment.id,
           client_reference_id: assessment.client_reference_id,
           submission_date: assessment.submission_date,
+          level_of_help: assessment.level_of_help,
           applicant: ApplicantDecorator.new(assessment.applicant),
           gross_income:,
-          disposable_income: DisposableIncomeDecorator.new(assessment.disposable_income_summary),
+          disposable_income: DisposableIncomeDecorator.new(assessment.disposable_income_summary, @calculation_output.dependant_allowance),
           capital: CapitalDecorator.new(assessment.capital_summary,
                                         @calculation_output.capital_subtotals.applicant_capital_subtotals),
           remarks: RemarksDecorator.new(assessment.remarks, assessment),
@@ -56,7 +57,7 @@ module Decorators
       end
 
       def partner_disposable_income
-        DisposableIncomeDecorator.new(assessment.partner_disposable_income_summary)
+        DisposableIncomeDecorator.new(assessment.partner_disposable_income_summary, @calculation_output.partner_dependant_allowance)
       end
 
       def partner_capital

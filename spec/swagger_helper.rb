@@ -25,7 +25,7 @@ RSpec.configure do |config|
   # be generated at the provided relative path under swagger_root
   # By default, the operations defined in spec files are added to the first
   # document below. You can override this behavior by adding a swagger_doc tag to the
-  # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v2/swagger.json'
+  # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v6/swagger.json'
   config.swagger_docs = {
     "v5/swagger.yaml" => {
       openapi: "3.0.1",
@@ -205,9 +205,8 @@ RSpec.configure do |config|
             minItems: 1,
             items: {
               type: :object,
-              # allow for legacy redundant net_employment_income field
-              additionalProperties: true,
-              description: "Employment payment detail",
+              additionalProperties: false,
+              required: %i[client_id date gross benefits_in_kind tax national_insurance],
               properties: {
                 client_id: {
                   type: :string,
@@ -221,27 +220,27 @@ RSpec.configure do |config|
                   example: "1992-07-22",
                 },
                 gross: {
-                  type: :number,
-                  format: :decimal,
+                  "$ref" => "#/components/schemas/positive_currency",
                   description: "Gross payment income received",
                   example: "101.01",
                 },
                 benefits_in_kind: {
-                  type: :number,
-                  format: :decimal,
+                  "$ref" => "#/components/schemas/positive_currency",
                   description: "Benefit in kind amount received",
                 },
                 tax: {
-                  type: :number,
-                  format: :decimal,
+                  "$ref" => "#/components/schemas/currency",
                   description: "Amount of tax paid - normally negative, but can be positive for a tax refund",
-                  example: "-10.01",
+                  example: -10.01,
                 },
                 national_insurance: {
-                  type: :number,
-                  format: :decimal,
+                  "$ref" => "#/components/schemas/currency",
                   description: "Amount of national insurance paid - normally negative, but can be positive for a tax refund",
-                  example: "-5.24",
+                  example: -5.24,
+                },
+                net_employment_income: {
+                  "$ref" => "#/components/schemas/currency",
+                  description: "Deprecated field not used in calculation",
                 },
               },
             },
@@ -259,6 +258,128 @@ RSpec.configure do |config|
               type: :number,
               format: :decimal,
               description: "Description of asset",
+            },
+          },
+          Employments: {
+            type: :array,
+            required: %i[name client_id payments],
+            description: "One or more employment income details",
+            items: {
+              type: :object,
+              description: "Employment income detail",
+              properties: {
+                name: {
+                  type: :string,
+                  description: "Identifying name for this employment - e.g. employer's name",
+                },
+                client_id: {
+                  type: :string,
+                  description: "Client supplied id to identify the employment",
+                },
+                receiving_only_statutory_sick_or_maternity_pay: {
+                  type: :boolean,
+                  description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
+                },
+                payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
+              },
+            },
+          },
+          OutgoingsList: {
+            type: :array,
+            description: "One or more outgoings categorized by name",
+            items: {
+              oneOf: [
+                {
+                  type: :object,
+                  required: %i[name payments],
+                  additionalProperties: false,
+                  description: "Outgoing payments detail",
+                  properties: {
+                    name: {
+                      type: :string,
+                      enum: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES,
+                      description: "Type of outgoing",
+                      example: CFEConstants::NON_HOUSING_OUTGOING_CATEGORIES.first,
+                    },
+                    payments: {
+                      type: :array,
+                      description: "One or more outgoing payments detail",
+                      items: {
+                        type: :object,
+                        additionalProperties: false,
+                        required: %i[client_id payment_date amount],
+                        description: "Payment detail",
+                        properties: {
+                          client_id: {
+                            type: :string,
+                            description: "Client identifier for outgoing payment",
+                            example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                          },
+                          payment_date: {
+                            type: :string,
+                            format: :date,
+                            description: "Date payment made",
+                            example: "1992-07-22",
+                          },
+                          amount: {
+                            type: :number,
+                            format: :decimal,
+                            description: "Amount of payment made",
+                            example: 101.01,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                {
+                  type: :object,
+                  required: %i[name payments],
+                  additionalProperties: false,
+                  description: "Outgoing payments detail",
+                  properties: {
+                    name: {
+                      type: :string,
+                      enum: %w[rent_or_mortgage],
+                      description: "Type of outgoing",
+                    },
+                    payments: {
+                      type: :array,
+                      description: "One or more outgoing payments detail",
+                      items: {
+                        type: :object,
+                        additionalProperties: false,
+                        required: %i[client_id payment_date amount housing_cost_type],
+                        description: "Payment detail",
+                        properties: {
+                          client_id: {
+                            type: :string,
+                            description: "Client identifier for outgoing payment",
+                            example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                          },
+                          payment_date: {
+                            type: :string,
+                            format: :date,
+                            description: "Date payment made",
+                            example: "1992-07-22",
+                          },
+                          housing_cost_type: {
+                            type: :string,
+                            enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
+                            description: "Housing cost type",
+                          },
+                          amount: {
+                            type: :number,
+                            format: :decimal,
+                            description: "Amount of payment made",
+                            example: 101.01,
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              ],
             },
           },
         },

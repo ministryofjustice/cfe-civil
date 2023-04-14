@@ -7,9 +7,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
       consumes "application/json"
       produces "application/json"
 
-      description <<~DESCRIPTION.chomp
-        Adds details of an applicant's partner.
-      DESCRIPTION
+      description "Adds details of an applicant's partner."
 
       assessment_id_parameter
 
@@ -21,11 +19,12 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                   required: %i[partner],
                   description: "Full information about an applicant's partner",
                   example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+                  additionalProperties: false,
                   properties: {
                     partner: {
                       type: :object,
                       description: "The partner of the applicant",
-                      required: %i[date_of_birth employed],
+                      required: %i[date_of_birth],
                       properties: {
                         date_of_birth: {
                           type: :string,
@@ -36,16 +35,17 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                         employed: {
                           type: :boolean,
                           example: true,
-                          description: "Whether the applicant's partner is employed",
+                          description: "Deprecated field - calculation uses presence of employment data",
                         },
                       },
                     },
                     irregular_incomes: {
                       type: :array,
-                      required: %i[income_type frequency amount],
                       description: "One or more irregular payment details",
                       items: {
                         type: :object,
+                        additionalProperties: false,
+                        required: %i[income_type frequency amount],
                         description: "Irregular payment detail",
                         properties: {
                           income_type: {
@@ -60,15 +60,12 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                             description: "Frequency of the payment received",
                             example: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES.first,
                           },
-                          amount: {
-                            type: :number,
-                            format: :decimal,
-                            example: 101.01,
-                          },
+                          amount: { "$ref" => "#/components/schemas/currency" },
                         },
                       },
                     },
-                    employments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
+                    employments: { "$ref" => "#/components/schemas/Employments" },
+                    outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
                     regular_transactions: {
                       type: :array,
                       required: %i[category operation frequency amount],
@@ -95,11 +92,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                             description: "Frequency with which regular transaction is made or received",
                             example: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.first,
                           },
-                          amount: {
-                            type: :number,
-                            format: :decimal,
-                            example: 101.01,
-                          },
+                          amount: { "$ref" => "#/components/schemas/currency" },
                         },
                       },
                     },
@@ -118,10 +111,10 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                           },
                           payments: {
                             type: :array,
-                            required: %i[client_id date amount],
                             description: "One or more state benefit payments details",
                             items: {
                               type: :object,
+                              required: %i[client_id date amount],
                               description: "Payment detail",
                               properties: {
                                 client_id: {
@@ -136,12 +129,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                                   description: "Date payment received",
                                   example: "1992-07-22",
                                 },
-                                amount: {
-                                  type: :number,
-                                  format: :decimal,
-                                  description: "Amount of payment received",
-                                  example: 101.01,
-                                },
+                                amount: { "$ref" => "#/components/schemas/positive_currency" },
                                 flags: {
                                   type: :object,
                                   description: "Line items that should be flagged to caseworkers for review",
@@ -160,21 +148,19 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                     },
                     additional_properties: {
                       type: :array,
-                      required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
                       description: "One or more additional properties owned by the applicant's partner",
                       items: {
                         type: :object,
+                        required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
                         description: "Additional property details",
                         properties: {
                           value: {
-                            type: :number,
-                            format: :decimal,
+                            "$ref" => "#/components/schemas/currency",
                             description: "Financial value of the property",
                             example: 500_000.01,
                           },
                           outstanding_mortgage: {
-                            type: :number,
-                            format: :decimal,
+                            "$ref" => "#/components/schemas/positive_currency",
                             description: "Amount outstanding on all mortgages against this property",
                             example: 999.99,
                           },
@@ -183,6 +169,8 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                             format: :decimal,
                             description: "Percentage share of the property which is owned by the applicant's partner",
                             example: 99.99,
+                            minimum: 0,
+                            maximum: 100,
                           },
                           shared_with_housing_assoc: {
                             type: :boolean,
@@ -195,7 +183,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                         },
                       },
                     },
-                    capital_items: { "$ref" => "#/components/schemas/Capitals" },
+                    capitals: { "$ref" => "#/components/schemas/Capitals" },
                     vehicles: {
                       type: :array,
                       description: "One or more vehicles' details",
@@ -204,18 +192,16 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                         required: %i[value date_of_purchase],
                         properties: {
                           value: {
-                            type: :number,
-                            format: :decimal,
+                            "$ref" => "#/components/schemas/positive_currency",
                             description: "Financial value of the vehicle",
                           },
                           loan_amount_outstanding: {
-                            type: :number,
-                            format: :decimal,
+                            "$ref" => "#/components/schemas/currency",
                             description: "Amount remaining, if any, of a loan used to purchase the vehicle",
                           },
                           date_of_purchase: {
                             type: :string,
-                            format: :dates,
+                            format: :date,
                             description: "Date vehicle purchased by the applicant's partner",
                           },
                           in_regular_use: {
@@ -337,7 +323,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
                 subject_matter_of_dispute: false,
               },
             ],
-            capital_items: {
+            capitals: {
               bank_accounts: [
                 {
                   value: 1.01,
@@ -392,7 +378,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/' did not contain a required property of 'date_of_birth' in schema file:\/\/#/)
+          expect(body[:errors]).to include(/The property '#\/partner' did not contain a required property of 'date_of_birth' in schema/)
         end
       end
     end
