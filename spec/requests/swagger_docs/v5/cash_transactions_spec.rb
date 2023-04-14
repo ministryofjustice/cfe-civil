@@ -7,7 +7,7 @@ RSpec.describe "cash_transactions", type: :request, swagger_doc: "v5/swagger.yam
       consumes "application/json"
       produces "application/json"
 
-      description << "Add cash income and outgoings to an assessment."
+      description "Add cash income and outgoings to an assessment."
 
       assessment_id_parameter
 

@@ -7,7 +7,7 @@ RSpec.describe "outgoings", type: :request, swagger_doc: "v5/swagger.yaml" do
       consumes "application/json"
       produces "application/json"
 
-      description << "Add applicant's outgoings to an assessment."
+      description "Add applicant's outgoings to an assessment."
 
       assessment_id_parameter
 

@@ -7,7 +7,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
       consumes "application/json"
       produces "application/json"
 
-      description << "Performs a complete assessment"
+      description "Performs a complete assessment"
 
       parameter name: :params,
                 in: :body,
@@ -19,7 +19,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     assessment: {
                       type: :object,
                       additionalProperties: false,
-                      required: %i[submission_date level_of_representation],
+                      required: %i[submission_date],
                       properties: {
                         submission_date: {
                           type: :string,
@@ -32,10 +32,10 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           example: "LA-FOO-BAR",
                           description: "Client's reference number for this application (free text)",
                         },
-                        level_of_representation: {
+                        level_of_help: {
                           type: :string,
-                          enum: Assessment.levels_of_representation.keys,
-                          example: Assessment.levels_of_representation.keys.first,
+                          enum: Assessment.levels_of_help.keys,
+                          example: Assessment.levels_of_help.keys.first,
                           description: "The level of representation required by the client. Defaults to 'certificated'",
                         },
                       },
