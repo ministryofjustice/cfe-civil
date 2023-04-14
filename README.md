@@ -114,8 +114,6 @@ Please install the following dependencies prior to running the application setup
     brew install postgresql
     # run postgres now AND on every boot
     brew services start postgresql
-    # run postgres now AND on every boot
-    brew services start postgresql
     ```
 
 3.  Run the setup script:
@@ -124,22 +122,103 @@ Please install the following dependencies prior to running the application setup
     bin/setup
     ```
 
-You can run `bin/setup` from the command line to install dependencies and setup the development and test databases.
+    This installs Ruby gem dependencies and setup the local postgres with the development and test databases.
+
+4.  Guard Monitoring:
+
+    Run Guard through Bundler with
+    ```sh
+    bundle exec guard
+    ```
+    
+    Show configuration options for each used plugin
+    ```sh
+    bundle exec guard show
+    ```
+
+## Running the API locally
+
+Start rails server:
+
+```sh
+bin/rails server
+```
+
+A simple test that it's working:
+```sh
+$ curl http://127.0.0.1:3000/healthcheck
+{"checks":{"database":true}}
+```
+
+## Tests
+
+There are several kinds of tests:
+
+* Integration tests using Spreadsheets
+* Integration tests using Cucumber
+* other RSpec tests
 
 ## Running tests
 
-The full rspec test suite can be run with
-```
+#### Environment variables for Integration tests (spreadsheets)
+
+Before you can run the spreadsheet integration tests you will need to set up a `.env` file in the root folder of your clone of this repo.
+
+Obtain the `.env` file from LastPass - look in the folder `Shared-LAA-Eligibility-Platform`, under item `Environment variables to run CFE ISPEC (spreadsheet) tests`. Reach out to the team if you don't have access.
+
+Environment variables:
+
+| Name | Value examples & commentary |
+| ---- | --------------------------- |
+| GOOGLE_SHEETS_PRIVATE_KEY_ID | (secret) |
+| GOOGLE_SHEETS_PRIVATE_KEY | (secret) |
+| GOOGLE_SHEETS_CLIENT_EMAIL | (secret) |
+| GOOGLE_SHEETS_CLIENT_ID | (secret) |
+| ALLOW_FUTURE_SUBMISSION_DATE | `true` allows integration tests to run with submission dates that are in the future / `false` |
+| RUNNING_AS_GITHUB_WORKFLOW | `TRUE` / `FALSE` |
+| LEGAL_FRAMEWORK_API_HOST | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
+
+
+### Running RSpec tests
+
+The RSpec test suite includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)"
+
+Run them with:
+
+```sh
 bundle exec rspec
 ```
 
 The repo also includes `pry-rescue`, a gem to allow faster debugging. Running
-```
+```sh
 bundle exec rescue rspec
 ```
 will cause any failing tests or unhandled exceptions to automatically open a `pry` prompt for immediate investigation.
 
-## Integration tests
+#### Common errors
+
+Error:
+```ruby
+   An error occurred while loading ./spec/integration/policy_disregards_spec.rb.
+   Failure/Error: require File.expand_path("../config/environment", __dir__)
+
+   NoMethodError:
+     undefined method `gsub' for nil:NilClass
+```
+Solution: fix your .env file. See: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
+
+Error:
+```ruby
+   An error occurred while loading ./spec/validators/json_validator_spec.rb.
+   Failure/Error: ActiveRecord::Migration.maintain_test_schema!
+
+   ActiveRecord::NoDatabaseError:
+     We could not find your database: cfe_civil_test. Which can be found in the database configuration file located at config/database.yml.
+```
+Solution: fix your database, which should have been created with `bin/setup` - see [Developer setup](developer-setup)
+
+### Integration tests (spreadsheets)
+
 A series of spreadsheets is used to provide use cases and their expected results, and are run as part of the normal `rspec` test suite, or can be run individually with more control using the script `bin/ispec` (see below).
 
 There is a  [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) which lists all the other spreadsheets to be run, as well as contain skeleton worksheets for creating new tests scenarios.  Each spreadsheet can hold multiple worksheet, each of which is a test scenario.
@@ -169,7 +248,7 @@ We are exploring the use of cucumber for feature tests, in particular to documen
 
 Run them with:
 
-```
+```sh
 bundle exec cucumber
 ```
 

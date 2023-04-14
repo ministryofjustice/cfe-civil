@@ -1,22 +1,16 @@
-class IrregularIncomesController < ApplicationController
+class IrregularIncomesController < CreationController
   before_action :load_assessment
 
   def create
-    if creation_service.success?
-      render_success
-    else
-      render_unprocessable(creation_service.errors)
-    end
+    json_validate_and_render "irregular_incomes", irregular_income_params, lambda {
+      Creators::IrregularIncomeCreator.call(
+        irregular_income_params:,
+        gross_income_summary: @assessment.gross_income_summary,
+      )
+    }
   end
 
 private
-
-  def creation_service
-    @creation_service ||= Creators::IrregularIncomeCreator.call(
-      irregular_income_params:,
-      gross_income_summary: @assessment.gross_income_summary,
-    )
-  end
 
   def irregular_income_params
     JSON.parse(request.raw_post, symbolize_names: true)

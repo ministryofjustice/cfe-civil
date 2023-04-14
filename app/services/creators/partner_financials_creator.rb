@@ -1,153 +1,146 @@
 module Creators
-  class PartnerFinancialsCreator < BaseCreator
-    attr_accessor :assessment_id
+  class PartnerFinancialsCreator
+    Result = Struct.new(:errors, keyword_init: true) do
+      def success?
+        errors.empty?
+      end
+    end
 
-    def initialize(assessment_id:, partner_financials_params:)
-      super()
-      @assessment_id = assessment_id
+    class << self
+      def call(assessment:, partner_financials_params:)
+        new(assessment:, partner_financials_params:).call
+      end
+    end
+
+    def initialize(assessment:, partner_financials_params:)
+      @assessment = assessment
       @partner_financials_params = partner_financials_params
     end
 
     def call
-      if json_validator.valid?
-        Assessment.transaction { create_records }
-      else
-        self.errors = json_validator.errors
+      Assessment.transaction do
+        create_records
       end
-      self
     end
 
   private
 
-    def create_records
-      raise(CreationError, ["No such assessment id"]) if assessment.nil?
+    attr_reader :assessment
 
-      create_partner
-      create_summaries
-      create_irregular_income
-      create_employments
-      create_regular_transactions
-      create_state_benefits
-      create_additional_properties
-      create_capitals
-      create_vehicles
-      create_dependants
-    rescue CreationError => e
-      self.errors = e.errors
+    def create_records
+      errors = []
+      errors.concat(create_partner.errors)
+      errors.concat(create_summaries.errors)
+      errors.concat(create_irregular_income.errors)
+      errors.concat(create_employments.errors)
+      errors.concat(create_regular_transactions.errors)
+      errors.concat(create_state_benefits.errors)
+      errors.concat(create_additional_properties.errors)
+      errors.concat(create_capitals.errors)
+      errors.concat(create_vehicles.errors)
+      errors.concat(create_dependants.errors)
+      errors.concat(create_outgoings.errors)
+      Result.new(errors:).freeze
+    rescue ActiveRecord::RecordInvalid => e
+      Result.new(errors: e.record.errors.full_messages).freeze
     end
 
     def create_partner
-      raise(CreationError, ["There is already a partner for this assesssment"]) if assessment.partner.present?
-
-      assessment.create_partner!(partner_attributes.slice(:date_of_birth, :employed))
-    rescue ActiveRecord::RecordInvalid => e
-      raise CreationError, e.record.errors.full_messages
-    end
-
-    def create_summaries
-      assessment.create_partner_capital_summary
-      assessment.create_partner_gross_income_summary
-      assessment.create_partner_disposable_income_summary
-    end
-
-    def create_irregular_income
-      return if irregular_income_params.blank?
-
-      creator = IrregularIncomeCreator.call(
-        irregular_income_params: { payments: irregular_income_params },
-        gross_income_summary: assessment.partner_gross_income_summary,
-      )
-
-      errors.concat(creator.errors)
-    end
-
-    def create_regular_transactions
-      return if regular_transaction_params.blank?
-
-      creator = RegularTransactionsCreator.call(
-        assessment_id: @assessment_id,
-        regular_transaction_params: { regular_transactions: regular_transaction_params },
-        gross_income_summary: assessment.partner_gross_income_summary,
-      )
-
-      errors.concat(creator.errors)
-    end
-
-    def create_employments
-      return if employment_params.blank?
-
-      employments_params = { employment_income: employment_params }
-      creator = EmploymentsCreator.call(
-        employments_params:,
-        employment_collection: assessment.partner_employments,
-      )
-
-      errors.concat(creator.errors)
-    end
-
-    def create_state_benefits
-      return if state_benefit_params.blank?
-
-      creator = StateBenefitsCreator.call(
-        assessment_id: @assessment_id,
-        state_benefits_params: { state_benefits: state_benefit_params },
-        gross_income_summary: assessment.partner_gross_income_summary,
-      )
-
-      errors.concat(creator.errors)
-    end
-
-    def create_additional_properties
-      return if additional_property_params.blank?
-
-      creator = PartnerPropertiesCreator.call(
-        assessment_id: @assessment_id,
-        properties_params: additional_property_params,
-      )
-
-      errors.concat(creator.errors)
-    end
-
-    def create_capitals
-      return if capital_params.blank?
-
-      json_validator = JsonSwaggerValidator.new("capitals", capital_params)
-      if json_validator.valid?
-        CapitalsCreator.call(
-          capital_params:,
-          capital_summary: assessment.partner_capital_summary,
-        )
+      if assessment.partner.present?
+        Result.new(errors: ["There is already a partner for this assesssment"]).freeze
       else
-        errors.concat(json_validator.errors)
+        assessment.create_partner!(partner_attributes.slice(:date_of_birth, :employed))
+        Result.new(errors: []).freeze
       end
     end
 
-    def create_vehicles
-      return if vehicle_params.blank?
+    def create_summaries
+      assessment.create_partner_capital_summary!
+      assessment.create_partner_gross_income_summary!
+      assessment.create_partner_disposable_income_summary!
+      Result.new(errors: []).freeze
+    end
 
-      creator = VehicleCreator.call(
-        assessment_id: @assessment_id,
+    def create_irregular_income
+      return Result.new(errors: []) if irregular_income_params.blank?
+
+      IrregularIncomeCreator.call(
+        irregular_income_params: { payments: irregular_income_params },
+        gross_income_summary: assessment.partner_gross_income_summary,
+      )
+    end
+
+    def create_regular_transactions
+      return Result.new(errors: []).freeze if regular_transaction_params.blank?
+
+      RegularTransactionsCreator.call(
+        regular_transaction_params: { regular_transactions: regular_transaction_params },
+        gross_income_summary: assessment.partner_gross_income_summary,
+      )
+    end
+
+    def create_employments
+      return Result.new(errors: []).freeze if employment_params.blank?
+
+      employments_params = { employment_income: employment_params }
+      EmploymentsCreator.call(
+        employments_params:,
+        employment_collection: assessment.partner_employments,
+      )
+    end
+
+    def create_state_benefits
+      return Result.new(errors: []).freeze if state_benefit_params.blank?
+
+      StateBenefitsCreator.call(
+        state_benefits_params: { state_benefits: state_benefit_params },
+        gross_income_summary: assessment.partner_gross_income_summary,
+      )
+    end
+
+    def create_additional_properties
+      return Result.new(errors: []).freeze if additional_property_params.blank?
+
+      PartnerPropertiesCreator.call(
+        capital_summary: assessment.partner_capital_summary,
+        properties_params: additional_property_params,
+      )
+    end
+
+    def create_capitals
+      return Result.new(errors: []).freeze if capital_params.blank?
+
+      CapitalsCreator.call(
+        capital_params:,
+        capital_summary: assessment.partner_capital_summary,
+      )
+    end
+
+    def create_vehicles
+      return Result.new(errors: []).freeze if vehicle_params.blank?
+
+      VehicleCreator.call(
         vehicles_params: { vehicles: vehicle_params },
         capital_summary: assessment.partner_capital_summary,
       )
+    end
 
-      errors.concat(creator.errors)
+    def create_outgoings
+      return Result.new(errors: []).freeze if outgoings_params.blank?
+
+      OutgoingsCreator.call(
+        disposable_income_summary: assessment.partner_disposable_income_summary,
+        outgoings_params: { outgoings: outgoings_params },
+      )
     end
 
     def create_dependants
-      return if dependant_params.blank?
+      return Result.new(errors: []).freeze if dependant_params.blank?
 
-      creator = DependantsCreator.call(
-        assessment_id: @assessment_id,
+      DependantsCreator.call(
+        dependants: @assessment.partner_dependants,
         dependants_params: { dependants: dependant_params },
-        relationship: :partner_dependants,
       )
-
-      errors.concat(creator.errors)
-    end
-
-    def assessment
-      @assessment ||= Assessment.find_by(id: assessment_id)
     end
 
     def partner_attributes
@@ -186,8 +179,8 @@ module Creators
       @dependant_params ||= @partner_financials_params[:dependants]
     end
 
-    def json_validator
-      @json_validator ||= JsonValidator.new("partner", partner_attributes)
+    def outgoings_params
+      @partner_financials_params[:outgoings]
     end
   end
 end

@@ -1,4 +1,4 @@
-FROM ruby:3.2.1-alpine3.17 as builder
+FROM ruby:3.2.2-alpine3.17 as builder
 MAINTAINER apply for legal aid team
 
 ENV RAILS_ENV production
@@ -15,7 +15,7 @@ RUN gem update --system
 RUN bundle config --local without test:development && bundle install
 
 
-FROM ruby:3.2.1-alpine3.17
+FROM ruby:3.2.2-alpine3.17
 RUN apk --no-cache add postgresql-client
 
 COPY --from=builder /usr/local/bundle/ /usr/local/bundle/

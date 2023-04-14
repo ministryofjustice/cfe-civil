@@ -1,4 +1,6 @@
-class AssessmentsController < ApplicationController
+class AssessmentsController < CreationController
+  before_action :validate, only: [:create]
+
   def create
     if assessment_creation_service.success?
       render json: { success: true, assessment_id: assessment_creation_service.assessment.id, errors: [] }
@@ -19,6 +21,10 @@ class AssessmentsController < ApplicationController
   end
 
 private
+
+  def validate
+    validate_json_schema "assessment", assessment_params
+  end
 
   def assessment_incomplete?
     assessment.proceeding_types.empty? || assessment.applicant.nil?

@@ -5,6 +5,7 @@ module Workflows
     let(:assessment) do
       create :assessment, :with_capital_summary, :with_disposable_income_summary,
              :with_gross_income_summary,
+             submission_date: Date.new(2022, 6, 7),
              applicant:, proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
     end
 
@@ -179,8 +180,8 @@ module Workflows
           let(:employed) { true }
 
           before do
-            create(:employment, assessment:,
-                                employment_payments: build_list(:employment_payment, 3, gross_income: 3_000))
+            create(:employment, :with_monthly_payments, assessment:,
+                                                        gross_monthly_income: 3_000)
             create(:housing_cost, amount: 1000,
                                   gross_income_summary: assessment.gross_income_summary)
           end
@@ -214,11 +215,11 @@ module Workflows
 
             context "with an employed partner" do
               before do
-                create(:partner, assessment:)
+                create(:partner, assessment:, employed: true)
                 create(:partner_employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
               end
 
-              it "is eligible due to partner income" do
+              it "is eligible due to partner allowance" do
                 expect(assessment_result).to eq("eligible")
               end
             end
