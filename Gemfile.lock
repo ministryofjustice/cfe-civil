@@ -534,7 +534,6 @@ DEPENDENCIES
   pry-stack_explorer
   puma (~> 6.2)
   rails (~> 7.0.4, >= 7.0.4.3)
-  rainbow
   roo (~> 2.10.0)
   rspec-rails (~> 6.0, >= 6.0.1)
   rspec_junit_formatter
