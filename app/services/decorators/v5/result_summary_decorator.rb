@@ -29,10 +29,10 @@ module Decorators
                                                                  @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
                                                                  partner_present: assessment.partner.present?,
                                                                  dependant_allowance: @calculation_output.dependant_allowance).as_json,
-          capital: CapitalResultDecorator.new(capital_summary,
-                                              @calculation_output.capital_subtotals.applicant_capital_subtotals,
-                                              @calculation_output.capital_subtotals.capital_contribution.to_f,
-                                              @calculation_output.capital_subtotals.combined_assessed_capital.to_f).as_json,
+          capital: ApplicantCapitalResultDecorator.new(summary: capital_summary,
+                                                       person_capital_subtotals: @calculation_output.capital_subtotals.applicant_capital_subtotals,
+                                                       capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
+                                                       combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f).as_json,
         }
         if assessment.partner
           details.merge(partner_capital:, partner_gross_income:, partner_disposable_income:)
@@ -57,8 +57,7 @@ module Decorators
 
       def partner_capital
         CapitalResultDecorator.new(assessment.partner_capital_summary,
-                                   @calculation_output.capital_subtotals.partner_capital_subtotals,
-                                   0, 0).as_json
+                                   @calculation_output.capital_subtotals.partner_capital_subtotals).as_json
       end
     end
   end

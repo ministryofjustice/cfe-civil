@@ -703,7 +703,6 @@ module V6
                   pensioner_disregard_applied: 0.0,
                   disputed_non_property_disregard: 0.0,
                   subject_matter_of_dispute_disregard: 0.0,
-                  capital_contribution: 0.0,
                 },
               )
           end

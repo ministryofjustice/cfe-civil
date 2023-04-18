@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Decorators
   module V5
-    RSpec.describe CapitalResultDecorator do
+    RSpec.describe ApplicantCapitalResultDecorator do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) { create :assessment, proceedings: pr_hash }
       let(:pt_results) do
@@ -22,30 +22,28 @@ module Decorators
                                    total_non_liquid: 12_553.22,
                                    total_property: 835_500,
                                    total_mortgage_allowance: 750_000,
-                                   total_capital: 24_000,
-                                   assessed_capital: 9_355,
-                                   total_capital_with_smod: 23_000,
                                    pensioner_capital_disregard: 10_000,
                                    disputed_non_property_disregard: 5_454,
-                                   subject_matter_of_dispute_disregard: 3_000)
+                                   disputed_property_disregard: 3_000)
       end
       let(:capital_contribution) { 0 }
       let(:combined_assessed_capital) { 12_000 }
 
       let(:expected_result) do
         {
+          pensioner_disregard_applied: 10_000.0,
           total_liquid: 9_355.23,
           total_non_liquid: 12_553.22,
           disputed_non_property_disregard: 5_454,
           total_vehicle: 3500,
           total_property: 835_500,
           total_mortgage_allowance: 750_000,
-          total_capital: 24_000,
-          total_capital_with_smod: 23_000,
+          total_capital: 860_908.45,
+          total_capital_with_smod: 855_454.45,
           pensioner_capital_disregard: 10_000,
-          subject_matter_of_dispute_disregard: 3_000,
+          subject_matter_of_dispute_disregard: 8454.0,
           capital_contribution: 0.0,
-          assessed_capital: 9_355,
+          assessed_capital: 845_454.45,
           proceeding_types: [
             {
               ccms_code: "DA003",
@@ -63,7 +61,6 @@ module Decorators
             },
           ],
           combined_assessed_capital: 12_000.0,
-          pensioner_disregard_applied: 0,
         }
       end
 
@@ -79,7 +76,12 @@ module Decorators
         end
       end
 
-      subject(:decorator) { described_class.new(assessment.capital_summary, subtotals, capital_contribution, combined_assessed_capital).as_json }
+      subject(:decorator) do
+        described_class.new(summary: assessment.capital_summary,
+                            person_capital_subtotals: subtotals,
+                            capital_contribution:,
+                            combined_assessed_capital:).as_json
+      end
 
       describe "#as_json" do
         it "returns the expected structure" do
