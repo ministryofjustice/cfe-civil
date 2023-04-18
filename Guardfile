@@ -71,4 +71,7 @@ guard :shell, swagger_options do
   watch(%r{^spec/requests/swagger_docs/.+\.rb}) do
     `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
   end
+  watch("spec/swagger_helper.rb") do
+    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
+  end
 end

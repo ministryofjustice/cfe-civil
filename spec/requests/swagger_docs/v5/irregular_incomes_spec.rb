@@ -22,36 +22,7 @@ RSpec.describe "irregular_incomes", type: :request, swagger_doc: "v5/swagger.yam
                   example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
                   required: %i[payments],
                   properties: {
-                    payments: {
-                      type: :array,
-                      minItems: 0,
-                      maxItems: 2,
-                      description: "One or more irregular payment details",
-                      items: {
-                        type: :object,
-                        required: %i[income_type frequency amount],
-                        description: "Irregular payment detail",
-                        properties: {
-                          income_type: {
-                            type: :string,
-                            enum: CFEConstants::VALID_IRREGULAR_INCOME_TYPES,
-                            description: "Identifying name for this irregular income payment",
-                            example: CFEConstants::VALID_IRREGULAR_INCOME_TYPES.first,
-                          },
-                          frequency: {
-                            type: :string,
-                            enum: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES,
-                            description: "Frequency of the payment received",
-                            example: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES.first,
-                          },
-                          amount: {
-                            type: :number,
-                            format: :decimal,
-                            example: 101.01,
-                          },
-                        },
-                      },
-                    },
+                    payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
                   },
                 }
 

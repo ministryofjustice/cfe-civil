@@ -21,30 +21,7 @@ RSpec.describe "explicit_remarks", type: :request, swagger_doc: "v5/swagger.yaml
                   required: %i[explicit_remarks],
                   example: { explicit_remarks: [{ category: "policy_disregards", details: %w[employment charity] }] },
                   properties: {
-                    explicit_remarks: {
-                      type: :array,
-                      description: "One or more remarks by category",
-                      items: {
-                        type: :object,
-                        required: %i[category details],
-                        description: "Explicit remark",
-                        properties: {
-                          category: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REMARK_CATEGORIES,
-                            description: "Category of remark. Currently, only 'policy_disregard' is supported",
-                            example: CFEConstants::VALID_REMARK_CATEGORIES.first,
-                          },
-                          details: {
-                            type: :array,
-                            description: "One or more remarks for that category",
-                            items: {
-                              type: :string,
-                            },
-                          },
-                        },
-                      },
-                    },
+                    explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
                   },
                 }
 

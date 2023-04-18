@@ -27,73 +27,11 @@ RSpec.describe "properties", type: :request, swagger_doc: "v5/swagger.yaml" do
                       required: %i[main_home],
                       description: "A main home and additional properties",
                       properties: {
-                        main_home: {
-                          type: :object,
-                          required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
-                          description: "Applicant's main home details",
-                          properties: {
-                            value: {
-                              "$ref" => "#/components/schemas/currency",
-                              description: "Financial value of the property",
-                            },
-                            outstanding_mortgage: {
-                              "$ref" => "#/components/schemas/currency",
-                              description: "Amount outstanding on all mortgages against this property",
-                            },
-                            percentage_owned: {
-                              type: :number,
-                              format: :decimal,
-                              description: "Percentage share of the property which is owned by the applicant",
-                              example: 99.99,
-                              minimum: 0,
-                              maximum: 100,
-                            },
-                            shared_with_housing_assoc: {
-                              type: :boolean,
-                              description: "Property is shared with a housing association",
-                            },
-                            subject_matter_of_dispute: {
-                              type: :boolean,
-                              description: "Property is the subject of a dispute",
-                            },
-                          },
-                        },
+                        main_home: { "$ref" => "#/components/schemas/Property" },
                         additional_properties: {
                           type: :array,
                           description: "One or more additional properties owned by the applicant",
-                          items: {
-                            type: :object,
-                            required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
-                            description: "Additional property details",
-                            properties: {
-                              value: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Financial value of the property",
-                                example: 500_000.01,
-                              },
-                              outstanding_mortgage: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Amount outstanding on all mortgages against this property",
-                                example: 999.99,
-                              },
-                              percentage_owned: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Percentage share of the property which is owned by the applicant",
-                                example: 99.99,
-                              },
-                              shared_with_housing_assoc: {
-                                type: :boolean,
-                                description: "Property is shared with a housing association",
-                              },
-                              subject_matter_of_dispute: {
-                                type: :boolean,
-                                description: "Property is the subject of a dispute",
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/Property" },
                         },
                       },
                     },
