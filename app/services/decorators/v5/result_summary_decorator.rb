@@ -30,7 +30,8 @@ module Decorators
                                                                  partner_present: assessment.partner.present?,
                                                                  dependant_allowance: @calculation_output.dependant_allowance).as_json,
           capital: ApplicantCapitalResultDecorator.new(summary: capital_summary,
-                                                       person_capital_subtotals: @calculation_output.capital_subtotals.applicant_capital_subtotals,
+                                                       applicant_capital_subtotals: @calculation_output.capital_subtotals.applicant_capital_subtotals,
+                                                       partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
                                                        capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
                                                        combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f).as_json,
         }

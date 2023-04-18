@@ -969,6 +969,16 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            type: :number,
                            format: :decimal,
                          },
+                         combined_disputed_capital: {
+                           description: "Combined applicant and partner disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         combined_non_disputed_capital: {
+                           description: "Combined applicant and partner non-disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
                          pensioner_capital_disregard: {
                            type: :number,
                            format: :decimal,

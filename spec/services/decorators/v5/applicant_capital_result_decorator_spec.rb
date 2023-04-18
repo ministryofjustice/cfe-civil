@@ -61,6 +61,8 @@ module Decorators
             },
           ],
           combined_assessed_capital: 12_000.0,
+          combined_disputed_capital: 16_908,
+          combined_non_disputed_capital: 1_704_908.9,
         }
       end
 
@@ -78,7 +80,8 @@ module Decorators
 
       subject(:decorator) do
         described_class.new(summary: assessment.capital_summary,
-                            person_capital_subtotals: subtotals,
+                            applicant_capital_subtotals: subtotals,
+                            partner_capital_subtotals: subtotals,
                             capital_contribution:,
                             combined_assessed_capital:).as_json
       end

@@ -24,7 +24,8 @@ class PersonCapitalSubtotals
               :pensioner_capital_disregard,
               :main_home,
               :additional_properties,
-              :disputed_non_property_disregard
+              :disputed_non_property_disregard,
+              :disputed_property_disregard
 
   def assessed_capital
     [total_capital_with_smod - pensioner_capital_disregard, 0].max

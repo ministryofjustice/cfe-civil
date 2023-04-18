@@ -674,7 +674,7 @@ module V6
 
           it "has capital" do
             expect(summary.fetch(:capital).except(:proceeding_types, :capital_contribution,
-                                                  :total_mortgage_allowance, :combined_assessed_capital))
+                                                  :total_mortgage_allowance))
               .to eq({
                 total_liquid: 0.0,
                 total_non_liquid: 0.0,
@@ -687,6 +687,9 @@ module V6
                 assessed_capital: 11_258.99,
                 total_capital_with_smod: 11_258.99,
                 pensioner_disregard_applied: 0.0,
+                combined_disputed_capital: 0.0,
+                combined_assessed_capital: 22_636.86,
+                combined_non_disputed_capital: 22_636.86,
               })
           end
 
