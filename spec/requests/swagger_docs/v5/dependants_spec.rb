@@ -25,36 +25,7 @@ RSpec.describe "dependants", type: :request, swagger_doc: "v5/swagger.yaml" do
                     dependants: {
                       type: :array,
                       description: "One or more dependants details",
-                      items: {
-                        type: :object,
-                        required: %i[date_of_birth in_full_time_education relationship],
-                        properties: {
-                          date_of_birth: {
-                            type: :string,
-                            format: :date,
-                            example: "1992-07-22",
-                          },
-                          in_full_time_education: {
-                            type: :boolean,
-                            example: false,
-                            description: "Dependant is in full time education or not",
-                          },
-                          relationship: {
-                            type: :string,
-                            enum: Dependant.relationships.values,
-                            example: Dependant.relationships.values.first,
-                            description: "Dependant's relationship to the applicant",
-                          },
-                          monthly_income: {
-                            "$ref" => "#/components/schemas/currency",
-                            description: "Dependant's monthly income",
-                          },
-                          assets_value: {
-                            "$ref" => "#/components/schemas/currency",
-                            description: "Dependant's total assets value",
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/Dependant" },
                     },
                   },
                 }

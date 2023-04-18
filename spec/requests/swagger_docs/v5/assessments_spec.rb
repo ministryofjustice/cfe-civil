@@ -11,27 +11,7 @@ RSpec.describe "V5 Assessments", type: :request, vcr: true, swagger_doc: "v5/swa
                 in: :body,
                 required: true,
                 schema: {
-                  type: :object,
-                  additionalProperties: false,
-                  required: %i[submission_date],
-                  properties: {
-                    client_reference_id: {
-                      type: :string,
-                      example: "LA-FOO-BAR",
-                      description: "Client's reference number for this application (free text)",
-                    },
-                    submission_date: {
-                      type: :string,
-                      description: "Date of the original submission (iso8601 format)",
-                      example: "2022-05-19",
-                    },
-                    level_of_help: {
-                      type: :string,
-                      enum: Assessment.levels_of_help.keys,
-                      example: Assessment.levels_of_help.keys.first,
-                      description: "The level of help required by the client. Defaults to 'certificated'",
-                    },
-                  },
+                  "$ref" => "#/components/schemas/Assessment",
                 }
 
       # rubocop:disable RSpec/VariableName

@@ -21,50 +21,7 @@ RSpec.describe "other_incomes", type: :request, swagger_doc: "v5/swagger.yaml" d
                   description: "A set of other regular income sources",
                   example: JSON.parse(File.read(Rails.root.join("spec/fixtures/other_incomes.json"))),
                   properties: {
-                    other_incomes: {
-                      type: :array,
-                      description: "One or more other regular income payments categorized by source",
-                      items: {
-                        type: :object,
-                        description: "Other regular income detail",
-                        required: %i[source payments],
-                        properties: {
-                          source: {
-                            type: :string,
-                            enum: CFEConstants::HUMANIZED_INCOME_CATEGORIES,
-                            description: "Source of other regular income",
-                            example: CFEConstants::HUMANIZED_INCOME_CATEGORIES.first,
-                          },
-                          payments: {
-                            type: :array,
-                            description: "One or more other regular payment details",
-                            items: {
-                              type: :object,
-                              description: "Payment detail",
-                              required: %i[date amount client_id],
-                              properties: {
-                                date: {
-                                  type: :string,
-                                  format: :date,
-                                  description: "Date payment received",
-                                  example: "1992-07-22",
-                                },
-                                amount: {
-                                  "$ref" => "#/components/schemas/positive_currency",
-                                  description: "Amount of payment received",
-                                },
-                                client_id: {
-                                  type: :string,
-                                  format: :uuid,
-                                  description: "Client identifier for payment received",
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
                   },
                 }
 
