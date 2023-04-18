@@ -23,7 +23,7 @@ class AssessmentsController < CreationController
 private
 
   def validate
-    validate_json_schema "assessment", assessment_params
+    validate_swagger_schema "/assessments", assessment_params
   end
 
   def assessment_incomplete?

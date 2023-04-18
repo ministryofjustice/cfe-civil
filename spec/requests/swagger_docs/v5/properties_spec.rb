@@ -76,7 +76,7 @@ RSpec.describe "properties", type: :request, swagger_doc: "v5/swagger.yaml" do
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/properties\/main_home\/value' of type null matched the disallowed schema in schema file/)
+          expect(body[:errors]).to include(/The property '#\/properties\/main_home\/value' of type null did not match any of the required schemas/)
         end
       end
     end

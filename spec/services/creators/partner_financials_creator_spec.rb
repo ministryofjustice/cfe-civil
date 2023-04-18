@@ -57,7 +57,7 @@ module Creators
           end
 
           it "returns error" do
-            expect(creator.errors[0]).to eq "There is already a partner for this assesssment"
+            expect(creator.errors[0]).to eq "Assessment There is already a partner for this assesssment"
           end
         end
       end

@@ -2,7 +2,7 @@ class CashTransactionsController < CreationController
   before_action :load_assessment
 
   def create
-    json_validate_and_render("cash_transaction", cash_transaction_params, lambda {
+    swagger_validate_and_render("cash_transactions", cash_transaction_params, lambda {
       Creators::CashTransactionsCreator.call(
         assessment: @assessment,
         cash_transaction_params:,

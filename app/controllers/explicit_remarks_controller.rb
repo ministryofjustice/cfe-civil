@@ -2,7 +2,7 @@ class ExplicitRemarksController < CreationController
   before_action :load_assessment
 
   def create
-    json_validate_and_render("explicit_remarks", explicit_remarks_params, lambda {
+    swagger_validate_and_render("explicit_remarks", explicit_remarks_params, lambda {
       Creators::ExplicitRemarksCreator.call(
         assessment: @assessment,
         explicit_remarks_params:,

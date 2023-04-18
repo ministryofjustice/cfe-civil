@@ -46,12 +46,8 @@ module Creators
     end
 
     def create_partner
-      if assessment.partner.present?
-        Result.new(errors: ["There is already a partner for this assesssment"]).freeze
-      else
-        assessment.create_partner!(partner_attributes.slice(:date_of_birth, :employed))
-        Result.new(errors: []).freeze
-      end
+      assessment.create_partner!(partner_attributes.slice(:date_of_birth, :employed))
+      Result.new(errors: []).freeze
     end
 
     def create_summaries

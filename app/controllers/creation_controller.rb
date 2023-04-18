@@ -1,10 +1,6 @@
 class CreationController < ApplicationController
 private
 
-  def json_validate_and_render(schema_name, parameters, creator)
-    validate_and_render JsonValidator.new(schema_name, parameters), creator
-  end
-
   def swagger_validate_and_render(schema_name, parameters, creator)
     validate_and_render JsonSwaggerValidator.new(schema_name, parameters), creator
   end
@@ -24,13 +20,6 @@ private
 
   def validate_swagger_schema(schema_name, parameters)
     json_validator = JsonSwaggerValidator.new(schema_name, parameters)
-    unless json_validator.valid?
-      render_unprocessable(json_validator.errors)
-    end
-  end
-
-  def validate_json_schema(schema_name, parameters)
-    json_validator = JsonValidator.new(schema_name, parameters)
     unless json_validator.valid?
       render_unprocessable(json_validator.errors)
     end

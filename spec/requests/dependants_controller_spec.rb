@@ -92,7 +92,7 @@ RSpec.describe DependantsController, type: :request do
       end
 
       it_behaves_like "it fails with message",
-                      /The property '#\/dependants\/0\/relationship' value "son" did not match one of the following values: adult_relative, child_relative/
+                      /The property '#\/dependants\/0\/relationship' value "son" did not match one of the following values: child_relative, adult_relative/
     end
 
     context "with no dependant monthly_income" do

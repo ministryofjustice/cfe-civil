@@ -2,7 +2,7 @@ class DependantsController < CreationController
   before_action :load_assessment
 
   def create
-    json_validate_and_render("dependants", dependants_params, lambda {
+    swagger_validate_and_render("dependants", dependants_params, lambda {
       Creators::DependantsCreator.call(
         dependants: @assessment.dependants,
         dependants_params:,
