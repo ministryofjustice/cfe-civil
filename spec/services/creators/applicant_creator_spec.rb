@@ -93,7 +93,7 @@ module Creators
 
             describe "#errors" do
               it "returns error" do
-                expect(creator.errors[0]).to eq "There is already an applicant for this assesssment"
+                expect(creator.errors[0]).to eq "Assessment There is already an applicant for this assesssment"
               end
             end
           end

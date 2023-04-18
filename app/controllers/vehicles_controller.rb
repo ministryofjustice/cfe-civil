@@ -2,7 +2,7 @@ class VehiclesController < CreationController
   before_action :load_assessment
 
   def create
-    json_validate_and_render "vehicles", vehicles_params, lambda {
+    swagger_validate_and_render "vehicles", vehicles_params, lambda {
       Creators::VehicleCreator.call(
         vehicles_params:,
         capital_summary: @assessment.capital_summary,

@@ -394,8 +394,8 @@ RSpec.configure do |config|
                                example: "1992-07-22",
                                description: "Applicant date of birth" },
               employed: {
-                type: :boolean,
-                nullable: true,
+                oneOf: [{ type: :boolean }, { type: :null }],
+                example: true,
               },
               has_partner_opponent: { type: :boolean,
                                       example: false,

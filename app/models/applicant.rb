@@ -2,6 +2,7 @@ class Applicant < ApplicationRecord
   extend EnumHash
 
   belongs_to :assessment, optional: true
+  validates :assessment_id, uniqueness: { message: "There is already an applicant for this assesssment" }
 
   enum involvement_type: enum_hash_for(:applicant)
 
