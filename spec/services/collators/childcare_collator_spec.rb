@@ -16,8 +16,7 @@ module Collators
       end
 
       subject(:collator) do
-        described_class.call(gross_income_summary:, childcare_outgoings:, eligible_for_childcare:,
-                             assessment_errors: assessment.assessment_errors)
+        described_class.call(gross_income_summary:, childcare_outgoings:, eligible_for_childcare:)
       end
 
       before do

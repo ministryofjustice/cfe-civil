@@ -12,7 +12,6 @@ module Calculators
 
         state_benefits.each do |state_benefit|
           monthly_value = Calculators::MonthlyEquivalentCalculator.call(
-            assessment_errors: state_benefit.gross_income_summary.assessment.assessment_errors,
             collection: state_benefit.state_benefit_payments,
           )
           # TODO: Stop persisting this

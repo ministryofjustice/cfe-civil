@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_31_170201) do
     t.boolean "self_employed", default: false
     t.boolean "employed"
     t.boolean "receives_asylum_support", default: false, null: false
-    t.index ["assessment_id"], name: "index_applicants_on_assessment_id"
+    t.index ["assessment_id"], name: "index_applicants_on_assessment_id", unique: true
   end
 
   create_table "assessment_errors", force: :cascade do |t|
@@ -215,7 +215,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_31_170201) do
     t.uuid "assessment_id", null: false
     t.date "date_of_birth"
     t.boolean "employed"
-    t.index ["assessment_id"], name: "index_partners_on_assessment_id"
+    t.index ["assessment_id"], name: "index_partners_on_assessment_id", unique: true
   end
 
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

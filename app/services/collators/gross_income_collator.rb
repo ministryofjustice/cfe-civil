@@ -109,7 +109,6 @@ module Collators
       result = Hash.new(0.0)
       @gross_income_summary.other_income_sources.each do |source|
         monthly_income = Calculators::MonthlyEquivalentCalculator.call(
-          assessment_errors: @gross_income_summary.assessment.assessment_errors,
           collection: source.other_income_payments,
         )
 

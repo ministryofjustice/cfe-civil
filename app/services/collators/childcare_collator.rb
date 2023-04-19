@@ -3,16 +3,15 @@ module Collators
     Result = Data.define(:cash, :bank)
 
     class << self
-      def call(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:)
-        new(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:).call
+      def call(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:)
+        new(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:).call
       end
     end
 
-    def initialize(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:, assessment_errors:)
+    def initialize(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:)
       @childcare_outgoings = childcare_outgoings
       @gross_income_summary = gross_income_summary
       @eligible_for_childcare = eligible_for_childcare
-      @assessment_errors = assessment_errors
     end
 
     def call
@@ -28,7 +27,6 @@ module Collators
 
     def child_care_bank
       Calculators::MonthlyEquivalentCalculator.call(
-        assessment_errors: @assessment_errors,
         collection: @childcare_outgoings,
       )
     end

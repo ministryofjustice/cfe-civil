@@ -1,6 +1,6 @@
 module Calculators
   class MonthlyIncomeConverter
-    attr_reader :monthly_amount, :error_message
+    # attr_reader :error_message
 
     def initialize(frequency, payments)
       @frequency = frequency
@@ -10,15 +10,10 @@ module Calculators
       @monthly_amount = nil
     end
 
-    def run
+    def monthly_amount
       raise "Unrecognized frequency" unless @frequency.in?(CFEConstants::VALID_FREQUENCIES)
 
-      @monthly_amount = __send__("process_#{@frequency}")
-    end
-
-    def error?
-      run
-      @error
+      __send__("process_#{@frequency}")
     end
 
   private
