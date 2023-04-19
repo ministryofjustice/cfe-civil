@@ -12,14 +12,14 @@ module Calculators
                           receives_qualifying_benefit: assessment.applicant.receives_qualifying_benefit,
                           total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income)
     end
-    let(:assessment) { create :assessment, applicant_disposable_income_summary: disposable_income_summary, applicant: }
-    let(:disposable_income_summary) { create :disposable_income_summary, total_disposable_income: disposable_income }
+    let(:assessment) { build :assessment, applicant_disposable_income_summary: disposable_income_summary, applicant: }
+    let(:disposable_income_summary) { build :disposable_income_summary, total_disposable_income: disposable_income }
     let(:disposable_income) { 0 }
 
     describe "#value" do
       context "non-passported" do
         context "not a pensioner" do
-          let(:applicant) { create :applicant, :without_qualifying_benefits, :under_pensionable_age }
+          let(:applicant) { build :applicant, :without_qualifying_benefits, :under_pensionable_age }
 
           it "returns zero" do
             expect(service.value).to eq 0.0
@@ -28,7 +28,7 @@ module Calculators
 
         context "a pensioner" do
           context "non-passported" do
-            let(:applicant) { create :applicant, :without_qualifying_benefits, :over_pensionable_age }
+            let(:applicant) { build :applicant, :without_qualifying_benefits, :over_pensionable_age }
 
             context "with an income of 0" do
               it "returns the maximum value" do
@@ -70,7 +70,7 @@ module Calculators
       end
 
       context "passported" do
-        let(:applicant) { create :applicant, :with_qualifying_benefits, :over_pensionable_age }
+        let(:applicant) { build :applicant, :with_qualifying_benefits, :over_pensionable_age }
 
         it "returns the passported value" do
           expect(service.value).to eq 100_000.0

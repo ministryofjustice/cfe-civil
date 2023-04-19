@@ -1,0 +1,13 @@
+---
+includes:
+  - app/services/calculators
+  - app/services/collators
+  - app/services/assessors
+  - app/services/workflows
+integration: rspec
+jobs: 1
+matcher:
+  subjects:
+    - Calculators*
+    - Calculators*
+    - Workflows*

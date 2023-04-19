@@ -159,12 +159,10 @@ module Calculators
       let(:assessment) { build(:assessment) }
       let(:dependant) { build :dependant, submission_date: assessment.submission_date }
 
-      subject(:calculator) { described_class.new(dependant, assessment.submission_date) }
+      subject(:calculator) { described_class.new(dependant, submission_date) }
 
       context "before new allowances date" do
-        before do
-          assessment.submission_date = "Sun, 11 Apr 2021"
-        end
+        let(:submission_date) { Date.new(2021, 4, 11) }
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
@@ -192,9 +190,7 @@ module Calculators
       end
 
       context "after new allowances date" do
-        before do
-          assessment.submission_date = "Mon, 12 Apr 2021"
-        end
+        let(:submission_date) { Date.new(2021, 4, 12) }
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
@@ -227,12 +223,10 @@ module Calculators
       let(:assessment) { build(:assessment) }
       let(:dependant) { build :dependant, submission_date: assessment.submission_date }
 
-      subject(:calculator) { described_class.new(dependant, assessment.submission_date) }
+      subject(:calculator) { described_class.new(dependant, submission_date) }
 
       context "before new allowances date" do
-        before do
-          assessment.submission_date = "Sun, 10 Apr 2022"
-        end
+        let(:submission_date) { Date.new(2022, 4, 10) }
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
@@ -260,9 +254,7 @@ module Calculators
       end
 
       context "after new allowances date" do
-        before do
-          assessment.submission_date = "Mon, 11 Apr 2022"
-        end
+        let(:submission_date) { Date.new(2022, 4, 11) }
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
