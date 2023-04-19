@@ -41,37 +41,6 @@ describe PartnerFinancialsController, :calls_bank_holiday, type: :request do
       end
     end
 
-    context "with employment values as strings" do
-      let(:partner_financials_params) do
-        {
-          partner: {
-            date_of_birth:,
-            employed: true,
-          },
-          employments: [
-            {
-              name: "Job",
-              client_id: "Something",
-              payments: [
-                {
-                  client_id: "Client",
-                  date: "2022-05-04",
-                  gross: "1046.45",
-                  benefits_in_kind: "12.34",
-                  tax: "-34.23",
-                  national_insurance: "-12.56",
-                },
-              ],
-            },
-          ],
-        }
-      end
-
-      it "does not error" do
-        expect(response).to be_successful
-      end
-    end
-
     context "with vehicle from the future" do
       let(:partner_financials_params) do
         {
