@@ -15,7 +15,6 @@ module Creators
     def initialize(capital_summary:, properties_params:)
       @capital_summary = capital_summary
       @properties_params = properties_params
-      @properties = []
     end
 
     def call
