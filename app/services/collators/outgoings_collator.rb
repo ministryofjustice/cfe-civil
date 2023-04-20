@@ -7,7 +7,6 @@ module Collators
         # sets child_care_bank and child_care_cash fields in disposable_income_summary
         child_care = Collators::ChildcareCollator.call(gross_income_summary:,
                                                        childcare_outgoings: disposable_income_summary.childcare_outgoings,
-                                                       assessment_errors: disposable_income_summary.assessment.assessment_errors,
                                                        eligible_for_childcare:)
         # TODO: Return these values instead of persisting them
         disposable_income_summary.update!(child_care_bank: child_care.bank, child_care_cash: child_care.cash)
