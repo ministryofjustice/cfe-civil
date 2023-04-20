@@ -13,7 +13,7 @@ info:
       - Retrieve the result using the GET `/assessments/{assessment_id}`
   contact:
     name: Github repository
-    url: https://github.com/ministryofjustice/check-financial-eligibility
+    url: https://github.com/ministryofjustice/cfe-civil
   version: v5
 components:
   schemas:
@@ -912,6 +912,8 @@ paths:
       summary: create applicant
       tags:
       - Assessment components
+      description: This endpoint will create an Applicant and associate it with an
+        existing Assessment which has been created via `POST /assessments`
       parameters:
       - name: assessment_id
         in: path
@@ -1007,6 +1009,7 @@ paths:
       summary: create cash_transaction
       tags:
       - Assessment components
+      description: Add cash income and outgoings to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1075,6 +1078,7 @@ paths:
       summary: create employment
       tags:
       - Assessment components
+      description: Add applicant employment income to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1181,6 +1185,7 @@ paths:
       summary: create
       tags:
       - Perform assessment with single call
+      description: Performs a complete assessment
       parameters: []
       responses:
         '200':
@@ -1781,6 +1786,7 @@ paths:
       summary: create outgoing
       tags:
       - Assessment components
+      description: Add applicant's outgoings to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1836,6 +1842,7 @@ paths:
       summary: 'create '
       tags:
       - Assessment components
+      description: Adds details of an applicant's partner.
       parameters:
       - name: assessment_id
         in: path
