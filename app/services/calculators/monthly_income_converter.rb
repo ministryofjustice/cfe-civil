@@ -1,7 +1,5 @@
 module Calculators
   class MonthlyIncomeConverter
-    # attr_reader :error_message
-
     def initialize(frequency, payments)
       @frequency = frequency
       @payments = payments
