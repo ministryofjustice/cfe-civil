@@ -264,6 +264,16 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            type: :number,
                            format: :decimal,
                          },
+                         combined_disputed_capital: {
+                           description: "Combined applicant and partner disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         combined_non_disputed_capital: {
+                           description: "Combined applicant and partner non-disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
                          pensioner_capital_disregard: {
                            type: :number,
                            format: :decimal,
@@ -316,6 +326,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      },
                      partner_capital: {
                        type: :object,
+                       additionalProperties: false,
                        properties: {
                          total_liquid: { type: :number },
                          total_non_liquid: { type: :number },
@@ -325,7 +336,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          total_capital: { type: :number },
                          pensioner_capital_disregard: { type: :number },
                          subject_matter_of_dispute_disregard: { type: :number },
-                         capital_contribution: { type: :number },
                          assessed_capital: { type: :number },
                        },
                      },

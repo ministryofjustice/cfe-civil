@@ -102,7 +102,25 @@ false for production.
 This allows the insertion of test data on an arbitrary date specified in the `values.yml` file to be used
 for testing new thresholds before they come into affect on production.
 
-## Setup
+## Developer Setup
+
+1.  Ensure Ruby is installed - for example using rbenv - with the version specified in `.ruby-version`
+
+2.  Install these system dependencies:
+
+    ```sh
+    brew install shared-mime-info
+    brew install cmake
+    brew install postgresql
+    # run postgres now AND on every boot
+    brew services start postgresql
+    ```
+
+3.  Run the setup script:
+
+    ```sh
+    bin/setup
+    ```
 
 Please install the following dependencies prior to running the application setup:
 
@@ -158,7 +176,7 @@ There are several kinds of tests:
 * Integration tests using Cucumber
 * other RSpec tests
 
-## Running tests
+4.  Guard Monitoring:
 
 #### Environment variables for Integration tests (spreadsheets)
 
@@ -221,9 +239,15 @@ Solution: fix your database, which should have been created with `bin/setup` - s
 
 A series of spreadsheets is used to provide use cases and their expected results, and are run as part of the normal `rspec` test suite, or can be run individually with more control using the script `bin/ispec` (see below).
 
-There is a  [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) which lists all the other spreadsheets to be run, as well as contain skeleton worksheets for creating new tests scenarios.  Each spreadsheet can hold multiple worksheet, each of which is a test scenario.
+The [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) lists all the other spreadsheets to be run, as well as contain skeleton worksheets for creating new tests scenarios.  Each spreadsheet can hold multiple worksheets, each of which is a test scenario.
 
-When run as part of the `rspec` test suite each worksheet is handled as a separate example.
+You can run these tests, in the standard rspec way:
+
+```sh
+bundle exec rspec --pattern=spec/integration/test_runner_spec.rb -fd
+```
+
+Each worksheet is a test scenario, which is run as an rspec example.
 
 For more fine control over the amount of verbosity, to run just one test case, or to force download the google spreadsheet,
 use `bin/ispec`, the help text of which is given below.
@@ -242,14 +266,24 @@ options:
 Each worksheet has an entry `Test Active` which can be either true or false.  If set to false, the worksheet will be skipped, unless it is
 the named worksheet using the `-w` command line switch.
 
-## Integration tests (cucumber)
+### Integration tests (cucumber)
 
-We are exploring the use of cucumber for feature tests, in particular to document features added for the "[CCQ](https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid)" client. These cucumber tests are to be found in the `features` folder.
+We are [trialling the use of cucumber for integration tests](https://dsdmoj.atlassian.net/wiki/spaces/LE/pages/4229660824/Architectural+Design+Records#Cucumber-tests-trial-in-CFE-Partner), in particular to document features added for the "[CCQ](https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid)" client. These cucumber tests are to be found in the `features` folder.
 
 Run them with:
 
 ```sh
 bundle exec cucumber
+```
+
+### Other RSpec tests
+
+The aim is for these to be "unit test" style - i.e. numerous tests that cover the detail of the functionality - the bottom level of the [test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html).
+
+Run them with:
+
+```sh
+bundle exec rspec --exclude-pattern=spec/integration/test_runner_spec.rb
 ```
 
 ## Replaying live API interactions for debugging purposes

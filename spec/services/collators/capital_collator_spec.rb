@@ -11,17 +11,13 @@ module Collators
     let(:smod_value) { 0 }
     let(:level_of_help) { "controlled" }
 
-    describe ".call" do
+    describe "#call" do
       subject(:collator) do
         described_class.call submission_date: assessment.submission_date,
                              capital_summary: assessment.capital_summary,
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
                              level_of_help:
-      end
-
-      it "always returns a hash" do
-        expect(collator).to be_a PersonCapitalSubtotals
       end
 
       context "liquid capital" do

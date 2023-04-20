@@ -21,9 +21,6 @@ module Workflows
         total_mortgage_allowance: 100_000.0,
         total_property: 35_000,
         pensioner_capital_disregard: 90_000,
-        total_capital: 14_045.38,
-        assessed_capital: 0.0,
-        capital_contribution: 0.0,
       )
     end
 

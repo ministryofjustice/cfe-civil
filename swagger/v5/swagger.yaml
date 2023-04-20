@@ -13,7 +13,7 @@ info:
       - Retrieve the result using the GET `/assessments/{assessment_id}`
   contact:
     name: Github repository
-    url: https://github.com/ministryofjustice/cfe-civil
+    url: https://github.com/ministryofjustice/check-financial-eligibility
   version: v5
 components:
   schemas:
@@ -912,8 +912,6 @@ paths:
       summary: create applicant
       tags:
       - Assessment components
-      description: This endpoint will create an Applicant and associate it with an
-        existing Assessment which has been created via `POST /assessments`
       parameters:
       - name: assessment_id
         in: path
@@ -1009,7 +1007,6 @@ paths:
       summary: create cash_transaction
       tags:
       - Assessment components
-      description: Add cash income and outgoings to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1078,7 +1075,6 @@ paths:
       summary: create employment
       tags:
       - Assessment components
-      description: Add applicant employment income to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1185,7 +1181,6 @@ paths:
       summary: create
       tags:
       - Perform assessment with single call
-      description: Performs a complete assessment
       parameters: []
       responses:
         '200':
@@ -1345,6 +1340,15 @@ paths:
                             description: Total value of all capital assets in submission
                             type: number
                             format: decimal
+                          combined_disputed_capital:
+                            description: Combined applicant and partner disputed capital
+                            type: number
+                            format: decimal
+                          combined_non_disputed_capital:
+                            description: Combined applicant and partner non-disputed
+                              capital
+                            type: number
+                            format: decimal
                           pensioner_capital_disregard:
                             type: number
                             format: decimal
@@ -1395,6 +1399,7 @@ paths:
                               and partner
                       partner_capital:
                         type: object
+                        additionalProperties: false
                         properties:
                           total_liquid:
                             type: number
@@ -1411,8 +1416,6 @@ paths:
                           pensioner_capital_disregard:
                             type: number
                           subject_matter_of_dispute_disregard:
-                            type: number
-                          capital_contribution:
                             type: number
                           assessed_capital:
                             type: number
@@ -1778,7 +1781,6 @@ paths:
       summary: create outgoing
       tags:
       - Assessment components
-      description: Add applicant's outgoings to an assessment.
       parameters:
       - name: assessment_id
         in: path
@@ -1834,7 +1836,6 @@ paths:
       summary: 'create '
       tags:
       - Assessment components
-      description: Adds details of an applicant's partner.
       parameters:
       - name: assessment_id
         in: path
