@@ -27,10 +27,7 @@ module Decorators
               end,
             ),
           ),
-          capital_subtotals: CapitalSubtotals.new(
-            applicant_capital_subtotals: PersonCapitalSubtotals.new(total_vehicle: 0),
-            partner_capital_subtotals: PersonCapitalSubtotals.new(total_vehicle: 0),
-          ),
+          capital_subtotals: CapitalSubtotals.blank,
         )
       end
 

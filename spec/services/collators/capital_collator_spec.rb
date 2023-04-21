@@ -21,8 +21,15 @@ module Collators
       end
 
       context "liquid capital" do
+        before do
+          capital_summary
+            .liquid_capital_items
+            .build([
+              attributes_for(:liquid_capital_item, value: 145.83),
+            ])
+        end
+
         it "calls LiquidCapitalAssessment and updates capital summary with the result" do
-          allow(Assessors::LiquidCapitalAssessor).to receive(:call).and_return(145.83)
           expect(collator.total_liquid).to eq 145.83
         end
       end
@@ -41,16 +48,70 @@ module Collators
         end
       end
 
+      context "with a main home and an additional property" do
+        let(:smod_value) { 60_000 }
+
+        before do
+          capital_summary
+            .properties
+            .build([
+              attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
+                                        value: 280_000, outstanding_mortgage: 50_000),
+              attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
+            ])
+          capital_summary
+            .vehicles
+            .build([
+              attributes_for(:vehicle, subject_matter_of_dispute: true, value: 15_000, in_regular_use: false),
+              attributes_for(:vehicle, subject_matter_of_dispute: false, value: 3_500, in_regular_use: false),
+            ])
+          capital_summary
+            .non_liquid_capital_items
+            .build([
+              attributes_for(:non_liquid_capital_item, subject_matter_of_dispute: true, value: 3_000),
+              attributes_for(:non_liquid_capital_item, subject_matter_of_dispute: false, value: 8_000),
+            ])
+          capital_summary
+            .liquid_capital_items
+            .build([
+              attributes_for(:liquid_capital_item, subject_matter_of_dispute: true, value: 4_000),
+              attributes_for(:liquid_capital_item, subject_matter_of_dispute: false, value: 12_000),
+            ])
+        end
+
+        it "produces total non disputed and total disputed (minus SMOD) assets" do
+          # disputed property value is 280k - 50k mortgage - 60k SMOD - 100k main home allowance = 70k (hopefully)
+          expect(total_non_disputed_capital: collator.total_non_disputed_capital.to_f,
+                 total_disputed_capital: collator.total_disputed_capital.to_f)
+            .to eq(total_non_disputed_capital: 7_000.0 + 3_500 + 8_000 + 12_000,
+                   total_disputed_capital: 70_000.0 + 15_000 + 3_000 + 4_000)
+        end
+      end
+
       context "vehicle assessment" do
+        before do
+          capital_summary
+            .vehicles
+            .build([
+              attributes_for(:vehicle, value: 2_500, in_regular_use: false),
+            ])
+        end
+
         it "instantiates and calls the Vehicle Assesment service" do
-          allow(Assessors::VehicleAssessor).to receive(:call).and_return([OpenStruct.new(value: 2_500.0)])
           expect(collator.total_vehicle).to eq 2_500.0
         end
       end
 
       context "non_liquid_capital_assessment" do
+        before do
+          capital_summary
+            .non_liquid_capital_items
+            .build([
+              attributes_for(:non_liquid_capital_item, value: 500),
+            ])
+        end
+
         it "instantiates and calls NonLiquidCapitalAssessment" do
-          allow(Assessors::NonLiquidCapitalAssessor).to receive(:call).and_return(500)
           expect(collator.total_non_liquid).to eq 500.0
         end
       end
@@ -59,7 +120,26 @@ module Collators
         let(:pcd_value) { 100_000 }
 
         before do
-          create :property, :main_home, capital_summary: assessment.capital_summary
+          capital_summary
+            .properties
+            .build([
+              attributes_for(:property, :main_home),
+            ])
+          capital_summary
+            .liquid_capital_items
+            .build([
+              attributes_for(:liquid_capital_item, value: 145.83),
+            ])
+          capital_summary
+            .non_liquid_capital_items
+            .build([
+              attributes_for(:non_liquid_capital_item, value: 500),
+            ])
+          capital_summary
+            .vehicles
+            .build([
+              attributes_for(:vehicle, value: 2_500, in_regular_use: false),
+            ])
         end
 
         it "summarizes the results it gets from the subservices" do
@@ -69,20 +149,16 @@ module Collators
 
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_result])
 
-          allow(Assessors::LiquidCapitalAssessor).to receive(:call).and_return(145.83)
-          allow(Assessors::NonLiquidCapitalAssessor).to receive(:call).and_return(500)
-          allow(Assessors::VehicleAssessor).to receive(:call).and_return([OpenStruct.new(value: 2_500.0)])
-
-          expect(collator.total_liquid).to eq 145.83
+          expect(collator.total_liquid.to_f).to eq 145.83
           expect(collator.total_non_liquid).to eq 500
           expect(collator.total_vehicle).to eq 2_500
           expect(collator.total_property).to eq 23_000
           expect(collator.total_mortgage_allowance).to eq 999_999_999_999
-          expect(collator.total_capital).to eq 26_145.83
+          expect(collator.total_capital.to_f).to eq 26_145.83
           expect(collator.pensioner_capital_disregard).to eq 100_000
           expect(collator.subject_matter_of_dispute_disregard).to eq 0
           expect(collator.assessed_capital).to eq(-0.0)
-          expect(collator.pensioner_disregard_applied).to eq(26_145.83)
+          expect(collator.pensioner_disregard_applied.to_f).to eq(26_145.83)
         end
       end
     end
