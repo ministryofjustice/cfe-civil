@@ -6,14 +6,15 @@ class PersonCapitalSubtotals
       new(total_vehicle: 0.0, total_liquid: 0,
           total_mortgage_allowance: 0.0, total_non_liquid: 0.0,
           disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
-          properties: [], disputed_non_property_disregard: 0.0, disputed_capital: 0.0, non_disputed_capital: 0.0)
+          properties: [], disputed_non_property_disregard: 0.0, disputed_non_property_capital: 0.0, non_disputed_non_property_capital: 0.0)
     end
   end
 
   def initialize(total_vehicle:, total_liquid:,
                  total_mortgage_allowance:, total_non_liquid:,
                  disputed_property_disregard:, pensioner_capital_disregard:,
-                 properties:, disputed_non_property_disregard:, disputed_capital:, non_disputed_capital:)
+                 properties:, disputed_non_property_disregard:,
+                 disputed_non_property_capital:, non_disputed_non_property_capital:)
     @total_vehicle = total_vehicle
     @total_liquid = total_liquid
     @total_mortgage_allowance = total_mortgage_allowance
@@ -22,8 +23,8 @@ class PersonCapitalSubtotals
     @disputed_property_disregard = disputed_property_disregard
     @disputed_non_property_disregard = disputed_non_property_disregard
     @properties = properties
-    @disputed_capital = disputed_capital
-    @non_disputed_capital = non_disputed_capital
+    @disputed_non_property_capital = disputed_non_property_capital
+    @non_disputed_non_property_capital = non_disputed_non_property_capital
   end
 
   attr_reader :total_vehicle,
@@ -72,10 +73,10 @@ class PersonCapitalSubtotals
   end
 
   def total_non_disputed_capital
-    @properties.reject(&:subject_matter_of_dispute).sum(&:assessed_equity) + @non_disputed_capital
+    @properties.reject(&:subject_matter_of_dispute).sum(&:assessed_equity) + @non_disputed_non_property_capital
   end
 
   def total_disputed_capital
-    @properties.select(&:subject_matter_of_dispute).sum(&:assessed_equity) + @disputed_capital
+    @properties.select(&:subject_matter_of_dispute).sum(&:assessed_equity) + @disputed_non_property_capital
   end
 end

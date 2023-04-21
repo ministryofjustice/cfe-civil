@@ -38,8 +38,8 @@ module Collators
           disputed_non_property_disregard: non_property_smod_allowance,
           disputed_property_disregard: property_smod,
           properties:,
-          non_disputed_capital: liquid_capital + non_liquid_capital + vehicle_value,
-          disputed_capital: smod_liquid_capital + smod_non_liquid_capital + smod_vehicle_value - non_property_smod_allowance,
+          non_disputed_non_property_capital: liquid_capital + non_liquid_capital + vehicle_value,
+          disputed_non_property_capital: smod_liquid_capital + smod_non_liquid_capital + smod_vehicle_value - non_property_smod_allowance,
         )
       end
 
