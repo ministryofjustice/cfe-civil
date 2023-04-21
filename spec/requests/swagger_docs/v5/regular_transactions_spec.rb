@@ -31,33 +31,7 @@ RSpec.describe "regular_transactions", type: :request, swagger_doc: "v5/swagger.
                     regular_transactions: {
                       type: :array,
                       description: "Zero or more regular transactions",
-                      items: {
-                        type: :object,
-                        description: "regular transaction detail",
-                        required: %i[category operation frequency amount],
-                        additionalProperties: false,
-                        properties: {
-                          category: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES + CFEConstants::VALID_OUTGOING_CATEGORIES,
-                            description: "Identifying category for this regular transaction",
-                            example: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES.first,
-                          },
-                          operation: {
-                            type: :string,
-                            enum: %w[credit debit],
-                            description: "Identifying operation for this regular transaction",
-                            example: "credit",
-                          },
-                          frequency: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES,
-                            description: "Frequency with which regular transaction is made or received",
-                            example: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.first,
-                          },
-                          amount: { "$ref" => "#/components/schemas/currency" },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/RegularTransaction" },
                     },
                   },
                 }

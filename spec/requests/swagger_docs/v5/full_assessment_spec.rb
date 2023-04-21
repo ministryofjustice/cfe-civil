@@ -16,251 +16,17 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                   type: :object,
                   required: %i[assessment applicant proceeding_types],
                   properties: {
-                    assessment: {
-                      type: :object,
-                      additionalProperties: false,
-                      required: %i[submission_date],
-                      properties: {
-                        submission_date: {
-                          type: :string,
-                          format: :date,
-                          example: "2022-06-07",
-                          description: "Date of the original submission (iso8601 format)",
-                        },
-                        client_reference_id: {
-                          type: :string,
-                          example: "LA-FOO-BAR",
-                          description: "Client's reference number for this application (free text)",
-                        },
-                        level_of_help: {
-                          type: :string,
-                          enum: Assessment.levels_of_help.keys,
-                          example: Assessment.levels_of_help.keys.first,
-                          description: "The level of representation required by the client. Defaults to 'certificated'",
-                        },
-                      },
-                    },
-                    applicant: {
-                      type: :object,
-                      additionalProperties: false,
-                      required: %i[date_of_birth has_partner_opponent receives_qualifying_benefit],
-                      description: "Object describing pertinent applicant details",
-                      properties: {
-                        date_of_birth: {
-                          type: :string,
-                          format: :date,
-                          example: "1992-07-22",
-                          description: "Applicant date of birth",
-                        },
-                        has_partner_opponent: {
-                          type: :boolean,
-                          example: false,
-                          description: "Applicant has partner opponent",
-                        },
-                        receives_qualifying_benefit: {
-                          type: :boolean,
-                          example: false,
-                          description: "Applicant receives qualifying benefit",
-                        },
-                        involvement_type: {
-                          type: :string,
-                          "enum": %w[applicant],
-                        },
-                        employed: {
-                          type: :boolean,
-                        },
-                        receives_asylum_support: {
-                          type: :boolean,
-                        },
-                      },
-                    },
-                    proceeding_types: {
-                      type: :array,
-                      description: "One or more proceeding_type details",
-                      minItems: 1,
-                      items: {
-                        type: :object,
-                        additionalProperties: false,
-                        required: %i[ccms_code client_involvement_type],
-                        properties: {
-                          ccms_code: {
-                            type: :string,
-                            enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                            example: "DA001",
-                            description: "The code expected by CCMS",
-                          },
-                          client_involvement_type: {
-                            type: :string,
-                            enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
-                            example: "A",
-                            description: "The client_involvement_type expected by CCMS",
-                          },
-                        },
-                      },
-                    },
+                    assessment: { "$ref" => "#/components/schemas/Assessment" },
+                    applicant: { "$ref" => "#/components/schemas/Applicant" },
+                    proceeding_types: { "$ref" => "#/components/schemas/ProceedingTypes" },
                     capitals: { "$ref" => "#/components/schemas/Capitals" },
-                    cash_transactions: {
-                      type: :object,
-                      additionalProperties: false,
-                      description: "A set of cash income[ings] and outgoings payments by category",
-                      example: JSON.parse(File.read(Rails.root.join("spec/fixtures/cash_transactions.json"))
-                                              .gsub("3.months.ago", "2022-03-01")
-                                              .gsub("2.months.ago", "2022-04-01")
-                                              .gsub("1.month.ago", "2022-05-01")),
-                      properties: {
-                        income: {
-                          type: :array,
-                          description: "One or more income details",
-                          items: {
-                            type: :object,
-                            description: "Income detail",
-                            additionalProperties: false,
-                            required: %i[category payments],
-                            properties: {
-                              category: {
-                                type: :string,
-                                enum: CFEConstants::VALID_INCOME_CATEGORIES,
-                                example: CFEConstants::VALID_INCOME_CATEGORIES.first,
-                              },
-                              payments: {
-                                type: :array,
-                                description: "One or more payment details",
-                                items: {
-                                  type: :object,
-                                  additionalProperties: false,
-                                  description: "Payment detail",
-                                  required: %i[amount client_id date],
-                                  properties: {
-                                    date: {
-                                      type: :string,
-                                      format: :date,
-                                      example: "1992-07-22",
-                                    },
-                                    amount: {
-                                      type: :number,
-                                      format: :decimal,
-                                      example: "101.01",
-                                    },
-                                    client_id: {
-                                      type: :string,
-                                      format: :uuid,
-                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                        outgoings: {
-                          type: :array,
-                          description: "One or more outgoing details",
-                          items: {
-                            type: :object,
-                            description: "Outgoing detail",
-                            additionalProperties: false,
-                            required: %i[category payments],
-                            properties: {
-                              category: {
-                                type: :string,
-                                enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
-                                example: CFEConstants::VALID_OUTGOING_CATEGORIES.first,
-                              },
-                              payments: {
-                                type: :array,
-                                description: "One or more payment details",
-                                items: {
-                                  type: :object,
-                                  description: "Payment detail",
-                                  required: %i[amount client_id date],
-                                  properties: {
-                                    date: {
-                                      type: :string,
-                                      format: :date,
-                                      example: "1992-07-22",
-                                    },
-                                    amount: {
-                                      type: :number,
-                                      format: :decimal,
-                                      example: "101.02",
-                                    },
-                                    client_id: {
-                                      type: :string,
-                                      format: :uuid,
-                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    cash_transactions: { "$ref" => "#/components/schemas/CashTransactions" },
                     dependants: {
                       type: :array,
                       description: "One or more dependants details",
-                      items: {
-                        type: :object,
-                        additionalProperties: false,
-                        required: %i[date_of_birth in_full_time_education relationship],
-                        properties: {
-                          date_of_birth: {
-                            type: :string,
-                            format: :date,
-                            example: "1992-07-22",
-                          },
-                          in_full_time_education: {
-                            type: :boolean,
-                            example: false,
-                            description: "Dependant is in full time education or not",
-                          },
-                          relationship: {
-                            type: :string,
-                            enum: Dependant.relationships.values,
-                            example: Dependant.relationships.values.first,
-                            description: "Dependant's relationship to the applicant",
-                          },
-                          monthly_income: {
-                            type: :number,
-                            format: :decimal,
-                            description: "Dependant's monthly income",
-                            example: 101.01,
-                          },
-                          assets_value: {
-                            type: :number,
-                            format: :decimal,
-                            description: "Dependant's total assets value",
-                            example: 0.0,
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/Dependant" },
                     },
-                    employment_income: {
-                      type: :array,
-                      description: "One or more employment income details",
-                      items: {
-                        type: :object,
-                        additionalProperties: false,
-                        description: "Employment income detail",
-                        required: %i[name client_id payments],
-                        properties: {
-                          name: {
-                            type: :string,
-                            description: "Identifying name for this employment - e.g. employer's name",
-                          },
-                          client_id: {
-                            type: :string,
-                            description: "Client supplied id to identify the employment",
-                          },
-                          receiving_only_statutory_sick_or_maternity_pay: {
-                            type: :boolean,
-                            description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
-                          },
-                          payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
-                        },
-                      },
-                    },
+                    employment_income: { "$ref" => "#/components/schemas/Employments" },
                     irregular_incomes: {
                       type: :object,
                       description: "A set of irregular income payments",
@@ -268,287 +34,38 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       additionalProperties: false,
                       example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
                       properties: {
-                        payments: {
-                          type: :array,
-                          required: %i[income_type frequency amount],
-                          description: "One or more irregular payment details",
-                          minItems: 0,
-                          maxItems: 2,
-                          items: {
-                            type: :object,
-                            description: "Irregular payment detail",
-                            required: %i[income_type frequency amount],
-                            additionalProperties: false,
-                            properties: {
-                              income_type: {
-                                type: :string,
-                                enum: CFEConstants::VALID_IRREGULAR_INCOME_TYPES,
-                                description: "Identifying name for this irregular income payment",
-                                example: CFEConstants::VALID_IRREGULAR_INCOME_TYPES.first,
-                              },
-                              frequency: {
-                                type: :string,
-                                enum: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES,
-                                description: "Frequency of the payment received",
-                                example: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES.first,
-                              },
-                              amount: {
-                                type: :number,
-                                format: :decimal,
-                                example: 101.01,
-                              },
-                            },
-                          },
-                        },
+                        payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
                       },
                     },
-                    other_incomes: {
-                      type: :array,
-                      description: "One or more other regular income payments categorized by source",
-                      items: {
-                        type: :object,
-                        additionalProperties: false,
-                        description: "Other regular income detail",
-                        required: %i[source],
-                        properties: {
-                          source: {
-                            type: :string,
-                            enum: CFEConstants::HUMANIZED_INCOME_CATEGORIES,
-                            description: "Source of other regular income",
-                            example: CFEConstants::HUMANIZED_INCOME_CATEGORIES.first,
-                          },
-                          payments: {
-                            type: :array,
-                            description: "One or more other regular payment details",
-                            items: {
-                              type: :object,
-                              description: "Payment detail",
-                              additionalProperties: false,
-                              required: %i[date amount client_id],
-                              properties: {
-                                date: {
-                                  type: :string,
-                                  format: :date,
-                                  description: "Date payment received",
-                                  example: "1992-07-22",
-                                },
-                                amount: {
-                                  "$ref" => "#/components/schemas/currency",
-                                  description: "Amount of payment received",
-                                },
-                                client_id: {
-                                  type: :string,
-                                  format: :uuid,
-                                  description: "Client identifier for payment received",
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
                     outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
                     properties: {
                       type: :object,
                       required: %i[main_home],
                       description: "A main home and additional properties",
                       properties: {
-                        main_home: {
-                          type: :object,
-                          required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
-                          description: "Applicant's main home details",
-                          properties: {
-                            value: {
-                              type: :number,
-                              format: :decimal,
-                              description: "Financial value of the property",
-                              example: 500_000.01,
-                            },
-                            outstanding_mortgage: {
-                              type: :number,
-                              format: :decimal,
-                              description: "Amount outstanding on all mortgages against this property",
-                              example: 999.99,
-                            },
-                            percentage_owned: {
-                              type: :number,
-                              format: :decimal,
-                              description: "Percentage share of the property which is owned by the applicant",
-                              example: 99.99,
-                            },
-                            shared_with_housing_assoc: {
-                              type: :boolean,
-                              description: "Property is shared with a housing association",
-                            },
-                            subject_matter_of_dispute: {
-                              type: :boolean,
-                              description: "Property is the subject of a dispute",
-                            },
-                          },
-                        },
+                        main_home: { "$ref" => "#/components/schemas/Property" },
                         additional_properties: {
                           type: :array,
                           description: "One or more additional properties owned by the applicant",
-                          items: {
-                            type: :object,
-                            description: "Additional property details",
-                            required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
-                            properties: {
-                              value: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Financial value of the property",
-                                example: 500_000.01,
-                              },
-                              outstanding_mortgage: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Amount outstanding on all mortgages against this property",
-                                example: 999.99,
-                              },
-                              percentage_owned: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Percentage share of the property which is owned by the applicant",
-                                example: 99.99,
-                              },
-                              shared_with_housing_assoc: {
-                                type: :boolean,
-                                description: "Property is shared with a housing association",
-                              },
-                              subject_matter_of_dispute: {
-                                type: :boolean,
-                                description: "Property is the subject of a dispute",
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/Property" },
                         },
                       },
                     },
                     regular_transactions: {
                       type: :array,
-                      required: %i[category operation frequency amount],
                       description: "Zero or more regular transactions",
-                      items: {
-                        type: :object,
-                        description: "regular transaction detail",
-                        required: %i[category operation frequency amount],
-                        additionalProperties: false,
-                        properties: {
-                          category: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES + CFEConstants::VALID_OUTGOING_CATEGORIES,
-                            description: "Identifying category for this regular transaction",
-                            example: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES.first,
-                          },
-                          operation: {
-                            type: :string,
-                            enum: %w[credit debit],
-                            description: "Identifying operation for this regular transaction",
-                            example: "credit",
-                          },
-                          frequency: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES,
-                            description: "Frequency with which regular transaction is made or received",
-                            example: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.first,
-                          },
-                          amount: {
-                            type: :number,
-                            format: :decimal,
-                            example: 101.01,
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/RegularTransaction" },
                     },
                     state_benefits: {
                       type: :array,
                       description: "One or more state benefits receved by the applicant and categorized by name",
-                      items: {
-                        type: :object,
-                        required: %i[name payments],
-                        description: "State benefit payment detail",
-                        properties: {
-                          name: {
-                            type: :string,
-                            description: "Name of the state benefit",
-                            example: "my_state_bnefit",
-                          },
-                          payments: {
-                            type: :array,
-                            required: %i[client_id date amount],
-                            description: "One or more state benefit payments details",
-                            items: {
-                              type: :object,
-                              description: "Payment detail",
-                              properties: {
-                                client_id: {
-                                  type: :string,
-                                  format: :uuid,
-                                  description: "Client identifier for payment received",
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                },
-                                date: {
-                                  type: :string,
-                                  format: :date,
-                                  description: "Date payment received",
-                                  example: "1992-07-22",
-                                },
-                                amount: {
-                                  type: :number,
-                                  format: :decimal,
-                                  description: "Amount of payment received",
-                                  example: 101.01,
-                                },
-                                flags: {
-                                  type: :object,
-                                  description: "Line items that should be flagged to caseworkers for review",
-                                  example: { multi_benefit: true },
-                                  properties: {
-                                    multi_benefit: {
-                                      type: :boolean,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/StateBenefit" },
                     },
                     vehicles: {
                       type: :array,
                       description: "One or more vehicles' details",
-                      items: {
-                        type: :object,
-                        required: %i[value date_of_purchase],
-                        properties: {
-                          value: {
-                            type: :number,
-                            format: :decimal,
-                            description: "Financial value of the vehicle",
-                          },
-                          loan_amount_outstanding: {
-                            type: :number,
-                            format: :decimal,
-                            description: "Amount remaining, if any, of a loan used to purchase the vehicle",
-                          },
-                          date_of_purchase: {
-                            type: :string,
-                            format: :date,
-                            description: "Date vehicle purchased by the applicant",
-                          },
-                          in_regular_use: {
-                            type: :boolean,
-                            description: "Vehicle in regular use or not",
-                          },
-                          subject_matter_of_dispute: {
-                            type: :boolean,
-                            description: "Whether this vehicle is the subject of a dispute",
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/Vehicle" },
                     },
                     partner: {
                       type: :object,
@@ -574,34 +91,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
-                        irregular_incomes: {
-                          type: :array,
-                          required: %i[income_type frequency amount],
-                          description: "One or more irregular payment details",
-                          items: {
-                            type: :object,
-                            description: "Irregular payment detail",
-                            properties: {
-                              income_type: {
-                                type: :string,
-                                enum: CFEConstants::VALID_IRREGULAR_INCOME_TYPES,
-                                description: "Identifying name for this irregular income payment",
-                                example: CFEConstants::VALID_IRREGULAR_INCOME_TYPES.first,
-                              },
-                              frequency: {
-                                type: :string,
-                                enum: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES,
-                                description: "Frequency of the payment received",
-                                example: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES.first,
-                              },
-                              amount: {
-                                type: :number,
-                                format: :decimal,
-                                example: 101.01,
-                              },
-                            },
-                          },
-                        },
+                        irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
                         employments: {
                           type: :array,
                           required: %i[name client_id payments],
@@ -624,228 +114,33 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         regular_transactions: {
                           type: :array,
-                          required: %i[category operation frequency amount],
                           description: "Zero or more regular transactions",
-                          items: {
-                            type: :object,
-                            description: "regular transaction detail",
-                            properties: {
-                              category: {
-                                type: :string,
-                                enum: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES + CFEConstants::VALID_OUTGOING_CATEGORIES,
-                                description: "Identifying category for this regular transaction",
-                                example: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES.first,
-                              },
-                              operation: {
-                                type: :string,
-                                enum: %w[credit debit],
-                                description: "Identifying operation for this regular transaction",
-                                example: "credit",
-                              },
-                              frequency: {
-                                type: :string,
-                                enum: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES,
-                                description: "Frequency with which regular transaction is made or received",
-                                example: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.first,
-                              },
-                              amount: {
-                                type: :number,
-                                format: :decimal,
-                                example: 101.01,
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/RegularTransaction" },
                         },
                         state_benefits: {
                           type: :array,
                           description: "One or more state benefits receved by the applicant's partner and categorized by name",
-                          items: {
-                            type: :object,
-                            required: %i[name payments],
-                            description: "State benefit payment detail",
-                            properties: {
-                              name: {
-                                type: :string,
-                                description: "Name of the state benefit",
-                                example: "my_state_bnefit",
-                              },
-                              payments: {
-                                type: :array,
-                                required: %i[client_id date amount],
-                                description: "One or more state benefit payments details",
-                                items: {
-                                  type: :object,
-                                  description: "Payment detail",
-                                  properties: {
-                                    client_id: {
-                                      type: :string,
-                                      format: :uuid,
-                                      description: "Client identifier for payment received",
-                                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                    },
-                                    date: {
-                                      type: :string,
-                                      format: :date,
-                                      description: "Date payment received",
-                                      example: "1992-07-22",
-                                    },
-                                    amount: {
-                                      type: :number,
-                                      format: :decimal,
-                                      description: "Amount of payment received",
-                                      example: 101.01,
-                                    },
-                                    flags: {
-                                      type: :object,
-                                      description: "Line items that should be flagged to caseworkers for review",
-                                      example: { multi_benefit: true },
-                                      properties: {
-                                        multi_benefit: {
-                                          type: :boolean,
-                                        },
-                                      },
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/StateBenefit" },
                         },
                         additional_properties: {
                           type: :array,
-                          required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
                           description: "One or more additional properties owned by the applicant's partner",
-                          items: {
-                            type: :object,
-                            description: "Additional property details",
-                            properties: {
-                              value: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Financial value of the property",
-                                example: 500_000.01,
-                              },
-                              outstanding_mortgage: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Amount outstanding on all mortgages against this property",
-                                example: 999.99,
-                              },
-                              percentage_owned: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Percentage share of the property which is owned by the applicant's partner",
-                                example: 99.99,
-                              },
-                              shared_with_housing_assoc: {
-                                type: :boolean,
-                                description: "Property is shared with a housing association",
-                              },
-                              subject_matter_of_dispute: {
-                                type: :boolean,
-                                description: "Property is the subject of a dispute",
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/Property" },
                         },
                         capital_items: { "$ref" => "#/components/schemas/Capitals" },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
-                          items: {
-                            type: :object,
-                            required: %i[value date_of_purchase],
-                            properties: {
-                              value: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Financial value of the vehicle",
-                              },
-                              loan_amount_outstanding: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Amount remaining, if any, of a loan used to purchase the vehicle",
-                              },
-                              date_of_purchase: {
-                                type: :string,
-                                format: :dates,
-                                description: "Date vehicle purchased by the applicant's partner",
-                              },
-                              in_regular_use: {
-                                type: :boolean,
-                                description: "Vehicle in regular use or not",
-                              },
-                              subject_matter_of_dispute: {
-                                type: :boolean,
-                                description: "Whether this vehicle is the subject of a dispute",
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/Vehicle" },
                         },
                         dependants: {
                           type: :array,
                           description: "One or more dependants details",
-                          items: {
-                            type: :object,
-                            required: %i[date_of_birth in_full_time_education relationship],
-                            properties: {
-                              date_of_birth: {
-                                type: :string,
-                                format: :date,
-                                example: "1992-07-22",
-                              },
-                              in_full_time_education: {
-                                type: :boolean,
-                                example: false,
-                                description: "Dependant is in full time education or not",
-                              },
-                              relationship: {
-                                type: :string,
-                                enum: Dependant.relationships.values,
-                                example: Dependant.relationships.values.first,
-                                description: "Dependant's relationship to the applicant's partner",
-                              },
-                              monthly_income: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Dependant's monthly income",
-                                example: 101.01,
-                              },
-                              assets_value: {
-                                type: :number,
-                                format: :decimal,
-                                description: "Dependant's total assets value",
-                                example: 0.0,
-                              },
-                            },
-                          },
+                          items: { "$ref" => "#/components/schemas/Dependant" },
                         },
                       },
                     },
-                    explicit_remarks: {
-                      type: :array,
-                      required: %i[category details],
-                      description: "One or more remarks by category",
-                      items: {
-                        type: :object,
-                        description: "Explicit remark",
-                        properties: {
-                          category: {
-                            type: :string,
-                            enum: CFEConstants::VALID_REMARK_CATEGORIES,
-                            description: "Category of remark. Currently, only 'policy_disregard' is supported",
-                            example: CFEConstants::VALID_REMARK_CATEGORIES.first,
-                          },
-                          details: {
-                            type: :array,
-                            description: "One or more remarks for that category",
-                            items: {
-                              type: :string,
-                            },
-                          },
-                        },
-                      },
-                    },
+                    explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
                   },
                 }
 
@@ -969,6 +264,16 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            type: :number,
                            format: :decimal,
                          },
+                         combined_disputed_capital: {
+                           description: "Combined applicant and partner disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
+                         combined_non_disputed_capital: {
+                           description: "Combined applicant and partner non-disputed capital",
+                           type: :number,
+                           format: :decimal,
+                         },
                          pensioner_capital_disregard: {
                            type: :number,
                            format: :decimal,
@@ -1021,6 +326,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      },
                      partner_capital: {
                        type: :object,
+                       additionalProperties: false,
                        properties: {
                          total_liquid: { type: :number },
                          total_non_liquid: { type: :number },
@@ -1030,7 +336,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          total_capital: { type: :number },
                          pensioner_capital_disregard: { type: :number },
                          subject_matter_of_dispute_disregard: { type: :number },
-                         capital_contribution: { type: :number },
                          assessed_capital: { type: :number },
                        },
                      },
@@ -1077,12 +382,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                additionalProperties: false,
                                properties: {
                                  main_home: {
-                                   "$ref" => "#/components/schemas/Property",
+                                   "$ref" => "#/components/schemas/PropertyResult",
                                  },
                                  additional_properties: {
                                    type: :array,
                                    items: {
-                                     "$ref" => "#/components/schemas/Property",
+                                     "$ref" => "#/components/schemas/PropertyResult",
                                    },
                                  },
                                },

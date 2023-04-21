@@ -19,20 +19,7 @@ RSpec.describe "employments", type: :request, swagger_doc: "v5/swagger.yaml" do
                   description: "One or more employments incomes",
                   example: JSON.parse(File.read(Rails.root.join("spec/fixtures/employments.json"))),
                   properties: {
-                    employment_income: {
-                      type: :array,
-                      items: {
-                        type: :object,
-                        additionalProperties: false,
-                        required: %i[name client_id payments],
-                        properties: {
-                          name: { type: :string },
-                          client_id: { type: :string },
-                          receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
-                          payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
-                        },
-                      },
-                    },
+                    employment_income: { "$ref" => "#/components/schemas/Employments" },
                   },
                 }
 

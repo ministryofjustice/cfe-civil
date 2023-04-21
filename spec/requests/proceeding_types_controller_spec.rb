@@ -4,7 +4,7 @@ RSpec.describe ProceedingTypesController, type: :request do
   describe "POST proceeding types" do
     let(:assessment) { create :assessment }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
-    let(:mock_creator) { instance_double(Creators::ProceedingTypesCreator::Result, success?: mock_response, errors: mock_errors) }
+    let(:mock_result) { instance_double(Creators::ProceedingTypesCreator::Result, success?: mock_response, errors: mock_errors) }
     let(:payload) do
       {
         proceeding_types:,
@@ -32,7 +32,7 @@ RSpec.describe ProceedingTypesController, type: :request do
       end
 
       before do
-        allow(Creators::ProceedingTypesCreator).to receive(:call).with(params).and_return(mock_creator)
+        allow(Creators::ProceedingTypesCreator).to receive(:call).with(params).and_return(mock_result)
         post assessment_proceeding_types_path(assessment.id), params: payload.to_json, headers:
       end
 

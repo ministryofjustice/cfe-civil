@@ -179,7 +179,7 @@ RSpec.describe RegularTransactionsController, type: :request do
       it "returns expected errors" do
         request
         expect(parsed_response[:errors])
-          .to include(/The property '#\/regular_transactions\/0\/amount' of type null matched the disallowed schema/)
+          .to include(/The property '#\/regular_transactions\/0\/amount' of type null did not match any of the required schemas/)
       end
     end
   end

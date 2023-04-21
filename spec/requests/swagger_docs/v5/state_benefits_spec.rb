@@ -26,57 +26,7 @@ RSpec.describe "state_benefits", type: :request, swagger_doc: "v5/swagger.yaml" 
                     state_benefits: {
                       type: :array,
                       description: "One or more state benefits receved by the applicant and categorized by name",
-                      items: {
-                        type: :object,
-                        required: %i[name payments],
-                        additionalProperties: false,
-                        description: "State benefit payment detail",
-                        properties: {
-                          name: {
-                            type: :string,
-                            description: "Name of the state benefit",
-                            example: "my_state_bnefit",
-                          },
-                          payments: {
-                            type: :array,
-                            description: "One or more state benefit payments details",
-                            items: {
-                              required: %i[client_id date amount],
-                              additionalProperties: false,
-                              type: :object,
-                              description: "Payment detail",
-                              properties: {
-                                client_id: {
-                                  type: :string,
-                                  format: :uuid,
-                                  description: "Client identifier for payment received",
-                                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
-                                },
-                                date: {
-                                  type: :string,
-                                  format: :date,
-                                  description: "Date payment received",
-                                  example: "1992-07-22",
-                                },
-                                amount: {
-                                  "$ref" => "#/components/schemas/currency",
-                                  description: "Amount of payment received",
-                                },
-                                flags: {
-                                  type: :object,
-                                  description: "Line items that should be flagged to caseworkers for review",
-                                  example: { multi_benefit: true },
-                                  properties: {
-                                    multi_benefit: {
-                                      type: :boolean,
-                                    },
-                                  },
-                                },
-                              },
-                            },
-                          },
-                        },
-                      },
+                      items: { "$ref" => "#/components/schemas/StateBenefit" },
                     },
                   },
                 }

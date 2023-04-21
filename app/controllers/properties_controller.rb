@@ -2,7 +2,7 @@ class PropertiesController < CreationController
   before_action :load_assessment
 
   def create
-    json_validate_and_render("properties", properties_params, lambda {
+    swagger_validate_and_render("properties", properties_params, lambda {
       Creators::PropertiesCreator.call(
         capital_summary: @assessment.capital_summary,
         properties_params:,
