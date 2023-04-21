@@ -2,11 +2,17 @@ module Collators
   class CapitalCollator
     class << self
       def call(submission_date:, capital_summary:, pensioner_capital_disregard:, maximum_subject_matter_of_dispute_disregard:, level_of_help:)
-        liquid_capital = Assessors::LiquidCapitalAssessor.call(capital_summary.liquid_capital_items.reject(&:subject_matter_of_dispute))
-        smod_liquid_capital = Assessors::LiquidCapitalAssessor.call(capital_summary.liquid_capital_items.select(&:subject_matter_of_dispute))
+        disputed_liquid = capital_summary.liquid_capital_items.select(&:subject_matter_of_dispute)
+        non_disputed_liquid = capital_summary.liquid_capital_items.reject(&:subject_matter_of_dispute)
 
-        non_liquid_capital = Assessors::NonLiquidCapitalAssessor.call(capital_summary.non_liquid_capital_items.reject(&:subject_matter_of_dispute))
-        smod_non_liquid_capital = Assessors::NonLiquidCapitalAssessor.call(capital_summary.non_liquid_capital_items.select(&:subject_matter_of_dispute))
+        liquid_capital = Assessors::LiquidCapitalAssessor.call(non_disputed_liquid)
+        smod_liquid_capital = Assessors::LiquidCapitalAssessor.call(disputed_liquid)
+
+        disputed_non_liquid = capital_summary.non_liquid_capital_items.select(&:subject_matter_of_dispute)
+        non_disputed_non_liquid = capital_summary.non_liquid_capital_items.reject(&:subject_matter_of_dispute)
+
+        non_liquid_capital = Assessors::NonLiquidCapitalAssessor.call(non_disputed_non_liquid)
+        smod_non_liquid_capital = Assessors::NonLiquidCapitalAssessor.call(disputed_non_liquid)
 
         properties = Calculators::PropertyCalculator.call(submission_date:,
                                                           properties: capital_summary.properties,
@@ -15,10 +21,11 @@ module Collators
         property_smod = properties.sum(&:smod_allowance)
         vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.reject(&:subject_matter_of_dispute), submission_date)
         smod_vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.select(&:subject_matter_of_dispute), submission_date)
-        vehicle_value = vehicles.sum(&:value)
-        smod_vehicle_value = smod_vehicles.sum(&:value)
+        vehicle_value = vehicles.sum(&:assessed_value)
+        smod_vehicle_value = smod_vehicles.sum(&:assessed_value)
         non_property_smod_allowance = Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
-          capital_summary:,
+          disputed_capital_items: disputed_liquid + disputed_non_liquid,
+          disputed_vehicles: smod_vehicles,
           maximum_disregard: maximum_subject_matter_of_dispute_disregard - property_smod,
         )
 

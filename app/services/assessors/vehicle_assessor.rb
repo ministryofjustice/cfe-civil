@@ -1,6 +1,6 @@
 module Assessors
   class VehicleAssessor
-    Result = Struct.new(:value, :included_in_assessment, keyword_init: true)
+    Result = Struct.new(:assessed_value, :included_in_assessment, keyword_init: true)
     class << self
       def call(vehicles, submission_date)
         vehicles.map { assess(_1, submission_date) }
@@ -21,14 +21,14 @@ module Assessors
       def assess_in_regular_use(vehicle, submission_date)
         net_value = vehicle.value - vehicle.loan_amount_outstanding
         if too_old_to_count(vehicle, submission_date) || net_value <= vehicle_disregard(submission_date)
-          Result.new(value: 0, included_in_assessment: false).freeze
+          Result.new(assessed_value: 0, included_in_assessment: false).freeze
         else
-          Result.new(value: net_value - vehicle_disregard(submission_date), included_in_assessment: true).freeze
+          Result.new(assessed_value: net_value - vehicle_disregard(submission_date), included_in_assessment: true).freeze
         end
       end
 
       def assess_not_in_regular_use(vehicle)
-        Result.new(value: vehicle.value, included_in_assessment: true).freeze
+        Result.new(assessed_value: vehicle.value, included_in_assessment: true).freeze
       end
 
       def too_old_to_count(vehicle, submission_date)
@@ -37,7 +37,7 @@ module Assessors
 
       # TODO: remove this side effect
       def save_assessed_value(vehicle, result)
-        vehicle.update!(assessed_value: result.value, included_in_assessment: result.included_in_assessment)
+        vehicle.update!(assessed_value: result.assessed_value, included_in_assessment: result.included_in_assessment)
       end
 
       def age_in_months(vehicle, submission_date)

@@ -3,9 +3,9 @@
 module Calculators
   class SubjectMatterOfDisputeDisregardCalculator
     class << self
-      def call(capital_summary:, maximum_disregard:)
-        total_disputed_asset_value = disputed_capital_value(capital_summary.disputed_capital_items) +
-          disputed_vehicle_value(capital_summary.disputed_vehicles)
+      def call(disputed_capital_items:, disputed_vehicles:, maximum_disregard:)
+        total_disputed_asset_value = disputed_capital_value(disputed_capital_items) +
+          disputed_vehicle_value(disputed_vehicles)
 
         if total_disputed_asset_value.positive? && maximum_disregard.nil?
           raise "SMOD assets listed but no threshold data found"
@@ -17,11 +17,11 @@ module Calculators
     private
 
       def disputed_capital_value(disputed_capital_items)
-        disputed_capital_items.sum(:value)
+        disputed_capital_items.sum(&:value)
       end
 
       def disputed_vehicle_value(disputed_vehicles)
-        disputed_vehicles.sum(:assessed_value)
+        disputed_vehicles.sum(&:assessed_value)
       end
     end
   end
