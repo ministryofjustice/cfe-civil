@@ -2,32 +2,27 @@
 # has already been calculated. If this is not the case, it will produce inaccurate results.
 module Calculators
   class SubjectMatterOfDisputeDisregardCalculator
-    delegate :disputed_capital_items, :disputed_vehicles, :disputed_properties, to: :@capital_summary
+    class << self
+      def call(capital_summary:, maximum_disregard:)
+        total_disputed_asset_value = disputed_capital_value(capital_summary.disputed_capital_items) +
+          disputed_vehicle_value(capital_summary.disputed_vehicles)
 
-    def initialize(capital_summary:, maximum_disregard:)
-      @capital_summary = capital_summary
-      @maximum_disregard = maximum_disregard
-    end
+        if total_disputed_asset_value.positive? && maximum_disregard.nil?
+          raise "SMOD assets listed but no threshold data found"
+        end
 
-    def value
-      total_disputed_asset_value = disputed_capital_value +
-        disputed_vehicle_value
-
-      if total_disputed_asset_value.positive? && @maximum_disregard.nil?
-        raise "SMOD assets listed but no threshold data found"
+        [total_disputed_asset_value, maximum_disregard].compact.min
       end
 
-      [total_disputed_asset_value, @maximum_disregard].compact.min
-    end
+    private
 
-  private
+      def disputed_capital_value(disputed_capital_items)
+        disputed_capital_items.sum(:value)
+      end
 
-    def disputed_capital_value
-      disputed_capital_items.sum(:value)
-    end
-
-    def disputed_vehicle_value
-      disputed_vehicles.sum(:assessed_value)
+      def disputed_vehicle_value(disputed_vehicles)
+        disputed_vehicles.sum(:assessed_value)
+      end
     end
   end
 end

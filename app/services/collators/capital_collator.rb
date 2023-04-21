@@ -17,10 +17,10 @@ module Collators
         smod_vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.select(&:subject_matter_of_dispute), submission_date)
         vehicle_value = vehicles.sum(&:value)
         smod_vehicle_value = smod_vehicles.sum(&:value)
-        non_property_smod_allowance = Calculators::SubjectMatterOfDisputeDisregardCalculator.new(
+        non_property_smod_allowance = Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
           capital_summary:,
           maximum_disregard: maximum_subject_matter_of_dispute_disregard - property_smod,
-        ).value
+        )
 
         PersonCapitalSubtotals.new(
           total_liquid: liquid_capital + smod_liquid_capital,
