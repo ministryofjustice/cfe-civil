@@ -1,8 +1,14 @@
 class DisposableIncomeSubtotals
-  attr_reader :dependant_allowance, :partner_dependant_allowance
+  class << self
+    def blank
+      new(partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
+          applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank)
+    end
+  end
+  attr_reader :partner_disposable_income_subtotals, :applicant_disposable_income_subtotals
 
-  def initialize(dependant_allowance: 0, partner_dependant_allowance: 0)
-    @dependant_allowance = dependant_allowance
-    @partner_dependant_allowance = partner_dependant_allowance
+  def initialize(partner_disposable_income_subtotals:, applicant_disposable_income_subtotals:)
+    @partner_disposable_income_subtotals = partner_disposable_income_subtotals
+    @applicant_disposable_income_subtotals = applicant_disposable_income_subtotals
   end
 end

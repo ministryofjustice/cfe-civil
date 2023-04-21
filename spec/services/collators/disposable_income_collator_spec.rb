@@ -11,7 +11,8 @@ module Collators
     let(:net_housing) { gross_housing - housing_benefit }
     let(:employment_income_deductions) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:fixed_employment_allowance) { 45.0 }
-    let(:dependant_allowance) { 582.98 }
+    let(:dependant_allowance_under_16) { 282.98 }
+    let(:dependant_allowance_over_16) { 300.00 }
     let(:partner_allowance) { 481.29 }
     let(:total_gross_income) { 0 }
     let(:gross_income_subtotals) do
@@ -44,7 +45,7 @@ module Collators
         maintenance_out_bank +
         legal_aid_bank +
         net_housing +
-        dependant_allowance -
+        dependant_allowance_under_16 + dependant_allowance_over_16 -
         employment_income_deductions -
         fixed_employment_allowance +
         partner_allowance
@@ -58,7 +59,7 @@ module Collators
                              disposable_income_summary: assessment.disposable_income_summary,
                              partner_allowance:,
                              gross_income_subtotals:,
-                             outgoings: OutgoingsCollator::Result.new(dependant_allowance:))
+                             outgoings: OutgoingsCollator::Result.new(dependant_allowance_under_16:, dependant_allowance_over_16:))
       end
 
       context "total_monthly_outgoings" do
