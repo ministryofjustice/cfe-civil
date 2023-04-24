@@ -1,12 +1,12 @@
 module Decorators
   module V5
     class DisposableIncomeResultDecorator
-      def initialize(summary, gross_income_summary, employment_income_subtotals, partner_present:, dependant_allowance:)
+      def initialize(summary, gross_income_summary, employment_income_subtotals, partner_present:, disposable_income_subtotals:)
         @summary = summary
         @gross_income_summary = gross_income_summary
         @employment_income_subtotals = employment_income_subtotals
         @partner_present = partner_present
-        @dependant_allowance = dependant_allowance
+        @disposable_income_subtotals = disposable_income_subtotals
       end
 
       def as_json
@@ -22,7 +22,9 @@ module Decorators
 
       def basic_attributes
         {
-          dependant_allowance: @dependant_allowance.to_f,
+          dependant_allowance_under_16: @disposable_income_subtotals.dependant_allowance_under_16,
+          dependant_allowance_over_16: @disposable_income_subtotals.dependant_allowance_over_16,
+          dependant_allowance: @disposable_income_subtotals.dependant_allowance,
           gross_housing_costs: @summary.gross_housing_costs.to_f,
           housing_benefit: @summary.housing_benefit.to_f,
           net_housing_costs: @summary.net_housing_costs.to_f,

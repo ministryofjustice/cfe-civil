@@ -4,11 +4,12 @@ class PersonWrapper
 
   attr_reader :dependants
 
-  def initialize(person:, is_single:, dependants:, gross_income_summary:)
+  def initialize(person:, is_single:, dependants:, gross_income_summary:, submission_date:)
     @person = person
     @is_single = is_single
-    @dependants = dependants
+    @dependants = dependants.map { |d| DependantWrapper.new(dependant: d, submission_date:) }
     @gross_income_summary = gross_income_summary
+    @submission_date = submission_date
   end
 
   def is_student?

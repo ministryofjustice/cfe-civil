@@ -5,7 +5,11 @@ module Calculators
     describe "#call" do
       let(:submission_date) { Date.current }
 
-      subject(:calculator) { described_class.new(dependant, submission_date).call }
+      subject(:calculator) do
+        described_class.new(
+          DependantWrapper.new(dependant:, submission_date:), submission_date
+        ).call
+      end
 
       context "when mocking Threshold values" do
         before do

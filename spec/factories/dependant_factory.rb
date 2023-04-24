@@ -4,7 +4,7 @@ FactoryBot.define do
     date_of_birth { Faker::Date.birthday }
     in_full_time_education { [true, false].sample }
     relationship { Dependant.relationships.values.sample }
-    monthly_income { rand(1...10_000.0).round(2).to_d(Float::DIG) }
+    monthly_income { 0.0 }
     assets_value { 0.0 }
 
     trait :child_relative do

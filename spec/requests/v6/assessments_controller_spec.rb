@@ -25,7 +25,7 @@ module V6
             payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
               {
                 client_id: SecureRandom.uuid,
-                gross: 546.00,
+                gross: 846.00,
                 benefits_in_kind: 16.60,
                 tax: -104.10,
                 national_insurance: -18.66,
@@ -59,7 +59,13 @@ module V6
           },
         ]
       end
-      let(:dependant_params) { attributes_for_list(:dependant, 2, relationship: "child_relative", monthly_income: 0, date_of_birth: "2014-06-11") }
+      let(:dependant_params) do
+        [
+          attributes_for(:dependant, relationship: "child_relative", monthly_income: 0, date_of_birth: "2014-06-11"),
+          attributes_for(:dependant, relationship: "child_relative", monthly_income: 0, date_of_birth: "2013-06-11"),
+          attributes_for(:dependant, relationship: "child_relative", monthly_income: 0, date_of_birth: "2004-06-11"),
+        ]
+      end
       let(:bank_1) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
       let(:bank_2) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
       let(:bank_account_params) do
@@ -199,8 +205,10 @@ module V6
           expect(parsed_response.fetch(:version)).to eq("6")
         end
 
-        it "has dependant_allowance" do
-          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance)).to eq(615.28)
+        it "has dependant_allowances" do
+          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance)).to eq(922.92)
+          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_under_16)).to eq(615.28)
+          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
         end
       end
 
@@ -375,12 +383,12 @@ module V6
             expect(employment_income)
               .to eq(
                 {
-                  gross_income: 546.0,
+                  gross_income: 846.0,
                   benefits_in_kind: 0.0,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 378.24,
+                  net_employment_income: 678.24,
                 },
               )
           end
@@ -398,27 +406,27 @@ module V6
                     payments: [
                       {
                         date: "2022-05-30",
-                        gross: 546.0,
+                        gross: 846.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 439.84,
+                        net_employment_income: 739.84,
                       },
                       {
                         date: "2022-04-30",
-                        gross: 546.0,
+                        gross: 846.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 439.84,
+                        net_employment_income: 739.84,
                       },
                       {
                         date: "2022-03-30",
-                        gross: 546.0,
+                        gross: 846.0,
                         benefits_in_kind: 16.6,
                         tax: -104.1,
                         national_insurance: -18.66,
-                        net_employment_income: 439.84,
+                        net_employment_income: 739.84,
                       },
                     ],
                   },
@@ -618,7 +626,7 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 76.44,
+                  income_contribution: 73.0,
                 })
             end
           end
@@ -631,8 +639,9 @@ module V6
               .to eq(
                 {
                   dependant_allowance: 0.0,
+                  dependant_allowance_under_16: 0.0,
+                  dependant_allowance_over_16: 0.0,
                   gross_housing_costs: 117.16,
-                  income_contribution: 76.44,
                   housing_benefit: 0.0,
                   net_housing_costs: 117.16,
                   maintenance_allowance: 333.07,
@@ -644,6 +653,7 @@ module V6
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
+                  income_contribution: 73.0,
                   partner_allowance: 191.41,
                 },
               )
@@ -652,20 +662,22 @@ module V6
           it "has partner disposable income" do
             expect(summary.fetch(:partner_disposable_income)).to eq(
               {
-                dependant_allowance: 615.28,
+                dependant_allowance: 922.92,
+                dependant_allowance_under_16: 615.28,
+                dependant_allowance_over_16: 307.64,
                 gross_housing_costs: 117.16,
                 housing_benefit: 0.0,
                 net_housing_costs: 117.16,
                 maintenance_allowance: 333.07,
-                total_outgoings_and_allowances: 1322.87,
-                total_disposable_income: -442.795,
+                total_outgoings_and_allowances: 1630.51,
+                total_disposable_income: -450.435,
                 employment_income: {
-                  gross_income: 546.0,
+                  gross_income: 846.0,
                   benefits_in_kind: 0.0,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 378.24,
+                  net_employment_income: 678.24,
                 },
                 income_contribution: 0.0,
               },
@@ -818,9 +830,9 @@ module V6
             it "has employment_income" do
               expect(partner_gross_income[:employment_income].first.fetch(:payments)).to eq(
                 [
-                  { date: "2022-05-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
-                  { date: "2022-04-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
-                  { date: "2022-03-30", gross: 546.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 439.84 },
+                  { date: "2022-05-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
+                  { date: "2022-04-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
+                  { date: "2022-03-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
                 ],
               )
             end
@@ -911,7 +923,7 @@ module V6
                   },
                 },
                 childcare_allowance: 82.98,
-                deductions: { dependants_allowance: 615.28, disregarded_state_benefits: 1033.44 },
+                deductions: { dependants_allowance: 922.92, disregarded_state_benefits: 1033.44 },
               },
             )
           end

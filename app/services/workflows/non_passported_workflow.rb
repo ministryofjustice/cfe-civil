@@ -67,8 +67,10 @@ module Workflows
     # TODO: make the Collators::DisposableIncomeCollator increment/sum to existing values so order of "collation" becomes unimportant
     def partner_disposable_income_assessment(gross_income_subtotals)
       applicant = PersonWrapper.new person: assessment.applicant, is_single: false,
+                                    submission_date: assessment.submission_date,
                                     dependants: assessment.dependants, gross_income_summary: assessment.gross_income_summary
       partner = PersonWrapper.new person: assessment.partner, is_single: false,
+                                  submission_date: assessment.submission_date,
                                   dependants: assessment.partner_dependants, gross_income_summary: assessment.partner_gross_income_summary
       eligible_for_childcare = calculate_childcare_eligibility(applicant, partner)
       outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
@@ -108,12 +110,15 @@ module Workflows
         combined_total_outgoings_and_allowances: assessment.disposable_income_summary.total_outgoings_and_allowances +
                                                    assessment.partner_disposable_income_summary.total_outgoings_and_allowances,
       )
-      DisposableIncomeSubtotals.new(dependant_allowance: outgoings.dependant_allowance,
-                                    partner_dependant_allowance: partner_outgoings.dependant_allowance)
+      DisposableIncomeSubtotals.new(
+        applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(outgoings),
+        partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(partner_outgoings),
+      )
     end
 
     def single_disposable_income_assessment(gross_income_subtotals)
       applicant = PersonWrapper.new person: assessment.applicant, is_single: true,
+                                    submission_date: assessment.submission_date,
                                     dependants: assessment.dependants, gross_income_summary: assessment.gross_income_summary
       eligible_for_childcare = calculate_childcare_eligibility(applicant)
       outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
@@ -132,7 +137,10 @@ module Workflows
                                                eligible_for_childcare:)
       assessment.disposable_income_summary.update!(combined_total_disposable_income: assessment.disposable_income_summary.total_disposable_income,
                                                    combined_total_outgoings_and_allowances: assessment.disposable_income_summary.total_outgoings_and_allowances)
-      DisposableIncomeSubtotals.new(dependant_allowance: outgoings.dependant_allowance)
+      DisposableIncomeSubtotals.new(
+        applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(outgoings),
+        partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
+      )
     end
 
     def collate_and_assess_capital

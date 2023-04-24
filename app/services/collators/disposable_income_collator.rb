@@ -59,7 +59,8 @@ module Collators
 
     def total_outgoings_and_allowances(monthly_cash_transactions_total)
       @disposable_income_summary.net_housing_costs +
-        @outgoings.dependant_allowance +
+        @outgoings.dependant_allowance_under_16 +
+        @outgoings.dependant_allowance_over_16 +
         monthly_bank_transactions_total +
         monthly_cash_transactions_total -
         @gross_income_subtotals.employment_income_subtotals.fixed_employment_allowance -

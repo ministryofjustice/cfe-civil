@@ -35,6 +35,8 @@ module Decorators
       let(:expected_result) do
         {
           dependant_allowance: 220.21,
+          dependant_allowance_under_16: 28.34,
+          dependant_allowance_over_16: 98.12,
           gross_housing_costs: 990.42,
           housing_benefit: 440.21,
           net_housing_costs: 550.21,
@@ -104,8 +106,13 @@ module Decorators
       let(:income_contribution) { 75 }
 
       subject(:decorator) do
-        described_class.new(summary, assessment.gross_income_summary, employment_income_subtotals,
-                            partner_present:, dependant_allowance: 220.21).as_json
+        described_class
+          .new(summary, assessment.gross_income_summary, employment_income_subtotals,
+               partner_present:,
+               disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
+                                                            dependant_allowance_under_16: 28.34,
+                                                            dependant_allowance_over_16: 98.12,
+                                                            dependant_allowance: 220.21)).as_json
       end
 
       before do
