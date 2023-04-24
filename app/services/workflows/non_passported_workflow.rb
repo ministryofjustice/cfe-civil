@@ -31,13 +31,11 @@ module Workflows
       applicant_gross_income_subtotals = Collators::GrossIncomeCollator.call(assessment:,
                                                                              submission_date: assessment.submission_date,
                                                                              employments: assessment.employments,
-                                                                             disposable_income_summary: assessment.disposable_income_summary,
                                                                              gross_income_summary: assessment.gross_income_summary)
       if assessment.partner.present?
         partner_gross_income_subtotals = Collators::GrossIncomeCollator.call(assessment:,
                                                                              submission_date: assessment.submission_date,
                                                                              employments: assessment.partner_employments,
-                                                                             disposable_income_summary: assessment.partner_disposable_income_summary,
                                                                              gross_income_summary: assessment.partner_gross_income_summary)
       end
 

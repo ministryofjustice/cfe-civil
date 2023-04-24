@@ -20,7 +20,6 @@ module Collators
         described_class.call assessment:,
                              submission_date: assessment.submission_date,
                              employments: assessment.employments,
-                             disposable_income_summary: assessment.disposable_income_summary,
                              gross_income_summary: assessment.gross_income_summary
       end
 
