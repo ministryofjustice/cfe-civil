@@ -1,16 +1,15 @@
 module Collators
   class GrossIncomeCollator
     class << self
-      def call(assessment:, submission_date:, employments:, disposable_income_summary:, gross_income_summary:)
-        new(assessment:, submission_date:, employments:, disposable_income_summary:, gross_income_summary:).call
+      def call(assessment:, submission_date:, employments:, gross_income_summary:)
+        new(assessment:, submission_date:, employments:, gross_income_summary:).call
       end
     end
 
-    def initialize(assessment:, submission_date:, employments:, disposable_income_summary:, gross_income_summary:)
+    def initialize(assessment:, submission_date:, employments:, gross_income_summary:)
       @assessment = assessment
       @submission_date = submission_date
       @employments = employments
-      @disposable_income_summary = disposable_income_summary
       @gross_income_summary = gross_income_summary
     end
 
