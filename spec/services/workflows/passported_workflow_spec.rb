@@ -14,14 +14,7 @@ module Workflows
     let(:capital_summary) { assessment.capital_summary }
     let(:gross_income_summary) { assessment.gross_income_summary }
     let(:capital_data) do
-      PersonCapitalSubtotals.new(
-        total_liquid: 45.36,
-        total_non_liquid: 14_000.02,
-        total_vehicle: 500.0,
-        total_mortgage_allowance: 100_000.0,
-        total_property: 35_000,
-        pensioner_capital_disregard: 90_000,
-      )
+      PersonCapitalSubtotals.blank
     end
 
     describe ".call" do

@@ -4,9 +4,9 @@ FactoryBot.define do
 
     value { Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f }
     outstanding_mortgage { Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f }
-    percentage_owned { Faker::Number.decimal(l_digits: 1, r_digits: 2).to_f }
+    percentage_owned { 100 }
     main_home { [true, false].sample }
-    shared_with_housing_assoc { [true, false].sample }
+    shared_with_housing_assoc { false }
     subject_matter_of_dispute { false }
 
     trait :main_home do

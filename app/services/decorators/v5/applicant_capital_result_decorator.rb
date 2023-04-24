@@ -20,12 +20,11 @@ module Decorators
     private
 
       def combined_disputed_capital
-        @person_capital_subtotals.disputed_non_property_disregard + @person_capital_subtotals.disputed_property_disregard +
-          @partner_capital_subtotals.disputed_non_property_disregard + @partner_capital_subtotals.disputed_property_disregard
+        @person_capital_subtotals.total_disputed_capital + @partner_capital_subtotals.total_disputed_capital
       end
 
       def combined_non_disputed_capital
-        @person_capital_subtotals.total_capital + @partner_capital_subtotals.total_capital - combined_disputed_capital
+        @person_capital_subtotals.total_non_disputed_capital + @partner_capital_subtotals.total_non_disputed_capital
       end
 
       def proceeding_types

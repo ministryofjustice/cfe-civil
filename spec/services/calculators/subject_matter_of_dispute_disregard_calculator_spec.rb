@@ -3,8 +3,10 @@ require "rails_helper"
 module Calculators
   RSpec.describe SubjectMatterOfDisputeDisregardCalculator do
     subject(:value) do
-      described_class.new(capital_summary:,
-                          maximum_disregard:).value
+      described_class.call(disputed_vehicles: capital_summary.vehicles.select(&:subject_matter_of_dispute),
+                           disputed_capital_items: capital_summary.non_liquid_capital_items.select(&:subject_matter_of_dispute) +
+                             capital_summary.liquid_capital_items.select(&:subject_matter_of_dispute),
+                           maximum_disregard:)
     end
 
     let(:capital_summary) do

@@ -8,6 +8,7 @@ class CapitalCollatorAndAssessor
                                                     pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied)
         combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
       else
+        partner_subtotals = PersonCapitalSubtotals.blank
         combined_assessed_capital = applicant_subtotals.assessed_capital
       end
       capital_contribution = Assessors::CapitalAssessor.call(assessment.capital_summary, combined_assessed_capital)

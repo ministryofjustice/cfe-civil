@@ -17,14 +17,22 @@ module Decorators
       end
 
       let(:subtotals) do
-        PersonCapitalSubtotals.new(total_vehicle: 3500,
-                                   total_liquid: 9_355.23,
-                                   total_non_liquid: 12_553.22,
-                                   total_property: 835_500,
-                                   total_mortgage_allowance: 750_000,
-                                   pensioner_capital_disregard: 10_000,
-                                   disputed_non_property_disregard: 5_454,
-                                   disputed_property_disregard: 3_000)
+        instance_double(PersonCapitalSubtotals,
+                        total_vehicle: 3500,
+                        total_capital: 860_908.45,
+                        subject_matter_of_dispute_disregard: 8454,
+                        assessed_capital: 845_454.45,
+                        total_disputed_capital: 4567,
+                        total_non_disputed_capital: 5678,
+                        total_capital_with_smod: 855_454.45,
+                        total_liquid: 9_355.23,
+                        total_non_liquid: 12_553.22,
+                        total_property: 835_500,
+                        total_mortgage_allowance: 750_000,
+                        pensioner_disregard_applied: 10_000,
+                        pensioner_capital_disregard: 12_000,
+                        disputed_non_property_disregard: 5_454,
+                        disputed_property_disregard: 3_000)
       end
       let(:capital_contribution) { 0 }
       let(:combined_assessed_capital) { 12_000 }
@@ -34,16 +42,14 @@ module Decorators
           pensioner_disregard_applied: 10_000.0,
           total_liquid: 9_355.23,
           total_non_liquid: 12_553.22,
-          disputed_non_property_disregard: 5_454,
-          total_vehicle: 3500,
-          total_property: 835_500,
-          total_mortgage_allowance: 750_000,
+          total_vehicle: 3500.0,
+          total_property: 835_500.0,
+          total_mortgage_allowance: 750_000.0,
           total_capital: 860_908.45,
-          total_capital_with_smod: 855_454.45,
-          pensioner_capital_disregard: 10_000,
           subject_matter_of_dispute_disregard: 8454.0,
-          capital_contribution: 0.0,
           assessed_capital: 845_454.45,
+          total_capital_with_smod: 855_454.45,
+          disputed_non_property_disregard: 5_454,
           proceeding_types: [
             {
               ccms_code: "DA003",
@@ -61,8 +67,10 @@ module Decorators
             },
           ],
           combined_assessed_capital: 12_000.0,
-          combined_disputed_capital: 16_908,
-          combined_non_disputed_capital: 1_704_908.9,
+          combined_disputed_capital: 9134,
+          combined_non_disputed_capital: 11_356,
+          pensioner_capital_disregard: 12_000,
+          capital_contribution: 0.0,
         }
       end
 
