@@ -33,7 +33,7 @@ module Creators
     end
 
     def threshold_from_proceeding_type(ptc)
-      @proceeding_types.find_by!(ccms_code: ptc).gross_income_upper_threshold
+      @proceeding_types.detect { |pt| pt.ccms_code == ptc }.gross_income_upper_threshold
     end
 
     def dependant_increase
@@ -43,7 +43,7 @@ module Creators
     end
 
     def number_of_child_dependants
-      @dependants.where(relationship: "child_relative").count
+      @dependants.count { |c| c.relationship == "child_relative" }
     end
 
     def dependant_increase_starts_after

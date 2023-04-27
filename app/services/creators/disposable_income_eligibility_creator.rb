@@ -46,7 +46,7 @@ module Creators
     end
 
     def upper_threshold(ptc)
-      @assessment.proceeding_types.find_by!(ccms_code: ptc).disposable_income_upper_threshold
+      @assessment.proceeding_types.detect { |pt| pt.ccms_code == ptc }.disposable_income_upper_threshold
     end
   end
 end

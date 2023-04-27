@@ -68,6 +68,7 @@ gem "govuk_notify_rails", "~> 2.2.0"
 
 group :development, :test do
   gem "awesome_print"
+  gem "bullet"
   gem "dotenv-rails", ">= 2.8.1"
   gem "factory_bot_rails", ">= 6.2.0"
   gem "faker"
@@ -75,6 +76,7 @@ group :development, :test do
   gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "hashdiff"
   gem "pry-byebug"
+  gem "rack-mini-profiler", require: false
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.0"
   gem "rswag-specs"
