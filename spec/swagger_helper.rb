@@ -255,8 +255,7 @@ RSpec.configure do |config|
               description: "Value of asset",
             },
             description: {
-              type: :number,
-              format: :decimal,
+              type: :string,
               description: "Description of asset",
             },
           },

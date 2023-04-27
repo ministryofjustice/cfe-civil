@@ -267,8 +267,7 @@ components:
         format: decimal
         description: Value of asset
       description:
-        type: number
-        format: decimal
+        type: string
         description: Description of asset
     Employments:
       type: array
