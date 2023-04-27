@@ -25,10 +25,8 @@ module Collators
         let(:dependant3) { create :dependant, :aged16or17, in_full_time_education: true, assessment: }
         let(:dependants) { [dependant1, dependant2, dependant3] }
 
-        it "updates the dependant records and returns the under_16s / over_16s grouped together" do
+        it "returns the under_16s / over_16s grouped together" do
           expect(collator).to have_attributes(under_16: 338.9, over_16: 338.9 + 338.9)
-          expect(dependants.map(&:reload).map(&:dependant_allowance))
-            .to eq([338.9, 338.9, 338.9])
         end
       end
     end
