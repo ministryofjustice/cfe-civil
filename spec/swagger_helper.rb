@@ -248,15 +248,18 @@ RSpec.configure do |config|
           Asset: {
             type: :object,
             additionalProperties: false,
+            description: "Asset",
             required: %i[value description],
-            value: {
-              type: :number,
-              format: :decimal,
-              description: "Value of asset",
-            },
-            description: {
-              type: :string,
-              description: "Description of asset",
+            properties: {
+              value: {
+                type: :number,
+                format: :decimal,
+                description: "Value of asset",
+              },
+              description: {
+                type: :string,
+                description: "Description of asset",
+              },
             },
           },
           Employments: {
