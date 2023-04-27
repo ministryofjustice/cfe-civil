@@ -7,7 +7,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
       consumes "application/json"
       produces "application/json"
 
-      description "Performs a complete assessment"
+      description <<~DESCRIPTION.chomp
+        Performs a complete assessment
+      DESCRIPTION
 
       parameter name: :params,
                 in: :body,
@@ -148,9 +150,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
         schema type: :object,
                required: %i[timestamp result_summary assessment version success],
                properties: {
-                 timestamp: {
-                   type: :string,
-                 },
                  result_summary: {
                    type: :object,
                    required: %i[overall_result gross_income disposable_income capital],
@@ -163,22 +162,43 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            type: :string,
                            enum: %w[eligible ineligible contribution_required],
                          },
-                         capital_contribution: { type: :number },
-                         income_contribution: { type: :number },
+                         income_contribution: {
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0,
+                           description: "Amount of income contribution required (only valid if result is contribution_required)",
+                         },
+                         capital_contribution: {
+                           type: :number,
+                           format: :decimal,
+                           minimum: 0,
+                           description: "Amount of capital contribution required (only valid if result is contribution_required)",
+                         },
                          proceeding_types: {
                            type: :array,
+                           minItems: 1,
                            items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
                          },
                        },
                      },
                      gross_income: {
                        type: :object,
+                       description: "gross_income calculation for partner, with some combined totals where appropriate",
                        required: %i[total_gross_income combined_total_gross_income proceeding_types],
                        properties: {
-                         total_gross_income: { type: :number },
-                         combined_total_gross_income: { type: :number },
+                         total_gross_income: {
+                           type: :number,
+                           format: :decimal,
+                           description: "Calculated monthly total gross income for applicant",
+                         },
+                         combined_total_gross_income: {
+                           type: :number,
+                           format: :decimal,
+                           description: "Calculated monthly total gross income for applicant and partner",
+                         },
                          proceeding_types: {
                            type: :array,
+                           minItems: 1,
                            items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
                          },
                        },
@@ -187,175 +207,106 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        type: :object,
                        required: %i[total_gross_income],
                        properties: {
-                         total_gross_income: { type: :number },
+                         total_gross_income: {
+                           type: :number,
+                           format: :decimal,
+                           description: "Calculated monthly total gross income for partner",
+                         },
                        },
                      },
                      disposable_income: {
-                       type: :object,
-                       properties: {
-                         proceeding_types: {
-                           type: :array,
-                           items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
+                       allOf: [
+                         { "$ref": "#/components/schemas/DisposableIncome" },
+                         {
+                           type: :object,
+                           properties: {
+                             partner_allowance: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Fixed allowance given if applicant has a partner for means assessment purposes",
+                             },
+                             combined_total_outgoings_and_allowances: {
+                               type: :number,
+                               format: :decimal,
+                               description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
+                             },
+                             combined_total_disposable_income: {
+                               type: :number,
+                               format: :decimal,
+                               description: "total_disposable_income + partner total_disposable_income",
+                             },
+                             proceeding_types: {
+                               type: :array,
+                               minItems: 1,
+                               items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+                             },
+                           },
                          },
-                         income_contribution: { type: :number },
-                         combined_total_outgoings_and_allowances: { type: :number },
-                         total_disposable_income: { type: :number },
-                         combined_total_disposable_income: { type: :number },
-                         total_outgoings_and_allowances: { type: :number },
-                         dependant_allowance_under_16: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Allowance for dependants under 16",
-                         },
-                         dependant_allowance_over_16: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Allowance for dependants 16 and over",
-                         },
-                         dependant_allowance: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Allowance for all dependants (sum of dependant_allowance_over_16 and dependant_allowance_under_16)",
-                         },
-                         gross_housing_costs: { type: :number },
-                         housing_benefit: { type: :number },
-                         net_housing_costs: { type: :number },
-                         maintenance_allowance: { type: :number },
-                         employment_income: { type: :object },
-                         partner_allowance: { type: :number },
-                       },
+                       ],
                      },
-                     partner_disposable_income: {
-                       type: :object,
-                       properties: {
-                         income_contribution: { type: :number },
-                         total_disposable_income: { type: :number },
-                         total_outgoings_and_allowances: { type: :number },
-                         dependant_allowance: { type: :number },
-                         gross_housing_costs: { type: :number },
-                         housing_benefit: { type: :number },
-                         net_housing_costs: { type: :number },
-                         maintenance_allowance: { type: :number },
-                         employment_income: { type: :object },
-                       },
-                     },
+                     partner_disposable_income: { "$ref": "#/components/schemas/DisposableIncome" },
                      capital: {
-                       type: :object,
-                       additionalProperties: false,
-                       properties: {
-                         proceeding_types: {
-                           type: :array,
-                           items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
+                       allOf: [
+                         { "$ref": "#/components/schemas/CapitalResult" },
+                         {
+                           type: :object,
+                           properties: {
+                             proceeding_types: {
+                               type: :array,
+                               items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+                             },
+                             pensioner_capital_disregard: {
+                               type: :number,
+                               format: :decimal,
+                               description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
+                               minimum: 0.0,
+                             },
+                             pensioner_disregard_applied: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Amount of pensioner capital disregard applied to this assessment",
+                             },
+                             total_capital_with_smod: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Total of all capital but with subject matter of dispute deduction applied where applicable",
+                             },
+                             disputed_non_property_disregard: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Amount of subject matter of dispute deduction applied for assets other than property",
+                             },
+                             capital_contribution: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Duplicate of results_summary capital_contribution field",
+                             },
+                             combined_disputed_capital: {
+                               description: "Combined applicant and partner disputed capital",
+                               type: :number,
+                               format: :decimal,
+                             },
+                             combined_non_disputed_capital: {
+                               description: "Combined applicant and partner non-disputed capital",
+                               type: :number,
+                               format: :decimal,
+                             },
+                             combined_assessed_capital: {
+                               type: :number,
+                               format: :decimal,
+                               minimum: 0,
+                               description: "Amount of assessed capital for both client and partner",
+                             },
+                           },
                          },
-                         total_liquid: {
-                           type: :number,
-                           description: "Total value of all client liquid assets in submission",
-                           format: :decimal,
-                         },
-                         total_non_liquid: {
-                           description: "Total value of all client non-liquid assets in submission",
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0.0,
-                         },
-                         total_vehicle: {
-                           description: "Total value of all client vehicle assets in submission",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         total_property: {
-                           description: "Total value of all client property assets in submission",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         total_mortgage_allowance: {
-                           description: "Maxiumum mortgage allowance used in submission. Cases April 2020 will all be set to 999_999_999",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         total_capital: {
-                           description: "Total value of all capital assets in submission",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         combined_disputed_capital: {
-                           description: "Combined applicant and partner disputed capital",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         combined_non_disputed_capital: {
-                           description: "Combined applicant and partner non-disputed capital",
-                           type: :number,
-                           format: :decimal,
-                         },
-                         pensioner_capital_disregard: {
-                           type: :number,
-                           format: :decimal,
-                           description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
-                           minimum: 0.0,
-                         },
-                         total_capital_with_smod: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of capital with subject matter of dispute deduction applied",
-                         },
-                         disputed_non_property_disregard: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of subject matter of dispute deduction applied for assets other than property",
-                         },
-                         pensioner_disregard_applied: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of pensioner capital disregard applied to this assessment",
-                         },
-                         subject_matter_of_dispute_disregard: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Total amount of subject matter of dispute disregard applied on this submission",
-                         },
-                         capital_contribution: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Assessed capital contribution. Will only be non-zero for 'contribution_required' cases",
-                         },
-                         assessed_capital: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of assessed client capital. Zero if deductions exceed total capital.",
-                         },
-                         combined_assessed_capital: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of assessed capital for both client and partner",
-                         },
-                       },
+                       ],
                      },
-                     partner_capital: {
-                       type: :object,
-                       additionalProperties: false,
-                       properties: {
-                         total_liquid: { type: :number },
-                         total_non_liquid: { type: :number },
-                         total_vehicle: { type: :number },
-                         total_property: { type: :number },
-                         total_mortgage_allowance: { type: :number },
-                         total_capital: { type: :number },
-                         pensioner_capital_disregard: { type: :number },
-                         subject_matter_of_dispute_disregard: { type: :number },
-                         assessed_capital: { type: :number },
-                       },
-                     },
+                     partner_capital: { "$ref": "#/components/schemas/CapitalResult" },
                    },
                  },
                  assessment: {
@@ -384,15 +335,15 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            properties: {
                              liquid: {
                                type: :array,
-                               items: { "$ref" => "#/components/schemas/Asset" },
+                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
                              },
                              non_liquid: {
                                type: :array,
-                               items: { "$ref" => "#/components/schemas/Asset" },
+                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
                              },
                              vehicles: {
                                type: :array,
-                               items: { "$ref" => "#/components/schemas/Asset" },
+                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
                              },
                              properties: {
                                type: :object,
@@ -418,9 +369,14 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                  version: {
                    type: :string,
                    enum: %w[6],
+                   description: "Version of the API used in the request",
                  },
                  success: {
                    type: :boolean,
+                   description: "Always true when HTTP 200 returned, false otherwise",
+                 },
+                 timestamp: {
+                   type: :string,
                  },
                }
 

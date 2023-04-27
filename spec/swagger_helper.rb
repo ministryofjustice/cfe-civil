@@ -245,10 +245,10 @@ RSpec.configure do |config|
               },
             },
           },
-          Asset: {
+          NonPropertyAsset: {
             type: :object,
             additionalProperties: false,
-            description: "Asset",
+            description: "Non-property Asset",
             required: %i[value description],
             properties: {
               value: {
@@ -630,13 +630,13 @@ RSpec.configure do |config|
                   type: :string,
                   enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
                   example: "DA001",
-                  description: "The code expected by CCMS",
+                  description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
                 },
                 client_involvement_type: {
                   type: :string,
                   enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
                   example: "A",
-                  description: "The client_involvement_type expected by CCMS",
+                  description: "A CCMS client_involvement_type. This is not used in the calculation, so can be set to any valid value.",
                 },
               },
             },
@@ -667,7 +667,7 @@ RSpec.configure do |config|
               },
               subject_matter_of_dispute: {
                 type: :boolean,
-                description: "Property is the subject of a dispute",
+                description: "Property is the subject of a dispute. Defaults to false",
               },
             },
           },
@@ -797,6 +797,138 @@ RSpec.configure do |config|
                     type: :string,
                   },
                 },
+              },
+            },
+          },
+          CapitalResult: {
+            type: :object,
+            properties: {
+              total_liquid: {
+                type: :number,
+                description: "Total value of all liquid assets in submission",
+                format: :decimal,
+              },
+              total_non_liquid: {
+                description: "Total value of all non-liquid assets in submission",
+                type: :number,
+                format: :decimal,
+                minimum: 0.0,
+              },
+              total_vehicle: {
+                description: "Total value of all client vehicle assets in submission",
+                type: :number,
+                format: :decimal,
+              },
+              total_property: {
+                description: "Total value of all client property assets in submission",
+                type: :number,
+                format: :decimal,
+              },
+              total_capital: {
+                description: "Total value of all capital assets in submission",
+                type: :number,
+                format: :decimal,
+              },
+              total_mortgage_allowance: {
+                description: "Maxiumum mortgage allowance used in submission. Cases post-April 2020 will all be set to 999_999_999",
+                type: :number,
+                format: :decimal,
+              },
+              subject_matter_of_dispute_disregard: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Total amount of subject matter of dispute disregard applied on this submission",
+              },
+              assessed_capital: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Amount of assessed client capital. Zero if deductions exceed total capital.",
+              },
+            },
+          },
+          DisposableIncome: {
+            type: :object,
+            properties: {
+              employment_income: {
+                type: :object,
+                description: "Calculated monthly employment income",
+                additionalProperties: false,
+                properties: {
+                  gross_income: { type: :number },
+                  benefits_in_kind: { type: :number },
+                  tax: { type: :number },
+                  national_insurance: { type: :number },
+                  fixed_employment_deduction: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                    description: "Fixed employment deduction (if applicable) otherwise zero",
+                  },
+                  net_employment_income: {
+                    type: :number,
+                    description: "Calculated monthly net income (gross + benefits_in_kind - tax - ni - deductions)",
+                  },
+                },
+              },
+              gross_housing_costs: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Calculated monthly rent/mortgage costs",
+              },
+              housing_benefit: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Calculated monthly housing benefit received",
+              },
+              net_housing_costs: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Calculated monthly net housing costs (gross - housing_benefit)",
+              },
+              maintenance_allowance: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Total of maintenance outgoings costs",
+              },
+              dependant_allowance_under_16: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Allowance for dependants under 16",
+              },
+              dependant_allowance_over_16: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Allowance for dependants 16 and over",
+              },
+              dependant_allowance: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Sum of dependant_allowance_under_16 and dependant_allowance_over_16",
+              },
+              total_outgoings_and_allowances: {
+                type: :number,
+                format: :decimal,
+                description: "Sum of outgoings and allowances",
+              },
+              total_disposable_income: {
+                type: :number,
+                format: :decimal,
+                description: "Calculated monthly disposable income (gross - outgoings - allowances)",
+              },
+              income_contribution: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Duplicate of result_summary.income_contribution",
               },
             },
           },

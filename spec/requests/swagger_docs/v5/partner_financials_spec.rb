@@ -7,7 +7,9 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
       consumes "application/json"
       produces "application/json"
 
-      description "Adds details of an applicant's partner."
+      description <<~DESCRIPTION.chomp
+        Adds details of an applicant's partner.
+      DESCRIPTION
 
       assessment_id_parameter
 
