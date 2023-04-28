@@ -259,17 +259,18 @@ components:
     Asset:
       type: object
       additionalProperties: false
+      description: Asset
       required:
       - value
       - description
-      value:
-        type: number
-        format: decimal
-        description: Value of asset
-      description:
-        type: number
-        format: decimal
-        description: Description of asset
+      properties:
+        value:
+          type: number
+          format: decimal
+          description: Value of asset
+        description:
+          type: string
+          description: Description of asset
     Employments:
       type: array
       description: One or more employment income details
