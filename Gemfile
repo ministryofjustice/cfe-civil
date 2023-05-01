@@ -8,7 +8,7 @@ gem "active_model_serializers", "~> 0.10.13"
 gem "rails", "~> 7.0.4", ">= 7.0.4.3"
 # Use postgresql as the database for Active Record
 # pg 1.5 introduces a deprecation warning that hasn't been fixed in Rails yet
-gem "pg", "< 1.5"
+gem "pg", "< 1.6"
 # Use Puma as the app server
 gem "puma", "~> 6.2"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
