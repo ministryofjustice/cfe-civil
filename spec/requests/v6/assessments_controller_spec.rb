@@ -35,6 +35,15 @@ module V6
           },
         ]
       end
+      let(:employment_income_without_payments_params) do
+        [
+          {
+            name: "Job 1",
+            client_id: SecureRandom.uuid,
+            payments: [],
+          },
+        ]
+      end
       let(:vehicle_params) do
         [
           attributes_for(:vehicle, value: 2638.69, loan_amount_outstanding: 3907.77,
@@ -429,6 +438,50 @@ module V6
                         net_employment_income: 739.84,
                       },
                     ],
+                  },
+                ],
+              )
+            end
+          end
+        end
+      end
+
+      context "with employment income without payments" do
+        let(:employed) { true }
+        let(:params) { { employment_income: employment_income_without_payments_params } }
+
+        it "returns http success" do
+          expect(response).to have_http_status(:success)
+        end
+
+        describe "disposable_income from summary" do
+          let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
+
+          it "has employment income" do
+            expect(employment_income)
+              .to eq(
+                {
+                  gross_income: 0.0,
+                  benefits_in_kind: 0.0,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  fixed_employment_deduction: -45.0,
+                  net_employment_income: 0,
+                },
+              )
+          end
+        end
+
+        describe "assessment" do
+          describe "gross income" do
+            let(:gross_income) { assessment.fetch(:gross_income) }
+
+            it "has employment income" do
+              expect(gross_income.fetch(:employment_income)).to eq(
+                [
+                  {
+                    name: "Job 1",
+                    payments: [],
                   },
                 ],
               )
