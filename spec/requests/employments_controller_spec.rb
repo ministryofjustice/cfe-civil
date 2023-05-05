@@ -13,15 +13,59 @@ RSpec.describe EmploymentsController, type: :request do
     context "valid payload" do
       context "with client ids" do
         context "with two employments" do
+          context "with income payments" do
+            it "returns http success" do
+              post_payload
+              expect(response).to have_http_status(:success)
+            end
+
+            it "creates two employment income records with associated EmploymentPayment records" do
+              post_payload
+              expect(Employment.count).to eq 2
+              expect(EmploymentPayment.count).to eq 6
+            end
+
+            it "generates a valid response" do
+              post_payload
+              expect(parsed_response[:success]).to eq true
+              expect(parsed_response[:errors]).to be_empty
+            end
+          end
+
+          context "without income payments" do
+            let(:params) { employment_income_without_payments_params }
+
+            it "returns http success" do
+              post_payload
+              expect(response).to have_http_status(:success)
+            end
+
+            it "creates two employment income records with 0 EmploymentPayment records" do
+              post_payload
+              expect(Employment.count).to eq 2
+              expect(EmploymentPayment.count).to eq 0
+            end
+
+            it "generates a valid response" do
+              post_payload
+              expect(parsed_response[:success]).to eq true
+              expect(parsed_response[:errors]).to be_empty
+            end
+          end
+        end
+
+        context "with no employments" do
+          let(:params) { { employment_income: [] } }
+
           it "returns http success" do
             post_payload
             expect(response).to have_http_status(:success)
           end
 
-          it "creates two employment income records with associated EmploymentPayment records" do
+          it "doesn't creates employment income records with associated EmploymentPayment records" do
             post_payload
-            expect(Employment.count).to eq 2
-            expect(EmploymentPayment.count).to eq 6
+            expect(Employment.count).to eq 0
+            expect(EmploymentPayment.count).to eq 0
           end
 
           it "generates a valid response" do
@@ -218,6 +262,23 @@ RSpec.describe EmploymentsController, type: :request do
                 national_insurance: -18.66,
               },
             ],
+          },
+        ],
+      }
+    end
+
+    def employment_income_without_payments_params
+      {
+        employment_income: [
+          {
+            name: "Job 1",
+            client_id: SecureRandom.uuid,
+            payments: [],
+          },
+          {
+            name: "Job 2",
+            client_id: SecureRandom.uuid,
+            payments: [],
           },
         ],
       }

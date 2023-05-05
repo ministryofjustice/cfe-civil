@@ -201,8 +201,7 @@ RSpec.configure do |config|
           },
           EmploymentPaymentList: {
             type: :array,
-            description: "One or more employment payment details",
-            minItems: 1,
+            description: "0 or more employment payment details",
             items: {
               type: :object,
               additionalProperties: false,
