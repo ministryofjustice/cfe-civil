@@ -68,6 +68,7 @@ class PersonCapitalSubtotals
     @properties.reject(&:main_home).map { |p| PropertySubtotals.new(p) }
   end
 
+  # subject matter of dispute is calculated earlier for property, so this value already includes SMOD disregards
   def total_property
     @properties.sum(&:assessed_equity)
   end
