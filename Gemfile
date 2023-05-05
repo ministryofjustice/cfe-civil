@@ -76,7 +76,7 @@ group :development, :test do
   gem "hashdiff"
   gem "pry-byebug"
   gem "rspec_junit_formatter"
-  gem "rspec-rails", "~> 6.0", ">= 6.0.1"
+  gem "rspec-rails", "~> 6.0"
   gem "rswag-specs"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
