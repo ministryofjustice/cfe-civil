@@ -18,7 +18,7 @@ module Creators
           }
 
         new_assessment = create_new_assessment_and_summary_records assessment_hash
-        if new_assessment.valid?
+        if new_assessment.save
           CreationResult.new(errors: [], assessment: new_assessment).freeze
         else
           CreationResult.new(errors: new_assessment.errors.full_messages).freeze
@@ -28,13 +28,10 @@ module Creators
     private
 
       def create_new_assessment_and_summary_records(assessment_hash)
-        Assessment.transaction do
-          Assessment.new(assessment_hash).tap do |assessment|
-            assessment.build_capital_summary
-            assessment.build_gross_income_summary
-            assessment.build_disposable_income_summary
-            Creators::EligibilitiesCreator.call(assessment) if assessment.save
-          end
+        Assessment.new(assessment_hash).tap do |assessment|
+          assessment.build_capital_summary
+          assessment.build_gross_income_summary
+          assessment.build_disposable_income_summary
         end
       end
     end
