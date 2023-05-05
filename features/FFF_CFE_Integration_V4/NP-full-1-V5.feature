@@ -40,10 +40,10 @@ Feature:
         When I retrieve the final assessment
 
         Then I should see the following overall summary:
-            | attribute                    | value    |
-            | assessment_result            | eligible |
-            | capital_lower_threshold      | 3000.0   |
-            | gross_income_upper_threshold | 2657.0   |
+            | attribute                      | value    |
+            | assessment_result              | eligible |
+            | capital_lower_threshold        | 3000.0   |
+            | gross_income_upper_threshold_1 | 2657.0   |
 
         Then I should see the following "gross_income_proceeding_types" details where "ccms_code:SE013":
             | attribute               | value    |
