@@ -69,6 +69,11 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       description: "One or more vehicles' details",
                       items: { "$ref" => "#/components/schemas/Vehicle" },
                     },
+                    self_employments: {
+                      type: :array,
+                      description: "To be implemented soon",
+                      items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                    },
                     partner: {
                       type: :object,
                       required: %i[partner],
@@ -130,15 +135,20 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           items: { "$ref" => "#/components/schemas/Property" },
                         },
                         capital_items: { "$ref" => "#/components/schemas/Capitals" },
+                        dependants: {
+                          type: :array,
+                          description: "One or more dependants details",
+                          items: { "$ref" => "#/components/schemas/Dependant" },
+                        },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
                           items: { "$ref" => "#/components/schemas/Vehicle" },
                         },
-                        dependants: {
+                        self_employments: {
                           type: :array,
-                          description: "One or more dependants details",
-                          items: { "$ref" => "#/components/schemas/Dependant" },
+                          description: "To be implemented soon",
+                          items: { "$ref" => "#/components/schemas/SelfEmployment" },
                         },
                       },
                     },

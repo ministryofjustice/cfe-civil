@@ -698,6 +698,72 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
+          SelfEmployment: {
+            type: :object,
+            required: %i[self_employment_type net_profit_or_drawings percentage_owned business_capital],
+            additionalProperties: false,
+            properties: {
+              self_employment_type: {
+                type: :string,
+                enum: %i[partnership company_director sole_trader],
+              },
+              net_profit_or_drawings: {
+                type: :object,
+                required: %i[frequency amount],
+                additionalProperties: false,
+                properties: {
+                  frequency: {
+                    type: :string,
+                    enum: %i[weekly monthly four_weekly two_weekly annually],
+                  },
+                  amount: {
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                  },
+                },
+              },
+              percentage_owned: {
+                type: :number,
+                format: :decimal,
+                maximum: 100,
+                minimum: 0,
+              },
+              business_capital: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[liquid_capital unused_assets total_assets total_liabilities],
+                properties: {
+                  liquid_capital: {
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                  },
+                  unused_assets: {
+                    description: "Unused land or buildings",
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                    minimum: 0,
+                  },
+                  total_assets: {
+                    description: "Total assets from company accounts",
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                    minimum: 0,
+                  },
+                  total_liabilities: {
+                    description: "Total liabilities from company accounts",
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                    minimum: 0,
+                  },
+                },
+              },
+            },
+          },
           StateBenefit: {
             type: :object,
             required: %i[name payments],
