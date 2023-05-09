@@ -332,7 +332,56 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        description: "The level of representation required by the client",
                      },
                      applicant: { type: :object },
-                     gross_income: { type: :object },
+                     gross_income: {
+                       type: :object,
+                       additionalProperties: false,
+                       required: %i[employment_income irregular_income state_benefits other_income],
+                       properties: {
+                         employment_income: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[name payments],
+                             properties: {
+                               name: { type: :string },
+                               payments: { type: :array },
+                             },
+                           },
+                         },
+                         irregular_income: {
+                           type: :object,
+                           additionalProperties: false,
+                           required: %i[monthly_equivalents],
+                           properties: {
+                             monthly_equivalents: {
+                               type: :object,
+                               additionalProperties: false,
+                               required: %i[student_loan unspecified_source],
+                               properties: {
+                                 student_loan: { type: :number },
+                                 unspecified_source: { type: :number },
+                               },
+                             },
+                           },
+                         },
+                         state_benefits: { type: :object },
+                         other_income: { type: :object },
+                         self_employments: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[name self_employment_type monthly_equivalent],
+                             properties: {
+                               name: { type: :string },
+                               self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
+                               monthly_equivalent: { type: :number },
+                             },
+                           },
+                         },
+                       },
+                     },
                      disposable_income: { type: :object },
                      capital: {
                        type: :object,
@@ -366,6 +415,22 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                    type: :array,
                                    items: {
                                      "$ref" => "#/components/schemas/PropertyResult",
+                                   },
+                                 },
+                               },
+                             },
+                             self_employments: {
+                               type: :array,
+                               items: {
+                                 type: :object,
+                                 additionalProperties: false,
+                                 required: %i[name business_capital_value],
+                                 properties: {
+                                   name: { type: :string },
+                                   business_capital_value: {
+                                     type: :number,
+                                     format: :decimal,
+                                     minimum: 0,
                                    },
                                  },
                                },

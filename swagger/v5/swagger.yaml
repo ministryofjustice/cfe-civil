@@ -820,21 +820,26 @@ components:
           example: three_monthly
         amount:
           "$ref": "#/components/schemas/currency"
+    SelfEmploymentType:
+      type: string
+      enum:
+      - partnership
+      - company_director
+      - sole_trader
     SelfEmployment:
       type: object
       required:
+      - name
       - self_employment_type
       - net_profit_or_drawings
       - percentage_owned
       - business_capital
       additionalProperties: false
       properties:
-        self_employment_type:
+        name:
           type: string
-          enum:
-          - partnership
-          - company_director
-          - sole_trader
+        self_employment_type:
+          "$ref": "#/components/schemas/SelfEmploymentType"
         net_profit_or_drawings:
           type: object
           required:
@@ -1571,6 +1576,63 @@ paths:
                         type: object
                       gross_income:
                         type: object
+                        additionalProperties: false
+                        required:
+                        - employment_income
+                        - irregular_income
+                        - state_benefits
+                        - other_income
+                        properties:
+                          employment_income:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - payments
+                              properties:
+                                name:
+                                  type: string
+                                payments:
+                                  type: array
+                          irregular_income:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - monthly_equivalents
+                            properties:
+                              monthly_equivalents:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - student_loan
+                                - unspecified_source
+                                properties:
+                                  student_loan:
+                                    type: number
+                                  unspecified_source:
+                                    type: number
+                          state_benefits:
+                            type: object
+                          other_income:
+                            type: object
+                          self_employments:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - self_employment_type
+                              - monthly_equivalent
+                              properties:
+                                name:
+                                  type: string
+                                self_employment_type:
+                                  "$ref": "#/components/schemas/SelfEmploymentType"
+                                monthly_equivalent:
+                                  type: number
                       disposable_income:
                         type: object
                       capital:
@@ -1608,6 +1670,21 @@ paths:
                                     type: array
                                     items:
                                       "$ref": "#/components/schemas/PropertyResult"
+                              self_employments:
+                                type: array
+                                items:
+                                  type: object
+                                  additionalProperties: false
+                                  required:
+                                  - name
+                                  - business_capital_value
+                                  properties:
+                                    name:
+                                      type: string
+                                    business_capital_value:
+                                      type: number
+                                      format: decimal
+                                      minimum: 0
                   version:
                     type: string
                     enum:

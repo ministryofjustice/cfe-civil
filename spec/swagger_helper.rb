@@ -698,15 +698,17 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
+          SelfEmploymentType: {
+            type: :string,
+            enum: %i[partnership company_director sole_trader],
+          },
           SelfEmployment: {
             type: :object,
-            required: %i[self_employment_type net_profit_or_drawings percentage_owned business_capital],
+            required: %i[name self_employment_type net_profit_or_drawings percentage_owned business_capital],
             additionalProperties: false,
             properties: {
-              self_employment_type: {
-                type: :string,
-                enum: %i[partnership company_director sole_trader],
-              },
+              name: { type: :string },
+              self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
               net_profit_or_drawings: {
                 type: :object,
                 required: %i[frequency amount],
