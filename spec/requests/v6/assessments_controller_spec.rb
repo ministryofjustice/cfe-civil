@@ -40,6 +40,7 @@ module V6
           {
             name: "Job 1",
             client_id: SecureRandom.uuid,
+            receiving_only_statutory_sick_or_maternity_pay: true,
             payments: [],
           },
         ]
@@ -465,8 +466,8 @@ module V6
                   benefits_in_kind: 0.0,
                   tax: 0.0,
                   national_insurance: 0.0,
-                  fixed_employment_deduction: -45.0,
-                  net_employment_income: 0,
+                  fixed_employment_deduction: 0.0,
+                  net_employment_income: 0.0,
                 },
               )
           end
