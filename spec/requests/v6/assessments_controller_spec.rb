@@ -40,7 +40,6 @@ module V6
           {
             name: "Job 1",
             client_id: SecureRandom.uuid,
-            receiving_only_statutory_sick_or_maternity_pay: true,
             payments: [],
           },
         ]
@@ -448,7 +447,6 @@ module V6
       end
 
       context "with employment income without payments" do
-        let(:employed) { true }
         let(:params) { { employment_income: employment_income_without_payments_params } }
 
         it "returns http success" do
@@ -458,7 +456,7 @@ module V6
         describe "disposable_income from summary" do
           let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
 
-          it "has employment income" do
+          it "has employment income with 0 deductions" do
             expect(employment_income)
               .to eq(
                 {
@@ -470,23 +468,6 @@ module V6
                   net_employment_income: 0.0,
                 },
               )
-          end
-        end
-
-        describe "assessment" do
-          describe "gross income" do
-            let(:gross_income) { assessment.fetch(:gross_income) }
-
-            it "has employment income" do
-              expect(gross_income.fetch(:employment_income)).to eq(
-                [
-                  {
-                    name: "Job 1",
-                    payments: [],
-                  },
-                ],
-              )
-            end
           end
         end
       end

@@ -53,7 +53,7 @@ module RemarkGenerators
         FrequencyChecker.call(@assessment, collection)
       end
       assessment.employments.each do |job|
-        FrequencyChecker.call(@assessment, job.employment_payments, :date) if job.employment_payments.any?
+        FrequencyChecker.call(@assessment, job.employment_payments, :date)
       end
     end
 

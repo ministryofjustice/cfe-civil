@@ -51,6 +51,8 @@ module Calculators
     end
 
     def allowance
+      return 0.0 if @employment.present? && @employment.employment_payments.empty?
+
       @employment.present? && !@employment.receiving_only_statutory_sick_or_maternity_pay? ? fixed_employment_allowance : 0.0
     end
 
