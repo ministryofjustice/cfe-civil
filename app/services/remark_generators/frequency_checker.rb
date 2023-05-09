@@ -3,7 +3,7 @@ module RemarkGenerators
     include Exemptable
 
     def self.call(assessment, collection, date_attribute = :payment_date)
-      new(assessment, collection).call(date_attribute)
+      new(assessment, collection).call(date_attribute) unless collection.empty?
     end
 
     def call(date_attribute = :payment_date)
