@@ -851,6 +851,7 @@ components:
               type: string
               enum:
               - weekly
+              - three_monthly
               - monthly
               - four_weekly
               - two_weekly

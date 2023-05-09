@@ -716,7 +716,7 @@ RSpec.configure do |config|
                 properties: {
                   frequency: {
                     type: :string,
-                    enum: %i[weekly monthly four_weekly two_weekly annually],
+                    enum: %i[weekly three_monthly monthly four_weekly two_weekly annually],
                   },
                   amount: {
                     type: :number,
