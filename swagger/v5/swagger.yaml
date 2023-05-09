@@ -864,7 +864,7 @@ components:
           format: decimal
           maximum: 100
           minimum: 0
-        business_capital:
+        capital:
           type: object
           additionalProperties: false
           required:

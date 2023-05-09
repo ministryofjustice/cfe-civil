@@ -731,7 +731,7 @@ RSpec.configure do |config|
                 maximum: 100,
                 minimum: 0,
               },
-              business_capital: {
+              capital: {
                 type: :object,
                 additionalProperties: false,
                 required: %i[liquid_capital unused_assets total_assets total_liabilities],
