@@ -58,6 +58,7 @@ private
   def assessment
     @assessment ||= Assessment.includes(
       { employments: :employment_payments },
+      :proceeding_types,
       gross_income_summary: [
         { other_income_sources: :other_income_payments },
         { state_benefits: %i[state_benefit_payments state_benefit_type] },
