@@ -1,4 +1,12 @@
 Rails.application.configure do
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.bullet_logger = true
+    # Some tests don't use all the possible eager loading depending on what they are doing
+    Bullet.unused_eager_loading_enable = false
+    Bullet.raise = true # raise an error if n+1 query occurs
+  end
+
   # Configure 'rails notes' to inspect Cucumber files
   config.annotations.register_directories("features")
   config.annotations.register_extensions("feature") { |tag| /#\s*(#{tag}):?\s*(.*)$/ }
