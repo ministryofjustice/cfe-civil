@@ -18,6 +18,7 @@ RSpec.describe "properties", type: :request, swagger_doc: "v5/swagger.yaml" do
                 required: true,
                 schema: {
                   type: :object,
+                  required: %i[properties],
                   description: "A set consisting of a main home and additional properties",
                   example: JSON.parse(File.read(Rails.root.join("spec/fixtures/properties.json"))),
                   properties: {

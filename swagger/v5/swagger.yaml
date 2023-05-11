@@ -2083,6 +2083,8 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+              - properties
               description: A set consisting of a main home and additional properties
               example:
                 properties:
