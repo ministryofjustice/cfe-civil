@@ -15,8 +15,8 @@ class EmploymentIncomeSubtotals
     @national_insurance = national_insurance
   end
 
-  attr_reader :gross_employment_income,
-              :benefits_in_kind,
+  attr_reader :benefits_in_kind,
+              :gross_employment_income,
               :fixed_employment_allowance,
               :tax,
               :national_insurance

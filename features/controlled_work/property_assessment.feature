@@ -4,7 +4,7 @@ Feature:
   Scenario: An applicant has property and sale costs are not disregarded
     Given I am undertaking a controlled assessment
     And An applicant who receives passporting benefits
-    And I am using version 5 of the API
+    And I am using version 6 of the API
     And I add the following main property details for the current assessment:
       | value                     | 163000 |
       | outstanding_mortgage      | 13000  |

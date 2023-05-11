@@ -149,7 +149,10 @@ module Decorators
           create(:state_benefit, :with_monthly_payments, state_benefit_type: child_benefit, gross_income_summary: summary, payment_amount: 343.27)
         end
 
-        subject(:decorator) { described_class.new(assessment.gross_income_summary, assessment.employments, subtotals).as_json }
+        subject(:decorator) do
+          described_class.new(assessment.gross_income_summary,
+                              assessment.employments, subtotals, []).as_json
+        end
 
         it "returns the expected structure" do
           expect(decorator).to match(expected_results)

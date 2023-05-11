@@ -2,29 +2,27 @@ module Collators
   class GrossIncomeCollator
     class << self
       def call(assessment:, submission_date:, employments:, gross_income_summary:)
-        employment_income_subtotals = if employments.any?
-                                        derive_employment_income_subtotals assessment:, submission_date:, employments:
-                                      else
-                                        EmploymentIncomeSubtotals.blank
-                                      end
+        employment_income_subtotals = derive_employment_income_subtotals(assessment:, submission_date:, employments:)
         perform_collation(gross_income_summary:, employment_income_subtotals:)
       end
 
     private
 
       def derive_employment_income_subtotals(assessment:, submission_date:, employments:)
-        calculate_subtotals(assessment:, submission_date:, employments:).tap do
+        calculate_subtotals(submission_date:, employments:).tap do
           add_remarks(assessment:, employments:) if employments.count > 1
         end
       end
 
-      def calculate_subtotals(assessment:, submission_date:, employments:)
-        if employments.count > 1
-          Calculators::MultipleEmploymentsCalculator.call(assessment:,
-                                                          employments:)
-        else
+      def calculate_subtotals(submission_date:, employments:)
+        case employments.count
+        when 0
+          EmploymentIncomeSubtotals.blank
+        when 1
           Calculators::EmploymentIncomeCalculator.call(submission_date:,
                                                        employment: employments.first)
+        else
+          Calculators::MultipleEmploymentsCalculator.call(submission_date)
         end
       end
 

@@ -819,6 +819,58 @@ components:
           example: three_monthly
         amount:
           "$ref": "#/components/schemas/currency"
+    SelfEmployment:
+      type: object
+      required:
+      - income
+      additionalProperties: false
+      description: This should be filled out when the client or partner is self employed
+      properties:
+        client_reference:
+          type: string
+          description: Optional reference, echoed in response
+        income:
+          type: object
+          required:
+          - frequency
+          - gross
+          - tax
+          - benefits_in_kind
+          - national_insurance
+          - receiving_only_statutory_sick_or_maternity_pay
+          - is_employment
+          additionalProperties: false
+          properties:
+            receiving_only_statutory_sick_or_maternity_pay:
+              type: boolean
+            frequency:
+              type: string
+              enum:
+              - weekly
+              - two_weekly
+              - four_weekly
+              - monthly
+              - three_monthly
+            is_employment:
+              type: boolean
+              description: set 'true' if this is a 'salary' type income (e.g. company
+                director salary)
+            gross:
+              type: number
+              format: decimal
+              minimum: 0
+            benefits_in_kind:
+              type: number
+              format: decimal
+              minimum: 0
+            tax:
+              type: number
+              format: decimal
+              minimum: 0
+            national_insurance:
+              type: number
+              format: decimal
+              minimum: 0
     StateBenefit:
       type: object
       required:
@@ -969,8 +1021,9 @@ components:
             fixed_employment_deduction:
               type: number
               format: decimal
-              minimum: 0
-              description: Fixed employment deduction (if applicable) otherwise zero
+              maximum: 0
+              description: "(negative) fixed employment deduction (if applicable)
+                otherwise zero"
             net_employment_income:
               type: number
               description: Calculated monthly net income (gross + benefits_in_kind
@@ -1500,6 +1553,98 @@ paths:
                         type: object
                       gross_income:
                         type: object
+                        additionalProperties: false
+                        required:
+                        - employment_income
+                        - irregular_income
+                        - state_benefits
+                        - other_income
+                        properties:
+                          employment_income:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - payments
+                              properties:
+                                name:
+                                  type: string
+                                payments:
+                                  type: array
+                          irregular_income:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - monthly_equivalents
+                            properties:
+                              monthly_equivalents:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - student_loan
+                                - unspecified_source
+                                properties:
+                                  student_loan:
+                                    type: number
+                                  unspecified_source:
+                                    type: number
+                          state_benefits:
+                            type: object
+                            additionalProperties: false
+                            properties:
+                              monthly_equivalents:
+                                type: object
+                                additionalProperties: false
+                                properties:
+                                  all_sources:
+                                    type: number
+                                    format: decimal
+                                  cash_transactions:
+                                    type: number
+                                    format: decimal
+                                  bank_transactions:
+                                    type: array
+                          other_income:
+                            type: object
+                          self_employments:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - monthly_income
+                              properties:
+                                client_reference:
+                                  type: string
+                                  description: client reference from request
+                                monthly_income:
+                                  type: object
+                                  description: Monthly versions of input data
+                                  additionalProperties: false
+                                  required:
+                                  - gross
+                                  - tax
+                                  - national_insurance
+                                  - benefits_in_kind
+                                  properties:
+                                    gross:
+                                      type: number
+                                      format: decimal
+                                      minimum: 0
+                                    tax:
+                                      type: number
+                                      maximum: 0
+                                      format: decimal
+                                    benefits_in_kind:
+                                      type: number
+                                      minimum: 0
+                                      format: decimal
+                                    national_insurance:
+                                      maximum: 0
+                                      type: number
+                                      format: decimal
                       disposable_income:
                         type: object
                       capital:
@@ -1621,6 +1766,11 @@ paths:
                   description: One or more vehicles' details
                   items:
                     "$ref": "#/components/schemas/Vehicle"
+                employment_or_self_employment:
+                  type: array
+                  description: One or more self employment details
+                  items:
+                    "$ref": "#/components/schemas/SelfEmployment"
                 partner:
                   type: object
                   required:
@@ -1717,6 +1867,11 @@ paths:
                             description: Client supplied id to identify the employment
                           payments:
                             "$ref": "#/components/schemas/EmploymentPaymentList"
+                    employment_or_self_employment:
+                      type: array
+                      description: Partner self employment details
+                      items:
+                        "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
                       type: array
                       description: Zero or more regular transactions
@@ -1724,7 +1879,7 @@ paths:
                         "$ref": "#/components/schemas/RegularTransaction"
                     state_benefits:
                       type: array
-                      description: One or more state benefits receved by the applicant's
+                      description: One or more state benefits received by the applicant's
                         partner and categorized by name
                       items:
                         "$ref": "#/components/schemas/StateBenefit"

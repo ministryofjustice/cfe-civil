@@ -14,6 +14,8 @@ module Decorators
       let(:calculation_output) do
         CalculationOutput.new(
           gross_income_subtotals: GrossIncomeSubtotals.new(
+            self_employments: [],
+            partner_self_employments: [],
             applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
               employment_income_subtotals: EmploymentIncomeSubtotals.blank,
               gross_income_summary: assessment.gross_income_summary,

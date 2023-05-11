@@ -24,7 +24,7 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment)
+        described_class.call(assessment:, self_employments:, partner_self_employments: [])
         Assessors::MainAssessor.call(assessment)
         assessment.assessment_result
       end
@@ -38,7 +38,110 @@ module Workflows
       context "with controlled work" do
         let(:level_of_help) { "controlled" }
 
+        describe "self employed" do
+          let(:applicant) { build :applicant }
+          let(:calculation_output) do
+            assessment.reload
+            described_class.call(assessment:, self_employments:, partner_self_employments: []).tap do |_output|
+              Assessors::MainAssessor.call(assessment)
+            end
+          end
+          let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
+
+          describe "frequencies" do
+            let(:self_employments) do
+              [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
+                                                               national_insurance: 150, gross: 900, frequency:))]
+            end
+
+            context "monthly" do
+              let(:frequency) { "monthly" }
+
+              it "returns employment figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 900.0,
+                                      national_insurance: -150.0,
+                                      benefits_in_kind: 100.0,
+                                      tax: -200.0,
+                                      employment_income_deductions: -350.0)
+              end
+            end
+
+            context "weekly" do
+              let(:frequency) { "weekly" }
+
+              it "returns weekly figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 3900.0,
+                                      benefits_in_kind: 433.33,
+                                      national_insurance: -650.0,
+                                      tax: -866.67,
+                                      employment_income_deductions: -1516.67)
+              end
+            end
+
+            context "2 weekly" do
+              let(:frequency) { "two_weekly" }
+
+              it "returns 2 weekly figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 1950.0,
+                                      national_insurance: -325.00,
+                                      benefits_in_kind: 216.67,
+                                      tax: -433.33,
+                                      employment_income_deductions: -758.33)
+              end
+            end
+
+            context "4 weekly" do
+              let(:frequency) { "four_weekly" }
+
+              it "returns 4 weekly figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 975.0,
+                                      benefits_in_kind: 108.33,
+                                      national_insurance: -162.50,
+                                      tax: -216.67,
+                                      employment_income_deductions: -379.17)
+              end
+            end
+
+            context "3 monthly" do
+              let(:frequency) { "three_monthly" }
+
+              it "returns 3 monthly figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 300.0,
+                                      national_insurance: -50.0,
+                                      benefits_in_kind: 33.33,
+                                      tax: -66.67,
+                                      employment_income_deductions: -116.67)
+              end
+            end
+          end
+
+          context "with 2 self employments" do
+            let(:self_employments) do
+              [
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: 220, benefits_in_kind: 20, national_insurance: 20, gross: 520, frequency: "monthly")),
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: 420, benefits_in_kind: 20, national_insurance: 40, gross: 720, frequency: "monthly", is_employment: true)),
+              ]
+            end
+
+            it "returns employment figures" do
+              expect(employment_income_subtotals)
+                .to have_attributes(fixed_employment_allowance: -45.0,
+                                    gross_employment_income: 1240.0,
+                                    benefits_in_kind: 40.0,
+                                    national_insurance: -60.0,
+                                    tax: -640.0,
+                                    employment_income_deductions: -700.0)
+            end
+          end
+        end
+
         describe "capital thresholds for controlled" do
+          let(:self_employments) { [] }
           let(:applicant) { build :applicant, :under_pensionable_age }
 
           before do
@@ -78,6 +181,7 @@ module Workflows
 
       context "with certificated work" do
         let(:level_of_help) { "certificated" }
+        let(:self_employments) { [] }
 
         context "with capital" do
           before do
