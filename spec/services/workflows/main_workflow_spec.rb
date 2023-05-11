@@ -61,7 +61,7 @@ module Workflows
 
       it "calls NonPassportedWorkflow" do
         allow(Assessors::MainAssessor).to receive(:call)
-        allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+        allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
         workflow_call
       end
 
@@ -92,7 +92,7 @@ module Workflows
           expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
 
           allow(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
 
@@ -103,7 +103,7 @@ module Workflows
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
 

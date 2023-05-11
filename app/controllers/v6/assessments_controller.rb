@@ -7,7 +7,12 @@ module V6
                                                     params: full_assessment_params)
 
       if create.success?
-        calculation_output = Workflows::MainWorkflow.call(create.assessment)
+        self_employment = full_assessment_params[:employment_or_self_employment]
+        calculation_output = if self_employment.present?
+                               Workflows::MainWorkflow.call(create.assessment, SelfEmployment.new(self_employment))
+                             else
+                               Workflows::MainWorkflow.call(create.assessment)
+                             end
         render json: Decorators::V5::AssessmentDecorator.new(create.assessment, calculation_output).as_json
       else
         render_unprocessable(create.errors)

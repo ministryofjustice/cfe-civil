@@ -4,7 +4,7 @@ module Calculators
   RSpec.describe HousingCostsCalculator do
     subject(:calculator) do
       described_class.new(disposable_income_summary: assessment.disposable_income_summary,
-                          person: OpenStruct.new(single?: true, dependants: assessment.dependants),
+                          person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                           submission_date: assessment.submission_date,
                           gross_income_summary: assessment.gross_income_summary)
     end
@@ -330,7 +330,7 @@ module Calculators
       let(:instance) do
         described_class.new(disposable_income_summary: assessment.disposable_income_summary,
                             gross_income_summary: assessment.gross_income_summary,
-                            person: OpenStruct.new(single?: true, dependants: assessment.dependants),
+                            person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                             submission_date: assessment.submission_date)
       end
       let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
