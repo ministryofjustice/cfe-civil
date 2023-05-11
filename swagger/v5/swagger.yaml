@@ -1295,11 +1295,6 @@ paths:
                     benefits_in_kind: 16.6
                     tax: -104.1
                     national_insurance: -18.66
-                self_employments:
-                - self_employment_type: sole_trader
-                  net_self_employment_income:
-                    frequency: monthly
-                    amount: 2000
               properties:
                 employment_income:
                   "$ref": "#/components/schemas/Employments"
