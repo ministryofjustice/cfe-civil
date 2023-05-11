@@ -1,11 +1,21 @@
 class EmploymentIncomeSubtotals
-  def initialize(values = Hash.new(0.0))
-    @gross_employment_income = values[:gross_employment_income]
-    @benefits_in_kind = values[:benefits_in_kind]
-    @employment_income_deductions = values[:employment_income_deductions]
-    @fixed_employment_allowance = values[:fixed_employment_allowance]
-    @tax = values[:tax]
-    @national_insurance = values[:national_insurance]
+  class << self
+    def blank
+      new gross_employment_income: 0,
+          benefits_in_kind: 0, employment_income_deductions: 0,
+          fixed_employment_allowance: 0, tax: 0, national_insurance: 0
+    end
+  end
+
+  def initialize(gross_employment_income:,
+                 benefits_in_kind:, employment_income_deductions:,
+                 fixed_employment_allowance:, tax:, national_insurance:)
+    @gross_employment_income = gross_employment_income
+    @benefits_in_kind = benefits_in_kind
+    @employment_income_deductions = employment_income_deductions
+    @fixed_employment_allowance = fixed_employment_allowance
+    @tax = tax
+    @national_insurance = national_insurance
   end
 
   attr_reader :gross_employment_income,

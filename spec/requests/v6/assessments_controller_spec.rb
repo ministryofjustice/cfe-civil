@@ -786,7 +786,6 @@ module V6
                 employed: false,
                 has_partner_opponent: false,
                 receives_qualifying_benefit: false,
-                self_employed: false,
               },
             )
           end

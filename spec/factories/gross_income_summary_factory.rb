@@ -33,7 +33,7 @@ FactoryBot.define do
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "maintenance_in", monthly_income: 200
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "property_or_lodger", monthly_income: 300
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "pension", monthly_income: 400
-        create :irregular_income_payment, gross_income_summary: gross_income_summary
+        create :student_loan_payment, amount: 600, gross_income_summary: gross_income_summary
 
         3.times do
           create :cash_transaction, cash_transaction_category: benefits_in_cash

@@ -5,18 +5,23 @@ module Decorators
     RSpec.describe GrossIncomeDecorator do
       let(:assessment) { create :assessment }
 
-      let(:summary) { create :gross_income_summary, assessment: }
+      let(:summary) do
+        create :gross_income_summary,
+               assessment:,
+               unspecified_source_payments: build_list(:unspecified_source_payment, 1, amount: 423.35),
+               student_loan_payments: build_list(:student_loan_payment, 1, frequency: "monthly", amount: 250)
+      end
 
       let(:subtotals) do
         PersonGrossIncomeSubtotals.new(
-          monthly_student_loan: 250,
-          monthly_unspecified_source: 423.35,
+          gross_income_summary: summary,
+          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
           regular_income_categories: [
-            GrossIncomeCategorySubtotals.new(category: :benefits, bank: 1322.6, cash: 0, regular: 0, all_sources: 1322.6),
-            GrossIncomeCategorySubtotals.new(category: :maintenance_in, bank: 200, cash: 150, regular: 0, all_sources: 350),
-            GrossIncomeCategorySubtotals.new(category: :friends_or_family, bank: 0, cash: 50, regular: 0, all_sources: 50),
-            GrossIncomeCategorySubtotals.new(category: :property_or_lodger, bank: 250, cash: 0, regular: 0, all_sources: 250),
-            GrossIncomeCategorySubtotals.new(category: :pension, bank: 0, cash: 0, regular: 0, all_sources: 0),
+            GrossIncomeCategorySubtotals.new(category: :benefits, bank: 1322.6, cash: 0, regular: 0),
+            GrossIncomeCategorySubtotals.new(category: :maintenance_in, bank: 200, cash: 150, regular: 0),
+            GrossIncomeCategorySubtotals.new(category: :friends_or_family, bank: 0, cash: 50, regular: 0),
+            GrossIncomeCategorySubtotals.new(category: :property_or_lodger, bank: 250, cash: 0, regular: 0),
+            GrossIncomeCategorySubtotals.new(category: :pension, bank: 0, cash: 0, regular: 0),
           ],
         )
       end

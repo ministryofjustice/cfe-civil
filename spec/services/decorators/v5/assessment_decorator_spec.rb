@@ -15,13 +15,15 @@ module Decorators
         CalculationOutput.new(
           gross_income_subtotals: GrossIncomeSubtotals.new(
             applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-              total_gross_income: 0,
+              employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+              gross_income_summary: assessment.gross_income_summary,
               regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                 GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
               end,
             ),
             partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-              total_gross_income: 0,
+              employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+              gross_income_summary: assessment.gross_income_summary,
               regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                 GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
               end,

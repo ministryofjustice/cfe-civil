@@ -13,7 +13,11 @@ module Decorators
       end
       let(:ptcs) { ptc_results.keys }
       let(:assessment) { create :assessment, proceedings: [%w[DA002 A], %w[DA003 A], %w[SE013 A]] }
-      let(:summary) { create :gross_income_summary, assessment: }
+      let(:summary) do
+        create :gross_income_summary,
+               unspecified_source_payments: build_list(:unspecified_source_payment, 1, amount: 16_615.40),
+               assessment:
+      end
       let(:expected_hash) do
         {
           total_gross_income: 16_615.40,
@@ -45,7 +49,10 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(summary, PersonGrossIncomeSubtotals.new(total_gross_income: 16_615.40), 0).as_json
+        described_class.new(summary,
+                            PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
+                                                           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                                                           regular_income_categories: []), 0).as_json
       end
 
       before do

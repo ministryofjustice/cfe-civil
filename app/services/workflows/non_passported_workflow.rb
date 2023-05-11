@@ -11,8 +11,6 @@ module Workflows
     end
 
     def call
-      return SelfEmployedWorkflow.call(assessment) if assessment.applicant.self_employed?
-
       gross_income_subtotals = collate_and_assess_gross_income
       return CalculationOutput.new(gross_income_subtotals:) if assessment.gross_income_summary.ineligible?
 
