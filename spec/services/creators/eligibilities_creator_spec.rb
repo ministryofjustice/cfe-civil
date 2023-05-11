@@ -2,20 +2,33 @@ require "rails_helper"
 
 module Creators
   RSpec.describe EligibilitiesCreator do
-    let(:assessment) { create :assessment }
+    before do
+      described_class.call(assessment)
+    end
 
-    describe ".call" do
-      it "calls an eligibility creator for each type of summary record" do
-        expect(GrossIncomeEligibilityCreator).to receive(:call).with(
-          assessment.gross_income_summary,
-          assessment.dependants,
-          assessment.proceeding_types,
-          assessment.submission_date,
-        )
-        expect(DisposableIncomeEligibilityCreator).to receive(:call).with(assessment)
-        expect(CapitalEligibilityCreator).to receive(:call).with(assessment)
+    describe "#call" do
+      context "with no children" do
+        let(:assessment) { create :assessment, :with_everything }
 
-        described_class.call(assessment)
+        it "creates an upper threshold" do
+          expect(assessment.gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2657.0])
+        end
+      end
+
+      context "with 5 children" do
+        let(:assessment) do
+          create(:assessment, :with_everything,
+                 dependants: build_list(:applicant_dependant, 2, :child_relative)).tap do |assessment|
+            3.times do
+              assessment.partner_dependants.create!(attributes_for(:dependant, :child_relative,
+                                                                   submission_date: assessment.submission_date))
+            end
+          end
+        end
+
+        it "creates an uplifted upper threshold" do
+          expect(assessment.gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2879.0])
+        end
       end
     end
   end
