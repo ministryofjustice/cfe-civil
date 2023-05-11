@@ -7,9 +7,10 @@ module V6
       let(:assessment) { parsed_response.fetch(:assessment).except(:id) }
       let(:employed) { false }
       let(:current_date) { Date.new(2022, 6, 6) }
+      let(:submission_date_params) { { submission_date: current_date.to_s } }
       let(:default_params) do
         {
-          assessment: { submission_date: current_date.to_s },
+          assessment: submission_date_params,
           applicant: { date_of_birth: "2001-02-02",
                        has_partner_opponent: false,
                        receives_qualifying_benefit: false,
@@ -203,7 +204,7 @@ module V6
         end
       end
 
-      context "with dependents" do
+      context "with dependants" do
         let(:params) { { dependants: dependant_params } }
 
         it "returns http success" do
@@ -473,6 +474,56 @@ module V6
         end
       end
 
+      context "with self employed controlled work" do
+        let(:params) do
+          {
+            assessment: submission_date_params.merge(level_of_help: "controlled"),
+            employment_or_self_employment: [{ client_reference: "12345",
+                                              income: {
+                                                receiving_only_statutory_sick_or_maternity_pay: false,
+                                                is_employment: false,
+                                                gross: 934,
+                                                benefits_in_kind: 26,
+                                                tax: 527,
+                                                national_insurance: 34,
+                                                frequency: "monthly",
+                                              } }],
+          }
+        end
+        let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
+        let(:self_employment_incomes) { parsed_response.dig(:assessment, :gross_income, :self_employments) }
+
+        it "is successful" do
+          expect(response).to have_http_status(:success)
+        end
+
+        it "has employment income without fixed employment deduction" do
+          expect(employment_income)
+            .to eq(
+              {
+                gross_income: 960.0,
+                benefits_in_kind: 26.0,
+                tax: -527.0,
+                national_insurance: -34.0,
+                fixed_employment_deduction: 0.0,
+                net_employment_income: 399.0,
+              },
+            )
+        end
+
+        it "outputs the monthly equivalents in the response" do
+          expect(self_employment_incomes).to eq([{
+            client_reference: "12345",
+            monthly_income: {
+              gross: 934.0,
+              benefits_in_kind: 26.0,
+              tax: -527.0,
+              national_insurance: -34.0,
+            },
+          }])
+        end
+      end
+
       context "with employment income without payments" do
         let(:params) { { employment_income: employment_income_without_payments_params } }
 
@@ -480,7 +531,7 @@ module V6
           expect(response).to have_http_status(:success)
         end
 
-        describe "disposable_income from summary" do
+        describe "employment_income" do
           let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
 
           it "has employment income with 0 deductions" do
@@ -821,7 +872,7 @@ module V6
             let(:gross_income) { assessment.fetch(:gross_income) }
 
             it "has correct keys" do
-              expect(gross_income.keys).to eq(%i[employment_income irregular_income state_benefits other_income])
+              expect(gross_income.keys).to eq(%i[employment_income irregular_income state_benefits other_income self_employments])
             end
 
             it "has irregular income" do

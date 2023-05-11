@@ -2,7 +2,7 @@ Feature:
     "1. Fully eligible, 2. No contribution"
 
     Scenario: Test that the correct output is produced for the following set of data.
-        Given I am using version 5 of the API
+        Given I am using version 6 of the API
         And I create an assessment with the following details:
             | client_reference_id | NP-FULL-1  |
             | submission_date     | 2021-05-10 |

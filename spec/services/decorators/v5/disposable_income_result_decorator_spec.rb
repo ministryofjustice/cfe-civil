@@ -93,7 +93,7 @@ module Decorators
         EmploymentIncomeSubtotals.new(
           benefits_in_kind: 0.0,
           fixed_employment_allowance: -45.0,
-          gross_employment_income: 0.0,
+          monthly_gross_income: 0.0,
           national_insurance: 0.0,
           tax: 0.0,
         )

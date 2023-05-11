@@ -96,6 +96,5 @@ module CFEConstants
   VALID_CLIENT_INVOLVEMENT_TYPES = %w[A D W Z I].freeze
 
   # Number of days before assessment is considered stale and eligible for deletion
-  #
   STALE_ASSESSMENT_THRESHOLD_DAYS = 14
 end

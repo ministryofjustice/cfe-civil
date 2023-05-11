@@ -24,7 +24,7 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment)
+        described_class.call(assessment, self_employed)
         Assessors::MainAssessor.call(assessment)
         assessment.assessment_result
       end
@@ -38,7 +38,138 @@ module Workflows
       context "with controlled work" do
         let(:level_of_help) { "controlled" }
 
+        describe "self employed" do
+          let(:applicant) { build :applicant }
+          let(:calculation_output) do
+            assessment.reload
+            described_class.call(assessment, self_employed).tap do |_output|
+              Assessors::MainAssessor.call(assessment)
+            end
+          end
+          let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
+
+          describe "frequencies" do
+            let(:self_employed) { [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, national_insurance: 100, gross: 1000, frequency:))] }
+
+            context "monthly" do
+              let(:frequency) { "monthly" }
+
+              it "returns employment figures" do
+                expect(
+                  {
+                    gross_employment_income: employment_income_subtotals.gross_employment_income,
+                    national_insurance: employment_income_subtotals.national_insurance,
+                    tax: employment_income_subtotals.tax,
+                    employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                  }.transform_values(&:to_f),
+                ).to eq(gross_employment_income: 1000.0,
+                        national_insurance: -100.0,
+                        tax: -200.0,
+                        employment_income_deductions: -300.0)
+              end
+            end
+
+            context "weekly" do
+              let(:frequency) { "weekly" }
+
+              it "returns weekly figures" do
+                expect(
+                  {
+                    gross_employment_income: employment_income_subtotals.gross_employment_income,
+                    national_insurance: employment_income_subtotals.national_insurance,
+                    tax: employment_income_subtotals.tax,
+                    employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                  }.transform_values(&:to_f),
+                ).to eq(gross_employment_income: 4333.33,
+                        national_insurance: -433.33,
+                        tax: -866.67,
+                        employment_income_deductions: -1300.00)
+              end
+            end
+
+            context "2 weekly" do
+              let(:frequency) { "two_weekly" }
+
+              it "returns 2 weekly figures" do
+                expect(
+                  {
+                    gross_employment_income: employment_income_subtotals.gross_employment_income,
+                    national_insurance: employment_income_subtotals.national_insurance,
+                    tax: employment_income_subtotals.tax,
+                    employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                  }.transform_values(&:to_f),
+                ).to eq(gross_employment_income: 2166.67,
+                        national_insurance: -216.67,
+                        tax: -433.33,
+                        employment_income_deductions: -650.00)
+              end
+            end
+
+            context "4 weekly" do
+              let(:frequency) { "four_weekly" }
+
+              it "returns 4 weekly figures" do
+                expect(
+                  {
+                    gross_employment_income: employment_income_subtotals.gross_employment_income,
+                    national_insurance: employment_income_subtotals.national_insurance,
+                    tax: employment_income_subtotals.tax,
+                    employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                  }.transform_values(&:to_f),
+                ).to eq(gross_employment_income: 1083.33,
+                        national_insurance: -108.33,
+                        tax: -216.67,
+                        employment_income_deductions: -325.00)
+              end
+            end
+
+            context "3 monthly" do
+              let(:frequency) { "three_monthly" }
+
+              it "returns 3 monthly figures" do
+                expect(
+                  {
+                    gross_employment_income: employment_income_subtotals.gross_employment_income,
+                    national_insurance: employment_income_subtotals.national_insurance,
+                    tax: employment_income_subtotals.tax,
+                    employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                  }.transform_values(&:to_f),
+                ).to eq(gross_employment_income: 333.33,
+                        national_insurance: -33.33,
+                        tax: -66.67,
+                        employment_income_deductions: -100.00)
+              end
+            end
+          end
+
+          context "with 2 self employments" do
+            let(:self_employed) do
+              [
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: 220, national_insurance: 20, gross: 520, frequency: "monthly")),
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: 420, national_insurance: 40, gross: 720, frequency: "monthly", is_employment: true)),
+              ]
+            end
+
+            it "returns employment figures" do
+              expect(
+                {
+                  fixed_employment_allowance: employment_income_subtotals.fixed_employment_allowance,
+                  gross_employment_income: employment_income_subtotals.gross_employment_income,
+                  national_insurance: employment_income_subtotals.national_insurance,
+                  tax: employment_income_subtotals.tax,
+                  employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                }.transform_values(&:to_f),
+              ).to eq(fixed_employment_allowance: -45.0,
+                      gross_employment_income: 1240.0,
+                      national_insurance: -60.0,
+                      tax: -640.0,
+                      employment_income_deductions: -700.0)
+            end
+          end
+        end
+
         describe "capital thresholds for controlled" do
+          let(:self_employed) { [] }
           let(:applicant) { build :applicant, :under_pensionable_age }
 
           before do
@@ -78,6 +209,7 @@ module Workflows
 
       context "with certificated work" do
         let(:level_of_help) { "certificated" }
+        let(:self_employed) { [] }
 
         context "with capital" do
           before do

@@ -26,7 +26,7 @@ module Collators
           national_insurance:,
           fixed_employment_allowance:,
           # This 50 is to offset 600/year in student loan in the factory, so that we control total_gross_income
-          gross_employment_income: total_gross_income - 50,
+          monthly_gross_income: total_gross_income - 50,
         ),
       )
     end

@@ -101,7 +101,7 @@ RSpec.describe AssessmentsController, type: :request do
     context "calling the correct workflows assessors and decorators" do
       before do
         allow(Assessment).to receive(:find).with(assessment.id.to_s).and_return(assessment)
-        allow(Workflows::MainWorkflow).to receive(:call).with(assessment).and_return(calculation_output)
+        allow(Workflows::MainWorkflow).to receive(:call).and_return(calculation_output)
       end
 
       let(:assessment) { create :assessment, :passported, :with_everything }

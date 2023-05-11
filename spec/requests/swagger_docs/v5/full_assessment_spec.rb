@@ -69,6 +69,11 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       description: "One or more vehicles' details",
                       items: { "$ref" => "#/components/schemas/Vehicle" },
                     },
+                    employment_or_self_employment: {
+                      type: :array,
+                      description: "One or more self employment details",
+                      items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                    },
                     partner: {
                       type: :object,
                       required: %i[partner],
@@ -114,6 +119,11 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
+                        employment_or_self_employment: {
+                          type: :array,
+                          description: "Partner self employment details",
+                          items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                        },
                         regular_transactions: {
                           type: :array,
                           description: "Zero or more regular transactions",
@@ -121,7 +131,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         state_benefits: {
                           type: :array,
-                          description: "One or more state benefits receved by the applicant's partner and categorized by name",
+                          description: "One or more state benefits received by the applicant's partner and categorized by name",
                           items: { "$ref" => "#/components/schemas/StateBenefit" },
                         },
                         additional_properties: {
@@ -322,7 +332,85 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        description: "The level of representation required by the client",
                      },
                      applicant: { type: :object },
-                     gross_income: { type: :object },
+                     gross_income: {
+                       type: :object,
+                       additionalProperties: false,
+                       required: %i[employment_income irregular_income state_benefits other_income self_employments],
+                       properties: {
+                         employment_income: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[name payments],
+                             properties: {
+                               name: { type: :string },
+                               payments: { type: :array },
+                             },
+                           },
+                         },
+                         irregular_income: {
+                           type: :object,
+                           additionalProperties: false,
+                           required: %i[monthly_equivalents],
+                           properties: {
+                             monthly_equivalents: {
+                               type: :object,
+                               additionalProperties: false,
+                               required: %i[student_loan unspecified_source],
+                               properties: {
+                                 student_loan: { type: :number },
+                                 unspecified_source: { type: :number },
+                               },
+                             },
+                           },
+                         },
+                         state_benefits: { type: :object },
+                         other_income: { type: :object },
+                         self_employments: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[monthly_income],
+                             properties: {
+                               client_reference: {
+                                 type: :string,
+                                 description: "client reference from request",
+                               },
+                               monthly_income: {
+                                 type: :object,
+                                 description: "Monthly versions of input data",
+                                 additionalProperties: false,
+                                 required: %i[gross tax national_insurance benefits_in_kind],
+                                 properties: {
+                                   gross: {
+                                     type: :number,
+                                     format: :decimal,
+                                     minimum: 0,
+                                   },
+                                   tax: {
+                                     type: :number,
+                                     maximum: 0,
+                                     format: :decimal,
+                                   },
+                                   benefits_in_kind: {
+                                     type: :number,
+                                     minimum: 0,
+                                     format: :decimal,
+                                   },
+                                   national_insurance: {
+                                     maximum: 0,
+                                     type: :number,
+                                     format: :decimal,
+                                   },
+                                 },
+                               },
+                             },
+                           },
+                         },
+                       },
+                     },
                      disposable_income: { type: :object },
                      capital: {
                        type: :object,
@@ -384,22 +472,34 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
           {
             assessment: { submission_date: "2022-06-06" },
             applicant: { date_of_birth: "2001-02-02", has_partner_opponent: false, receives_qualifying_benefit: false, employed: false },
-            proceeding_types: [{ ccms_code: "DA001", client_involvement_type: "A" }],
+            proceeding_types: [{ ccms_code: "SE013", client_involvement_type: "A" }],
             outgoings: [
               { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
               { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },
             ],
+            employment_or_self_employment: [
+              {
+                income: {
+                  receiving_only_statutory_sick_or_maternity_pay: false,
+                  frequency: "monthly",
+                  is_employment: true,
+                  gross: 1000.0,
+                  tax: 700.0,
+                  national_insurance: 50.0,
+                },
+              },
+            ],
             cash_transactions: {
               outgoings: [
                 { category: "child_care",
-                  payments: [{ amount: 10.00, client_id: "blah", date: "2022-03-01" },
-                             { amount: 10.00, client_id: "blah", date: "2022-04-01" },
-                             { amount: 10.00, client_id: "blah", date: "2022-05-01" }] },
+                  payments: [{ amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" },
+                             { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01" },
+                             { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" }] },
                 { category: "rent_or_mortgage",
                   payments: [
-                    { amount: 10.00, client_id: "blah", date: "2022-03-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: "blah", date: "2022-04-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: "blah", date: "2022-05-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01", housing_cost_type: "rent" },
                   ] },
               ],
               income: [],

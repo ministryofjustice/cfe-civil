@@ -10,7 +10,7 @@ module Calculators
     end
 
     def call
-      EmploymentIncomeSubtotals.new(gross_employment_income:,
+      EmploymentIncomeSubtotals.new(monthly_gross_income: monthly_incomes,
                                     benefits_in_kind: monthly_benefits_in_kind,
                                     fixed_employment_allowance: allowance,
                                     tax: taxes,
@@ -18,10 +18,6 @@ module Calculators
     end
 
   private
-
-    def gross_employment_income
-      monthly_incomes + monthly_benefits_in_kind
-    end
 
     def monthly_incomes
       @employment&.monthly_gross_income || 0.0
