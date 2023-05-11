@@ -697,6 +697,41 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
+          SelfEmployment: {
+            type: :object,
+            required: %i[receiving_only_statutory_sick_or_maternity_pay income],
+            additionalProperties: false,
+            description: "This should be filled out when the client or partner is self employed",
+            properties: {
+              receiving_only_statutory_sick_or_maternity_pay: {
+                type: :boolean,
+              },
+              income: {
+                type: :object,
+                required: %i[frequency gross tax national_insurance],
+                additionalProperties: false,
+                properties: {
+                  frequency: {
+                    type: :string,
+                    enum: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES,
+                    example: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES.fourth,
+                  },
+                  gross: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  tax: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  national_insurance: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                },
+              },
+            },
+          },
           StateBenefit: {
             type: :object,
             required: %i[name payments],
