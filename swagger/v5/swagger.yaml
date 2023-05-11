@@ -1594,8 +1594,7 @@ paths:
                   "$ref": "#/components/schemas/OutgoingsList"
                 properties:
                   type: object
-                  required:
-                  - main_home
+                  required: []
                   description: A main home and additional properties
                   properties:
                     main_home:
@@ -2106,8 +2105,6 @@ paths:
               properties:
                 properties:
                   type: object
-                  required:
-                  - main_home
                   description: A main home and additional properties
                   properties:
                     main_home:

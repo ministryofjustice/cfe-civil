@@ -68,16 +68,16 @@ RSpec.describe PropertiesController, type: :request do
     context "with missing main_home attribute" do
       let(:request_payload) { { properties: {} } }
 
-      it "returns http status 422" do
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "returns http status code 200" do
+        expect(response).to have_http_status(:success)
       end
 
-      it "parsed response returns success false" do
-        expect(parsed_response[:success]).to eq false
+      it "parsed response returns success true" do
+        expect(parsed_response[:success]).to eq true
       end
 
-      it "returns expected error response" do
-        expect(parsed_response[:errors]).to match [/The property '#\/properties' did not contain a required property of 'main_home'/]
+      it "parsed response returns no errors" do
+        expect(parsed_response[:errors]).to be_empty
       end
     end
 

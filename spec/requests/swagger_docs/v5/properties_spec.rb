@@ -24,7 +24,6 @@ RSpec.describe "properties", type: :request, swagger_doc: "v5/swagger.yaml" do
                   properties: {
                     properties: {
                       type: :object,
-                      required: %i[main_home],
                       description: "A main home and additional properties",
                       properties: {
                         main_home: { "$ref" => "#/components/schemas/Property" },

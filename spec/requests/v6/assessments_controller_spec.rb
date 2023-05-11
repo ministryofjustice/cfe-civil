@@ -995,58 +995,82 @@ module V6
             describe "has properties" do
               let(:properties) { capital_items.fetch(:properties) }
 
-              it "has a main home" do
-                expect(properties.fetch(:main_home))
-                  .to eq({
-                    value: 500_000.0,
-                    outstanding_mortgage: 200.0,
-                    percentage_owned: 15.0,
-                    main_home: true,
-                    shared_with_housing_assoc: true,
-                    transaction_allowance: 15_000.0,
-                    allowable_outstanding_mortgage: 200.0,
-                    net_value: 484_800.0,
-                    net_equity: 59_800.0,
-                    main_home_equity_disregard: 59_800.0,
-                    assessed_equity: 0.0,
-                    smod_allowance: 0.0,
-                  })
+              context "without main home" do
+                let(:params) { { properties: {} } }
+
+                it "has a main home with 0 values" do
+                  expect(properties.fetch(:main_home))
+                    .to eq({
+                      value: 0.0,
+                      outstanding_mortgage: 0.0,
+                      percentage_owned: 0,
+                      main_home: false,
+                      shared_with_housing_assoc: false,
+                      transaction_allowance: 0.0,
+                      allowable_outstanding_mortgage: 0.0,
+                      net_value: 0.0,
+                      net_equity: 0.0,
+                      smod_allowance: 0,
+                      main_home_equity_disregard: 0.0,
+                      assessed_equity: 0.0,
+                    })
+                end
               end
 
-              it "has additional properties" do
-                expect(properties.fetch(:additional_properties))
-                  .to match_array(
-                    [
-                      {
-                        value: 1000.0,
-                        outstanding_mortgage: 0.0,
-                        percentage_owned: 99.0,
-                        main_home: false,
-                        shared_with_housing_assoc: false,
-                        transaction_allowance: 30.0,
-                        allowable_outstanding_mortgage: 0.0,
-                        net_value: 970.0,
-                        net_equity: 960.3,
-                        main_home_equity_disregard: 0.0,
-                        assessed_equity: 960.3,
-                        smod_allowance: 0.0,
-                      },
-                      {
-                        value: 10_000.0,
-                        outstanding_mortgage: 40.0,
-                        percentage_owned: 80.0,
-                        main_home: false,
-                        shared_with_housing_assoc: true,
-                        transaction_allowance: 300.0,
-                        allowable_outstanding_mortgage: 40.0,
-                        net_value: 9660.0,
-                        net_equity: 7660.0,
-                        main_home_equity_disregard: 0.0,
-                        assessed_equity: 7660.0,
-                        smod_allowance: 0.0,
-                      },
-                    ],
-                  )
+              context "with main home" do
+                it "has a main home" do
+                  expect(properties.fetch(:main_home))
+                    .to eq({
+                      value: 500_000.0,
+                      outstanding_mortgage: 200.0,
+                      percentage_owned: 15.0,
+                      main_home: true,
+                      shared_with_housing_assoc: true,
+                      transaction_allowance: 15_000.0,
+                      allowable_outstanding_mortgage: 200.0,
+                      net_value: 484_800.0,
+                      net_equity: 59_800.0,
+                      main_home_equity_disregard: 59_800.0,
+                      assessed_equity: 0.0,
+                      smod_allowance: 0.0,
+                    })
+                end
+
+                it "has additional properties" do
+                  expect(properties.fetch(:additional_properties))
+                    .to match_array(
+                      [
+                        {
+                          value: 1000.0,
+                          outstanding_mortgage: 0.0,
+                          percentage_owned: 99.0,
+                          main_home: false,
+                          shared_with_housing_assoc: false,
+                          transaction_allowance: 30.0,
+                          allowable_outstanding_mortgage: 0.0,
+                          net_value: 970.0,
+                          net_equity: 960.3,
+                          main_home_equity_disregard: 0.0,
+                          assessed_equity: 960.3,
+                          smod_allowance: 0.0,
+                        },
+                        {
+                          value: 10_000.0,
+                          outstanding_mortgage: 40.0,
+                          percentage_owned: 80.0,
+                          main_home: false,
+                          shared_with_housing_assoc: true,
+                          transaction_allowance: 300.0,
+                          allowable_outstanding_mortgage: 40.0,
+                          net_value: 9660.0,
+                          net_equity: 7660.0,
+                          main_home_equity_disregard: 0.0,
+                          assessed_equity: 7660.0,
+                          smod_allowance: 0.0,
+                        },
+                      ],
+                    )
+                end
               end
             end
           end

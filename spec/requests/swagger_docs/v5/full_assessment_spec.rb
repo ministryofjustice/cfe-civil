@@ -43,7 +43,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
                     properties: {
                       type: :object,
-                      required: %i[main_home],
+                      required: %i[],
                       description: "A main home and additional properties",
                       properties: {
                         main_home: { "$ref" => "#/components/schemas/Property" },
