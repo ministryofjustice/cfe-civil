@@ -26,6 +26,16 @@
       ]
     }
   ],
+  "self_employments": [
+    {
+      "self_employment_type": "sole_trader",
+      "income": {
+        "frequency": "monthly",
+        "gross": 1000,
+        "tax": 400,
+        "national_insurance": 120
+      }
+    }],
   "regular_transactions": [
     {
       "category": "benefits",

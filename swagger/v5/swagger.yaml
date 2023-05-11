@@ -819,6 +819,43 @@ components:
           example: three_monthly
         amount:
           "$ref": "#/components/schemas/currency"
+    SelfEmployment:
+      type: object
+      required:
+      - receiving_only_statutory_sick_or_maternity_pay
+      - income
+      additionalProperties: false
+      description: This should be filled out when the client or partner is self employed
+      properties:
+        receiving_only_statutory_sick_or_maternity_pay:
+          type: boolean
+        income:
+          type: object
+          required:
+          - frequency
+          - gross
+          - tax
+          - national_insurance
+          additionalProperties: false
+          properties:
+            frequency:
+              type: string
+              enum:
+              - weekly
+              - two_weekly
+              - four_weekly
+              - monthly
+              - annually
+              example: monthly
+            gross:
+              type: number
+              format: decimal
+            tax:
+              type: number
+              format: decimal
+            national_insurance:
+              type: number
+              format: decimal
     StateBenefit:
       type: object
       required:
@@ -1500,6 +1537,68 @@ paths:
                         type: object
                       gross_income:
                         type: object
+                        additionalProperties: false
+                        required:
+                        - employment_income
+                        - irregular_income
+                        - state_benefits
+                        - other_income
+                        properties:
+                          employment_income:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - payments
+                              properties:
+                                name:
+                                  type: string
+                                payments:
+                                  type: array
+                          irregular_income:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - monthly_equivalents
+                            properties:
+                              monthly_equivalents:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - student_loan
+                                - unspecified_source
+                                properties:
+                                  student_loan:
+                                    type: number
+                                  unspecified_source:
+                                    type: number
+                          state_benefits:
+                            type: object
+                          other_income:
+                            type: object
+                          self_employments:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - self_employment_type
+                              - income
+                              properties:
+                                self_employment_type:
+                                  "$ref": "#/components/schemas/SelfEmploymentType"
+                                income:
+                                  gross:
+                                    type: number
+                                    format: decimal
+                                  tax:
+                                    type: number
+                                    format: decimal
+                                  national_insurance:
+                                    type: number
+                                    format: decimal
                       disposable_income:
                         type: object
                       capital:
@@ -1537,6 +1636,27 @@ paths:
                                     type: array
                                     items:
                                       "$ref": "#/components/schemas/PropertyResult"
+                            self_employments:
+                              type: array
+                              items:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - self_employment_type
+                                - income
+                                properties:
+                                  self_employment_type:
+                                    "$ref": "#/components/schemas/SelfEmploymentType"
+                                  income:
+                                    gross:
+                                      type: number
+                                      format: decimal
+                                    tax:
+                                      type: number
+                                      format: decimal
+                                    national_insurance:
+                                      type: number
+                                      format: decimal
                   version:
                     type: string
                     enum:
@@ -1621,6 +1741,11 @@ paths:
                   description: One or more vehicles' details
                   items:
                     "$ref": "#/components/schemas/Vehicle"
+                employment_or_self_employment:
+                  type: array
+                  description: One or more self employment details
+                  items:
+                    "$ref": "#/components/schemas/SelfEmployment"
                 partner:
                   type: object
                   required:
@@ -1644,6 +1769,13 @@ paths:
                         benefits_in_kind: 0
                         tax: 11
                         national_insurance: 3
+                    self_employments:
+                    - self_employment_type: sole_trader
+                      income:
+                        frequency: monthly
+                        gross: 1000
+                        tax: 400
+                        national_insurance: 120
                     regular_transactions:
                     - category: benefits
                       operation: credit
@@ -1717,6 +1849,11 @@ paths:
                             description: Client supplied id to identify the employment
                           payments:
                             "$ref": "#/components/schemas/EmploymentPaymentList"
+                    employment_or_self_employment:
+                      type: array
+                      description: Partner self employment details
+                      items:
+                        "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
                       type: array
                       description: Zero or more regular transactions
@@ -1724,7 +1861,7 @@ paths:
                         "$ref": "#/components/schemas/RegularTransaction"
                     state_benefits:
                       type: array
-                      description: One or more state benefits receved by the applicant's
+                      description: One or more state benefits received by the applicant's
                         partner and categorized by name
                       items:
                         "$ref": "#/components/schemas/StateBenefit"
@@ -1936,6 +2073,13 @@ paths:
                     benefits_in_kind: 0
                     tax: 11
                     national_insurance: 3
+                self_employments:
+                - self_employment_type: sole_trader
+                  income:
+                    frequency: monthly
+                    gross: 1000
+                    tax: 400
+                    national_insurance: 120
                 regular_transactions:
                 - category: benefits
                   operation: credit

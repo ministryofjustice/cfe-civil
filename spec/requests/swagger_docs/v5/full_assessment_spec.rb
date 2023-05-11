@@ -69,6 +69,11 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       description: "One or more vehicles' details",
                       items: { "$ref" => "#/components/schemas/Vehicle" },
                     },
+                    employment_or_self_employment: {
+                      type: :array,
+                      description: "One or more self employment details",
+                      items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                    },
                     partner: {
                       type: :object,
                       required: %i[partner],
@@ -114,6 +119,11 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
+                        employment_or_self_employment: {
+                          type: :array,
+                          description: "Partner self employment details",
+                          items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                        },
                         regular_transactions: {
                           type: :array,
                           description: "Zero or more regular transactions",
@@ -121,7 +131,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         state_benefits: {
                           type: :array,
-                          description: "One or more state benefits receved by the applicant's partner and categorized by name",
+                          description: "One or more state benefits received by the applicant's partner and categorized by name",
                           items: { "$ref" => "#/components/schemas/StateBenefit" },
                         },
                         additional_properties: {
@@ -322,7 +332,68 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        description: "The level of representation required by the client",
                      },
                      applicant: { type: :object },
-                     gross_income: { type: :object },
+                     gross_income: {
+                       type: :object,
+                       additionalProperties: false,
+                       required: %i[employment_income irregular_income state_benefits other_income],
+                       properties: {
+                         employment_income: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[name payments],
+                             properties: {
+                               name: { type: :string },
+                               payments: { type: :array },
+                             },
+                           },
+                         },
+                         irregular_income: {
+                           type: :object,
+                           additionalProperties: false,
+                           required: %i[monthly_equivalents],
+                           properties: {
+                             monthly_equivalents: {
+                               type: :object,
+                               additionalProperties: false,
+                               required: %i[student_loan unspecified_source],
+                               properties: {
+                                 student_loan: { type: :number },
+                                 unspecified_source: { type: :number },
+                               },
+                             },
+                           },
+                         },
+                         state_benefits: { type: :object },
+                         other_income: { type: :object },
+                         self_employments: {
+                           type: :array,
+                           items: {
+                             type: :object,
+                             additionalProperties: false,
+                             required: %i[self_employment_type income],
+                             properties: {
+                               self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
+                               income: {
+                                 gross: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                                 tax: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                                 national_insurance: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                               },
+                             },
+                           },
+                         },
+                       },
+                     },
                      disposable_income: { type: :object },
                      capital: {
                        type: :object,
@@ -356,6 +427,31 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                    type: :array,
                                    items: {
                                      "$ref" => "#/components/schemas/PropertyResult",
+                                   },
+                                 },
+                               },
+                             },
+                           },
+                           self_employments: {
+                             type: :array,
+                             items: {
+                               type: :object,
+                               additionalProperties: false,
+                               required: %i[self_employment_type income],
+                               properties: {
+                                 self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
+                                 income: {
+                                   gross: {
+                                     type: :number,
+                                     format: :decimal,
+                                   },
+                                   tax: {
+                                     type: :number,
+                                     format: :decimal,
+                                   },
+                                   national_insurance: {
+                                     type: :number,
+                                     format: :decimal,
                                    },
                                  },
                                },
