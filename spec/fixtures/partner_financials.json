@@ -26,6 +26,15 @@
       ]
     }
   ],
+  "self_employments": [
+    {
+      "self_employment_type": "sole_trader",
+      "net_self_employment_income": {
+        "frequency": "monthly",
+        "amount": 1000
+      }
+    }
+  ],
   "regular_transactions": [
     {
       "category": "benefits",

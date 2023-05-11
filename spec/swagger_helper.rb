@@ -697,6 +697,37 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
+          SelfEmploymentType: {
+            type: :string,
+            enum: CFEConstants::VALID_SELF_EMPLOYMENT_TYPES,
+          },
+          SelfEmployment: {
+            type: :object,
+            required: %i[self_employment_type net_self_employment_income],
+            additionalProperties: false,
+            properties: {
+              self_employment_type: {
+                type: :string,
+                enum: CFEConstants::VALID_SELF_EMPLOYMENT_TYPES,
+              },
+              net_self_employment_income: {
+                type: :object,
+                required: %i[frequency amount],
+                additionalProperties: false,
+                properties: {
+                  frequency: {
+                    type: :string,
+                    enum: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES,
+                    example: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES.fourth,
+                  },
+                  amount: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                },
+              },
+            },
+          },
           StateBenefit: {
             type: :object,
             required: %i[name payments],

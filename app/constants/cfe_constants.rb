@@ -95,7 +95,10 @@ module CFEConstants
   #
   VALID_CLIENT_INVOLVEMENT_TYPES = %w[A D W Z I].freeze
 
+  # Self employments types
+  VALID_SELF_EMPLOYMENT_TYPES = %w[sole_trader partnership].freeze
+  VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES = %w[weekly two_weekly four_weekly monthly annually].freeze
+
   # Number of days before assessment is considered stale and eligible for deletion
-  #
   STALE_ASSESSMENT_THRESHOLD_DAYS = 14
 end

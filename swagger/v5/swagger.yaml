@@ -819,6 +819,42 @@ components:
           example: three_monthly
         amount:
           "$ref": "#/components/schemas/currency"
+    SelfEmploymentType:
+      type: string
+      enum:
+      - sole_trader
+      - partnership
+    SelfEmployment:
+      type: object
+      required:
+      - self_employment_type
+      - net_self_employment_income
+      additionalProperties: false
+      properties:
+        self_employment_type:
+          type: string
+          enum:
+          - sole_trader
+          - partnership
+        net_self_employment_income:
+          type: object
+          required:
+          - frequency
+          - amount
+          additionalProperties: false
+          properties:
+            frequency:
+              type: string
+              enum:
+              - weekly
+              - two_weekly
+              - four_weekly
+              - monthly
+              - annually
+              example: monthly
+            amount:
+              type: number
+              format: decimal
     StateBenefit:
       type: object
       required:
@@ -1259,6 +1295,11 @@ paths:
                     benefits_in_kind: 16.6
                     tax: -104.1
                     national_insurance: -18.66
+                self_employments:
+                - self_employment_type: sole_trader
+                  net_self_employment_income:
+                    frequency: monthly
+                    amount: 2000
               properties:
                 employment_income:
                   "$ref": "#/components/schemas/Employments"
@@ -1500,6 +1541,63 @@ paths:
                         type: object
                       gross_income:
                         type: object
+                        additionalProperties: false
+                        required:
+                        - employment_income
+                        - irregular_income
+                        - state_benefits
+                        - other_income
+                        properties:
+                          employment_income:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - payments
+                              properties:
+                                name:
+                                  type: string
+                                payments:
+                                  type: array
+                          irregular_income:
+                            type: object
+                            additionalProperties: false
+                            required:
+                            - monthly_equivalents
+                            properties:
+                              monthly_equivalents:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - student_loan
+                                - unspecified_source
+                                properties:
+                                  student_loan:
+                                    type: number
+                                  unspecified_source:
+                                    type: number
+                          state_benefits:
+                            type: object
+                          other_income:
+                            type: object
+                          self_employments:
+                            type: array
+                            items:
+                              type: object
+                              additionalProperties: false
+                              required:
+                              - name
+                              - self_employment_type
+                              - monthly_equivalent
+                              properties:
+                                name:
+                                  type: string
+                                self_employment_type:
+                                  "$ref": "#/components/schemas/SelfEmploymentType"
+                                monthly_equivalent:
+                                  type: number
                       disposable_income:
                         type: object
                       capital:
@@ -1537,6 +1635,22 @@ paths:
                                     type: array
                                     items:
                                       "$ref": "#/components/schemas/PropertyResult"
+                            self_employments:
+                              type: array
+                              items:
+                                type: object
+                                additionalProperties: false
+                                required:
+                                - name
+                                - self_employment_type
+                                - monthly_equivalent
+                                properties:
+                                  name:
+                                    type: string
+                                  self_employment_type:
+                                    "$ref": "#/components/schemas/SelfEmploymentType"
+                                  monthly_equivalent:
+                                    type: number
                   version:
                     type: string
                     enum:
@@ -1622,6 +1736,11 @@ paths:
                   description: One or more vehicles' details
                   items:
                     "$ref": "#/components/schemas/Vehicle"
+                self_employments:
+                  type: array
+                  description: One or more self employment details
+                  items:
+                    "$ref": "#/components/schemas/SelfEmployment"
                 partner:
                   type: object
                   required:
@@ -1645,6 +1764,11 @@ paths:
                         benefits_in_kind: 0
                         tax: 11
                         national_insurance: 3
+                    self_employments:
+                    - self_employment_type: sole_trader
+                      net_self_employment_income:
+                        frequency: monthly
+                        amount: 1000
                     regular_transactions:
                     - category: benefits
                       operation: credit
@@ -1718,6 +1842,11 @@ paths:
                             description: Client supplied id to identify the employment
                           payments:
                             "$ref": "#/components/schemas/EmploymentPaymentList"
+                    self_employments:
+                      type: array
+                      description: Partner self employment details
+                      items:
+                        "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
                       type: array
                       description: Zero or more regular transactions
@@ -1725,7 +1854,7 @@ paths:
                         "$ref": "#/components/schemas/RegularTransaction"
                     state_benefits:
                       type: array
-                      description: One or more state benefits receved by the applicant's
+                      description: One or more state benefits received by the applicant's
                         partner and categorized by name
                       items:
                         "$ref": "#/components/schemas/StateBenefit"
@@ -1937,6 +2066,11 @@ paths:
                     benefits_in_kind: 0
                     tax: 11
                     national_insurance: 3
+                self_employments:
+                - self_employment_type: sole_trader
+                  net_self_employment_income:
+                    frequency: monthly
+                    amount: 1000
                 regular_transactions:
                 - category: benefits
                   operation: credit
