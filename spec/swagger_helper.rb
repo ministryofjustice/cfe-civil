@@ -712,7 +712,7 @@ RSpec.configure do |config|
               },
               income: {
                 type: :object,
-                required: %i[frequency],
+                required: %i[frequency gross tax national_insurance],
                 additionalProperties: false,
                 properties: {
                   frequency: {

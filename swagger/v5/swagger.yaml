@@ -840,6 +840,9 @@ components:
           type: object
           required:
           - frequency
+          - gross
+          - tax
+          - national_insurance
           additionalProperties: false
           properties:
             frequency:
@@ -1589,18 +1592,20 @@ paths:
                               additionalProperties: false
                               required:
                               - self_employment_type
+                              - income
                               properties:
                                 self_employment_type:
                                   "$ref": "#/components/schemas/SelfEmploymentType"
-                                gross:
-                                  type: number
-                                  format: decimal
-                                tax:
-                                  type: number
-                                  format: decimal
-                                national_insurance:
-                                  type: number
-                                  format: decimal
+                                income:
+                                  gross:
+                                    type: number
+                                    format: decimal
+                                  tax:
+                                    type: number
+                                    format: decimal
+                                  national_insurance:
+                                    type: number
+                                    format: decimal
                       disposable_income:
                         type: object
                       capital:
@@ -1644,20 +1649,21 @@ paths:
                                 type: object
                                 additionalProperties: false
                                 required:
-                                - name
                                 - self_employment_type
+                                - income
                                 properties:
                                   self_employment_type:
                                     "$ref": "#/components/schemas/SelfEmploymentType"
-                                  gross:
-                                    type: number
-                                    format: decimal
-                                  tax:
-                                    type: number
-                                    format: decimal
-                                  national_insurance:
-                                    type: number
-                                    format: decimal
+                                  income:
+                                    gross:
+                                      type: number
+                                      format: decimal
+                                    tax:
+                                      type: number
+                                      format: decimal
+                                    national_insurance:
+                                      type: number
+                                      format: decimal
                   version:
                     type: string
                     enum:
