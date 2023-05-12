@@ -703,16 +703,16 @@ RSpec.configure do |config|
           },
           SelfEmployment: {
             type: :object,
-            required: %i[self_employment_type net_self_employment_income],
+            required: %i[self_employment_type income],
             additionalProperties: false,
             properties: {
               self_employment_type: {
                 type: :string,
                 enum: CFEConstants::VALID_SELF_EMPLOYMENT_TYPES,
               },
-              net_self_employment_income: {
+              income: {
                 type: :object,
-                required: %i[frequency amount],
+                required: %i[frequency],
                 additionalProperties: false,
                 properties: {
                   frequency: {
@@ -720,7 +720,15 @@ RSpec.configure do |config|
                     enum: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES,
                     example: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES.fourth,
                   },
-                  amount: {
+                  gross: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  tax: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  national_insurance: {
                     type: :number,
                     format: :decimal,
                   },

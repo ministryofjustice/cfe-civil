@@ -29,12 +29,13 @@
   "self_employments": [
     {
       "self_employment_type": "sole_trader",
-      "net_self_employment_income": {
+      "income": {
         "frequency": "monthly",
-        "amount": 1000
+        "gross": 1000,
+        "tax": 400,
+        "national_insurance": 120
       }
-    }
-  ],
+    }],
   "regular_transactions": [
     {
       "category": "benefits",

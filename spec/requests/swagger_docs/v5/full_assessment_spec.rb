@@ -372,11 +372,21 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            items: {
                              type: :object,
                              additionalProperties: false,
-                             required: %i[name self_employment_type monthly_equivalent],
+                             required: %i[self_employment_type],
                              properties: {
-                               name: { type: :string },
                                self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
-                               monthly_equivalent: { type: :number },
+                               gross: {
+                                 type: :number,
+                                 format: :decimal,
+                               },
+                               tax: {
+                                 type: :number,
+                                 format: :decimal,
+                               },
+                               national_insurance: {
+                                 type: :number,
+                                 format: :decimal,
+                               },
                              },
                            },
                          },
@@ -425,11 +435,21 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              items: {
                                type: :object,
                                additionalProperties: false,
-                               required: %i[name self_employment_type monthly_equivalent],
+                               required: %i[name self_employment_type],
                                properties: {
-                                 name: { type: :string },
                                  self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
-                                 monthly_equivalent: { type: :number },
+                                 gross: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                                 tax: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                                 national_insurance: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
                                },
                              },
                            },

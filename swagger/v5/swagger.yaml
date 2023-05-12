@@ -828,7 +828,7 @@ components:
       type: object
       required:
       - self_employment_type
-      - net_self_employment_income
+      - income
       additionalProperties: false
       properties:
         self_employment_type:
@@ -836,11 +836,10 @@ components:
           enum:
           - sole_trader
           - partnership
-        net_self_employment_income:
+        income:
           type: object
           required:
           - frequency
-          - amount
           additionalProperties: false
           properties:
             frequency:
@@ -852,7 +851,13 @@ components:
               - monthly
               - annually
               example: monthly
-            amount:
+            gross:
+              type: number
+              format: decimal
+            tax:
+              type: number
+              format: decimal
+            national_insurance:
               type: number
               format: decimal
     StateBenefit:
@@ -1583,16 +1588,19 @@ paths:
                               type: object
                               additionalProperties: false
                               required:
-                              - name
                               - self_employment_type
-                              - monthly_equivalent
                               properties:
-                                name:
-                                  type: string
                                 self_employment_type:
                                   "$ref": "#/components/schemas/SelfEmploymentType"
-                                monthly_equivalent:
+                                gross:
                                   type: number
+                                  format: decimal
+                                tax:
+                                  type: number
+                                  format: decimal
+                                national_insurance:
+                                  type: number
+                                  format: decimal
                       disposable_income:
                         type: object
                       capital:
@@ -1638,14 +1646,18 @@ paths:
                                 required:
                                 - name
                                 - self_employment_type
-                                - monthly_equivalent
                                 properties:
-                                  name:
-                                    type: string
                                   self_employment_type:
                                     "$ref": "#/components/schemas/SelfEmploymentType"
-                                  monthly_equivalent:
+                                  gross:
                                     type: number
+                                    format: decimal
+                                  tax:
+                                    type: number
+                                    format: decimal
+                                  national_insurance:
+                                    type: number
+                                    format: decimal
                   version:
                     type: string
                     enum:
@@ -1761,9 +1773,11 @@ paths:
                         national_insurance: 3
                     self_employments:
                     - self_employment_type: sole_trader
-                      net_self_employment_income:
+                      income:
                         frequency: monthly
-                        amount: 1000
+                        gross: 1000
+                        tax: 400
+                        national_insurance: 120
                     regular_transactions:
                     - category: benefits
                       operation: credit
@@ -2063,9 +2077,11 @@ paths:
                     national_insurance: 3
                 self_employments:
                 - self_employment_type: sole_trader
-                  net_self_employment_income:
+                  income:
                     frequency: monthly
-                    amount: 1000
+                    gross: 1000
+                    tax: 400
+                    national_insurance: 120
                 regular_transactions:
                 - category: benefits
                   operation: credit
