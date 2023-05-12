@@ -7,9 +7,19 @@ FactoryBot.define do
     monthly_income { 0.0 }
     assets_value { 0.0 }
 
+    factory :applicant_dependant do
+    end
+
+    factory :partner_dependant do
+    end
+
+    transient do
+      submission_date { assessment.submission_date }
+    end
+
     trait :child_relative do
       relationship { :child_relative }
-      date_of_birth { assessment.submission_date - 16.years + 1.day }
+      date_of_birth { submission_date - 16.years + 1.day }
     end
 
     trait :adult_relative do

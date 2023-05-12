@@ -7,7 +7,7 @@ FactoryBot.define do
     transient do
       # the proceedings transient is an array of arrays, each item comprising a proceeding type code and it's associated client involvement type,
       # e.g. [ ['DA003', 'A'], ['SE014', 'Z']]
-      proceedings { [%w[DA003 A]] }
+      proceedings { [%w[SE003 A]] }
 
       # use :with_child_dependants: 2 to create 2 children for the assessment
       with_child_dependants { 0 }
