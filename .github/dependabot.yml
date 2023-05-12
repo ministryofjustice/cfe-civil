@@ -1,18 +1,14 @@
 version: 2
 updates:
-  - package-ecosystem: bundler
+  - package-ecosystem: "bundler"
     directory: "/"
-    allow:
-      - dependency-type: "all"
     schedule:
-      interval: daily
-      time: "03:00"
-      timezone: Europe/London
-    open-pull-requests-limit: 10
-    ignore:
-      - dependency-name: sentry-raven
-        versions:
-          - 3.1.2
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
 
   - package-ecosystem: "docker"
     directory: "/"
