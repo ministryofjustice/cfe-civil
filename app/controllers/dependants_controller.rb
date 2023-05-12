@@ -4,7 +4,7 @@ class DependantsController < CreationController
   def create
     swagger_validate_and_render("dependants", dependants_params, lambda {
       Creators::DependantsCreator.call(
-        dependants: @assessment.dependants,
+        dependants: @assessment.client_dependants,
         dependants_params:,
       )
     })

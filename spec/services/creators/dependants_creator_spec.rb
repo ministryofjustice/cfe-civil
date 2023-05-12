@@ -7,14 +7,14 @@ module Creators
     let(:dependants_attributes) { attributes_for_list(:dependant, 2).map { |v| v.merge(date_of_birth: v.fetch(:date_of_birth).to_s) } }
     let(:dependants_params) { { dependants: dependants_attributes } }
 
-    subject(:creator) { described_class.call(dependants: assessment.dependants, dependants_params:) }
+    subject(:creator) { described_class.call(dependants: assessment.client_dependants, dependants_params:) }
 
     context "valid payload" do
       it "creates two dependant records for this assessment" do
-        expect { creator }.to change { assessment.dependants.count }.by(dependants_attributes.count)
+        expect { creator }.to change { assessment.client_dependants.count }.by(dependants_attributes.count)
 
         dependants_attributes.each do |dependant_attributes|
-          dependant = assessment.dependants.find_by!(date_of_birth: dependant_attributes[:date_of_birth])
+          dependant = assessment.client_dependants.find_by!(date_of_birth: dependant_attributes[:date_of_birth])
           dependant_attributes.each_key do |key|
             expect(dependant[key].to_s).to eq(dependant_attributes[key].to_s),
                                            "Dependent attribute `#{key}` mismatch: #{dependant[key].inspect}, #{dependant_attributes[key].inspect}"

@@ -12,7 +12,7 @@ module Creators
 
     subject(:creator) do
       described_class.call(assessment.gross_income_summary,
-                           assessment.dependants,
+                           assessment.client_dependants,
                            assessment.proceeding_types,
                            assessment.submission_date)
     end

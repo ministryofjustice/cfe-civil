@@ -4,7 +4,7 @@ module Calculators
   RSpec.describe HousingCostsCalculator do
     subject(:calculator) do
       described_class.new(disposable_income_summary: assessment.disposable_income_summary,
-                          person: OpenStruct.new(single?: true, dependants: assessment.dependants),
+                          person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                           submission_date: assessment.submission_date,
                           gross_income_summary: assessment.gross_income_summary)
     end
@@ -326,20 +326,15 @@ module Calculators
       end
     end
 
-    context "when using regular_transactions" do
+    context "when using regular_transactions", :calls_bank_holiday do
       let(:instance) do
         described_class.new(disposable_income_summary: assessment.disposable_income_summary,
                             gross_income_summary: assessment.gross_income_summary,
-                            person: OpenStruct.new(single?: true, dependants: assessment.dependants),
+                            person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                             submission_date: assessment.submission_date)
       end
       let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
       let(:dates) { [Date.current, 1.month.ago, 2.months.ago] }
-
-      before do
-        stub_request(:get, "https://www.gov.uk/bank-holidays.json")
-          .to_return(body: file_fixture("bank-holidays.json").read)
-      end
 
       describe "#gross_housing_costs" do
         subject(:gross_housing_costs) { instance.gross_housing_costs }

@@ -75,7 +75,7 @@ module Workflows
       def partner_disposable_income_assessment(assessment, gross_income_subtotals)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: false,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.dependants,
+                                      dependants: assessment.client_dependants,
                                       gross_income_summary: assessment.gross_income_summary
         partner = PersonWrapper.new person: assessment.partner, is_single: false,
                                     submission_date: assessment.submission_date,
@@ -128,7 +128,7 @@ module Workflows
       def single_disposable_income_assessment(assessment, gross_income_subtotals)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: true,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.dependants, gross_income_summary: assessment.gross_income_summary
+                                      dependants: assessment.client_dependants, gross_income_summary: assessment.gross_income_summary
         eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant)
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
@@ -160,7 +160,7 @@ module Workflows
         Calculators::ChildcareEligibilityCalculator.call(
           applicant:,
           partner:,
-          dependants: assessment.dependants + assessment.partner_dependants, # Ensure we consider both client and partner dependants
+          dependants: assessment.client_dependants + assessment.partner_dependants, # Ensure we consider both client and partner dependants
           submission_date: assessment.submission_date,
         )
       end
