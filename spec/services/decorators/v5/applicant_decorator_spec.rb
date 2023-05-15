@@ -24,7 +24,6 @@ module Decorators
               employed
               has_partner_opponent
               receives_qualifying_benefit
-              self_employed
             ]
             expect(decorator.keys).to eq expected_keys
           end

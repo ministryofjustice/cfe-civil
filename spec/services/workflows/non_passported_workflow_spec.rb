@@ -36,18 +36,9 @@ module Workflows
         end
       end
 
-      context "when self_employed" do
-        let(:applicant) { build :applicant, self_employed: true }
-
-        it "calls the self-employed workflow" do
-          expect(SelfEmployedWorkflow).to receive(:call).with(assessment)
-          described_class.call(assessment)
-        end
-      end
-
       describe "capital thresholds for controlled" do
         let(:level_of_help) { "controlled" }
-        let(:applicant) { build :applicant, :under_pensionable_age, self_employed: false }
+        let(:applicant) { build :applicant, :under_pensionable_age }
 
         before do
           create(:property, :additional_property, capital_summary: assessment.capital_summary,
@@ -90,7 +81,7 @@ module Workflows
         end
 
         context "without partner" do
-          let(:applicant) { build :applicant, :under_pensionable_age, self_employed: false }
+          let(:applicant) { build :applicant, :under_pensionable_age }
 
           it "is not eligible" do
             expect(assessment_result).to eq("ineligible")
@@ -98,7 +89,7 @@ module Workflows
         end
 
         context "with pensionable partner" do
-          let(:applicant) { build :applicant, :under_pensionable_age, self_employed: false }
+          let(:applicant) { build :applicant, :under_pensionable_age }
 
           before do
             create(:partner, :over_pensionable_age, assessment:)
@@ -110,7 +101,7 @@ module Workflows
         end
 
         context "when both pensioners" do
-          let(:applicant) { build :applicant, :over_pensionable_age, self_employed: false }
+          let(:applicant) { build :applicant, :over_pensionable_age }
 
           before do
             create(:partner, :over_pensionable_age, assessment:)
@@ -125,7 +116,7 @@ module Workflows
       end
 
       context "without capital" do
-        let(:applicant) { build :applicant, :over_pensionable_age, self_employed: false, employed: }
+        let(:applicant) { build :applicant, :over_pensionable_age, employed: }
 
         context "with childcare costs (and at least 1 dependent child)" do
           let(:salary) { 19_000 }

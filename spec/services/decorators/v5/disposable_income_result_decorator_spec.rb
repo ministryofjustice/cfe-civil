@@ -96,7 +96,6 @@ module Decorators
           gross_employment_income: 0.0,
           employment_income_deductions: 0.0,
           national_insurance: 0.0,
-          net_employment_income: -45.0,
           tax: 0.0,
         )
       end

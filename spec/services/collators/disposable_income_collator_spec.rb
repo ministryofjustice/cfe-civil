@@ -17,24 +17,33 @@ module Collators
     let(:total_gross_income) { 0 }
     let(:gross_income_subtotals) do
       PersonGrossIncomeSubtotals.new(
-        total_gross_income:,
-        employment_income_subtotals: EmploymentIncomeSubtotals.new(employment_income_deductions:, fixed_employment_allowance:),
+        gross_income_summary: assessment.gross_income_summary,
+        regular_income_categories: [],
+        employment_income_subtotals: EmploymentIncomeSubtotals.new(
+          benefits_in_kind: 0,
+          tax: 0,
+          national_insurance: 0,
+          fixed_employment_allowance:,
+          employment_income_deductions:,
+          # This 50 is to offset 600/year in student loan in the factory, so that we control total_gross_income
+          gross_employment_income: total_gross_income - 50,
+        ),
       )
     end
 
     let(:disposable_income_summary) do
-      summary = create(:disposable_income_summary,
-                       child_care_bank:,
-                       maintenance_out_bank:,
-                       gross_housing_costs: gross_housing,
-                       rent_or_mortgage_bank: gross_housing,
-                       legal_aid_bank:,
-                       housing_benefit:,
-                       net_housing_costs: net_housing,
-                       total_outgoings_and_allowances: 0.0,
-                       total_disposable_income: 0.0)
-      create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
-      summary
+      create(:disposable_income_summary,
+             child_care_bank:,
+             maintenance_out_bank:,
+             gross_housing_costs: gross_housing,
+             rent_or_mortgage_bank: gross_housing,
+             legal_aid_bank:,
+             housing_benefit:,
+             net_housing_costs: net_housing,
+             total_outgoings_and_allowances: 0.0,
+             total_disposable_income: 0.0).tap do |summary|
+        create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
+      end
     end
 
     let(:total_outgoings) do

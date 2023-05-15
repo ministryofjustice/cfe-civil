@@ -2,134 +2,88 @@ module Collators
   class GrossIncomeCollator
     class << self
       def call(assessment:, submission_date:, employments:, gross_income_summary:)
-        new(assessment:, submission_date:, employments:, gross_income_summary:).call
-      end
-    end
-
-    def initialize(assessment:, submission_date:, employments:, gross_income_summary:)
-      @assessment = assessment
-      @submission_date = submission_date
-      @employments = employments
-      @gross_income_summary = gross_income_summary
-    end
-
-    def call
-      employment_income_subtotals = if @employments.any?
-                                      derive_employment_income_subtotals
-                                    else
-                                      EmploymentIncomeSubtotals.new
-                                    end
-      perform_collation(employment_income_subtotals)
-    end
-
-  private
-
-    def derive_employment_income_subtotals
-      @employments.each { |employment| Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment) }
-      calculate_subtotals.tap do
-        add_remarks if @employments.count > 1
-      end
-    end
-
-    def calculate_subtotals
-      if @employments.count > 1
-        Calculators::MultipleEmploymentsCalculator.call(assessment: @assessment,
-                                                        employments: @employments)
-      else
-        Calculators::EmploymentIncomeCalculator.call(submission_date: @submission_date,
-                                                     employment: @employments.first)
-      end
-    end
-
-    def add_remarks
-      my_remarks = @assessment.remarks
-      my_remarks.add(:employment, :multiple_employments, @employments.map(&:client_id))
-      @assessment.update!(remarks: my_remarks)
-    end
-
-    def income_categories
-      CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym)
-    end
-
-    def perform_collation(employment_income_subtotals)
-      regular_income_categories = income_categories.map do |category|
-        calculate_category_subtotals(category)
+        employment_income_subtotals = if employments.any?
+                                        derive_employment_income_subtotals assessment:, submission_date:, employments:
+                                      else
+                                        EmploymentIncomeSubtotals.blank
+                                      end
+        perform_collation(gross_income_summary:, employment_income_subtotals:)
       end
 
-      total_gross_income = employment_income_subtotals.gross_employment_income +
-        regular_income_categories.sum(&:all_sources) +
-        monthly_student_loan +
-        monthly_unspecified_source
+    private
 
-      PersonGrossIncomeSubtotals.new(
-        total_gross_income:,
-        monthly_student_loan:,
-        monthly_unspecified_source:,
-        regular_income_categories:,
-        employment_income_subtotals:,
-      )
-    end
+      def derive_employment_income_subtotals(assessment:, submission_date:, employments:)
+        employments.each { |employment| Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment) }
+        calculate_subtotals(assessment:, submission_date:, employments:).tap do
+          add_remarks(assessment:, employments:) if employments.count > 1
+        end
+      end
 
-    def calculate_category_subtotals(category)
-      bank = if category == :benefits
-               monthly_state_benefits
-             else
-               categorised_bank_transactions[category]
-             end
+      def calculate_subtotals(assessment:, submission_date:, employments:)
+        if employments.count > 1
+          Calculators::MultipleEmploymentsCalculator.call(assessment:,
+                                                          employments:)
+        else
+          Calculators::EmploymentIncomeCalculator.call(submission_date:,
+                                                       employment: employments.first)
+        end
+      end
 
-      cash = Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :credit, category:)
-      regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :credit, category:)
-      GrossIncomeCategorySubtotals.new(
-        category: category.to_sym,
-        bank:,
-        cash:,
-        regular:,
-        all_sources: bank + cash + regular,
-      )
-    end
+      def add_remarks(assessment:, employments:)
+        my_remarks = assessment.remarks
+        my_remarks.add(:employment, :multiple_employments, employments.map(&:client_id))
+        assessment.update!(remarks: my_remarks)
+      end
 
-    def monthly_state_benefits
-      @monthly_state_benefits ||= Calculators::StateBenefitsCalculator.call(@gross_income_summary.state_benefits)
-    end
+      def income_categories
+        CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym)
+      end
 
-    def monthly_student_loan
-      @monthly_student_loan ||= @gross_income_summary.student_loan_payments.sum { monthly_equivalent_amount(_1) }
-    end
+      def perform_collation(gross_income_summary:, employment_income_subtotals:)
+        regular_income_categories = income_categories.map do |category|
+          calculate_category_subtotals(category, gross_income_summary)
+        end
 
-    def monthly_unspecified_source
-      @monthly_unspecified_source ||= @gross_income_summary.unspecified_source_payments.sum { monthly_equivalent_amount(_1) }
-    end
-
-    def categorised_bank_transactions
-      @categorised_bank_transactions ||= categorise_bank_transaction
-    end
-
-    def categorise_bank_transaction
-      result = Hash.new(0.0)
-      @gross_income_summary.other_income_sources.each do |source|
-        monthly_income = Calculators::MonthlyEquivalentCalculator.call(
-          collection: source.other_income_payments,
+        PersonGrossIncomeSubtotals.new(
+          gross_income_summary:,
+          regular_income_categories:,
+          employment_income_subtotals:,
         )
-
-        # TODO: Stop persisting this
-        source.update!(monthly_income:)
-
-        formatted = BigDecimal(monthly_income, Float::DIG)
-        result[source.name.to_sym] = formatted
-        result[:total] += formatted
       end
 
-      result
-    end
+      def calculate_category_subtotals(category, gross_income_summary)
+        bank = if category == :benefits
+                 Calculators::StateBenefitsCalculator.call(gross_income_summary.state_benefits)
+               else
+                 categorised_bank_transactions(gross_income_summary)[category]
+               end
 
-    def monthly_equivalent_amount(payment)
-      payment.amount / MONTHS_PER_PERIOD.fetch(payment.frequency)
-    end
+        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary:, operation: :credit, category:)
+        regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary:, operation: :credit, category:)
+        GrossIncomeCategorySubtotals.new(
+          category:,
+          bank:,
+          cash:,
+          regular:,
+        )
+      end
 
-    MONTHS_PER_PERIOD = {
-      CFEConstants::ANNUAL_FREQUENCY => 12,
-      CFEConstants::QUARTERLY_FREQUENCY => 3,
-      CFEConstants::MONTHLY_FREQUENCY => 1,
-    }.freeze
+      def categorised_bank_transactions(gross_income_summary)
+        result = Hash.new(0.0)
+        gross_income_summary.other_income_sources.each do |source|
+          monthly_income = Calculators::MonthlyEquivalentCalculator.call(
+            collection: source.other_income_payments,
+          )
+
+          # TODO: Stop persisting this
+          source.update!(monthly_income:)
+
+          formatted = BigDecimal(monthly_income, Float::DIG)
+          result[source.name.to_sym] = formatted
+        end
+
+        result
+      end
+    end
   end
 end

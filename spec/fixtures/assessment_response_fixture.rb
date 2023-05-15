@@ -6,7 +6,6 @@ class AssessmentResponseFixture < BaseAssessmentFixture
       result: "eligible",
       details: {
         passported: true,
-        self_employed: false,
         income: {
           monthly_gross_income: 2_565.33,
           upper_income_threshold: 2_567.00,
