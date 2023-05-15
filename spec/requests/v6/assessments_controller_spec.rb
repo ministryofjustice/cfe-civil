@@ -446,6 +446,33 @@ module V6
         end
       end
 
+      context "with negative gross income" do
+        let(:job_with_negative_gross) do
+          [
+            {
+              name: "Job 1",
+              client_id: SecureRandom.uuid,
+              payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
+                {
+                  client_id: SecureRandom.uuid,
+                  gross: -46.00,
+                  benefits_in_kind: 16.60,
+                  tax: -104.10,
+                  national_insurance: -18.66,
+                  date:,
+                }
+              end,
+            },
+          ]
+        end
+
+        let(:params) { { employment_income: job_with_negative_gross } }
+
+        it "is allowed" do
+          expect(response).to have_http_status(:success)
+        end
+      end
+
       context "with employment income without payments" do
         let(:params) { { employment_income: employment_income_without_payments_params } }
 

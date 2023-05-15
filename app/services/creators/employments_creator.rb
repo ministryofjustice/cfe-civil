@@ -11,8 +11,6 @@ module Creators
         ActiveRecord::Base.transaction do
           create_employment employments_params, employment_collection
           Result.new(errors: []).freeze
-        rescue ActiveRecord::RecordInvalid => e
-          Result.new(errors: e.record.errors.full_messages).freeze
         end
       end
 
