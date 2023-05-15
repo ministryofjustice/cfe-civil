@@ -13,7 +13,6 @@ module Collators
     private
 
       def derive_employment_income_subtotals(assessment:, submission_date:, employments:)
-        employments.each { |employment| Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment) }
         calculate_subtotals(assessment:, submission_date:, employments:).tap do
           add_remarks(assessment:, employments:) if employments.count > 1
         end
@@ -65,7 +64,7 @@ module Collators
           bank:,
           cash:,
           regular:,
-        )
+        ).freeze
       end
 
       def categorised_bank_transactions(gross_income_summary)

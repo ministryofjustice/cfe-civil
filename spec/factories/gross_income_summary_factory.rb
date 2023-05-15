@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :gross_income_summary do
-    assessment
+    association :assessment
     trait :with_everything do
       after(:create) do |gross_income_summary|
         create :state_benefit, :with_monthly_payments, gross_income_summary: gross_income_summary
