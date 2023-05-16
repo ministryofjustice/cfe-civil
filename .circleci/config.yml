@@ -37,6 +37,32 @@ executors:
         environment:
           - POSTGRES_USER=user
           - POSTGRES_DB=cfe_civil_test
+  ccq-executor:
+    docker:
+      - image: cimg/ruby:3.1.3-browsers
+        environment:
+          VCR_RECORD_MODE: none
+          COVERAGE: true
+          RAILS_ENV: test
+          PGHOST: localhost
+          PGUSER: postgres
+          TZ: "Europe/London"
+          CFE_HOST: http://localhost:3000
+      - image: cimg/postgres:10.18
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: ccq_test
+      - image: ${ECR_ENDPOINT}:${CIRCLE_SHA1}
+        environment:
+          - RAILS_ENV: production
+          - LEGAL_FRAMEWORK_API_HOST: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
+          - SECRET_KEY_BASE: any_old_secret_key_base
+          - POSTGRES_HOST: localhost
+          - POSTGRES_USER: postgres
+          - POSTGRES_PASSWORD: cfe_ccq_pass
+          - POSTGRES_DATABASE: cfe_db
+          - PROBE_TIMEOUT: 60
+          - TZ: "Europe/London"
 
 references:
   build_docker_image: &build_docker_image
@@ -109,7 +135,7 @@ references:
     run:
       name: Database Setup
       command: |
-        bundle exec rake db:create db:schema:load
+        bundle exec rake db:schema:load
         bundle exec rake db:migrate
 
 jobs:
@@ -123,6 +149,30 @@ jobs:
       - run:
           name: Run Rubocop
           command:  bundle exec rubocop
+
+  end2end_tests:
+    executor: ccq-executor
+    steps:
+      - run:
+          name: Checkout CCQ main line
+          command: |
+            git clone https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid.git ~/project/ccq
+      - run:
+          name: Setup CCQ ready to execute tests
+          working_directory: ~/project/ccq
+          command: |
+            bundle install --without=development
+      - run:
+          name: Setup CCQ database and test env
+          working_directory: ~/project/ccq
+          command: |
+            bundle exec rails db:schema:load
+            bundle exec rake test:prepare
+      - run:
+          name: CFE/CCQ end2end specs
+          working_directory: ~/project/ccq
+          command: |
+            COVERAGE=false bundle exec rspec -t end2end --format documentation spec/**/*_spec.rb
 
   unit_tests:
     executor: test-executor
@@ -296,6 +346,12 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
+      - end2end_tests:
+          filters:
+            branches:
+              ignore: main
+          requires:
+            - build_and_push
       - integration_tests:
           filters:
             branches:
@@ -317,7 +373,8 @@ workflows:
             - lint_checks
             - check_swagger
             - unit_tests
-            - build_and_push
+            - integration_tests
+            - end2end_tests
       - delete_dependabot_deployment:
           context: cfe-civil-uat
           filters:
@@ -346,6 +403,10 @@ workflows:
             branches:
               only: main
       #          <<: *generic-slack-fail-post-step
+      - end2end_tests:
+          filters:
+            branches:
+              only: main
       - integration_tests:
           filters:
             branches:
@@ -361,6 +422,7 @@ workflows:
             - lint_checks
             - check_swagger
             - unit_tests
+            - integration_tests
       #          <<: *generic-slack-fail-post-step
       - deploy_main_uat:
           context: cfe-civil-uat
