@@ -50,17 +50,22 @@ API documentation is available as:
 
 ## API Versioning
 
-The API version is specified through the accept header, as follows:
+The API version in the URL path:
 
-```text
-Accept:application/json;version=5
-```
+* v5 API - path contains no version number e.g. `/assessments/{assessment_id}/applicant`
+* v6 API - path `/v6/assessments`
 
-The current accepted versions are:
-* 5
-* 6 - "one shot API"
+## API Changelog
 
-### v5 usage
+### 2023-04-03 v6 "one shot API"
+
+See design reasoning: [ADR12 One Shot API](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4405395614/ADR12+One+shot+API)
+### 2022-07-12 v5
+
+This was the last release of the API by the Civil Apply team.
+
+There were previous releases, but they have since been removed from the code base.
+#### v5 usage
 
 The client will create an assessment by posting a payload to the `/assessments` endpoint, which will respond with an `assessment_id`.  This assessment id
 is then given on all subsequent posts to the other endpoints to build up a record of capital, income and outgoings, finally requesting an assessment result
@@ -193,6 +198,8 @@ rake rswag:specs:swaggerize
 ```
 
 ## Threshold configuration files
+
+**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
 
 Files holding details of all thresholds values used in calculating eligibility are stored in `config/thresholds`.
 The file `values.yml` details the start dates for each set of thresholds, and the name of the file from which they should be read.
