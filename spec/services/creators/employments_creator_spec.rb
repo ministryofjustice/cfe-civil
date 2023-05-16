@@ -3,30 +3,6 @@ require "rails_helper"
 RSpec.describe Creators::EmploymentsCreator do
   let(:assessment) { create :assessment }
 
-  context "with negative net income" do
-    let(:creator) do
-      described_class.call(employments_params: employment_income_params,
-                           employment_collection: assessment.employments)
-    end
-
-    let(:job1_payments) do
-      [
-        {
-          client_id: "employment-1-payment-1",
-          date: "2021-10-30",
-          gross: 146.00,
-          benefits_in_kind: 16.60,
-          tax: -164.10,
-          national_insurance: -18.66,
-        },
-      ]
-    end
-
-    it "returns an error" do
-      expect(creator.errors).to eq(["Net income must be greater than or equal to 0"])
-    end
-  end
-
   context "with client ids" do
     let(:job1_payments) do
       [

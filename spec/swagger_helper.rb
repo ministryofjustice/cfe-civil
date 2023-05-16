@@ -219,7 +219,7 @@ RSpec.configure do |config|
                   example: "1992-07-22",
                 },
                 gross: {
-                  "$ref" => "#/components/schemas/positive_currency",
+                  "$ref" => "#/components/schemas/currency",
                   description: "Gross payment income received",
                   example: "101.01",
                 },
