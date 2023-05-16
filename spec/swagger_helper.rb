@@ -714,19 +714,21 @@ RSpec.configure do |config|
                   frequency: {
                     type: :string,
                     enum: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES,
-                    example: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES.fourth,
                   },
                   gross: {
                     type: :number,
                     format: :decimal,
+                    minimum: 0,
                   },
                   tax: {
                     type: :number,
                     format: :decimal,
+                    minimum: 0,
                   },
                   national_insurance: {
                     type: :number,
                     format: :decimal,
+                    minimum: 0,
                   },
                 },
               },

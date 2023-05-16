@@ -846,16 +846,18 @@ components:
               - four_weekly
               - monthly
               - annually
-              example: monthly
             gross:
               type: number
               format: decimal
+              minimum: 0
             tax:
               type: number
               format: decimal
+              minimum: 0
             national_insurance:
               type: number
               format: decimal
+              minimum: 0
     StateBenefit:
       type: object
       required:
@@ -1587,9 +1589,23 @@ paths:
                               - self_employment_type
                               - income
                               properties:
-                                self_employment_type:
-                                  "$ref": "#/components/schemas/SelfEmploymentType"
+                                receiving_only_statutory_sick_or_maternity_pay:
+                                  type: boolean
                                 income:
+                                  required:
+                                  - frequency
+                                  - gross
+                                  - tax
+                                  - national_insurance
+                                  - net
+                                  frequency:
+                                    type: string
+                                    enum:
+                                    - weekly
+                                    - two_weekly
+                                    - four_weekly
+                                    - monthly
+                                    - annually
                                   gross:
                                     type: number
                                     format: decimal
@@ -1597,6 +1613,9 @@ paths:
                                     type: number
                                     format: decimal
                                   national_insurance:
+                                    type: number
+                                    format: decimal
+                                  net:
                                     type: number
                                     format: decimal
                       disposable_income:
@@ -1636,27 +1655,6 @@ paths:
                                     type: array
                                     items:
                                       "$ref": "#/components/schemas/PropertyResult"
-                            self_employments:
-                              type: array
-                              items:
-                                type: object
-                                additionalProperties: false
-                                required:
-                                - self_employment_type
-                                - income
-                                properties:
-                                  self_employment_type:
-                                    "$ref": "#/components/schemas/SelfEmploymentType"
-                                  income:
-                                    gross:
-                                      type: number
-                                      format: decimal
-                                    tax:
-                                      type: number
-                                      format: decimal
-                                    national_insurance:
-                                      type: number
-                                      format: decimal
                   version:
                     type: string
                     enum:
@@ -1769,8 +1767,8 @@ paths:
                         benefits_in_kind: 0
                         tax: 11
                         national_insurance: 3
-                    self_employments:
-                    - self_employment_type: sole_trader
+                    employment_or_self_employments:
+                    - receiving_only_statutory_sick_or_maternity_pay: false
                       income:
                         frequency: monthly
                         gross: 1000
@@ -2073,8 +2071,8 @@ paths:
                     benefits_in_kind: 0
                     tax: 11
                     national_insurance: 3
-                self_employments:
-                - self_employment_type: sole_trader
+                employment_or_self_employments:
+                - receiving_only_statutory_sick_or_maternity_pay: false
                   income:
                     frequency: monthly
                     gross: 1000

@@ -374,8 +374,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              additionalProperties: false,
                              required: %i[self_employment_type income],
                              properties: {
-                               self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
+                               receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
                                income: {
+                                 required: %i[frequency gross tax national_insurance net],
+                                 frequency: {
+                                   type: :string,
+                                   enum: CFEConstants::VALID_SELF_EMPLOYMENT_PAYMENT_FREQUENCIES,
+                                 },
                                  gross: {
                                    type: :number,
                                    format: :decimal,
@@ -385,6 +390,10 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                    format: :decimal,
                                  },
                                  national_insurance: {
+                                   type: :number,
+                                   format: :decimal,
+                                 },
+                                 net: {
                                    type: :number,
                                    format: :decimal,
                                  },
@@ -427,31 +436,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                    type: :array,
                                    items: {
                                      "$ref" => "#/components/schemas/PropertyResult",
-                                   },
-                                 },
-                               },
-                             },
-                           },
-                           self_employments: {
-                             type: :array,
-                             items: {
-                               type: :object,
-                               additionalProperties: false,
-                               required: %i[self_employment_type income],
-                               properties: {
-                                 self_employment_type: { "$ref" => "#/components/schemas/SelfEmploymentType" },
-                                 income: {
-                                   gross: {
-                                     type: :number,
-                                     format: :decimal,
-                                   },
-                                   tax: {
-                                     type: :number,
-                                     format: :decimal,
-                                   },
-                                   national_insurance: {
-                                     type: :number,
-                                     format: :decimal,
                                    },
                                  },
                                },
