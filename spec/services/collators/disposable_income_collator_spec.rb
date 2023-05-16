@@ -9,7 +9,8 @@ module Collators
     let(:legal_aid_bank) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:housing_benefit) { Faker::Number.between(from: 1.25, to: gross_housing / 2).round(2) }
     let(:net_housing) { gross_housing - housing_benefit }
-    let(:employment_income_deductions) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
+    let(:tax) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
+    let(:national_insurance) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:fixed_employment_allowance) { 45.0 }
     let(:dependant_allowance_under_16) { 282.98 }
     let(:dependant_allowance_over_16) { 300.00 }
@@ -21,10 +22,9 @@ module Collators
         regular_income_categories: [],
         employment_income_subtotals: EmploymentIncomeSubtotals.new(
           benefits_in_kind: 0,
-          tax: 0,
-          national_insurance: 0,
+          tax:,
+          national_insurance:,
           fixed_employment_allowance:,
-          employment_income_deductions:,
           # This 50 is to offset 600/year in student loan in the factory, so that we control total_gross_income
           gross_employment_income: total_gross_income - 50,
         ),
@@ -55,7 +55,7 @@ module Collators
         legal_aid_bank +
         net_housing +
         dependant_allowance_under_16 + dependant_allowance_over_16 -
-        employment_income_deductions -
+        (tax + national_insurance) -
         fixed_employment_allowance +
         partner_allowance
     end

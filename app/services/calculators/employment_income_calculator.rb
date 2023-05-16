@@ -20,7 +20,6 @@ module Calculators
 
       EmploymentIncomeSubtotals.new(gross_employment_income:,
                                     benefits_in_kind: monthly_benefits_in_kind,
-                                    employment_income_deductions: deductions,
                                     fixed_employment_allowance: allowance,
                                     tax: taxes,
                                     national_insurance: ni_contributions).freeze
@@ -36,10 +35,6 @@ module Calculators
 
     def monthly_benefits_in_kind
       @employment&.monthly_benefits_in_kind || 0.0
-    end
-
-    def deductions
-      taxes + ni_contributions
     end
 
     def taxes
