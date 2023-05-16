@@ -49,7 +49,7 @@ module Workflows
           let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
 
           context "with monthly frequency" do
-            let(:self_employed) { SelfEmployment.new(tax: 527, national_insurance: 34, gross_income: 934, frequency: "monthly") }
+            let(:self_employed) { SelfEmployment.new(tax: 527, national_insurance: 34, gross: 934, frequency: "monthly") }
 
             it "can be eligible" do
               expect(fixed_employment_allowance: employment_income_subtotals.fixed_employment_allowance,

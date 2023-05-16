@@ -8,7 +8,7 @@ module Workflows
                              elsif assessment.applicant.receives_qualifying_benefit?
                                PassportedWorkflow.call(assessment)
                              else
-                               NonPassportedWorkflow.call(assessment, self_employment)
+                               NonPassportedWorkflow.call(assessment, self_employment&.first)
                              end
         RemarkGenerators::Orchestrator.call(assessment, calculation_output.capital_subtotals.combined_assessed_capital)
         Assessors::MainAssessor.call(assessment)

@@ -33,7 +33,7 @@ module Workflows
       def collate_and_assess_gross_income(assessment, self_employment)
         employments = if self_employment.present?
                         [EmploymentData.new(monthly_tax: -self_employment.tax,
-                                            monthly_gross_income: self_employment.gross_income,
+                                            monthly_gross_income: self_employment.gross,
                                             monthly_national_insurance: -self_employment.national_insurance,
                                             actively_working?: false,
                                             client_id: "dummy_client_id",

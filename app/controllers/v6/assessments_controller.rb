@@ -7,9 +7,13 @@ module V6
                                                     params: full_assessment_params)
 
       if create.success?
-        self_employment = full_assessment_params[:employment_or_self_employment]
-        calculation_output = if self_employment.present?
-                               Workflows::MainWorkflow.call(create.assessment, SelfEmployment.new(self_employment))
+        self_employments = full_assessment_params.fetch(:employment_or_self_employment, [])
+        calculation_output = if self_employments.any?
+                               Workflows::MainWorkflow.call(create.assessment, self_employments.map do |s|
+                                 SelfEmployment.new(s.fetch(:income).merge(
+                                                      receiving_only_statutory_sick_or_maternity_pay: s.fetch(:receiving_only_statutory_sick_or_maternity_pay),
+                                                    ))
+                               end)
                              else
                                Workflows::MainWorkflow.call(create.assessment)
                              end

@@ -451,7 +451,8 @@ module V6
         let(:params) do
           {
             assessment: submission_date_params.merge(level_of_help: "controlled"),
-            employment_or_self_employment: { gross_income: 934, tax: 527, national_insurance: 34, frequency: "monthly" },
+            employment_or_self_employment: [{ receiving_only_statutory_sick_or_maternity_pay: false,
+                                              income: { gross: 934, tax: 527, national_insurance: 34, frequency: "monthly" } }],
           }
         end
         let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
