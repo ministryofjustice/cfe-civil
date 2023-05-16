@@ -51,17 +51,20 @@ module Workflows
           context "with monthly frequency" do
             let(:self_employed) { SelfEmployment.new(tax: 527, national_insurance: 34, gross: 934, frequency: "monthly") }
 
-            it "can be eligible" do
-              expect(fixed_employment_allowance: employment_income_subtotals.fixed_employment_allowance,
-                     gross_employment_income: employment_income_subtotals.gross_employment_income.to_f,
-                     national_insurance: employment_income_subtotals.national_insurance.to_f,
-                     tax: employment_income_subtotals.tax.to_f,
-                     employment_income_deductions: employment_income_subtotals.employment_income_deductions.to_f)
-                .to eq(fixed_employment_allowance: 0.0,
-                       gross_employment_income: 934.0,
-                       national_insurance: -34.0,
-                       tax: -527.0,
-                       employment_income_deductions: -561.0)
+            it "returns employment figures" do
+              expect(
+                {
+                  fixed_employment_allowance: employment_income_subtotals.fixed_employment_allowance,
+                  gross_employment_income: employment_income_subtotals.gross_employment_income,
+                  national_insurance: employment_income_subtotals.national_insurance,
+                  tax: employment_income_subtotals.tax,
+                  employment_income_deductions: employment_income_subtotals.employment_income_deductions,
+                }.transform_values(&:to_f),
+              ).to eq(fixed_employment_allowance: 0.0,
+                      gross_employment_income: 934.0,
+                      national_insurance: -34.0,
+                      tax: -527.0,
+                      employment_income_deductions: -561.0)
             end
           end
         end
