@@ -150,6 +150,13 @@ module Collators
           let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
 
+          before do
+            assessment.employments.each do |employment|
+              Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
+              Calculators::EmploymentMonthlyValueCalculator.call(employment, assessment.submission_date)
+            end
+          end
+
           it "has a total gross employed income" do
             expect(collator.employment_income_subtotals.gross_employment_income).to eq 1500
           end

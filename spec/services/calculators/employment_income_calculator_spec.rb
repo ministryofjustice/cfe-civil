@@ -20,20 +20,6 @@ module Calculators
     let(:expected_national_insurance) { ni_cont + ni_cont }
     let(:receiving_only_statutory_sick_or_maternity_pay) { false }
 
-    context "when there is only one employment" do
-      it "does not call the Multiple Employments Calculator" do
-        allow(Calculators::EmploymentMonthlyValueCalculator).to receive(:call)
-        described_class.call(submission_date: assessment.submission_date,
-                             employment: employment1)
-      end
-
-      it "requests an employment calculation" do
-        expect(Calculators::EmploymentMonthlyValueCalculator).to receive(:call)
-        described_class.call(submission_date: assessment.submission_date,
-                             employment: employment1)
-      end
-    end
-
     describe "fixed income allowance" do
       context "at least one employment record exists" do
         before { create_payments_for_single_employment }
@@ -50,6 +36,13 @@ module Calculators
             expect(described_class.call(submission_date: assessment.submission_date,
                                         employment: employment1).fixed_employment_allowance).to eq(0)
           end
+        end
+      end
+
+      context "without payment records" do
+        it "ignores fixed employment allowance" do
+          expect(described_class.call(submission_date: assessment.submission_date,
+                                      employment: employment2).fixed_employment_allowance).to eq(0)
         end
       end
 

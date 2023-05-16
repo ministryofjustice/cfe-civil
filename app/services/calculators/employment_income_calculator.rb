@@ -10,20 +10,14 @@ module Calculators
     end
 
     def call
-      process_single_employment
-    end
-
-  private
-
-    def process_single_employment
-      EmploymentMonthlyValueCalculator.call(@employment, @submission_date) if @employment
-
       EmploymentIncomeSubtotals.new(gross_employment_income:,
                                     benefits_in_kind: monthly_benefits_in_kind,
                                     fixed_employment_allowance: allowance,
                                     tax: taxes,
                                     national_insurance: ni_contributions).freeze
     end
+
+  private
 
     def gross_employment_income
       monthly_incomes + monthly_benefits_in_kind
@@ -46,9 +40,11 @@ module Calculators
     end
 
     def allowance
-      return 0.0 if @employment.present? && @employment.employment_payments.empty?
-
-      @employment.present? && !@employment.receiving_only_statutory_sick_or_maternity_pay? ? fixed_employment_allowance : 0.0
+      if @employment&.actively_working?
+        fixed_employment_allowance
+      else
+        0.0
+      end
     end
 
     def fixed_employment_allowance
