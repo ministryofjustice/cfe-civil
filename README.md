@@ -118,11 +118,10 @@ Developers need a `.env` file in the root folder of their clone of this repo.
 For running locally it should contain the following values:
 
 ```sh
-ALLOW_FUTURE_SUBMISSION_DATE=true
 LEGAL_FRAMEWORK_API_HOST=https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk
 ```
 
-Set ALLOW_FUTURE_SUBMISSION_DATE to true to allow integration tests to run with submission dates that are in the future.
+(There used to be an option `ALLOW_FUTURE_SUBMISSION_DATE`, but now specifying a submission_date in the future is always allowed.)
 
 However for running the integration tests, you need a few more values, including secrets - see: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
 
@@ -215,17 +214,29 @@ for testing new thresholds before they come into affect on production.
 
 CFE-Civil has several kinds of tests:
 
+* End to End (E2E) tests
 * Integration tests defined in Spreadsheets and using RSpec
 * Integration tests using Cucumber
 * Unit tests - using RSpec
 
 For the purpose of each type of test, see: [CFE-Civil Test pyramid](https://docs.google.com/drawings/d/1XADSXrS-wQ6GHWo8b5JLdnWEHjrR_OyX5xT2uB4_jI4/edit)
 
+### End to End (E2E) tests
+
+The E2E tests perform user journeys using CCQ's web interface, using both CCQ and CFE-Civil running together. This helps us spot real-world incompitibilities between CCQ's requests and what CFE-Civil accepts.
+
+The test cases are defined in the CCQ repo: https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid/tree/main/spec/end_to_end
+
+E2E tests are run by the [CircleCI config](.circleci/config.yml) - see the `end2end_tests` workflow.
+### RSpec tests
+
+The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
+
 #### Environment variables for Integration tests (spreadsheets)
 
 Before you can run the spreadsheet integration tests you will need to set up a `.env` file in the root folder of your clone of this repo.
 
-Obtain the `.env` file from LastPass - look in the folder `Shared-LAA-Eligibility-Platform`, under item `Environment variables to run CFE ISPEC (spreadsheet) tests`. Reach out to the team if you don't have access.
+Obtain the `.env` file from 1Password - look in the folder `LAA-Eligibility-Platform`, under item `Environment variables to run CFE ISPEC (spreadsheet) tests`. If you don't have access, see: [Tech we use - 1Password](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4323606529/Tech+we+use#1Password)
 
 Environment variables:
 
@@ -235,14 +246,12 @@ Environment variables:
 | GOOGLE_SHEETS_PRIVATE_KEY | (secret) |
 | GOOGLE_SHEETS_CLIENT_EMAIL | (secret) |
 | GOOGLE_SHEETS_CLIENT_ID | (secret) |
-| ALLOW_FUTURE_SUBMISSION_DATE | `true` allows integration tests to run with submission dates that are in the future / `false` |
 | RUNNING_AS_GITHUB_WORKFLOW | `TRUE` / `FALSE` |
 | LEGAL_FRAMEWORK_API_HOST | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
 
+#### Running RSpec tests
 
-### Running RSpec tests
-
-The RSpec test suite includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)"
+The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
 Run them with:
 
@@ -250,11 +259,11 @@ Run them with:
 bundle exec rspec
 ```
 
-The repo also includes `pry-rescue`, a gem to allow faster debugging. Running
+`pry-rescue` allows you to run tests so that a `pry` prompt will be opened on test failure or unhandled exceptions, which can be helpful for debugging. It is a gem which is included in this repo. Run it with:
+
 ```sh
 bundle exec rescue rspec
 ```
-will cause any failing tests or unhandled exceptions to automatically open a `pry` prompt for immediate investigation.
 
 #### Common errors
 
