@@ -393,11 +393,11 @@ module V6
               .to eq(
                 {
                   gross_income: 846.0,
-                  benefits_in_kind: 0.0,
+                  benefits_in_kind: 16.6,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 678.24,
+                  net_employment_income: 694.84,
                 },
               )
           end
@@ -688,7 +688,7 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 73.0,
+                  income_contribution: 80.47,
                 })
             end
           end
@@ -715,7 +715,7 @@ module V6
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
-                  income_contribution: 73.0,
+                  income_contribution: 80.47,
                   partner_allowance: 191.41,
                 },
               )
@@ -724,22 +724,22 @@ module V6
           it "has partner disposable income" do
             expect(summary.fetch(:partner_disposable_income)).to eq(
               {
-                dependant_allowance: 922.92,
                 dependant_allowance_under_16: 615.28,
                 dependant_allowance_over_16: 307.64,
+                dependant_allowance: 922.92,
                 gross_housing_costs: 117.16,
                 housing_benefit: 0.0,
                 net_housing_costs: 117.16,
                 maintenance_allowance: 333.07,
                 total_outgoings_and_allowances: 1630.51,
-                total_disposable_income: -450.435,
+                total_disposable_income: -433.835,
                 employment_income: {
                   gross_income: 846.0,
-                  benefits_in_kind: 0.0,
+                  benefits_in_kind: 16.6,
                   tax: -104.1,
                   national_insurance: -18.66,
                   fixed_employment_deduction: -45.0,
-                  net_employment_income: 678.24,
+                  net_employment_income: 694.84,
                 },
                 income_contribution: 0.0,
               },

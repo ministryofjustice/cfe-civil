@@ -18,7 +18,7 @@ class PersonGrossIncomeSubtotals
   end
 
   def total_gross_income
-    employment_income_subtotals.gross_employment_income +
+    employment_income_subtotals.gross_employment_income + employment_income_subtotals.benefits_in_kind +
       @regular_income_categories.sum(&:all_sources) +
       monthly_student_loan +
       monthly_unspecified_source
