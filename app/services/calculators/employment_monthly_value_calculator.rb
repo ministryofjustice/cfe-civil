@@ -1,9 +1,9 @@
 module Calculators
   class EmploymentMonthlyValueCalculator
     class << self
-      def call(employment, submission_date, payments)
+      def call(employment, submission_date, monthly_equivalent_payments)
         Calculators::TaxNiRefundCalculator.call(employment)
-        if employment_income_variation_below_threshold?(payments, submission_date)
+        if employment_income_variation_below_threshold?(monthly_equivalent_payments, submission_date)
           calculation = :most_recent
           add_variation_remarks = false
         else
@@ -11,7 +11,7 @@ module Calculators
           add_variation_remarks = true
         end
 
-        monthly_values = calculate_monthly_values(payments, calculation:)
+        monthly_values = calculate_monthly_values(monthly_equivalent_payments, calculation:)
 
         # TODO: Return these values instead of persisting them
         persist_values(employment, monthly_values, add_variation_remarks)
