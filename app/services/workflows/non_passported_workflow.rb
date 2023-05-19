@@ -20,8 +20,8 @@ module Workflows
                                    :monthly_benefits_in_kind, :monthly_national_insurance)
 
       def convert_employment(employment, submission_date)
-        Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
-        Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date)
+        monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
+        Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date, monthly_equivalent_payments)
         EmploymentData.new(monthly_tax: employment.monthly_tax,
                            monthly_gross_income: employment.monthly_gross_income,
                            monthly_national_insurance: employment.monthly_national_insurance,

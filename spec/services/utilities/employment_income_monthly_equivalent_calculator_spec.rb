@@ -4,7 +4,7 @@ RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_ba
   let(:instance) { described_class.new(employment) }
   let(:assessment) { create :assessment }
   let(:employment) { create :employment, assessment: }
-  let(:payments) { employment.employment_payments.order(:date) }
+  let(:payments) { instance.call }
 
   context "with valid payment period" do
     before do

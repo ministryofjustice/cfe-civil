@@ -152,8 +152,8 @@ module Collators
 
           before do
             assessment.employments.each do |employment|
-              Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
-              Calculators::EmploymentMonthlyValueCalculator.call(employment, assessment.submission_date)
+              monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
+              Calculators::EmploymentMonthlyValueCalculator.call(employment, assessment.submission_date, monthly_equivalent_payments)
             end
           end
 

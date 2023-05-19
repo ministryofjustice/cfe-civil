@@ -28,7 +28,7 @@ FactoryBot.define do
       [record.assessment.submission_date,
        record.assessment.submission_date - 32.days,
        record.assessment.submission_date - 64.days].each do |date|
-        create :employment_payment, employment: record, date:, gross_income: 1500, gross_income_monthly_equiv: 1500
+        create :employment_payment, employment: record, date:, gross_income: 1500
       end
     end
   end

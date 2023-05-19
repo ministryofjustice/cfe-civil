@@ -1,9 +1,8 @@
 module Calculators
   class EmploymentMonthlyValueCalculator
     class << self
-      def call(employment, submission_date)
+      def call(employment, submission_date, payments)
         Calculators::TaxNiRefundCalculator.call(employment)
-        payments = employment.employment_payments
         if employment_income_variation_below_threshold?(payments, submission_date)
           calculation = :most_recent
           add_variation_remarks = false
@@ -41,7 +40,7 @@ module Calculators
       end
 
       def most_recent(payments, attribute)
-        payment = payments.order(:date).last
+        payment = payments.max_by(&:date)
         payment.public_send(attribute)
       end
 

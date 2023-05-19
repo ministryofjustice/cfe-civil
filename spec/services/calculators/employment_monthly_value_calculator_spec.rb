@@ -7,7 +7,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
     it "calls the tax and national insurance refund calculator" do
       allow(Calculators::TaxNiRefundCalculator).to receive(:call)
 
-      described_class.call employment, employment.assessment.submission_date
+      described_class.call employment, employment.assessment.submission_date, []
 
       expect(Calculators::TaxNiRefundCalculator)
         .to have_received(:call)
@@ -16,23 +16,12 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
     end
 
     context "when there are employment payments" do
-      before do
-        _payment = create(
-          :employment_payment,
-          employment:,
-          date: Date.yesterday,
-          gross_income_monthly_equiv: 100,
-          national_insurance_monthly_equiv: 10,
-          tax_monthly_equiv: 20,
-        )
-        _recent_payment = create(
-          :employment_payment,
-          employment:,
-          date: Date.current,
-          gross_income_monthly_equiv: 500,
-          national_insurance_monthly_equiv: 20,
-          tax_monthly_equiv: 50,
-        )
+      let(:monthly_equiv_payment_data) { Utilities::EmploymentIncomeMonthlyEquivalentCalculator::MonthlyEquivPaymentData }
+      let(:payments) do
+        [
+          monthly_equiv_payment_data.new(date: Date.yesterday, gross_income_monthly_equiv: 100, national_insurance_monthly_equiv: 10, tax_monthly_equiv: 20),
+          monthly_equiv_payment_data.new(date: Date.current, gross_income_monthly_equiv: 500, national_insurance_monthly_equiv: 20, tax_monthly_equiv: 50),
+        ]
       end
 
       context "when variation in employment income is below the threshold" do
@@ -48,7 +37,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the most recent payment" do
-          described_class.call employment, employment.assessment.submission_date
+          described_class.call employment, employment.assessment.submission_date, payments
 
           expect(employment).to have_attributes(
             calculation_method: "most_recent",
@@ -59,7 +48,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
         end
 
         it "does not add a remark to the assessment" do
-          described_class.call employment, employment.assessment.submission_date
+          described_class.call employment, employment.assessment.submission_date, payments
 
           remarks = employment.assessment.remarks.remarks_hash
           expect(remarks).to be_blank
@@ -79,7 +68,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the blunt average" do
-          described_class.call employment, employment.assessment.submission_date
+          described_class.call employment, employment.assessment.submission_date, payments
 
           expect(employment).to have_attributes(
             calculation_method: "blunt_average",
@@ -90,7 +79,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
         end
 
         it "adds a remark to the assessment" do
-          described_class.call employment, employment.assessment.submission_date
+          described_class.call employment, employment.assessment.submission_date, payments
 
           remarks = employment.assessment.remarks.remarks_hash
           employment_payments = employment.employment_payments
@@ -102,7 +91,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
     context "when there are no employment payments" do
       it "zeros the monthly gross income, national insurance, and tax" do
-        described_class.call employment, employment.assessment.submission_date
+        described_class.call employment, employment.assessment.submission_date, []
 
         expect(employment).to have_attributes(
           calculation_method: "blunt_average",
