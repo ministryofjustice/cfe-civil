@@ -195,7 +195,7 @@ RSpec.describe "partner_financials", type: :request, swagger_doc: "v5/swagger.ya
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/partner' did not contain a required property of 'date_of_birth' in schema/)
+          expect(body[:errors]).to include(/The property '#\/partner' did not contain a required property of 'date_of_birth'/)
         end
       end
     end

@@ -76,7 +76,7 @@ RSpec.describe OtherIncomesController, type: :request do
 
         it "contains has an error in the response body" do
           post_payload
-          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/1' did not contain a required property of 'source' in schema/)
+          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/1' did not contain a required property of 'source'/)
         end
 
         it "does not create any other income source records" do
@@ -104,7 +104,7 @@ RSpec.describe OtherIncomesController, type: :request do
         end
 
         it "contains an error in the response body" do
-          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/1\/payments\/0' did not contain a required property of 'client_id' in schema/)
+          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/1\/payments\/0' did not contain a required property of 'client_id'/)
         end
 
         it "does not create any other income source records" do

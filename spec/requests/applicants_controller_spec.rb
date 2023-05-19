@@ -120,7 +120,7 @@ RSpec.describe ApplicantsController, type: :request do
         end
 
         it_behaves_like "it fails with message",
-                        /The property '#\/applicant\/has_partner_opponent' of type string did not match the following type: boolean in schema/
+                        /The property '#\/applicant\/has_partner_opponent' of type string did not match the following type: boolean/
       end
 
       context "with non boolean receives_qualifying_benefit" do

@@ -11,7 +11,7 @@ RSpec.describe "V5 Assessments", type: :request, vcr: true, swagger_doc: "v5/swa
                 in: :body,
                 required: true,
                 schema: {
-                  "$ref" => "#/components/schemas/Assessment",
+                  "$ref" => "#/components/schemas/CertificatedAssessment",
                 }
 
       # rubocop:disable RSpec/VariableName
@@ -41,7 +41,7 @@ RSpec.describe "V5 Assessments", type: :request, vcr: true, swagger_doc: "v5/swa
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/' did not contain a required property of 'submission_date' in schema/)
+          expect(body[:errors]).to include(/The property '#\/' did not contain a required property of 'submission_date'/)
         end
       end
     end

@@ -15,115 +15,35 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                 in: :body,
                 required: true,
                 schema: {
-                  type: :object,
-                  required: %i[assessment applicant proceeding_types],
-                  properties: {
-                    assessment: { "$ref" => "#/components/schemas/Assessment" },
-                    applicant: { "$ref" => "#/components/schemas/Applicant" },
-                    proceeding_types: { "$ref" => "#/components/schemas/ProceedingTypes" },
-                    capitals: { "$ref" => "#/components/schemas/Capitals" },
-                    cash_transactions: { "$ref" => "#/components/schemas/CashTransactions" },
-                    dependants: {
-                      type: :array,
-                      description: "One or more dependants details",
-                      items: { "$ref" => "#/components/schemas/Dependant" },
-                    },
-                    employment_income: { "$ref" => "#/components/schemas/Employments" },
-                    irregular_incomes: {
+                  oneOf: [
+                    {
                       type: :object,
-                      description: "A set of irregular income payments",
-                      required: %i[payments],
-                      additionalProperties: false,
-                      example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
+                      required: %i[assessment applicant proceeding_types],
                       properties: {
-                        payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
-                      },
-                    },
-                    other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
-                    outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
-                    properties: {
-                      type: :object,
-                      required: %i[],
-                      description: "A main home and additional properties",
-                      properties: {
-                        main_home: { "$ref" => "#/components/schemas/Property" },
-                        additional_properties: {
+                        assessment: { "$ref" => "#/components/schemas/CertificatedAssessment" },
+                        applicant: { "$ref" => "#/components/schemas/Applicant" },
+                        proceeding_types: { "$ref" => "#/components/schemas/ProceedingTypes" },
+                        capitals: { "$ref" => "#/components/schemas/Capitals" },
+                        cash_transactions: { "$ref" => "#/components/schemas/CashTransactions" },
+                        dependants: {
                           type: :array,
-                          description: "One or more additional properties owned by the applicant",
-                          items: { "$ref" => "#/components/schemas/Property" },
+                          description: "One or more dependants details",
+                          items: { "$ref" => "#/components/schemas/Dependant" },
                         },
-                      },
-                    },
-                    regular_transactions: {
-                      type: :array,
-                      description: "Zero or more regular transactions",
-                      items: { "$ref" => "#/components/schemas/RegularTransaction" },
-                    },
-                    state_benefits: {
-                      type: :array,
-                      description: "One or more state benefits receved by the applicant and categorized by name",
-                      items: { "$ref" => "#/components/schemas/StateBenefit" },
-                    },
-                    vehicles: {
-                      type: :array,
-                      description: "One or more vehicles' details",
-                      items: { "$ref" => "#/components/schemas/Vehicle" },
-                    },
-                    employment_or_self_employment: {
-                      type: :array,
-                      description: "One or more self employment details",
-                      items: { "$ref" => "#/components/schemas/SelfEmployment" },
-                    },
-                    partner: {
-                      type: :object,
-                      required: %i[partner],
-                      description: "Full information about an applicant's partner",
-                      example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
-                      properties: {
-                        partner: {
+                        employment_income: { "$ref" => "#/components/schemas/Employments" },
+                        irregular_incomes: {
                           type: :object,
-                          description: "The partner of the applicant",
-                          required: %i[date_of_birth employed],
+                          description: "A set of irregular income payments",
+                          required: %i[payments],
+                          additionalProperties: false,
+                          example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
                           properties: {
-                            date_of_birth: {
-                              type: :string,
-                              format: :date,
-                              example: "1992-07-22",
-                              description: "Applicant's partner's date of birth",
-                            },
-                            employed: {
-                              type: :boolean,
-                              example: true,
-                              description: "Whether the applicant's partner is employed",
-                            },
+                            payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
                           },
                         },
-                        irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
-                        employments: {
-                          type: :array,
-                          required: %i[name client_id payments],
-                          description: "One or more employment income details",
-                          items: {
-                            type: :object,
-                            description: "Employment income detail",
-                            properties: {
-                              name: {
-                                type: :string,
-                                description: "Identifying name for this employment - e.g. employer's name",
-                              },
-                              client_id: {
-                                type: :string,
-                                description: "Client supplied id to identify the employment",
-                              },
-                              payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
-                            },
-                          },
-                        },
-                        employment_or_self_employment: {
-                          type: :array,
-                          description: "Partner self employment details",
-                          items: { "$ref" => "#/components/schemas/SelfEmployment" },
-                        },
+                        other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
+                        outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
+                        properties: { "$ref" => "#/components/schemas/MainHomeAndOtherProperties" },
                         regular_transactions: {
                           type: :array,
                           description: "Zero or more regular transactions",
@@ -131,29 +51,76 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         state_benefits: {
                           type: :array,
-                          description: "One or more state benefits received by the applicant's partner and categorized by name",
+                          description: "One or more state benefits receved by the applicant and categorized by name",
                           items: { "$ref" => "#/components/schemas/StateBenefit" },
                         },
-                        additional_properties: {
-                          type: :array,
-                          description: "One or more additional properties owned by the applicant's partner",
-                          items: { "$ref" => "#/components/schemas/Property" },
-                        },
-                        capital_items: { "$ref" => "#/components/schemas/Capitals" },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
                           items: { "$ref" => "#/components/schemas/Vehicle" },
                         },
+                        employment_or_self_employment: {
+                          type: :array,
+                          description: "One or more self employment details",
+                          items: { "$ref" => "#/components/schemas/CertificatedSelfEmployment" },
+                        },
+                        partner: { "$ref" => "#/components/schemas/CertificatedPartner" },
+                        explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
+                      },
+                    },
+                    {
+                      type: :object,
+                      required: %i[assessment applicant proceeding_types],
+                      properties: {
+                        assessment: { "$ref" => "#/components/schemas/ControlledAssessment" },
+                        applicant: { "$ref" => "#/components/schemas/Applicant" },
+                        proceeding_types: { "$ref" => "#/components/schemas/ProceedingTypes" },
+                        capitals: { "$ref" => "#/components/schemas/Capitals" },
+                        cash_transactions: { "$ref" => "#/components/schemas/CashTransactions" },
                         dependants: {
                           type: :array,
                           description: "One or more dependants details",
                           items: { "$ref" => "#/components/schemas/Dependant" },
                         },
+                        employment_income: { "$ref" => "#/components/schemas/Employments" },
+                        irregular_incomes: {
+                          type: :object,
+                          description: "A set of irregular income payments",
+                          required: %i[payments],
+                          additionalProperties: false,
+                          example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
+                          properties: {
+                            payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
+                          },
+                        },
+                        other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
+                        outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
+                        properties: { "$ref" => "#/components/schemas/MainHomeAndOtherProperties" },
+                        regular_transactions: {
+                          type: :array,
+                          description: "Zero or more regular transactions",
+                          items: { "$ref" => "#/components/schemas/RegularTransaction" },
+                        },
+                        state_benefits: {
+                          type: :array,
+                          description: "One or more state benefits receved by the applicant and categorized by name",
+                          items: { "$ref" => "#/components/schemas/StateBenefit" },
+                        },
+                        vehicles: {
+                          type: :array,
+                          description: "One or more vehicles' details",
+                          items: { "$ref" => "#/components/schemas/Vehicle" },
+                        },
+                        employment_or_self_employment: {
+                          type: :array,
+                          description: "One or more self employment details",
+                          items: { "$ref" => "#/components/schemas/ControlledSelfEmployment" },
+                        },
+                        partner: { "$ref" => "#/components/schemas/ControlledPartner" },
+                        explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
                       },
                     },
-                    explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
-                  },
+                  ],
                 }
 
       response(200, "successful") do

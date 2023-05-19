@@ -421,7 +421,7 @@ components:
           type: string
           enum:
           - applicant
-    Assessment:
+    CertificatedAssessment:
       type: object
       additionalProperties: false
       required:
@@ -433,15 +433,268 @@ components:
           description: Client's reference number for this application (free text)
         submission_date:
           type: string
+          format: date
           description: Date of the original submission (iso8601 format)
-          example: '2022-05-19'
         level_of_help:
           type: string
           enum:
           - certificated
-          - controlled
-          example: certificated
           description: The level of help required by the client. Defaults to 'certificated'
+    ControlledAssessment:
+      type: object
+      additionalProperties: false
+      required:
+      - submission_date
+      - level_of_help
+      properties:
+        client_reference_id:
+          type: string
+          example: LA-FOO-BAR
+          description: Client's reference number for this application (free text)
+        submission_date:
+          type: string
+          format: date
+          description: Date of the original submission (iso8601 format)
+        level_of_help:
+          type: string
+          enum:
+          - controlled
+          description: The level of help required by the client
+    ControlledPartner:
+      type: object
+      required:
+      - partner
+      description: Full information about an applicant's partner
+      example:
+        partner:
+          date_of_birth: '1992-07-22'
+          employed: true
+        irregular_incomes:
+        - income_type: student_loan
+          frequency: annual
+          amount: 101.01
+        employments:
+        - name: A
+          client_id: B
+          payments:
+          - client_id: C
+            date: '1992-07-22'
+            gross: 101.01
+            benefits_in_kind: 0
+            tax: 11
+            national_insurance: 3
+        regular_transactions:
+        - category: benefits
+          operation: credit
+          frequency: three_monthly
+          amount: 101.01
+        state_benefits:
+        - name: D
+          payments:
+          - client_id: E
+            date: '1992-07-22'
+            amount: 101.01
+            flags:
+              multi_benefit: false
+        additional_properties:
+        - value: 500000.01
+          outstanding_mortgage: 999.99
+          percentage_owned: 100
+          shared_with_housing_assoc: false
+          subject_matter_of_dispute: false
+        capitals:
+          bank_accounts:
+          - value: 1.01
+            description: F
+            subject_matter_of_dispute: false
+          non_liquid_capital:
+          - value: 1.01
+            description: G
+            subject_matter_of_dispute: false
+        vehicles:
+        - value: 5000
+          loan_amount_outstanding: 1000
+          date_of_purchase: '2017-01-23'
+          in_regular_use: true
+          subject_matter_of_dispute: false
+      properties:
+        partner:
+          type: object
+          description: The partner of the applicant
+          required:
+          - date_of_birth
+          - employed
+          properties:
+            date_of_birth:
+              type: string
+              format: date
+              example: '1992-07-22'
+              description: Applicant's partner's date of birth
+            employed:
+              type: boolean
+              example: true
+              description: Whether the applicant's partner is employed
+        irregular_incomes:
+          "$ref": "#/components/schemas/IrregularIncomePayments"
+        employments:
+          "$ref": "#/components/schemas/Employments"
+        employment_or_self_employment:
+          type: array
+          description: Partner self employment details
+          items:
+            "$ref": "#/components/schemas/ControlledSelfEmployment"
+        regular_transactions:
+          type: array
+          description: Zero or more regular transactions
+          items:
+            "$ref": "#/components/schemas/RegularTransaction"
+        state_benefits:
+          type: array
+          description: One or more state benefits receved by the applicant's partner
+            and categorized by name
+          items:
+            "$ref": "#/components/schemas/StateBenefit"
+        additional_properties:
+          type: array
+          description: One or more additional properties owned by the applicant's
+            partner
+          items:
+            "$ref": "#/components/schemas/Property"
+        capital_items:
+          "$ref": "#/components/schemas/Capitals"
+        vehicles:
+          type: array
+          description: One or more vehicles' details
+          items:
+            "$ref": "#/components/schemas/Vehicle"
+        dependants:
+          type: array
+          description: One or more dependants details
+          items:
+            "$ref": "#/components/schemas/Dependant"
+    CertificatedPartner:
+      type: object
+      required:
+      - partner
+      description: Full information about an applicant's partner
+      example:
+        partner:
+          date_of_birth: '1992-07-22'
+          employed: true
+        irregular_incomes:
+        - income_type: student_loan
+          frequency: annual
+          amount: 101.01
+        employments:
+        - name: A
+          client_id: B
+          payments:
+          - client_id: C
+            date: '1992-07-22'
+            gross: 101.01
+            benefits_in_kind: 0
+            tax: 11
+            national_insurance: 3
+        regular_transactions:
+        - category: benefits
+          operation: credit
+          frequency: three_monthly
+          amount: 101.01
+        state_benefits:
+        - name: D
+          payments:
+          - client_id: E
+            date: '1992-07-22'
+            amount: 101.01
+            flags:
+              multi_benefit: false
+        additional_properties:
+        - value: 500000.01
+          outstanding_mortgage: 999.99
+          percentage_owned: 100
+          shared_with_housing_assoc: false
+          subject_matter_of_dispute: false
+        capitals:
+          bank_accounts:
+          - value: 1.01
+            description: F
+            subject_matter_of_dispute: false
+          non_liquid_capital:
+          - value: 1.01
+            description: G
+            subject_matter_of_dispute: false
+        vehicles:
+        - value: 5000
+          loan_amount_outstanding: 1000
+          date_of_purchase: '2017-01-23'
+          in_regular_use: true
+          subject_matter_of_dispute: false
+      properties:
+        partner:
+          type: object
+          description: The partner of the applicant
+          required:
+          - date_of_birth
+          - employed
+          properties:
+            date_of_birth:
+              type: string
+              format: date
+              example: '1992-07-22'
+              description: Applicant's partner's date of birth
+            employed:
+              type: boolean
+              example: true
+              description: Whether the applicant's partner is employed
+        irregular_incomes:
+          "$ref": "#/components/schemas/IrregularIncomePayments"
+        employments:
+          "$ref": "#/components/schemas/Employments"
+        employment_or_self_employment:
+          type: array
+          description: Partner self employment details
+          items:
+            "$ref": "#/components/schemas/CertificatedSelfEmployment"
+        regular_transactions:
+          type: array
+          description: Zero or more regular transactions
+          items:
+            "$ref": "#/components/schemas/RegularTransaction"
+        state_benefits:
+          type: array
+          description: One or more state benefits receved by the applicant's partner
+            and categorized by name
+          items:
+            "$ref": "#/components/schemas/StateBenefit"
+        additional_properties:
+          type: array
+          description: One or more additional properties owned by the applicant's
+            partner
+          items:
+            "$ref": "#/components/schemas/Property"
+        capital_items:
+          "$ref": "#/components/schemas/Capitals"
+        vehicles:
+          type: array
+          description: One or more vehicles' details
+          items:
+            "$ref": "#/components/schemas/Vehicle"
+        dependants:
+          type: array
+          description: One or more dependants details
+          items:
+            "$ref": "#/components/schemas/Dependant"
+    MainHomeAndOtherProperties:
+      type: object
+      description: A main home and additional properties
+      properties:
+        main_home:
+          "$ref": "#/components/schemas/Property"
+        additional_properties:
+          type: array
+          description: One or more additional properties owned by the applicant
+          items:
+            "$ref": "#/components/schemas/Property"
     CashTransactions:
       type: object
       description: A set of cash income[ings] and outgoings payments by category
@@ -819,7 +1072,48 @@ components:
           example: three_monthly
         amount:
           "$ref": "#/components/schemas/currency"
-    SelfEmployment:
+    SelfEmploymentIncome:
+      type: object
+      required:
+      - frequency
+      - gross
+      - tax
+      - national_insurance
+      - receiving_only_statutory_sick_or_maternity_pay
+      - is_employment
+      additionalProperties: false
+      properties:
+        receiving_only_statutory_sick_or_maternity_pay:
+          type: boolean
+        frequency:
+          type: string
+          enum:
+          - weekly
+          - two_weekly
+          - four_weekly
+          - monthly
+          - three_monthly
+        is_employment:
+          type: boolean
+          description: set 'true' if this is a 'salary' type income (e.g. company
+            director salary)
+        gross:
+          type: number
+          format: decimal
+          minimum: 0
+        benefits_in_kind:
+          type: number
+          format: decimal
+          minimum: 0
+        tax:
+          type: number
+          format: decimal
+          minimum: 0
+        national_insurance:
+          type: number
+          format: decimal
+          minimum: 0
+    ControlledSelfEmployment:
       type: object
       required:
       - income
@@ -830,46 +1124,19 @@ components:
           type: string
           description: Optional reference, echoed in response
         income:
-          type: object
-          required:
-          - frequency
-          - gross
-          - tax
-          - national_insurance
-          - receiving_only_statutory_sick_or_maternity_pay
-          - is_employment
-          additionalProperties: false
-          properties:
-            receiving_only_statutory_sick_or_maternity_pay:
-              type: boolean
-            frequency:
-              type: string
-              enum:
-              - weekly
-              - two_weekly
-              - four_weekly
-              - monthly
-              - three_monthly
-            is_employment:
-              type: boolean
-              description: set 'true' if this is a 'salary' type income (e.g. company
-                director salary)
-            gross:
-              type: number
-              format: decimal
-              minimum: 0
-            benefits_in_kind:
-              type: number
-              format: decimal
-              minimum: 0
-            tax:
-              type: number
-              format: decimal
-              minimum: 0
-            national_insurance:
-              type: number
-              format: decimal
-              minimum: 0
+          "$ref": "#/components/schemas/SelfEmploymentIncome"
+    CertificatedSelfEmployment:
+      type: object
+      required:
+      - income
+      additionalProperties: false
+      description: This should be filled out when the client or partner is self employed
+      properties:
+        client_reference:
+          type: string
+          description: Optional reference, echoed in response
+        income:
+          "$ref": "#/components/schemas/SelfEmploymentIncome"
     StateBenefit:
       type: object
       required:
@@ -1122,7 +1389,7 @@ paths:
         content:
           application/json:
             schema:
-              "$ref": "#/components/schemas/Assessment"
+              "$ref": "#/components/schemas/CertificatedAssessment"
         required: true
   "/assessments/{id}":
     parameters:
@@ -1682,213 +1949,143 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-              - assessment
-              - applicant
-              - proceeding_types
-              properties:
-                assessment:
-                  "$ref": "#/components/schemas/Assessment"
-                applicant:
-                  "$ref": "#/components/schemas/Applicant"
-                proceeding_types:
-                  "$ref": "#/components/schemas/ProceedingTypes"
-                capitals:
-                  "$ref": "#/components/schemas/Capitals"
-                cash_transactions:
-                  "$ref": "#/components/schemas/CashTransactions"
-                dependants:
-                  type: array
-                  description: One or more dependants details
-                  items:
-                    "$ref": "#/components/schemas/Dependant"
-                employment_income:
-                  "$ref": "#/components/schemas/Employments"
-                irregular_incomes:
-                  type: object
-                  description: A set of irregular income payments
-                  required:
-                  - payments
-                  additionalProperties: false
-                  example:
-                    payments:
-                    - income_type: student_loan
-                      frequency: annual
-                      amount: 123456.78
-                  properties:
-                    payments:
-                      "$ref": "#/components/schemas/IrregularIncomePayments"
-                other_incomes:
-                  "$ref": "#/components/schemas/OtherIncomes"
-                outgoings:
-                  "$ref": "#/components/schemas/OutgoingsList"
+              oneOf:
+              - type: object
+                required:
+                - assessment
+                - applicant
+                - proceeding_types
                 properties:
-                  type: object
-                  required: []
-                  description: A main home and additional properties
-                  properties:
-                    main_home:
-                      "$ref": "#/components/schemas/Property"
-                    additional_properties:
-                      type: array
-                      description: One or more additional properties owned by the
-                        applicant
-                      items:
-                        "$ref": "#/components/schemas/Property"
-                regular_transactions:
-                  type: array
-                  description: Zero or more regular transactions
-                  items:
-                    "$ref": "#/components/schemas/RegularTransaction"
-                state_benefits:
-                  type: array
-                  description: One or more state benefits receved by the applicant
-                    and categorized by name
-                  items:
-                    "$ref": "#/components/schemas/StateBenefit"
-                vehicles:
-                  type: array
-                  description: One or more vehicles' details
-                  items:
-                    "$ref": "#/components/schemas/Vehicle"
-                employment_or_self_employment:
-                  type: array
-                  description: One or more self employment details
-                  items:
-                    "$ref": "#/components/schemas/SelfEmployment"
-                partner:
-                  type: object
-                  required:
-                  - partner
-                  description: Full information about an applicant's partner
-                  example:
-                    partner:
-                      date_of_birth: '1992-07-22'
-                      employed: true
-                    irregular_incomes:
-                    - income_type: student_loan
-                      frequency: annual
-                      amount: 101.01
-                    employments:
-                    - name: A
-                      client_id: B
+                  assessment:
+                    "$ref": "#/components/schemas/CertificatedAssessment"
+                  applicant:
+                    "$ref": "#/components/schemas/Applicant"
+                  proceeding_types:
+                    "$ref": "#/components/schemas/ProceedingTypes"
+                  capitals:
+                    "$ref": "#/components/schemas/Capitals"
+                  cash_transactions:
+                    "$ref": "#/components/schemas/CashTransactions"
+                  dependants:
+                    type: array
+                    description: One or more dependants details
+                    items:
+                      "$ref": "#/components/schemas/Dependant"
+                  employment_income:
+                    "$ref": "#/components/schemas/Employments"
+                  irregular_incomes:
+                    type: object
+                    description: A set of irregular income payments
+                    required:
+                    - payments
+                    additionalProperties: false
+                    example:
                       payments:
-                      - client_id: C
-                        date: '1992-07-22'
-                        gross: 101.01
-                        benefits_in_kind: 0
-                        tax: 11
-                        national_insurance: 3
-                    regular_transactions:
-                    - category: benefits
-                      operation: credit
-                      frequency: three_monthly
-                      amount: 101.01
-                    state_benefits:
-                    - name: D
+                      - income_type: student_loan
+                        frequency: annual
+                        amount: 123456.78
+                    properties:
                       payments:
-                      - client_id: E
-                        date: '1992-07-22'
-                        amount: 101.01
-                        flags:
-                          multi_benefit: false
-                    additional_properties:
-                    - value: 500000.01
-                      outstanding_mortgage: 999.99
-                      percentage_owned: 100
-                      shared_with_housing_assoc: false
-                      subject_matter_of_dispute: false
-                    capitals:
-                      bank_accounts:
-                      - value: 1.01
-                        description: F
-                        subject_matter_of_dispute: false
-                      non_liquid_capital:
-                      - value: 1.01
-                        description: G
-                        subject_matter_of_dispute: false
-                    vehicles:
-                    - value: 5000
-                      loan_amount_outstanding: 1000
-                      date_of_purchase: '2017-01-23'
-                      in_regular_use: true
-                      subject_matter_of_dispute: false
+                        "$ref": "#/components/schemas/IrregularIncomePayments"
+                  other_incomes:
+                    "$ref": "#/components/schemas/OtherIncomes"
+                  outgoings:
+                    "$ref": "#/components/schemas/OutgoingsList"
                   properties:
-                    partner:
-                      type: object
-                      description: The partner of the applicant
-                      required:
-                      - date_of_birth
-                      - employed
-                      properties:
-                        date_of_birth:
-                          type: string
-                          format: date
-                          example: '1992-07-22'
-                          description: Applicant's partner's date of birth
-                        employed:
-                          type: boolean
-                          example: true
-                          description: Whether the applicant's partner is employed
-                    irregular_incomes:
-                      "$ref": "#/components/schemas/IrregularIncomePayments"
-                    employments:
-                      type: array
-                      required:
-                      - name
-                      - client_id
-                      - payments
-                      description: One or more employment income details
-                      items:
-                        type: object
-                        description: Employment income detail
-                        properties:
-                          name:
-                            type: string
-                            description: Identifying name for this employment - e.g.
-                              employer's name
-                          client_id:
-                            type: string
-                            description: Client supplied id to identify the employment
-                          payments:
-                            "$ref": "#/components/schemas/EmploymentPaymentList"
-                    employment_or_self_employment:
-                      type: array
-                      description: Partner self employment details
-                      items:
-                        "$ref": "#/components/schemas/SelfEmployment"
-                    regular_transactions:
-                      type: array
-                      description: Zero or more regular transactions
-                      items:
-                        "$ref": "#/components/schemas/RegularTransaction"
-                    state_benefits:
-                      type: array
-                      description: One or more state benefits received by the applicant's
-                        partner and categorized by name
-                      items:
-                        "$ref": "#/components/schemas/StateBenefit"
-                    additional_properties:
-                      type: array
-                      description: One or more additional properties owned by the
-                        applicant's partner
-                      items:
-                        "$ref": "#/components/schemas/Property"
-                    capital_items:
-                      "$ref": "#/components/schemas/Capitals"
-                    vehicles:
-                      type: array
-                      description: One or more vehicles' details
-                      items:
-                        "$ref": "#/components/schemas/Vehicle"
-                    dependants:
-                      type: array
-                      description: One or more dependants details
-                      items:
-                        "$ref": "#/components/schemas/Dependant"
-                explicit_remarks:
-                  "$ref": "#/components/schemas/ExplicitRemarks"
+                    "$ref": "#/components/schemas/MainHomeAndOtherProperties"
+                  regular_transactions:
+                    type: array
+                    description: Zero or more regular transactions
+                    items:
+                      "$ref": "#/components/schemas/RegularTransaction"
+                  state_benefits:
+                    type: array
+                    description: One or more state benefits receved by the applicant
+                      and categorized by name
+                    items:
+                      "$ref": "#/components/schemas/StateBenefit"
+                  vehicles:
+                    type: array
+                    description: One or more vehicles' details
+                    items:
+                      "$ref": "#/components/schemas/Vehicle"
+                  employment_or_self_employment:
+                    type: array
+                    description: One or more self employment details
+                    items:
+                      "$ref": "#/components/schemas/CertificatedSelfEmployment"
+                  partner:
+                    "$ref": "#/components/schemas/CertificatedPartner"
+                  explicit_remarks:
+                    "$ref": "#/components/schemas/ExplicitRemarks"
+              - type: object
+                required:
+                - assessment
+                - applicant
+                - proceeding_types
+                properties:
+                  assessment:
+                    "$ref": "#/components/schemas/ControlledAssessment"
+                  applicant:
+                    "$ref": "#/components/schemas/Applicant"
+                  proceeding_types:
+                    "$ref": "#/components/schemas/ProceedingTypes"
+                  capitals:
+                    "$ref": "#/components/schemas/Capitals"
+                  cash_transactions:
+                    "$ref": "#/components/schemas/CashTransactions"
+                  dependants:
+                    type: array
+                    description: One or more dependants details
+                    items:
+                      "$ref": "#/components/schemas/Dependant"
+                  employment_income:
+                    "$ref": "#/components/schemas/Employments"
+                  irregular_incomes:
+                    type: object
+                    description: A set of irregular income payments
+                    required:
+                    - payments
+                    additionalProperties: false
+                    example:
+                      payments:
+                      - income_type: student_loan
+                        frequency: annual
+                        amount: 123456.78
+                    properties:
+                      payments:
+                        "$ref": "#/components/schemas/IrregularIncomePayments"
+                  other_incomes:
+                    "$ref": "#/components/schemas/OtherIncomes"
+                  outgoings:
+                    "$ref": "#/components/schemas/OutgoingsList"
+                  properties:
+                    "$ref": "#/components/schemas/MainHomeAndOtherProperties"
+                  regular_transactions:
+                    type: array
+                    description: Zero or more regular transactions
+                    items:
+                      "$ref": "#/components/schemas/RegularTransaction"
+                  state_benefits:
+                    type: array
+                    description: One or more state benefits receved by the applicant
+                      and categorized by name
+                    items:
+                      "$ref": "#/components/schemas/StateBenefit"
+                  vehicles:
+                    type: array
+                    description: One or more vehicles' details
+                    items:
+                      "$ref": "#/components/schemas/Vehicle"
+                  employment_or_self_employment:
+                    type: array
+                    description: One or more self employment details
+                    items:
+                      "$ref": "#/components/schemas/ControlledSelfEmployment"
+                  partner:
+                    "$ref": "#/components/schemas/ControlledPartner"
+                  explicit_remarks:
+                    "$ref": "#/components/schemas/ExplicitRemarks"
         required: true
   "/assessments/{assessment_id}/irregular_incomes":
     post:

@@ -141,7 +141,7 @@ module V6
         it "returns error JSON" do
           codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.join(", ")
           expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes} in schema/)
+            .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes}/)
         end
       end
 
@@ -154,7 +154,7 @@ module V6
 
         it "returns error JSON" do
           expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
+            .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1/)
         end
       end
 
@@ -200,7 +200,7 @@ module V6
 
         it "returns error JSON" do
           expect(parsed_response[:errors])
-            .to include(/The property '#\/dependants' of type object did not match the following type: array in schema/)
+            .to include(/The property '#\/dependants' of type object did not match the following type: array/)
         end
       end
 
@@ -253,7 +253,7 @@ module V6
 
         it "returns error JSON" do
           expect(parsed_response[:errors])
-            .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array in schema/)
+            .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array/)
         end
       end
 

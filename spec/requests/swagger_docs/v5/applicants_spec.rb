@@ -64,7 +64,7 @@ RSpec.describe "applicants", type: :request, swagger_doc: "v5/swagger.yaml" do
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/applicant' did not contain a required property of 'date_of_birth' in schema/)
+          expect(body[:errors]).to include(/The property '#\/applicant' did not contain a required property of 'date_of_birth'/)
         end
       end
     end

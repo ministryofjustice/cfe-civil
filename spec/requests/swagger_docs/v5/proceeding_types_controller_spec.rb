@@ -67,7 +67,7 @@ RSpec.describe "proceeding_types", type: :request, swagger_doc: "v5/swagger.yaml
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/proceeding_types\/0\/client_involvement_type' value "X" did not match one of the following values: A, D, W, Z, I in schema/)
+          expect(body[:errors]).to include(/The property '#\/proceeding_types\/0\/client_involvement_type' value "X" did not match one of the following values: A, D, W, Z, I/)
         end
       end
     end

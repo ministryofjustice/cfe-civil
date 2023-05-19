@@ -101,10 +101,10 @@ RSpec.describe RegularTransactionsController, type: :request do
       it "returns expected errors" do
         request
         expect(parsed_response[:errors])
-          .to include(%r{The property '#/regular_transactions/0' did not contain a required property of 'category' in schema},
-                      %r{The property '#/regular_transactions/0' did not contain a required property of 'operation' in schema},
-                      %r{The property '#/regular_transactions/0' did not contain a required property of 'frequency' in schema},
-                      %r{The property '#/regular_transactions/0' did not contain a required property of 'amount' in schema})
+          .to include(%r{The property '#/regular_transactions/0' did not contain a required property of 'category'},
+                      %r{The property '#/regular_transactions/0' did not contain a required property of 'operation'},
+                      %r{The property '#/regular_transactions/0' did not contain a required property of 'frequency'},
+                      %r{The property '#/regular_transactions/0' did not contain a required property of 'amount'})
       end
     end
 

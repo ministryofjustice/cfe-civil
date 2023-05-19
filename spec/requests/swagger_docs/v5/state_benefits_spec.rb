@@ -66,7 +66,7 @@ RSpec.describe "state_benefits", type: :request, swagger_doc: "v5/swagger.yaml" 
 
         run_test! do |response|
           body = JSON.parse(response.body, symbolize_names: true)
-          expect(body[:errors]).to include(/The property '#\/state_benefits\/0' did not contain a required property of 'name' in schema/)
+          expect(body[:errors]).to include(/The property '#\/state_benefits\/0' did not contain a required property of 'name'/)
         end
       end
     end

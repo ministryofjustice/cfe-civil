@@ -413,7 +413,7 @@ RSpec.configure do |config|
               },
             },
           },
-          Assessment: {
+          CertificatedAssessment: {
             type: :object,
             additionalProperties: false,
             required: %i[submission_date],
@@ -425,14 +425,165 @@ RSpec.configure do |config|
               },
               submission_date: {
                 type: :string,
+                format: :date,
                 description: "Date of the original submission (iso8601 format)",
-                example: "2022-05-19",
               },
               level_of_help: {
                 type: :string,
-                enum: Assessment.levels_of_help.keys,
-                example: Assessment.levels_of_help.keys.first,
+                enum: %i[certificated],
                 description: "The level of help required by the client. Defaults to 'certificated'",
+              },
+            },
+          },
+          ControlledAssessment: {
+            type: :object,
+            additionalProperties: false,
+            required: %i[submission_date level_of_help],
+            properties: {
+              client_reference_id: {
+                type: :string,
+                example: "LA-FOO-BAR",
+                description: "Client's reference number for this application (free text)",
+              },
+              submission_date: {
+                type: :string,
+                format: :date,
+                description: "Date of the original submission (iso8601 format)",
+              },
+              level_of_help: {
+                type: :string,
+                enum: %i[controlled],
+                description: "The level of help required by the client",
+              },
+            },
+          },
+          ControlledPartner: {
+            type: :object,
+            required: %i[partner],
+            description: "Full information about an applicant's partner",
+            example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+            properties: {
+              partner: {
+                type: :object,
+                description: "The partner of the applicant",
+                required: %i[date_of_birth employed],
+                properties: {
+                  date_of_birth: {
+                    type: :string,
+                    format: :date,
+                    example: "1992-07-22",
+                    description: "Applicant's partner's date of birth",
+                  },
+                  employed: {
+                    type: :boolean,
+                    example: true,
+                    description: "Whether the applicant's partner is employed",
+                  },
+                },
+              },
+              irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
+              employments: { "$ref" => "#/components/schemas/Employments" },
+              employment_or_self_employment: {
+                type: :array,
+                description: "Partner self employment details",
+                items: { "$ref" => "#/components/schemas/ControlledSelfEmployment" },
+              },
+              regular_transactions: {
+                type: :array,
+                description: "Zero or more regular transactions",
+                items: { "$ref" => "#/components/schemas/RegularTransaction" },
+              },
+              state_benefits: {
+                type: :array,
+                description: "One or more state benefits receved by the applicant's partner and categorized by name",
+                items: { "$ref" => "#/components/schemas/StateBenefit" },
+              },
+              additional_properties: {
+                type: :array,
+                description: "One or more additional properties owned by the applicant's partner",
+                items: { "$ref" => "#/components/schemas/Property" },
+              },
+              capital_items: { "$ref" => "#/components/schemas/Capitals" },
+              vehicles: {
+                type: :array,
+                description: "One or more vehicles' details",
+                items: { "$ref" => "#/components/schemas/Vehicle" },
+              },
+              dependants: {
+                type: :array,
+                description: "One or more dependants details",
+                items: { "$ref" => "#/components/schemas/Dependant" },
+              },
+            },
+          },
+          CertificatedPartner: {
+            type: :object,
+            required: %i[partner],
+            description: "Full information about an applicant's partner",
+            example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+            properties: {
+              partner: {
+                type: :object,
+                description: "The partner of the applicant",
+                required: %i[date_of_birth employed],
+                properties: {
+                  date_of_birth: {
+                    type: :string,
+                    format: :date,
+                    example: "1992-07-22",
+                    description: "Applicant's partner's date of birth",
+                  },
+                  employed: {
+                    type: :boolean,
+                    example: true,
+                    description: "Whether the applicant's partner is employed",
+                  },
+                },
+              },
+              irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
+              employments: { "$ref" => "#/components/schemas/Employments" },
+              employment_or_self_employment: {
+                type: :array,
+                description: "Partner self employment details",
+                items: { "$ref" => "#/components/schemas/CertificatedSelfEmployment" },
+              },
+              regular_transactions: {
+                type: :array,
+                description: "Zero or more regular transactions",
+                items: { "$ref" => "#/components/schemas/RegularTransaction" },
+              },
+              state_benefits: {
+                type: :array,
+                description: "One or more state benefits receved by the applicant's partner and categorized by name",
+                items: { "$ref" => "#/components/schemas/StateBenefit" },
+              },
+              additional_properties: {
+                type: :array,
+                description: "One or more additional properties owned by the applicant's partner",
+                items: { "$ref" => "#/components/schemas/Property" },
+              },
+              capital_items: { "$ref" => "#/components/schemas/Capitals" },
+              vehicles: {
+                type: :array,
+                description: "One or more vehicles' details",
+                items: { "$ref" => "#/components/schemas/Vehicle" },
+              },
+              dependants: {
+                type: :array,
+                description: "One or more dependants details",
+                items: { "$ref" => "#/components/schemas/Dependant" },
+              },
+            },
+          },
+          MainHomeAndOtherProperties: {
+            type: :object,
+            description: "A main home and additional properties",
+            properties: {
+              main_home: { "$ref" => "#/components/schemas/Property" },
+              additional_properties: {
+                type: :array,
+                description: "One or more additional properties owned by the applicant",
+                items: { "$ref" => "#/components/schemas/Property" },
               },
             },
           },
@@ -697,7 +848,43 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
-          SelfEmployment: {
+          SelfEmploymentIncome: {
+            type: :object,
+            required: %i[frequency gross tax national_insurance receiving_only_statutory_sick_or_maternity_pay is_employment],
+            additionalProperties: false,
+            properties: {
+              receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
+              frequency: {
+                type: :string,
+                enum: SelfEmploymentIncome::PAYMENT_FREQUENCIES,
+              },
+              is_employment: {
+                type: :boolean,
+                description: "set 'true' if this is a 'salary' type income (e.g. company director salary)",
+              },
+              gross: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+              },
+              benefits_in_kind: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+              },
+              tax: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+              },
+              national_insurance: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+              },
+            },
+          },
+          ControlledSelfEmployment: {
             type: :object,
             required: %i[income],
             additionalProperties: false,
@@ -707,42 +894,20 @@ RSpec.configure do |config|
                 type: :string,
                 description: "Optional reference, echoed in response",
               },
-              income: {
-                type: :object,
-                required: %i[frequency gross tax national_insurance receiving_only_statutory_sick_or_maternity_pay is_employment],
-                additionalProperties: false,
-                properties: {
-                  receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
-                  frequency: {
-                    type: :string,
-                    enum: SelfEmploymentIncome::PAYMENT_FREQUENCIES,
-                  },
-                  is_employment: {
-                    type: :boolean,
-                    description: "set 'true' if this is a 'salary' type income (e.g. company director salary)",
-                  },
-                  gross: {
-                    type: :number,
-                    format: :decimal,
-                    minimum: 0,
-                  },
-                  benefits_in_kind: {
-                    type: :number,
-                    format: :decimal,
-                    minimum: 0,
-                  },
-                  tax: {
-                    type: :number,
-                    format: :decimal,
-                    minimum: 0,
-                  },
-                  national_insurance: {
-                    type: :number,
-                    format: :decimal,
-                    minimum: 0,
-                  },
-                },
+              income: { "$ref" => "#/components/schemas/SelfEmploymentIncome" },
+            },
+          },
+          CertificatedSelfEmployment: {
+            type: :object,
+            required: %i[income],
+            additionalProperties: false,
+            description: "This should be filled out when the client or partner is self employed",
+            properties: {
+              client_reference: {
+                type: :string,
+                description: "Optional reference, echoed in response",
               },
+              income: { "$ref" => "#/components/schemas/SelfEmploymentIncome" },
             },
           },
           StateBenefit: {

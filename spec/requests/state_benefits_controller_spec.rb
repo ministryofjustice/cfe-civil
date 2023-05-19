@@ -81,7 +81,7 @@ RSpec.describe StateBenefitsController, type: :request do
 
         it "returns an error" do
           expect(parsed_response[:errors])
-            .to include(/The property '#\/state_benefits\/0\/payments\/0' did not contain a required property of 'date' in schema/)
+            .to include(/The property '#\/state_benefits\/0\/payments\/0' did not contain a required property of 'date'/)
           expect(StateBenefitPayment.count).to eq 0
         end
       end
@@ -98,7 +98,7 @@ RSpec.describe StateBenefitsController, type: :request do
         end
 
         it "contains success false in the response body" do
-          expect(parsed_response).to match(errors: [/The property '#\/state_benefits\/1' did not contain a required property of 'name' in schema/], success: false)
+          expect(parsed_response).to match(errors: [/The property '#\/state_benefits\/1' did not contain a required property of 'name'/], success: false)
         end
 
         it "does not create any state benefit records" do
