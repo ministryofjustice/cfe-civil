@@ -407,6 +407,8 @@ workflows:
           filters:
             branches:
               only: main
+          requires:
+            - build_and_push
       - integration_tests:
           filters:
             branches:
@@ -427,12 +429,12 @@ workflows:
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
-            - build_and_push
+            - end2end_tests
       #          <<: *generic-slack-fail-post-step
       - deploy_staging:
           context: cfe-civil-staging
           requires:
-            - build_and_push
+            - end2end_tests
           filters:
             branches:
               only:
@@ -440,7 +442,7 @@ workflows:
       - deploy_production_approval:
           type: approval
           requires:
-            - build_and_push
+            - end2end_tests
           filters:
             branches:
               only:
