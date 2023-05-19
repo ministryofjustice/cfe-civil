@@ -5,13 +5,16 @@ FactoryBot.define do
 
     name { nil }
 
+    transient do
+      payment_amount { 88.30 }
+    end
+
     trait :with_monthly_payments do
-      monthly_value { 88.3 }
-      after(:create) do |record|
+      after(:create) do |record, evaluator|
         [record.assessment.submission_date,
          record.assessment.submission_date - 1.month,
          record.assessment.submission_date - 2.months].each do |date|
-          create :state_benefit_payment, state_benefit: record, amount: 88.30, payment_date: date, client_id: SecureRandom.uuid
+          create :state_benefit_payment, state_benefit: record, amount: evaluator.payment_amount, payment_date: date, client_id: SecureRandom.uuid
         end
       end
     end

@@ -7,11 +7,18 @@ module Calculators
     let(:included_state_benefit_type) { create :state_benefit_type, :benefit_included }
     let(:excluded_state_benefit_type) { create :state_benefit_type, :benefit_excluded }
     let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:state_benefits_input) do
+      gross_income_summary.state_benefits.map do |sb|
+        OpenStruct.new(monthly_value: 88.3, exclude_from_gross_income?: sb.exclude_from_gross_income)
+      end
+    end
 
-    subject(:calculator) { described_class.call(disposable_income_summary) }
+    subject(:calculator) do
+      described_class.call(state_benefits_input)
+    end
 
     context "no state benefit payments" do
-      it " should return zero" do
+      it "returns zero" do
         expect(calculator).to eq 0
       end
     end

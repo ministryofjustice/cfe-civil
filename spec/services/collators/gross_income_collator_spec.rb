@@ -4,6 +4,7 @@ module Collators
   RSpec.describe GrossIncomeCollator do
     let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary, proceedings: proceeding_type_codes }
     let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:employments) { [] }
 
     before do
       create :bank_holiday
@@ -19,7 +20,7 @@ module Collators
       subject(:collator) do
         described_class.call assessment:,
                              submission_date: assessment.submission_date,
-                             employments: assessment.employments,
+                             employments:,
                              gross_income_summary: assessment.gross_income_summary
       end
 
@@ -149,11 +150,9 @@ module Collators
         context "gross_employment_income" do
           let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
-
-          before do
-            assessment.employments.each do |employment|
-              monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment.employment_payments)
-              Calculators::EmploymentMonthlyValueCalculator.call(employment, assessment.submission_date, monthly_equivalent_payments)
+          let(:employments) do
+            assessment.employments.map do |_e|
+              OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, actively_working?: true)
             end
           end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_19_124156) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -139,12 +139,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
   create_table "employments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "name"
-    t.decimal "monthly_gross_income", default: "0.0", null: false
-    t.decimal "monthly_benefits_in_kind", default: "0.0", null: false
-    t.decimal "monthly_tax", default: "0.0", null: false
-    t.decimal "monthly_national_insurance", default: "0.0", null: false
     t.string "client_id", null: false
-    t.string "calculation_method"
     t.string "type", default: "ApplicantEmployment"
     t.boolean "receiving_only_statutory_sick_or_maternity_pay", default: false
     t.index ["assessment_id"], name: "index_employments_on_assessment_id"
@@ -175,7 +170,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
     t.uuid "other_income_source_id", null: false
     t.date "payment_date", null: false
     t.decimal "amount", null: false
-    t.boolean "assessment_error", default: false
     t.string "client_id"
     t.index ["other_income_source_id"], name: "index_other_income_payments_on_other_income_source_id"
   end
@@ -184,7 +178,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
     t.uuid "gross_income_summary_id", null: false
     t.string "name", null: false
     t.decimal "monthly_income"
-    t.boolean "assessment_error", default: false
     t.index ["gross_income_summary_id"], name: "index_other_income_sources_on_gross_income_summary_id"
   end
 
@@ -269,7 +262,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
     t.uuid "gross_income_summary_id", null: false
     t.uuid "state_benefit_type_id", null: false
     t.string "name"
-    t.decimal "monthly_value", default: "0.0", null: false
     t.index ["gross_income_summary_id"], name: "index_state_benefits_on_gross_income_summary_id"
     t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
@@ -280,8 +272,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_121447) do
     t.date "date_of_purchase"
     t.boolean "in_regular_use"
     t.uuid "capital_summary_id"
-    t.boolean "included_in_assessment", default: false, null: false
-    t.decimal "assessed_value"
     t.boolean "subject_matter_of_dispute"
     t.index ["capital_summary_id"], name: "index_vehicles_on_capital_summary_id"
   end

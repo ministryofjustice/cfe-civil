@@ -3,7 +3,7 @@ require "rails_helper"
 module Calculators
   RSpec.describe SubjectMatterOfDisputeDisregardCalculator do
     subject(:value) do
-      described_class.call(disputed_vehicles: capital_summary.vehicles.select(&:subject_matter_of_dispute),
+      described_class.call(disputed_vehicles: vehicles,
                            disputed_capital_items: capital_summary.non_liquid_capital_items.select(&:subject_matter_of_dispute) +
                              capital_summary.liquid_capital_items.select(&:subject_matter_of_dispute),
                            maximum_disregard:)
@@ -11,10 +11,9 @@ module Calculators
 
     let(:capital_summary) do
       create :capital_summary,
-             vehicles: [vehicle],
              capital_items: [capital_item]
     end
-    let(:vehicle) { create :vehicle, subject_matter_of_dispute: false }
+    let(:vehicles) { [] }
     let(:capital_item) { create :liquid_capital_item, subject_matter_of_dispute: false }
     let(:maximum_disregard) { 10_000 }
 
@@ -26,7 +25,7 @@ module Calculators
       end
 
       context "with a SMOD vehicle worth less than the disregard" do
-        let(:vehicle) { create :vehicle, assessed_value: 1_000, subject_matter_of_dispute: true }
+        let(:vehicles) { [OpenStruct.new(assessed_value: 1_000)] }
 
         it "returns the value of the vehicle" do
           expect(value).to eq 1_000
@@ -43,7 +42,7 @@ module Calculators
 
       context "with multiple SMOD assets worth less than the disregard" do
         let(:capital_item) { create :liquid_capital_item, value: 3_000, subject_matter_of_dispute: true }
-        let(:vehicle) { create :vehicle, assessed_value: 1_000, subject_matter_of_dispute: true }
+        let(:vehicles) { [OpenStruct.new(assessed_value: 1_000)] }
 
         it "returns the combined value of the assets" do
           expect(value).to eq 4_000
@@ -52,7 +51,7 @@ module Calculators
 
       context "with multiple SMOD assets worth more than the disregard" do
         let(:capital_item) { create :liquid_capital_item, value: 3_000, subject_matter_of_dispute: true }
-        let(:vehicle) { create :vehicle, assessed_value: 1_000, subject_matter_of_dispute: true }
+        let(:vehicles) { [OpenStruct.new(assessed_value: 1_000)] }
 
         it "returns the disregard value" do
           expect(value).to eq 4_000
@@ -61,7 +60,7 @@ module Calculators
 
       context "if there is no valid upper limit provided" do
         let(:capital_item) { create :liquid_capital_item, value: 3_000, subject_matter_of_dispute: true }
-        let(:vehicle) { create :vehicle, assessed_value: 1_000, subject_matter_of_dispute: true }
+        let(:vehicles) { [OpenStruct.new(assessed_value: 1_000)] }
         let(:maximum_disregard) { nil }
 
         it "raises an exception" do

@@ -21,13 +21,13 @@ module Workflows
 
       def convert_employment(employment, submission_date)
         monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment.employment_payments)
-        Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date, monthly_equivalent_payments)
-        EmploymentData.new(monthly_tax: employment.monthly_tax,
-                           monthly_gross_income: employment.monthly_gross_income,
-                           monthly_national_insurance: employment.monthly_national_insurance,
+        result = Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date, monthly_equivalent_payments)
+        EmploymentData.new(monthly_tax: result.fetch(:monthly_tax),
+                           monthly_gross_income: result.fetch(:monthly_gross_income),
+                           monthly_national_insurance: result.fetch(:monthly_national_insurance),
                            actively_working?: employment.actively_working?,
                            client_id: employment.client_id,
-                           monthly_benefits_in_kind: employment.monthly_benefits_in_kind)
+                           monthly_benefits_in_kind: result.fetch(:monthly_benefits_in_kind))
       end
 
       def collate_and_assess_gross_income(assessment)

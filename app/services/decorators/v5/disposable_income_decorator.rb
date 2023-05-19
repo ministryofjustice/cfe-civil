@@ -3,10 +3,11 @@ module Decorators
     class DisposableIncomeDecorator
       attr_reader :record, :categories
 
-      def initialize(summary:, disposable_income_subtotals:)
+      def initialize(summary:, disposable_income_subtotals:, state_benefits:)
         @summary = summary
         @disposable_income_subtotals = disposable_income_subtotals
         @categories = CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym)
+        @state_benefits = state_benefits
       end
 
       def as_json
@@ -43,7 +44,7 @@ module Decorators
       def deductions
         {
           dependants_allowance: @disposable_income_subtotals.dependant_allowance.to_f,
-          disregarded_state_benefits: Calculators::DisregardedStateBenefitsCalculator.call(@summary).to_f,
+          disregarded_state_benefits: Calculators::DisregardedStateBenefitsCalculator.call(@state_benefits).to_f,
         }
       end
     end
