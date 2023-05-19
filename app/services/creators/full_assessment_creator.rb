@@ -31,7 +31,7 @@ module Creators
         },
         lambda { |assessment, params|
           if params[:dependants]
-            Creators::DependantsCreator.call(dependants: assessment.dependants,
+            Creators::DependantsCreator.call(dependants: assessment.client_dependants,
                                              dependants_params: { dependants: params[:dependants] })
           end
         },

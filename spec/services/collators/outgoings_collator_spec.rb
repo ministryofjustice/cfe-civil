@@ -6,7 +6,8 @@ module Collators
 
     subject(:collator) do
       described_class.call(submission_date: assessment.submission_date,
-                           person: OpenStruct.new(employed?: assessment.applicant&.employed?, dependants: assessment.dependants),
+                           person: OpenStruct.new(employed?: assessment.applicant&.employed?,
+                                                  dependants: assessment.client_dependants),
                            gross_income_summary: assessment.gross_income_summary,
                            disposable_income_summary: assessment.disposable_income_summary,
                            eligible_for_childcare: true,

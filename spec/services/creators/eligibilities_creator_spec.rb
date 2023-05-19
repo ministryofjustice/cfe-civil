@@ -18,7 +18,7 @@ module Creators
       context "with 5 children" do
         let(:assessment) do
           create(:assessment, :with_everything,
-                 dependants: build_list(:applicant_dependant, 2, :child_relative)).tap do |assessment|
+                 client_dependants: build_list(:applicant_dependant, 2, :child_relative)).tap do |assessment|
             3.times do
               assessment.partner_dependants.create!(attributes_for(:dependant, :child_relative,
                                                                    submission_date: assessment.submission_date))
