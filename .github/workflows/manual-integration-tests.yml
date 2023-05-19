@@ -47,7 +47,6 @@ jobs:
           GOOGLE_SHEETS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
           GOOGLE_SHEETS_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           GOOGLE_SHEETS_PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
-          ALLOW_FUTURE_SUBMISSION_DATE: true
         run: |
           bin/rails db:create db:schema:load
       - name: Run Tests
@@ -57,7 +56,6 @@ jobs:
           GOOGLE_SHEETS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
           GOOGLE_SHEETS_PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
           GOOGLE_SHEETS_PRIVATE_KEY_ID: ${{ secrets.PRIVATE_KEY_ID }}
-          ALLOW_FUTURE_SUBMISSION_DATE: true
         run: |
           bin/ispec -v -r
 

@@ -37,7 +37,6 @@ module CheckFinancialEligibility
     # this overrides the setting and allows the code(and tests) to run as normal
     config.active_record.yaml_column_permitted_classes = [Symbol, Date, Remarks]
 
-    config.x.application.allow_future_submission_date = ENV["ALLOW_FUTURE_SUBMISSION_DATE"] || false
     config.x.status.build_date = ENV["BUILD_DATE"] || "Not Available"
     config.x.status.build_tag = ENV["BUILD_TAG"] || "Not Available"
     config.x.status.app_branch = ENV["APP_BRANCH"] || "Not Available"
