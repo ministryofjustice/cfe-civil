@@ -1,9 +1,7 @@
 module Calculators
   class HousingCostsCalculator
-    delegate :housing_cost_outgoings, to: :@disposable_income_summary
-
-    def initialize(disposable_income_summary:, gross_income_summary:, submission_date:, person:)
-      @disposable_income_summary = disposable_income_summary
+    def initialize(housing_cost_outgoings:, gross_income_summary:, submission_date:, person:)
+      @housing_cost_outgoings = housing_cost_outgoings
       @gross_income_summary = gross_income_summary
       @submission_date = submission_date
       @person = person
@@ -36,7 +34,7 @@ module Calculators
 
     def gross_housing_costs_bank
       Calculators::MonthlyEquivalentCalculator.call(
-        collection: @disposable_income_summary.housing_cost_outgoings,
+        collection: @housing_cost_outgoings,
         amount_method: :allowable_amount,
       )
     end
@@ -44,7 +42,8 @@ module Calculators
   private
 
     def gross_housing_costs_cash
-      Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category: :rent_or_mortgage)
+      cash_transactions = @gross_income_summary.cash_transactions(:debit, :rent_or_mortgage)
+      Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
     end
 
     def gross_housing_costs_regular_transactions
@@ -59,13 +58,11 @@ module Calculators
     # but at time of writing they do not include sub-types of housing costs,
     # specifically "board and lodging", so this should never get called.
     def monthly_actual_housing_costs
-      @monthly_actual_housing_costs ||= calculate_actual_housing_costs + gross_housing_costs_cash
+      @monthly_actual_housing_costs ||= actual_housing_costs + gross_housing_costs_cash
     end
 
-    def calculate_actual_housing_costs
-      Calculators::MonthlyEquivalentCalculator.call(
-        collection: housing_cost_outgoings,
-      )
+    def actual_housing_costs
+      Calculators::MonthlyEquivalentCalculator.call(collection: @housing_cost_outgoings)
     end
 
     def gross_cost_minus_housing_benefit
@@ -77,8 +74,8 @@ module Calculators
     end
 
     def all_board_and_lodging?
-      housing_cost_outgoings.present? &&
-        housing_cost_outgoings.map(&:housing_cost_type).all?("board_and_lodging")
+      @housing_cost_outgoings.present? &&
+        @housing_cost_outgoings.map(&:housing_cost_type).all?("board_and_lodging")
     end
 
     def should_halve_full_cost_minus_benefits?

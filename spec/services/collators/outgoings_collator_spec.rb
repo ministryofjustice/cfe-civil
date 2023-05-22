@@ -18,9 +18,9 @@ module Collators
       it "calls all the collators and calculators" do
         expect(Collators::ChildcareCollator).to receive(:call).exactly(1).and_call_original
         expect(Collators::DependantsAllowanceCollator).to receive(:call).exactly(1).and_call_original
-        expect(Collators::MaintenanceCollator).to receive(:call).with(assessment.applicant_disposable_income_summary).exactly(1).and_call_original
+        expect(Collators::MaintenanceCollator).to receive(:call).with(assessment.applicant_disposable_income_summary.maintenance_outgoings).exactly(1).and_call_original
         expect(Collators::HousingCostsCollator).to receive(:call).exactly(1).and_call_original
-        expect(Collators::LegalAidCollator).to receive(:call).with(assessment.applicant_disposable_income_summary).exactly(1).and_call_original
+        expect(Collators::LegalAidCollator).to receive(:call).with(assessment.applicant_disposable_income_summary.legal_aid_outgoings).exactly(1).and_call_original
         collator
       end
     end

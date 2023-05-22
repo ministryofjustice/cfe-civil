@@ -16,7 +16,7 @@ module Collators
       end
 
       subject(:collator) do
-        described_class.call(gross_income_summary:, childcare_outgoings:, eligible_for_childcare:)
+        described_class.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care), childcare_outgoings:, eligible_for_childcare:)
       end
 
       before do

@@ -55,7 +55,8 @@ module Collators
                  categorised_bank_transactions(gross_income_summary)[category]
                end
 
-        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary:, operation: :credit, category:)
+        cash_transactions = gross_income_summary.cash_transactions(:credit, category)
+        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
         regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary:, operation: :credit, category:)
         GrossIncomeCategorySubtotals.new(
           category:,

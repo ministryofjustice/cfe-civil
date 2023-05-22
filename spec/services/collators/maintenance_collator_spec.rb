@@ -8,7 +8,7 @@ module Collators
     let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
 
     describe ".call" do
-      subject(:collator) { described_class.call(disposable_income_summary) }
+      subject(:collator) { described_class.call(disposable_income_summary.maintenance_outgoings) }
 
       context "when there are no maintenance outgoings" do
         it "leaves the monthly maintenance field on the disposable income summary as zero" do
@@ -29,7 +29,7 @@ module Collators
           create :childcare_outgoing, disposable_income_summary:, payment_date: 66.days.ago, amount: 99.00
         end
 
-        it "calculates the monthly equivalent and updates the disposable income summary" do
+        it "calculates the monthly equivalent" do
           expect(collator).to eq 112.08
         end
       end
