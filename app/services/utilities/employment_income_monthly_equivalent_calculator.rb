@@ -5,12 +5,12 @@ module Utilities
                                           :national_insurance_monthly_equiv,
                                           :date)
     class << self
-      def call(employment)
-        period = PaymentPeriodAnalyser.new(dates(employment.employment_payments)).period_pattern
+      def call(employment_payments)
+        period = PaymentPeriodAnalyser.new(dates(employment_payments)).period_pattern
         if period == :unknown
-          monthly_equivalents_from_unknown_period(employment.employment_payments)
+          monthly_equivalents_from_unknown_period(employment_payments)
         else
-          monthly_equivalents_from_known_period(period, employment.employment_payments)
+          monthly_equivalents_from_known_period(period, employment_payments)
         end
       end
 

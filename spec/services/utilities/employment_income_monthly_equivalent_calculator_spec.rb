@@ -9,7 +9,7 @@ RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_ba
       create_employment_payment_records
     end
 
-    subject(:monthly_equivalent_calculator) { described_class.call(employment) }
+    subject(:monthly_equivalent_calculator) { described_class.call(employment.employment_payments) }
 
     context "with monthly payment frequency and non varying gross_income" do
       let(:dates) { %w[2022-01-31 2022-02-28 2022-03-31] }
@@ -193,7 +193,7 @@ RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_ba
     end
 
     it "raises an argument error for unacceptable period" do
-      expect { described_class.call(employment) }.to raise_error ArgumentError, "unexpected frequency testing"
+      expect { described_class.call(employment.employment_payments) }.to raise_error ArgumentError, "unexpected frequency testing"
     end
   end
 
