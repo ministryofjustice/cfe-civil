@@ -111,7 +111,6 @@ RSpec.describe Calculators::TaxNiRefundCalculator do
              employment:,
              date: Date.parse(date_string),
              gross_income: 1000,
-             gross_income_monthly_equiv: 1000,
              benefits_in_kind: 100,
              tax: tax_amounts[i],
              national_insurance: ni_amounts[i]

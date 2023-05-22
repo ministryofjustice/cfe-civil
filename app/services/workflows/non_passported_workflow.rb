@@ -20,8 +20,8 @@ module Workflows
                                    :monthly_benefits_in_kind, :monthly_national_insurance)
 
       def convert_employment(employment, submission_date)
-        Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment)
-        Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date)
+        monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment.employment_payments)
+        Calculators::EmploymentMonthlyValueCalculator.call(employment, submission_date, monthly_equivalent_payments)
         EmploymentData.new(monthly_tax: employment.monthly_tax,
                            monthly_gross_income: employment.monthly_gross_income,
                            monthly_national_insurance: employment.monthly_national_insurance,
@@ -37,7 +37,7 @@ module Workflows
                                                                                employments:,
                                                                                gross_income_summary: assessment.gross_income_summary)
         if assessment.partner.present?
-          assessment.partner_employments.each { |employment| Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment) }
+          assessment.partner_employments.each { |employment| Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(employment.employment_payments) }
           partner_employments = assessment.partner_employments.map { convert_employment(_1, assessment.submission_date) }
 
           partner_gross_income_subtotals = Collators::GrossIncomeCollator.call(assessment:,
