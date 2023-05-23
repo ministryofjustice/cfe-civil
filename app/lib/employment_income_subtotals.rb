@@ -22,7 +22,7 @@ class EmploymentIncomeSubtotals
               :national_insurance
 
   def net_employment_income
-    gross_employment_income + employment_income_deductions + fixed_employment_allowance
+    gross_employment_income + benefits_in_kind + employment_income_deductions + fixed_employment_allowance
   end
 
   def employment_income_deductions

@@ -2,6 +2,7 @@ module Utilities
   class EmploymentIncomeMonthlyEquivalentCalculator
     MonthlyEquivPaymentData = Data.define(:gross_income_monthly_equiv,
                                           :tax_monthly_equiv,
+                                          :benefits_in_kind_monthly_equiv,
                                           :national_insurance_monthly_equiv,
                                           :date)
     class << self
@@ -24,6 +25,7 @@ module Utilities
         payments.map do |payment|
           MonthlyEquivPaymentData.new(gross_income_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.gross_income),
                                       tax_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.tax),
+                                      benefits_in_kind_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.benefits_in_kind),
                                       national_insurance_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.national_insurance),
                                       date: payment.date)
         end
@@ -33,6 +35,7 @@ module Utilities
         payments.map do |payment|
           MonthlyEquivPaymentData.new(gross_income_monthly_equiv: blunt_average(payments, :gross_income),
                                       tax_monthly_equiv: blunt_average(payments, :tax),
+                                      benefits_in_kind_monthly_equiv: blunt_average(payments, :benefits_in_kind),
                                       national_insurance_monthly_equiv: blunt_average(payments, :national_insurance),
                                       date: payment.date)
         end
