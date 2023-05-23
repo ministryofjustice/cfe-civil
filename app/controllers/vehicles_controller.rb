@@ -5,7 +5,7 @@ class VehiclesController < CreationController
     swagger_validate_and_render "vehicles", vehicles_params, lambda {
       Creators::VehicleCreator.call(
         vehicles_params:,
-        capital_summary: @assessment.capital_summary,
+        capital_summary: @assessment.applicant_capital_summary,
       )
     }
   end

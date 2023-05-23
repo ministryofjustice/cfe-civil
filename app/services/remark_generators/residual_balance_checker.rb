@@ -16,7 +16,7 @@ module RemarkGenerators
   private
 
     def residual_balance?
-      current_accounts = assessment.capital_items.where(description: "Current accounts")
+      current_accounts = assessment.applicant_capital_summary.capital_items.where(description: "Current accounts")
       highest_current_account_balance = current_accounts.map(&:value).max || 0
       capital_exceeds_lower_threshold? && highest_current_account_balance.positive?
     end
@@ -33,7 +33,7 @@ module RemarkGenerators
 
     def lower_capital_threshold
       # we can take the lower threshold from the first eligibility records as they are all the same
-      assessment.capital_summary.eligibilities.first.lower_threshold
+      assessment.applicant_capital_summary.eligibilities.first.lower_threshold
     end
 
     attr_reader :assessment

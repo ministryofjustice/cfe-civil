@@ -8,24 +8,24 @@ module Creators
       let(:housing_cost_type_rent) { "rent" }
       let(:housing_cost_type_mortgage) { "mortgage" }
 
-      subject(:creator) { described_class.call(disposable_income_summary: assessment.disposable_income_summary, outgoings_params:) }
+      subject(:creator) { described_class.call(disposable_income_summary: assessment.applicant_disposable_income_summary, outgoings_params:) }
 
       it "creates all the required outgoing records" do
         expect { creator }.to change(Outgoings::BaseOutgoing, :count).by(6)
 
-        childcares = assessment.disposable_income_summary.childcare_outgoings.order(:payment_date)
+        childcares = assessment.applicant_disposable_income_summary.childcare_outgoings.order(:payment_date)
         expect(childcares.first.payment_date).to eq Date.parse("2019-11-09")
         expect(childcares.first.amount.to_f).to eq 584.31
         expect(childcares.last.payment_date).to eq Date.parse("2019-12-09")
         expect(childcares.last.amount.to_f).to eq 266.95
 
-        maintenances = assessment.disposable_income_summary.maintenance_outgoings.order(:payment_date)
+        maintenances = assessment.applicant_disposable_income_summary.maintenance_outgoings.order(:payment_date)
         expect(maintenances.first.payment_date).to eq Date.parse("2019-11-06")
         expect(maintenances.first.amount.to_f).to eq 506.78
         expect(maintenances.last.payment_date).to eq Date.parse("2019-12-06")
         expect(maintenances.last.amount.to_f).to eq 193.47
 
-        housings = assessment.disposable_income_summary.housing_cost_outgoings.order(:payment_date)
+        housings = assessment.applicant_disposable_income_summary.housing_cost_outgoings.order(:payment_date)
         expect(housings.first.payment_date).to eq Date.parse("2019-11-01")
         expect(housings.first.amount.to_f).to eq 810.38
         expect(housings.first.housing_cost_type).to eq "mortgage"

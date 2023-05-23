@@ -105,7 +105,7 @@ module Decorators
 
       subject(:decorator) do
         described_class
-          .new(summary, assessment.gross_income_summary, employment_income_subtotals,
+          .new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
                partner_present:,
                disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
                                                             dependant_allowance_under_16: 28.34,

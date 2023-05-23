@@ -12,9 +12,9 @@ module Assessors
              proceedings: [[ptc, "A"]]
     end
     let(:ptc) { "DA003" }
-    let(:gross_income_eligibility) { assessment.gross_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
-    let(:disposable_income_eligibility) { assessment.disposable_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
-    let(:capital_eligibility) { assessment.capital_summary.eligibilities.find_by(proceeding_type_code: ptc) }
+    let(:gross_income_eligibility) { assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
+    let(:disposable_income_eligibility) { assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
+    let(:capital_eligibility) { assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: ptc) }
     let(:assessment_eligibility) { assessment.eligibilities.find_by(proceeding_type_code: ptc) }
 
     describe ".call" do

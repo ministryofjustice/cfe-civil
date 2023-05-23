@@ -34,8 +34,8 @@ module Assessors
 
     def passported_assessment
       raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result == "pending"
-      raise AssessmentError, "Invalid assessment status: for passported applicant" if disposable_income_summary && disposable_income_result != "pending"
-      raise AssessmentError, "Invalid assessment status: for passported applicant" if gross_income_summary && gross_income_result != "pending"
+      raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_disposable_income_summary && disposable_income_result != "pending"
+      raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_gross_income_summary && gross_income_result != "pending"
 
       capital_result
     end
@@ -71,15 +71,15 @@ module Assessors
     end
 
     def capital_eligibility
-      @capital_eligibility ||= assessment.capital_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
+      @capital_eligibility ||= assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
     end
 
     def gross_income_eligibility
-      @gross_income_eligibility ||= assessment.gross_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
+      @gross_income_eligibility ||= assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
     end
 
     def disposable_income_eligibility
-      @disposable_income_eligibility ||= assessment.disposable_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
+      @disposable_income_eligibility ||= assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
     end
 
     def combined_result

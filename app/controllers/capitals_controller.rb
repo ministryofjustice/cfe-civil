@@ -5,7 +5,7 @@ class CapitalsController < CreationController
     swagger_validate_and_render("capitals", capital_params, lambda {
       Creators::CapitalsCreator.call(
         capital_params:,
-        capital_summary: @assessment.capital_summary,
+        capital_summary: @assessment.applicant_capital_summary,
       )
     })
   end

@@ -37,7 +37,8 @@ module Creators
         },
         lambda { |assessment, params|
           if params[:cash_transactions]
-            Creators::CashTransactionsCreator.call(assessment:,
+            Creators::CashTransactionsCreator.call(submission_date: assessment.submission_date,
+                                                   gross_income_summary: assessment.applicant_gross_income_summary,
                                                    cash_transaction_params: params[:cash_transactions])
           end
         },
@@ -50,50 +51,50 @@ module Creators
         lambda { |assessment, params|
           if params[:irregular_incomes]
             Creators::IrregularIncomeCreator.call(irregular_income_params: params[:irregular_incomes],
-                                                  gross_income_summary: assessment.gross_income_summary)
+                                                  gross_income_summary: assessment.applicant_gross_income_summary)
           end
         },
         lambda { |assessment, params|
           if params[:other_incomes]
-            Creators::OtherIncomesCreator.call(assessment:,
+            Creators::OtherIncomesCreator.call(gross_income_summary: assessment.applicant_gross_income_summary,
                                                other_incomes_params: { other_incomes: params[:other_incomes] })
           end
         },
         lambda { |assessment, params|
           if params[:state_benefits]
-            Creators::StateBenefitsCreator.call(gross_income_summary: assessment.gross_income_summary,
+            Creators::StateBenefitsCreator.call(gross_income_summary: assessment.applicant_gross_income_summary,
                                                 state_benefits_params: { state_benefits: params[:state_benefits] })
           end
         },
         lambda { |assessment, params|
           if params[:vehicles]
-            Creators::VehicleCreator.call(capital_summary: assessment.capital_summary,
+            Creators::VehicleCreator.call(capital_summary: assessment.applicant_capital_summary,
                                           vehicles_params: { vehicles: params[:vehicles] })
           end
         },
         lambda { |assessment, params|
           if params[:capitals]
             Creators::CapitalsCreator.call(capital_params: params[:capitals],
-                                           capital_summary: assessment.capital_summary)
+                                           capital_summary: assessment.applicant_capital_summary)
           end
         },
         lambda { |assessment, params|
           if params[:regular_transactions]
             Creators::RegularTransactionsCreator.call(
-              gross_income_summary: assessment.gross_income_summary,
+              gross_income_summary: assessment.applicant_gross_income_summary,
               regular_transaction_params: { regular_transactions: params[:regular_transactions] },
             )
           end
         },
         lambda { |assessment, params|
           if params[:outgoings]
-            Creators::OutgoingsCreator.call(disposable_income_summary: assessment.disposable_income_summary,
+            Creators::OutgoingsCreator.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
                                             outgoings_params: { outgoings: params[:outgoings] })
           end
         },
         lambda { |assessment, params|
           if params[:properties]
-            Creators::PropertiesCreator.call(capital_summary: assessment.capital_summary,
+            Creators::PropertiesCreator.call(capital_summary: assessment.applicant_capital_summary,
                                              properties_params: { properties: params[:properties] })
           end
         },

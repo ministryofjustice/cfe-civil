@@ -2,7 +2,7 @@ require "rails_helper"
 
 module RemarkGenerators
   RSpec.describe ResidualBalanceChecker do
-    let(:assessment) { create :assessment, capital_summary: }
+    let(:assessment) { create :assessment, applicant_capital_summary: capital_summary }
     let(:capital_summary) { create :capital_summary, :with_eligibilities }
     let(:assessed_capital) { 4000 }
 

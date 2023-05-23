@@ -4,7 +4,7 @@ module Assessors
   RSpec.describe VehicleAssessor do
     let(:assessment) { create :assessment, :with_capital_summary }
     let(:vehicle) { described_class.call(capital_summary.vehicles, assessment.submission_date).first.result }
-    let(:capital_summary) { assessment.capital_summary }
+    let(:capital_summary) { assessment.applicant_capital_summary }
 
     before do
       create :vehicle,

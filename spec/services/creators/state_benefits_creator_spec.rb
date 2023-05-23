@@ -10,7 +10,7 @@ module Creators
       let(:state_benefits) { state_benefits_params }
 
       subject(:creator) do
-        described_class.call(gross_income_summary: assessment.gross_income_summary,
+        described_class.call(gross_income_summary: assessment.applicant_gross_income_summary,
                              state_benefits_params:)
       end
 

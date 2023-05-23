@@ -4,7 +4,7 @@ RSpec.describe CashTransactionsController, type: :request do
   describe "POST cash_transactions" do
     let(:assessment) { create :assessment, :with_gross_income_summary }
     let(:assessment_id) { assessment.id }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
     let(:creator_class) { Creators::CashTransactionsCreator }
     let(:creator_instance) { instance_double(creator_class::Result) }
@@ -26,7 +26,9 @@ RSpec.describe CashTransactionsController, type: :request do
         allow(creator_instance).to receive(:success?).and_return(true)
         allow(creator_class)
           .to receive(:call)
-                .with(assessment:, cash_transaction_params: params).and_return(creator_instance)
+                .with(submission_date: assessment.submission_date,
+                      gross_income_summary: assessment.applicant_gross_income_summary,
+                      cash_transaction_params: params).and_return(creator_instance)
         post_payload
         expect(response).to have_http_status(:success)
       end

@@ -3,10 +3,10 @@ require "rails_helper"
 module Calculators
   RSpec.describe HousingCostsCalculator do
     subject(:calculator) do
-      described_class.new(disposable_income_summary: assessment.disposable_income_summary,
+      described_class.new(disposable_income_summary: assessment.applicant_disposable_income_summary,
                           person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                           submission_date: assessment.submission_date,
-                          gross_income_summary: assessment.gross_income_summary)
+                          gross_income_summary: assessment.applicant_gross_income_summary)
     end
 
     context "when using outgoings and state_benefits", :calls_bank_holiday do
@@ -17,7 +17,7 @@ module Calculators
                submission_date: current_date,
                with_child_dependants: children
       end
-      let(:rent_or_mortgage_category) { assessment.cash_transaction_categories.detect { |cat| cat.name == "rent_or_mortgage" } }
+      let(:rent_or_mortgage_category) { assessment.applicant_gross_income_summary.cash_transaction_categories.detect { |cat| cat.name == "rent_or_mortgage" } }
       let(:rent_or_mortgage_transactions) { rent_or_mortgage_category.cash_transactions.order(:date) }
       let(:monthly_cash_housing) { rent_or_mortgage_transactions.average(:amount).round(2).to_d }
       let(:children) { 0 }
@@ -25,14 +25,14 @@ module Calculators
       before do
         [current_date - 2.months, current_date - 1.month, current_date].each do |date|
           create :housing_cost_outgoing,
-                 disposable_income_summary: assessment.disposable_income_summary,
+                 disposable_income_summary: assessment.applicant_disposable_income_summary,
                  payment_date: date,
                  amount: housing_cost_amount,
                  housing_cost_type:
         end
 
         calculator
-        assessment.disposable_income_summary.reload
+        assessment.applicant_disposable_income_summary.reload
         @assessment = assessment
       end
 
@@ -328,8 +328,8 @@ module Calculators
 
     context "when using regular_transactions", :calls_bank_holiday do
       let(:instance) do
-        described_class.new(disposable_income_summary: assessment.disposable_income_summary,
-                            gross_income_summary: assessment.gross_income_summary,
+        described_class.new(disposable_income_summary: assessment.applicant_disposable_income_summary,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
                             person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                             submission_date: assessment.submission_date)
       end
@@ -346,16 +346,16 @@ module Calculators
         context "with all forms of housing costs" do
           before do
             # add monthly equivalent bank transactions of 111.11
-            create(:housing_cost_outgoing, disposable_income_summary: assessment.disposable_income_summary, payment_date: dates[0], amount: 333.33)
+            create(:housing_cost_outgoing, disposable_income_summary: assessment.applicant_disposable_income_summary, payment_date: dates[0], amount: 333.33)
 
             # add average cash transactions of 111.11
-            rent_or_mortgage = create(:cash_transaction_category, name: "rent_or_mortgage", operation: "debit", gross_income_summary: assessment.gross_income_summary)
+            rent_or_mortgage = create(:cash_transaction_category, name: "rent_or_mortgage", operation: "debit", gross_income_summary: assessment.applicant_gross_income_summary)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[0], amount: 111.11)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[1], amount: 111.11)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[2], amount: 111.11)
 
             # add monthly equivalent regular transaction of 333.33
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "three_monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "three_monthly", amount: 1000.00)
           end
 
           # NOTE: expected API use cases should not add both bank and regular transactions
@@ -371,7 +371,7 @@ module Calculators
         context "with state_benefits of housing_benefit type" do
           before do
             housing_benefit = create(:state_benefit,
-                                     gross_income_summary: assessment.gross_income_summary,
+                                     gross_income_summary: assessment.applicant_gross_income_summary,
                                      state_benefit_type: build(:state_benefit_type, label: "housing_benefit"))
 
             create(:state_benefit_payment, state_benefit: housing_benefit, amount: 222.22, payment_date: dates[0])
@@ -385,7 +385,7 @@ module Calculators
 
         context "with regular_transactions of housing_benefit type" do
           before do
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "three_monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "three_monthly", amount: 1000.00)
           end
 
           it "returns monthly equivalent" do
@@ -399,15 +399,15 @@ module Calculators
 
         context "when single, with no dependants" do
           it "returns gross housing cost less benefits" do
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
 
             expect(net_housing_costs).to eq 500.00
           end
 
           it "implements a cap" do
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
 
             expect(net_housing_costs).to eq 545.00
           end
@@ -419,8 +419,8 @@ module Calculators
           end
 
           it "returns gross housing cost less benefits" do
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
 
             expect(net_housing_costs).to eq 500.00
           end
@@ -435,8 +435,8 @@ module Calculators
           end
 
           it "returns gross housing without a cap" do
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
+            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
 
             expect(net_housing_costs).to eq 600.00
           end
@@ -446,11 +446,11 @@ module Calculators
 
     def create_housing_benefit_payments(amount, dates: [2.months.ago, 1.month.ago, Date.current])
       housing_benefit_type = create :state_benefit_type, label: "housing_benefit"
-      state_benefit = create :state_benefit, gross_income_summary: assessment.gross_income_summary, state_benefit_type: housing_benefit_type
+      state_benefit = create :state_benefit, gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type
       dates.each do |pay_date|
         create :state_benefit_payment, state_benefit:, amount:, payment_date: pay_date
       end
-      assessment.gross_income_summary.reload
+      assessment.applicant_gross_income_summary.reload
     end
   end
 end

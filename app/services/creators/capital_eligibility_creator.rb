@@ -6,7 +6,7 @@ module Creators
 
     def initialize(assessment)
       @assessment = assessment
-      @summary = assessment.capital_summary
+      @summary = assessment.applicant_capital_summary
     end
 
     def call

@@ -5,7 +5,7 @@ module Calculators
     before { create :bank_holiday }
 
     let(:assessment) { create :assessment, :with_gross_income_summary }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
     subject(:collator) { described_class.call(gross_income_summary.state_benefits) }
 

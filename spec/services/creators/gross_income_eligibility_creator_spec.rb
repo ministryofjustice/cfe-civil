@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Creators
   RSpec.describe GrossIncomeEligibilityCreator do
-    let(:summary) { assessment.gross_income_summary }
+    let(:summary) { assessment.applicant_gross_income_summary }
 
     around do |example|
       travel_to Date.new(2021, 4, 20)
@@ -11,7 +11,7 @@ module Creators
     end
 
     subject(:creator) do
-      described_class.call(assessment.gross_income_summary,
+      described_class.call(assessment.applicant_gross_income_summary,
                            assessment.client_dependants,
                            assessment.proceeding_types,
                            assessment.submission_date)
@@ -19,7 +19,7 @@ module Creators
 
     context "version 5" do
       let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
-      let(:eligibilities) { assessment.gross_income_summary.eligibilities }
+      let(:eligibilities) { assessment.applicant_gross_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
 
       it "creates a capital eligibility record for each proceeding type" do

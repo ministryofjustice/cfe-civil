@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Creators
   RSpec.describe CapitalEligibilityCreator do
-    let(:summary) { assessment.capital_summary }
+    let(:summary) { assessment.applicant_capital_summary }
 
     around do |example|
       travel_to Date.new(2022, 4, 20)
@@ -11,7 +11,7 @@ module Creators
     end
 
     context "version 5" do
-      let(:eligibilities) { assessment.capital_summary.eligibilities }
+      let(:eligibilities) { assessment.applicant_capital_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
 
       before { described_class.call(assessment) }

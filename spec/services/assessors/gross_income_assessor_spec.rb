@@ -3,7 +3,7 @@ require "rails_helper"
 module Assessors
   RSpec.describe GrossIncomeAssessor do
     let(:assessment) { create :assessment, :with_gross_income_summary }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
     describe ".call" do
       subject(:assessor) do

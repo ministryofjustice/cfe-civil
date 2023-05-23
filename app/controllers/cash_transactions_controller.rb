@@ -4,7 +4,8 @@ class CashTransactionsController < CreationController
   def create
     swagger_validate_and_render("cash_transactions", cash_transaction_params, lambda {
       Creators::CashTransactionsCreator.call(
-        assessment: @assessment,
+        submission_date: @assessment.submission_date,
+        gross_income_summary: @assessment.applicant_gross_income_summary,
         cash_transaction_params:,
       )
     })

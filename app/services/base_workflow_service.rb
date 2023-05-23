@@ -1,20 +1,7 @@
 class BaseWorkflowService
   delegate :applicant,
-           :capital_summary,
            :submission_date,
-           :gross_income_summary,
-           :disposable_income_summary, to: :assessment
-
-  delegate :liquid_capital_items,
-           :main_home,
-           :additional_properties,
-           :vehicles, to: :capital_summary
-
-  delegate :upper_threshold,
-           :state_benefits,
-           :other_income_sources,
-           :irregular_income_payments,
-           :student_loan_payments, to: :gross_income_summary
+           to: :assessment
 
   attr_reader :assessment
 

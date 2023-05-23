@@ -5,7 +5,7 @@ module Collators
     let(:assessment) { create :assessment, :with_capital_summary, :with_disposable_income_summary, :with_applicant }
     let(:request_hash) { AssessmentRequestFixture.ruby_hash }
     let(:submission_date) { assessment.submission_date }
-    let(:capital_summary) { assessment.capital_summary }
+    let(:capital_summary) { assessment.applicant_capital_summary }
     let(:today) { Date.new(2019, 4, 2) }
     let(:pcd_value) { 0 }
     let(:smod_value) { 0 }
@@ -14,7 +14,7 @@ module Collators
     describe "#call" do
       subject(:collator) do
         described_class.call submission_date: assessment.submission_date,
-                             capital_summary: assessment.capital_summary,
+                             capital_summary: assessment.applicant_capital_summary,
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
                              level_of_help:
@@ -36,12 +36,12 @@ module Collators
 
       context "property_assessment" do
         before do
-          create :property, :main_home, capital_summary: assessment.capital_summary
+          create :property, :main_home, capital_summary: assessment.applicant_capital_summary
         end
 
         it "instantiates and calls the Property Assessment service" do
           property_result = Calculators::PropertyCalculator::Result.new(assessed_equity: 23_000.0,
-                                                                        property: assessment.capital_summary.main_home,
+                                                                        property: assessment.applicant_capital_summary.main_home,
                                                                         smod_allowance: 0)
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_result])
           expect(collator.total_property).to eq 23_000.0
@@ -144,7 +144,7 @@ module Collators
 
         it "summarizes the results it gets from the subservices" do
           property_result = Calculators::PropertyCalculator::Result.new(assessed_equity: 23_000.0,
-                                                                        property: assessment.capital_summary.main_home,
+                                                                        property: assessment.applicant_capital_summary.main_home,
                                                                         smod_allowance: 0)
 
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_result])

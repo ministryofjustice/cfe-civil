@@ -1,7 +1,7 @@
 module Creators
   class EligibilitiesCreator
     def self.call(assessment)
-      GrossIncomeEligibilityCreator.call(assessment.gross_income_summary,
+      GrossIncomeEligibilityCreator.call(assessment.applicant_gross_income_summary,
                                          assessment.client_dependants + assessment.partner_dependants,
                                          assessment.proceeding_types,
                                          assessment.submission_date)

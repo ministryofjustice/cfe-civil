@@ -5,7 +5,7 @@ class OutgoingsController < CreationController
     swagger_validate_and_render "outgoings", outgoings_params, lambda {
       Creators::OutgoingsCreator.call(
         outgoings_params:,
-        disposable_income_summary: @assessment.disposable_income_summary,
+        disposable_income_summary: @assessment.applicant_disposable_income_summary,
       )
     }
   end

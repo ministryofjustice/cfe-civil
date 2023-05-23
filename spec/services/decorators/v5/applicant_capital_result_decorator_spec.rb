@@ -87,7 +87,7 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(summary: assessment.capital_summary,
+        described_class.new(summary: assessment.applicant_capital_summary,
                             applicant_capital_subtotals: subtotals,
                             partner_capital_subtotals: subtotals,
                             capital_contribution:,

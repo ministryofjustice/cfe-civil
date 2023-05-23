@@ -4,7 +4,7 @@ RSpec.describe EmploymentsController, type: :request do
   describe "POST employment_income" do
     let!(:assessment) { create :assessment }
     let(:assessment_id) { assessment.id }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:params) { employment_income_params }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
 

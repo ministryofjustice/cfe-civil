@@ -8,6 +8,6 @@ module Exemptable
   end
 
   def childcare_disallowed?
-    @assessment.disposable_income_summary.child_care_bank.zero?
+    @assessment.applicant_disposable_income_summary.child_care_bank.zero?
   end
 end

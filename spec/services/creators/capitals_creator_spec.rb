@@ -4,7 +4,7 @@ module Creators
   RSpec.describe CapitalsCreator do
     let(:assessment) { create :assessment, :with_capital_summary }
     let(:assessment_id) { assessment.id }
-    let(:capital_summary) { assessment.capital_summary }
+    let(:capital_summary) { assessment.applicant_capital_summary }
     let(:bank_accounts) { [] }
     let(:non_liquid_assets) { [] }
     let(:bank_name1)  { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
@@ -18,7 +18,7 @@ module Creators
     subject(:creator) do
       described_class.call(
         capital_params:,
-        capital_summary: assessment.capital_summary,
+        capital_summary: assessment.applicant_capital_summary,
       )
     end
 
@@ -27,7 +27,7 @@ module Creators
         let(:capital_params) { {} }
 
         it "does not create any capital item records" do
-          expect(assessment.capital_summary.capital_items).to be_empty
+          expect(assessment.applicant_capital_summary.capital_items).to be_empty
         end
       end
 
@@ -68,7 +68,7 @@ module Creators
       let(:capital_params) { {} }
 
       it "does not create any capital item records" do
-        expect(assessment.capital_summary.capital_items).to be_empty
+        expect(assessment.applicant_capital_summary.capital_items).to be_empty
       end
     end
 

@@ -5,10 +5,10 @@ module Workflows
         gross_income_subtotals = collate_and_assess_gross_income(assessment:,
                                                                  self_employments:,
                                                                  partner_self_employments:)
-        return CalculationOutput.new(gross_income_subtotals:) if assessment.gross_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_income_subtotals = disposable_income_assessment(assessment, gross_income_subtotals)
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:) if assessment.disposable_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:) if assessment.applicant_disposable_income_summary.ineligible?
 
         capital_subtotals = collate_and_assess_capital assessment
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
@@ -72,7 +72,7 @@ module Workflows
         applicant_gross_income_subtotals = Collators::GrossIncomeCollator.call(assessment:,
                                                                                submission_date: assessment.submission_date,
                                                                                employments: converted_employments + aggregate_self_employments(self_employments),
-                                                                               gross_income_summary: assessment.gross_income_summary)
+                                                                               gross_income_summary: assessment.applicant_gross_income_summary)
         partner_gross_income_subtotals = if assessment.partner.present?
                                            partner_employments = convert_employments(assessment.partner_employments, assessment.submission_date)
 
@@ -93,7 +93,7 @@ module Workflows
           partner_self_employments: convert_self_employments(partner_self_employments),
         ).tap do |gross_income_subtotals|
           Assessors::GrossIncomeAssessor.call(
-            eligibilities: assessment.gross_income_summary.eligibilities,
+            eligibilities: assessment.applicant_gross_income_summary.eligibilities,
             total_gross_income: gross_income_subtotals.combined_monthly_gross_income,
           )
         end
@@ -106,8 +106,8 @@ module Workflows
                    single_disposable_income_assessment(assessment, gross_income_subtotals)
                  end
         result.tap do
-          Assessors::DisposableIncomeAssessor.call(disposable_income_summary: assessment.disposable_income_summary,
-                                                   total_disposable_income: assessment.disposable_income_summary.combined_total_disposable_income)
+          Assessors::DisposableIncomeAssessor.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                   total_disposable_income: assessment.applicant_disposable_income_summary.combined_total_disposable_income)
         end
       end
 
@@ -115,15 +115,15 @@ module Workflows
       def partner_disposable_income_assessment(assessment, gross_income_subtotals)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: false,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.client_dependants, gross_income_summary: assessment.gross_income_summary
+                                      dependants: assessment.client_dependants, gross_income_summary: assessment.applicant_gross_income_summary
         partner = PersonWrapper.new person: assessment.partner, is_single: false,
                                     submission_date: assessment.submission_date,
                                     dependants: assessment.partner_dependants, gross_income_summary: assessment.partner_gross_income_summary
         eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant, partner)
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
-                                                      gross_income_summary: assessment.gross_income_summary.freeze,
-                                                      disposable_income_summary: assessment.disposable_income_summary,
+                                                      gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                      disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                       eligible_for_childcare:,
                                                       allow_negative_net: true)
         partner_outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
@@ -133,8 +133,8 @@ module Workflows
                                                               eligible_for_childcare:,
                                                               allow_negative_net: true)
 
-        Collators::DisposableIncomeCollator.call(gross_income_summary: assessment.gross_income_summary.freeze,
-                                                 disposable_income_summary: assessment.disposable_income_summary,
+        Collators::DisposableIncomeCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                 disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                  partner_allowance: partner_allowance(assessment.submission_date),
                                                  gross_income_subtotals: gross_income_subtotals.applicant_gross_income_subtotals,
                                                  outgoings:)
@@ -144,17 +144,17 @@ module Workflows
                                                  gross_income_subtotals: gross_income_subtotals.partner_gross_income_subtotals,
                                                  outgoings: partner_outgoings)
 
-        Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.gross_income_summary.freeze,
-                                                 disposable_income_summary: assessment.disposable_income_summary,
+        Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                 disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                  eligible_for_childcare:)
         Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.partner_gross_income_summary.freeze,
                                                  disposable_income_summary: assessment.partner_disposable_income_summary,
                                                  eligible_for_childcare:)
 
-        assessment.disposable_income_summary.update!(
-          combined_total_disposable_income: assessment.disposable_income_summary.total_disposable_income +
+        assessment.applicant_disposable_income_summary.update!(
+          combined_total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income +
                                               assessment.partner_disposable_income_summary.total_disposable_income,
-          combined_total_outgoings_and_allowances: assessment.disposable_income_summary.total_outgoings_and_allowances +
+          combined_total_outgoings_and_allowances: assessment.applicant_disposable_income_summary.total_outgoings_and_allowances +
                                                      assessment.partner_disposable_income_summary.total_outgoings_and_allowances,
         )
         DisposableIncomeSubtotals.new(
@@ -166,24 +166,24 @@ module Workflows
       def single_disposable_income_assessment(assessment, gross_income_subtotals)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: true,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.client_dependants, gross_income_summary: assessment.gross_income_summary
+                                      dependants: assessment.client_dependants, gross_income_summary: assessment.applicant_gross_income_summary
         eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant)
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
-                                                      gross_income_summary: assessment.gross_income_summary.freeze,
-                                                      disposable_income_summary: assessment.disposable_income_summary,
+                                                      gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                      disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                       eligible_for_childcare:,
                                                       allow_negative_net: false)
-        Collators::DisposableIncomeCollator.call(gross_income_summary: assessment.gross_income_summary.freeze,
-                                                 disposable_income_summary: assessment.disposable_income_summary,
+        Collators::DisposableIncomeCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                 disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                  partner_allowance: 0,
                                                  gross_income_subtotals: gross_income_subtotals.applicant_gross_income_subtotals,
                                                  outgoings:)
-        Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.gross_income_summary.freeze,
-                                                 disposable_income_summary: assessment.disposable_income_summary,
+        Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze,
+                                                 disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                  eligible_for_childcare:)
-        assessment.disposable_income_summary.update!(combined_total_disposable_income: assessment.disposable_income_summary.total_disposable_income,
-                                                     combined_total_outgoings_and_allowances: assessment.disposable_income_summary.total_outgoings_and_allowances)
+        assessment.applicant_disposable_income_summary.update!(combined_total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income,
+                                                               combined_total_outgoings_and_allowances: assessment.applicant_disposable_income_summary.total_outgoings_and_allowances)
         DisposableIncomeSubtotals.new(
           applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(outgoings),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,

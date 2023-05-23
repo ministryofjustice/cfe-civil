@@ -6,7 +6,7 @@ module Creators
 
     def initialize(assessment)
       @assessment = assessment
-      @summary = assessment.disposable_income_summary
+      @summary = assessment.applicant_disposable_income_summary
     end
 
     def call

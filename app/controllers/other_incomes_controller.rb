@@ -4,7 +4,7 @@ class OtherIncomesController < CreationController
   def create
     swagger_validate_and_render("other_incomes", other_incomes_params, lambda {
       Creators::OtherIncomesCreator.call(
-        assessment: @assessment,
+        gross_income_summary: @assessment.applicant_gross_income_summary,
         other_incomes_params:,
       )
     })

@@ -16,8 +16,8 @@ module Assessors
 
       subject(:assessor) do
         described_class.call(
-          total_disposable_income: assessment.disposable_income_summary.total_disposable_income,
-          disposable_income_summary: assessment.disposable_income_summary,
+          total_disposable_income: disposable_income_summary.total_disposable_income,
+          disposable_income_summary:,
         )
       end
 

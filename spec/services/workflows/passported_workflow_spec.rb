@@ -11,8 +11,8 @@ module Workflows
              applicant:
     end
     let(:applicant) { create :applicant, :with_qualifying_benefits }
-    let(:capital_summary) { assessment.capital_summary }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:applicant_capital_summary) { assessment.applicant_capital_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:capital_data) do
       PersonCapitalSubtotals.blank
     end
@@ -33,7 +33,7 @@ module Workflows
         expect(Collators::CapitalCollator).to receive(:call)
         expect(Assessors::CapitalAssessor).to receive(:call).and_call_original
         workflow_call
-        expect(capital_summary.summarized_assessment_result).to eq :eligible
+        expect(applicant_capital_summary.summarized_assessment_result).to eq :eligible
       end
     end
   end

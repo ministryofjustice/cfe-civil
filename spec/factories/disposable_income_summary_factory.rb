@@ -31,5 +31,7 @@ FactoryBot.define do
         end
       end
     end
+
+    factory :partner_disposable_income_summary
   end
 end

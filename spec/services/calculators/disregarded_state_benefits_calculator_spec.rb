@@ -3,10 +3,10 @@ require "rails_helper"
 module Calculators
   RSpec.describe DisregardedStateBenefitsCalculator do
     let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
-    let(:disposable_income_summary) { assessment.disposable_income_summary }
+    let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
     let(:included_state_benefit_type) { create :state_benefit_type, :benefit_included }
     let(:excluded_state_benefit_type) { create :state_benefit_type, :benefit_excluded }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:state_benefits_input) do
       gross_income_summary.state_benefits.map do |sb|
         OpenStruct.new(monthly_value: 88.3, exclude_from_gross_income?: sb.exclude_from_gross_income)
