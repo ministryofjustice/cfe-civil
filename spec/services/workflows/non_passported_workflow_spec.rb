@@ -304,7 +304,7 @@ module Workflows
           end
 
           context "with employment" do
-            let(:salary) { 15_300 }
+            let(:salary) { 15_000 }
 
             context "when unemployed" do
               let(:employed) { false }
