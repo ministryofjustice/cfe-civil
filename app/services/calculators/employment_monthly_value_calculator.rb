@@ -4,17 +4,11 @@ module Calculators
       def call(employment, submission_date, monthly_equivalent_payments)
         Calculators::TaxNiRefundCalculator.call(employment)
         if employment_income_variation_below_threshold?(monthly_equivalent_payments, submission_date)
-          calculation = :most_recent
-          add_variation_remarks = false
+          calculate_monthly_values(monthly_equivalent_payments, calculation: :most_recent)
         else
-          calculation = :blunt_average
-          add_variation_remarks = true
+          add_variation_remarks(employment)
+          calculate_monthly_values(monthly_equivalent_payments, calculation: :blunt_average)
         end
-
-        monthly_values = calculate_monthly_values(monthly_equivalent_payments, calculation:)
-
-        # TODO: Return these values instead of persisting them
-        persist_values(employment, monthly_values, add_variation_remarks)
       end
 
       def employment_income_variation_below_threshold?(payments, submission_date)
@@ -25,7 +19,6 @@ module Calculators
 
       def calculate_monthly_values(payments, calculation:)
         {
-          calculation_method: calculation.to_s,
           monthly_gross_income: send(calculation, payments, :gross_income_monthly_equiv),
           monthly_national_insurance: send(calculation, payments, :national_insurance_monthly_equiv),
           monthly_tax: send(calculation, payments, :tax_monthly_equiv),
@@ -45,11 +38,7 @@ module Calculators
         payment.public_send(attribute)
       end
 
-      def persist_values(employment, monthly_values, add_variation_remarks)
-        employment.update!(monthly_values)
-
-        return unless add_variation_remarks
-
+      def add_variation_remarks(employment)
         remarks = employment.assessment.remarks
         remarks.add(:employment_gross_income, :amount_variation, employment.employment_payments.map(&:client_id))
         employment.assessment.update!(remarks:)

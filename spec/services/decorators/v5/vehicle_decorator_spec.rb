@@ -7,11 +7,10 @@ RSpec.describe Decorators::V5::VehicleDecorator do
            value: 12_000.0,
            loan_amount_outstanding: 1250.44,
            date_of_purchase: purchase_date,
-           in_regular_use: false,
-           assessed_value: 0
+           in_regular_use: false
   end
 
-  subject(:decorator) { described_class.new(vehicle) }
+  subject(:decorator) { described_class.new(vehicle, OpenStruct.new(assessed_value: 0, included_in_assessment: false)) }
 
   describe "#as_json" do
     it "returns hash in correct format" do

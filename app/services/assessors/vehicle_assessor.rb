@@ -1,22 +1,22 @@
 module Assessors
   class VehicleAssessor
-    Result = Struct.new(:assessed_value, :included_in_assessment, keyword_init: true)
+    Result = Data.define(:assessed_value, :included_in_assessment)
+    VehicleData = Data.define(:vehicle, :result)
+
     class << self
       def call(vehicles, submission_date)
-        vehicles.map { assess(_1, submission_date) }
-      end
-
-      def assess(vehicle, submission_date)
-        result = if vehicle.in_regular_use?
-                   assess_in_regular_use(vehicle, submission_date)
-                 else
-                   assess_not_in_regular_use(vehicle)
-                 end
-        save_assessed_value(vehicle, result)
-        result
+        vehicles.map { VehicleData.new(vehicle: _1, result: assess(_1, submission_date)) }
       end
 
     private
+
+      def assess(vehicle, submission_date)
+        if vehicle.in_regular_use?
+          assess_in_regular_use(vehicle, submission_date)
+        else
+          assess_not_in_regular_use(vehicle)
+        end
+      end
 
       def assess_in_regular_use(vehicle, submission_date)
         net_value = vehicle.value - vehicle.loan_amount_outstanding
@@ -33,11 +33,6 @@ module Assessors
 
       def too_old_to_count(vehicle, submission_date)
         age_in_months(vehicle, submission_date) >= vehicle_out_of_scope_age(submission_date)
-      end
-
-      # TODO: remove this side effect
-      def save_assessed_value(vehicle, result)
-        vehicle.update!(assessed_value: result.assessed_value, included_in_assessment: result.included_in_assessment)
       end
 
       def age_in_months(vehicle, submission_date)

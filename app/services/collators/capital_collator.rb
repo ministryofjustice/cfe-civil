@@ -21,18 +21,19 @@ module Collators
         property_smod = properties.sum(&:smod_allowance)
         vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.reject(&:subject_matter_of_dispute), submission_date)
         smod_vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.select(&:subject_matter_of_dispute), submission_date)
-        vehicle_value = vehicles.sum(&:assessed_value)
-        smod_vehicle_value = smod_vehicles.sum(&:assessed_value)
+        vehicle_value = vehicles.map(&:result).sum(&:assessed_value)
+        smod_vehicle_value = smod_vehicles.map(&:result).sum(&:assessed_value)
         non_property_smod_allowance = Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
           disputed_capital_items: disputed_liquid + disputed_non_liquid,
-          disputed_vehicles: smod_vehicles,
+          disputed_vehicles: smod_vehicles.map(&:result),
           maximum_disregard: maximum_subject_matter_of_dispute_disregard - property_smod,
         )
 
         PersonCapitalSubtotals.new(
           total_liquid: liquid_capital + smod_liquid_capital,
           total_non_liquid: non_liquid_capital + smod_non_liquid_capital,
-          total_vehicle: vehicle_value + smod_vehicle_value,
+          non_disputed_vehicles: vehicles,
+          disputed_vehicles: smod_vehicles,
           total_mortgage_allowance: property_maximum_mortgage_allowance_threshold(submission_date),
           pensioner_capital_disregard:,
           disputed_non_property_disregard: non_property_smod_allowance,

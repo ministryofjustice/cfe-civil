@@ -89,7 +89,7 @@ module Decorators
           monthly_equivalents: {
             all_sources: @subtotals.monthly_regular_incomes(:all_sources, :benefits).to_f,
             cash_transactions: @subtotals.monthly_regular_incomes(:cash, :benefits),
-            bank_transactions: summary.state_benefits.map { |sb| StateBenefitDecorator.new(sb).as_json },
+            bank_transactions: @subtotals.state_benefits.map { |sb| StateBenefitDecorator.new(sb).as_json },
           },
         }
       end

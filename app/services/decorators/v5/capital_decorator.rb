@@ -47,7 +47,7 @@ module Decorators
       end
 
       def vehicles
-        @summary.vehicles.map { |v| VehicleDecorator.new(v).as_json }
+        @capital_subtotals.vehicles.map { |v| VehicleDecorator.new(v.vehicle, v.result).as_json }
       end
     end
   end

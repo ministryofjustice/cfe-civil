@@ -3,19 +3,20 @@ class PersonCapitalSubtotals
   # This structure helps enforce that so that e.g. tests are updated when the structure changes
   class << self
     def blank
-      new(total_vehicle: 0.0, total_liquid: 0,
+      new(disputed_vehicles: [], non_disputed_vehicles: [], total_liquid: 0,
           total_mortgage_allowance: 0.0, total_non_liquid: 0.0,
           disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
           properties: [], disputed_non_property_disregard: 0.0, disputed_non_property_capital: 0.0, non_disputed_non_property_capital: 0.0)
     end
   end
 
-  def initialize(total_vehicle:, total_liquid:,
+  def initialize(disputed_vehicles:, non_disputed_vehicles:, total_liquid:,
                  total_mortgage_allowance:, total_non_liquid:,
                  disputed_property_disregard:, pensioner_capital_disregard:,
                  properties:, disputed_non_property_disregard:,
                  disputed_non_property_capital:, non_disputed_non_property_capital:)
-    @total_vehicle = total_vehicle
+    @disputed_vehicles = disputed_vehicles
+    @non_disputed_vehicles = non_disputed_vehicles
     @total_liquid = total_liquid
     @total_mortgage_allowance = total_mortgage_allowance
     @total_non_liquid = total_non_liquid
@@ -27,13 +28,20 @@ class PersonCapitalSubtotals
     @non_disputed_non_property_capital = non_disputed_non_property_capital
   end
 
-  attr_reader :total_vehicle,
-              :total_liquid,
+  attr_reader :total_liquid,
               :total_mortgage_allowance,
               :total_non_liquid,
               :pensioner_capital_disregard,
               :disputed_non_property_disregard,
               :disputed_property_disregard
+
+  def vehicles
+    @disputed_vehicles + @non_disputed_vehicles
+  end
+
+  def total_vehicle
+    vehicles.map(&:result).sum(&:assessed_value)
+  end
 
   def assessed_capital
     [total_capital_with_smod - pensioner_capital_disregard, 0].max

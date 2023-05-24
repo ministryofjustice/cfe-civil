@@ -39,24 +39,24 @@ module Decorators
               payments: [
                 {
                   date: Time.zone.today.strftime("%Y-%m-%d"),
-                  benefits_in_kind: 0.0,
                   gross: 1500.0,
+                  benefits_in_kind: 0.0,
                   tax: -495.0,
                   national_insurance: -150.0,
                   net_employment_income: 855.0,
                 },
                 {
                   date: 1.month.ago.to_date.strftime("%Y-%m-%d"),
-                  benefits_in_kind: 0.0,
                   gross: 1500.0,
+                  benefits_in_kind: 0.0,
                   tax: -495.0,
                   national_insurance: -150.0,
                   net_employment_income: 855.0,
                 },
                 {
                   date: 2.months.ago.to_date.strftime("%Y-%m-%d"),
-                  benefits_in_kind: 0.0,
                   gross: 1500.0,
+                  benefits_in_kind: 0.0,
                   tax: -495.0,
                   national_insurance: -150.0,
                   net_employment_income: 855.0,
@@ -143,10 +143,10 @@ module Decorators
         }
       end
 
-      describe "#as_json" do
+      describe "#as_json", :calls_bank_holiday do
         before do
-          create(:state_benefit, state_benefit_type: universal_credit, gross_income_summary: summary, monthly_value: 979.33)
-          create(:state_benefit, state_benefit_type: child_benefit, gross_income_summary: summary, monthly_value: 343.27)
+          create(:state_benefit, :with_monthly_payments, state_benefit_type: universal_credit, gross_income_summary: summary, payment_amount: 979.33)
+          create(:state_benefit, :with_monthly_payments, state_benefit_type: child_benefit, gross_income_summary: summary, payment_amount: 343.27)
         end
 
         subject(:decorator) { described_class.new(assessment.gross_income_summary, assessment.employments, subtotals).as_json }

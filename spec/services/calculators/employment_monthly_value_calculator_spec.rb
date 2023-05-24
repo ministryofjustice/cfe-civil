@@ -37,15 +37,13 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the most recent payment" do
-          described_class.call employment, employment.assessment.submission_date, payments
-
-          expect(employment).to have_attributes(
-            calculation_method: "most_recent",
-            monthly_gross_income: 490,
-            monthly_benefits_in_kind: 10,
-            monthly_national_insurance: 20,
-            monthly_tax: 50,
-          )
+          expect(described_class.call(employment, employment.assessment.submission_date, payments))
+            .to eq(
+              monthly_gross_income: 490,
+              monthly_benefits_in_kind: 10,
+              monthly_national_insurance: 20,
+              monthly_tax: 50,
+            )
         end
 
         it "does not add a remark to the assessment" do
@@ -69,15 +67,13 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the blunt average" do
-          described_class.call employment, employment.assessment.submission_date, payments
-
-          expect(employment).to have_attributes(
-            calculation_method: "blunt_average",
-            monthly_gross_income: 290,
-            monthly_national_insurance: 15,
-            monthly_tax: 35,
-            monthly_benefits_in_kind: 10,
-          )
+          expect(described_class.call(employment, employment.assessment.submission_date, payments))
+            .to eq(
+              monthly_gross_income: 290,
+              monthly_national_insurance: 15,
+              monthly_tax: 35,
+              monthly_benefits_in_kind: 10,
+            )
         end
 
         it "adds a remark to the assessment" do
@@ -93,15 +89,13 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
     context "when there are no employment payments" do
       it "zeros the monthly gross income, national insurance, and tax" do
-        described_class.call employment, employment.assessment.submission_date, []
-
-        expect(employment).to have_attributes(
-          calculation_method: "blunt_average",
-          monthly_gross_income: 0,
-          monthly_national_insurance: 0,
-          monthly_tax: 0,
-          monthly_benefits_in_kind: 0,
-        )
+        expect(described_class.call(employment, employment.assessment.submission_date, []))
+          .to eq(
+            monthly_gross_income: 0,
+            monthly_national_insurance: 0,
+            monthly_tax: 0,
+            monthly_benefits_in_kind: 0,
+          )
       end
     end
   end
