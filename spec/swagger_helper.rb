@@ -13,11 +13,9 @@ RSpec.configure do |config|
     # Check financial eligibility for legal aid.
 
     ## Usage:
-      - Create an assessment by POSTing a payload to `/assessments`
+      - Create an assessment by POSTing a payload to `/v6/assessments`
         and store the `assessment_id` returned.
-      - Add assessment components, such as applicant, capitals and properties using the
-        `assessment_id` from the first call
-      - Retrieve the result using the GET `/assessments/{assessment_id}`
+      - Add assessment components, such as applicant, capitals and properties in the payload
   DESCRIPTION
 
   # Define one or more Swagger documents and provide global metadata for each one
@@ -27,16 +25,16 @@ RSpec.configure do |config|
   # document below. You can override this behavior by adding a swagger_doc tag to the
   # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v6/swagger.json'
   config.swagger_docs = {
-    "v5/swagger.yaml" => {
+    "v6/swagger.yaml" => {
       openapi: "3.0.1",
       info: {
-        title: "API V5",
+        title: "API V6",
         description: api_description,
         contact: {
           name: "Github repository",
           url: "https://github.com/ministryofjustice/cfe-civil",
         },
-        version: "v5",
+        version: "v6",
       },
       components: {
         schemas: {
@@ -440,9 +438,9 @@ RSpec.configure do |config|
             type: :object,
             description: "A set of cash income[ings] and outgoings payments by category",
             example: JSON.parse(File.read(Rails.root.join("spec/fixtures/cash_transactions.json"))
-                                      .gsub("3.months.ago", "2022-01-01")
-                                      .gsub("2.months.ago", "2022-02-01")
-                                      .gsub("1.month.ago", "2022-03-01")),
+                                    .gsub("3.months.ago", "2022-01-01")
+                                    .gsub("2.months.ago", "2022-02-01")
+                                    .gsub("1.month.ago", "2022-03-01")),
             properties: {
               income: {
                 type: :array,
