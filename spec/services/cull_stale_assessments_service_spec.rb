@@ -44,8 +44,8 @@ RSpec.describe CullStaleAssessmentsService do
       create_list :dependant, 2, assessment: ass
       create :partner, assessment: ass
       create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
-      create :partner_capital_summary, :with_everything, :with_eligibilities, assessment: ass
-      create :partner_capital_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :partner_capital_summary, :with_everything, assessment: ass
+      create :partner_capital_summary, :with_everything, assessment: ass
       create :gross_income_summary,
              :with_all_records,
              :with_employment,
@@ -58,7 +58,6 @@ RSpec.describe CullStaleAssessmentsService do
       create :partner_disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
       create :explicit_remark, assessment: ass
       create :regular_transaction, gross_income_summary: ass.applicant_gross_income_summary
-      create :request_log, assessment_id: ass.id
     end
   end
 
@@ -84,7 +83,6 @@ RSpec.describe CullStaleAssessmentsService do
       ProceedingType,
       Property,
       RegularTransaction,
-      RequestLog,
       StateBenefitPayment,
       StateBenefit,
       Vehicle,

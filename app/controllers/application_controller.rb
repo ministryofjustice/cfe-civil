@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::API
-  around_action :log_request
+  around_action :log_request, if: :log_request?
 
   class ErrorSerializer < ApiErrorHandler::Serializers::BaseSerializer
     def serialize(_serializer_options)
@@ -26,13 +26,17 @@ class ApplicationController < ActionController::API
 
   def log_request
     start_time = Time.zone.now
-    rec = RequestLog.create_from_request(request) if /^\/assessment/.match?(request.path)
+    rec = RequestLog.create_from_request(request)
     yield
     duration = Time.zone.now - start_time
-    rec.update_from_response(response, duration) if /^\/assessment/.match?(request.path)
+    rec.update_from_response(response, duration)
   end
 
 private
+
+  def log_request?
+    /^\/v6\/assessment/.match?(request.path)
+  end
 
   def validate_swagger_schema(schema_name, parameters)
     json_validator = JsonSwaggerValidator.new(schema_name, parameters)
