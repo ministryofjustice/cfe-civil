@@ -1,5 +1,5 @@
 RESPONSE_SECTION_MAPPINGS = {
-  "v5" => {
+  "v6" => {
     "assessment_result" => "result_summary.overall_result.result",
     "capital contribution" => "result_summary.overall_result.capital_contribution",
     "income contribution" => "result_summary.overall_result.income_contribution",
@@ -19,6 +19,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "partner property" => "assessment.partner_capital.capital_items.properties.additional_properties.0",
     "overall_disposable_income" => "result_summary.partner_disposable_income",
     "employment" => "result_summary.disposable_income.employment_income",
+    "partner_employment" => "result_summary.partner_disposable_income.employment_income",
     "combined_assessed_capital" => "result_summary.capital.combined_assessed_capital",
   },
 }.freeze
@@ -51,19 +52,11 @@ def section_from_path(relevant_section, section_path, section_name)
   relevant_section
 end
 
-def remove_request_specific_data(response)
-  response.except("timestamp", "version").merge("assessment" => response.fetch("assessment").except("id"))
-end
-
 # Fetch the json values from within the response based on the mapping defined for the section
-def extract_response_section(response, single_shot_response, version, section_name)
-  resp = remove_request_specific_data(response)
-  ss_resp = remove_request_specific_data(single_shot_response)
-  raise "Single shot API error #{Hashdiff.diff(resp, ss_resp)}" if resp != ss_resp
-
+def extract_response_section(single_shot_response, version, section_name)
   section_path = response_section_for(version, section_name)
 
-  section_from_path(response, section_path, section_name)
+  section_from_path(single_shot_response, section_path, section_name)
 end
 
 def raise_if_present(failures)

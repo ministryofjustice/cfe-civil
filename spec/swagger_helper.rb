@@ -697,6 +697,54 @@ RSpec.configure do |config|
               amount: { "$ref" => "#/components/schemas/currency" },
             },
           },
+          SelfEmployment: {
+            type: :object,
+            required: %i[income],
+            additionalProperties: false,
+            description: "This should be filled out when the client or partner is self employed",
+            properties: {
+              client_reference: {
+                type: :string,
+                description: "Optional reference, echoed in response",
+              },
+              income: {
+                type: :object,
+                required: %i[frequency gross tax benefits_in_kind national_insurance receiving_only_statutory_sick_or_maternity_pay is_employment],
+                additionalProperties: false,
+                properties: {
+                  receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
+                  frequency: {
+                    type: :string,
+                    enum: SelfEmploymentIncome::PAYMENT_FREQUENCIES,
+                  },
+                  is_employment: {
+                    type: :boolean,
+                    description: "set 'true' if this is a 'salary' type income (e.g. company director salary)",
+                  },
+                  gross: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                  },
+                  benefits_in_kind: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                  },
+                  tax: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                  },
+                  national_insurance: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                  },
+                },
+              },
+            },
+          },
           StateBenefit: {
             type: :object,
             required: %i[name payments],
@@ -862,8 +910,8 @@ RSpec.configure do |config|
                   fixed_employment_deduction: {
                     type: :number,
                     format: :decimal,
-                    minimum: 0,
-                    description: "Fixed employment deduction (if applicable) otherwise zero",
+                    maximum: 0,
+                    description: "(negative) fixed employment deduction (if applicable) otherwise zero",
                   },
                   net_employment_income: {
                     type: :number,

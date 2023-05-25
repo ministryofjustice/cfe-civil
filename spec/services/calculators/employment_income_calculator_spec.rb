@@ -35,13 +35,6 @@ module Calculators
           end
         end
       end
-
-      context "no employment records exist" do
-        it "leaves the fixed employment allowance as zero" do
-          expect(described_class.call(submission_date: assessment.submission_date,
-                                      employment: nil).fixed_employment_allowance).to eq 0.0
-        end
-      end
     end
   end
 end

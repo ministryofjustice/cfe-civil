@@ -1,5 +1,5 @@
-def submit_request(method, path, api_version, payload = nil)
-  headers = { "HTTP_ACCEPT" => "application/json;version=#{api_version}", "HTTP_CONTENT_TYPE" => "application/json" }
+def submit_request(method, path, payload = nil)
+  headers = { "HTTP_ACCEPT" => "application/json", "HTTP_CONTENT_TYPE" => "application/json" }
   case method
   when :post
     page.driver.post(path, payload.to_json, headers)

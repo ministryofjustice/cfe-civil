@@ -35,7 +35,7 @@ private
   end
 
   def perform_assessment
-    calculation_output = Workflows::MainWorkflow.call(assessment)
+    calculation_output = Workflows::MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: [])
     render json: decorator_klass.new(assessment, calculation_output).as_json
   end
 

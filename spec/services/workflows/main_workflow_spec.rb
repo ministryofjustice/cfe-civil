@@ -21,7 +21,7 @@ module Workflows
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
         expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-        MainWorkflow.call(assessment)
+        MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: [])
       end
 
       context "for immigration/asylum proceeding types" do
@@ -31,7 +31,7 @@ module Workflows
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
           expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-          MainWorkflow.call(assessment)
+          MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: [])
         end
       end
     end
@@ -39,7 +39,7 @@ module Workflows
     context "applicant is passported" do
       let(:applicant) { create :applicant, :with_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment) }
+      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
 
       it "calls PassportedWorkflow" do
         allow(Assessors::MainAssessor).to receive(:call)
@@ -57,11 +57,11 @@ module Workflows
     context "applicant is not passported" do
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment) }
+      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
 
       it "calls NonPassportedWorkflow" do
         allow(Assessors::MainAssessor).to receive(:call)
-        allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+        allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
         workflow_call
       end
 
@@ -85,14 +85,14 @@ module Workflows
       end
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment) }
+      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
 
       context "with proceeding types" do
         it "Populates proceeding types with thresholds" do
           expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
 
           allow(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
 
@@ -103,7 +103,7 @@ module Workflows
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
 

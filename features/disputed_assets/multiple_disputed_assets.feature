@@ -4,7 +4,7 @@ Feature:
   Scenario: A client with disputed property and vehicle
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
-    And I am using version 5 of the API
+    And I am using version 6 of the API
     And I add the following main property details for the current assessment:
       | value                     | 150000 |
       | outstanding_mortgage      | 100000 |

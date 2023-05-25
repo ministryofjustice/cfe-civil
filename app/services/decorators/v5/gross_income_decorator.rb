@@ -1,11 +1,12 @@
 module Decorators
   module V5
     class GrossIncomeDecorator
-      def initialize(summary, employments, subtotals)
+      def initialize(summary, employments, subtotals, self_employments)
         @summary = summary
         @employments = employments
         @categories = income_categories_excluding_benefits
         @subtotals = subtotals
+        @self_employments = self_employments
       end
 
       def as_json
@@ -14,12 +15,29 @@ module Decorators
           irregular_income:,
           state_benefits:,
           other_income:,
-        }
+        }.tap do |result|
+          result.merge!(self_employments:) if @self_employments.any?
+        end
       end
 
     private
 
       attr_reader :summary
+
+      def self_employments
+        @self_employments.map do |self_employment|
+          {
+            monthly_income: {
+              gross: self_employment.monthly_gross_income,
+              tax: self_employment.monthly_tax,
+              national_insurance: self_employment.monthly_national_insurance,
+              benefits_in_kind: self_employment.monthly_benefits_in_kind,
+            },
+          }.tap do |result|
+            result.merge!(client_reference: self_employment.client_id) if self_employment.client_id
+          end
+        end
+      end
 
       def income_categories_excluding_benefits
         CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym) - [:benefits]

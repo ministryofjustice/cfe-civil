@@ -4,38 +4,15 @@ module Calculators
   RSpec.describe MultipleEmploymentsCalculator, :vcr do
     let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
 
-    before do
-      create_list :employment, 2, assessment:
-    end
-
-    it "sets gross employment income to zero" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).gross_employment_income).to eq 0
-    end
-
-    it "sets benefits in kind to zero" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).benefits_in_kind).to eq 0
-    end
-
-    it "sets employment income deductions to zero" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).employment_income_deductions).to eq 0
-    end
-
-    it "sets tax to zero" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).tax).to eq 0
-    end
-
-    it "sets national insurance to zero" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).national_insurance).to eq 0
-    end
-
-    it "sets fixed employment allowance to 45" do
-      expect(described_class.call(assessment:,
-                                  employments: assessment.employments).fixed_employment_allowance).to eq(-45)
+    it "sets all items to zero apart from allowance" do
+      expect(described_class.call(assessment.submission_date))
+        .to have_attributes(
+          gross_employment_income: 0.0,
+          benefits_in_kind: 0.0,
+          tax: 0.0,
+          national_insurance: 0.0,
+          fixed_employment_allowance: -45.0,
+        )
     end
   end
 end
