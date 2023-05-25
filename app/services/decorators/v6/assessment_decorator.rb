@@ -9,12 +9,6 @@ module Decorators
       end
 
       def as_json
-        payload
-      end
-
-    private
-
-      def payload
         {
           version: assessment.version,
           timestamp: Time.current,
@@ -23,6 +17,8 @@ module Decorators
           assessment: assessment_details.transform_values(&:as_json),
         }
       end
+
+    private
 
       def assessment_details
         details = {

@@ -13,6 +13,18 @@ class ApplicationController < ActionController::API
 
   handle_api_errors(serializer: ErrorSerializer, error_reporter: :sentry)
 
+  # ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
+  #   event = ActiveSupport::Notifications::Event.new(*args)
+  #   if event.payload.fetch(:controller) == V6::AssessmentsController.to_s
+  #     RequestLog.create!(
+  #       request: event.payload.fetch(:params).except("controller", "action"),
+  #       http_status: event.payload.fetch(:status),
+  #       response: JSON.parse(event.payload.fetch(:response).body),
+  #       duration: event.duration,
+  #     )
+  #   end
+  # end
+
   def render_unprocessable(message)
     messages = Array.wrap(message)
     sentry_message = messages.join(", ")
@@ -26,10 +38,13 @@ class ApplicationController < ActionController::API
 
   def log_request
     start_time = Time.zone.now
-    rec = RequestLog.create_from_request(request)
     yield
-    duration = Time.zone.now - start_time
-    rec.update_from_response(response, duration)
+    RequestLog.create!(
+      request: request.params.except(:controller, :action),
+      http_status: response.status,
+      response: JSON.parse(response.body),
+      duration: Time.zone.now - start_time,
+    )
   end
 
 private
