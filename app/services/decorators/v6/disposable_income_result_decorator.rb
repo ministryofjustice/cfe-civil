@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class DisposableIncomeResultDecorator
       def initialize(summary, gross_income_summary, employment_income_subtotals, partner_present:, disposable_income_subtotals:)
         @summary = summary

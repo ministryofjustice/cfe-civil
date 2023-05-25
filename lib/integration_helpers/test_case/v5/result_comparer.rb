@@ -1,7 +1,7 @@
 require_relative "remarks_comparer"
 
 module TestCase
-  module V5
+  module V6
     class ResultComparer
       def self.call(actual, expected, verbosity)
         new(actual, expected, verbosity).call

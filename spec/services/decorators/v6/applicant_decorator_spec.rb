@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Decorators
-  module V5
+  module V6
     RSpec.describe ApplicantDecorator do
       describe "#as_json" do
         subject(:decorator) { described_class.new(applicant).as_json }

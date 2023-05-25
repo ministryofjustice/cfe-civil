@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Decorators
-  module V5
+  module V6
     RSpec.describe DisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do

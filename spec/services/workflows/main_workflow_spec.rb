@@ -72,7 +72,7 @@ module Workflows
       end
     end
 
-    context "version 5" do
+    context "version 6" do
       let(:assessment) do
         create :assessment,
                :with_capital_summary,

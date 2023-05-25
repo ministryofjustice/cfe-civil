@@ -1,5 +1,5 @@
 module TestCase
-  module V5
+  module V6
     class RemarksComparer
       def self.call(expected, actual, verbosity)
         new(expected, actual, verbosity).call

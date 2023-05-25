@@ -1,5 +1,5 @@
 module TestCase
-  module V5
+  module V6
     class ExpectedResult
       attr_reader :result_set
 

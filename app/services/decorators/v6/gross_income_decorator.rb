@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class GrossIncomeDecorator
       def initialize(summary, employments, subtotals, self_employments)
         @summary = summary

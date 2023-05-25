@@ -144,7 +144,7 @@ module TestCase
     end
 
     def populate_expected_results
-      @expected_results = V5::ExpectedResult.new(@rows)
+      @expected_results = V6::ExpectedResult.new(@rows)
     end
 
     def populate_earned_income

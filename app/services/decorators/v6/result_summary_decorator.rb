@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class ResultSummaryDecorator
       attr_reader :assessment
 

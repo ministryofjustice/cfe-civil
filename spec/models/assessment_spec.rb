@@ -4,7 +4,7 @@ require Rails.root.join("spec/fixtures/assessment_request_fixture.rb")
 RSpec.describe Assessment, type: :model do
   let(:payload) { AssessmentRequestFixture.json }
 
-  context "version 5" do
+  context "version 6" do
     let(:param_hash) do
       {
         client_reference_id: "client-ref-1",

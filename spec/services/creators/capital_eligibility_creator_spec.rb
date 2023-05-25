@@ -10,7 +10,7 @@ module Creators
       travel_back
     end
 
-    context "version 5" do
+    context "version 6" do
       let(:eligibilities) { assessment.applicant_capital_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
 

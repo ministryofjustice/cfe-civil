@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class RemarksDecorator
       def initialize(record, assessment)
         @record = record

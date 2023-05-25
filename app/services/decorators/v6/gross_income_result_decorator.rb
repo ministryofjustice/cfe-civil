@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class GrossIncomeResultDecorator
       def initialize(summary, person_gross_income_subtotals, combined_monthly_gross_income)
         @summary = summary

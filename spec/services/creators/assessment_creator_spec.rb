@@ -4,7 +4,7 @@ module Creators
   RSpec.describe AssessmentCreator do
     let(:remote_ip) { "127.0.0.1" }
 
-    let(:raw_post_v5) do
+    let(:raw_post_v6) do
       {
         client_reference_id: "psr-123",
         submission_date: "2019-06-06",
@@ -21,9 +21,9 @@ module Creators
 
     subject(:creator) { described_class.call(remote_ip:, assessment_params:, version:) }
 
-    context "version 5" do
-      let(:assessment_params) { raw_post_v5 }
-      let(:version) { "5" }
+    context "version 6" do
+      let(:assessment_params) { raw_post_v6 }
+      let(:version) { "6" }
 
       context "valid request" do
         it "is successful" do
@@ -37,7 +37,7 @@ module Creators
         it "populates the assessment record with expected values" do
           creator
           assessment = Assessment.first
-          expect(assessment.version).to eq "5"
+          expect(assessment.version).to eq "6"
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(assessment.proceeding_type_codes).to eq []
           expect(assessment.level_of_help).to eq "certificated"
@@ -53,9 +53,9 @@ module Creators
       end
     end
 
-    context "when version 5" do
-      let(:assessment_params) { raw_post_v5 }
-      let(:version) { "5" }
+    context "when version 6" do
+      let(:assessment_params) { raw_post_v6 }
+      let(:version) { "6" }
 
       context "valid request" do
         it "is successful" do
@@ -69,7 +69,7 @@ module Creators
         it "populates the assessment record with expected values" do
           creator
           assessment = Assessment.first
-          expect(assessment.version).to eq "5"
+          expect(assessment.version).to eq "6"
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(assessment.proceeding_type_codes).to eq []
         end

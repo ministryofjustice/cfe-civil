@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Decorators
-  module V5
+  module V6
     RSpec.describe GrossIncomeDecorator do
       let(:assessment) { create :assessment }
 

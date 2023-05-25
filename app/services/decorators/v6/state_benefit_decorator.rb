@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class StateBenefitDecorator
       def initialize(state_benefit)
         @state_benefit = state_benefit

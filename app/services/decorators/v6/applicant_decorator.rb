@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class ApplicantDecorator
       def initialize(applicant)
         @record = applicant

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Decorators
-  module V5
+  module V6
     RSpec.describe ProceedingTypesResultDecorator do
       let(:proceeding_types) { [%w[DA003 A], %w[DA005 Z], %w[SE013 W]] }
       let(:assessment) { create :assessment, proceedings: proceeding_types }

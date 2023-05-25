@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Decorators
-  module V5
+  module V6
     RSpec.describe PropertyDecorator do
       describe "#as_json" do
         subject(:json_hash) { described_class.new(property).as_json }

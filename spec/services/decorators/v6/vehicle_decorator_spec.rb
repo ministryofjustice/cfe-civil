@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe Decorators::V5::VehicleDecorator do
+RSpec.describe Decorators::V6::VehicleDecorator do
   let(:purchase_date) { Date.new(2022, 8, 13) }
   let(:vehicle) do
     create :vehicle,

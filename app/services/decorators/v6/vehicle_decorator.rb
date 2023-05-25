@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class VehicleDecorator
       def initialize(record, vehicle_result)
         @record = record

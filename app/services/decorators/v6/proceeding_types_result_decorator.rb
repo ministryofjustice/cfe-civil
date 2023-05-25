@@ -1,5 +1,5 @@
 module Decorators
-  module V5
+  module V6
     class ProceedingTypesResultDecorator
       def initialize(eligibilities, proceeding_types)
         @eligibilities = eligibilities
