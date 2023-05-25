@@ -97,26 +97,28 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
 
   def capitals_params
     {
-      bank_accounts: [
-        {
-          description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-        {
-          description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-      ],
-      non_liquid_capital: [
-        {
-          description: "Ming vase",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-        {
-          description: "Aramco shares",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-      ],
+      capitals: {
+        bank_accounts: [
+          {
+            description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+          {
+            description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+        ],
+        non_liquid_capital: [
+          {
+            description: "Ming vase",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+          {
+            description: "Aramco shares",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+        ],
+      },
     }
   end
 
