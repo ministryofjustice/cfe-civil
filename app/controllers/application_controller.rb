@@ -19,6 +19,7 @@ class ApplicationController < ActionController::API
         http_status: event.payload.fetch(:status),
         response: JSON.parse(event.payload.fetch(:response).body),
         duration: event.duration,
+        user_agent: event.payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
     end
   end

@@ -11,6 +11,7 @@ class ReshapeRequestLog < ActiveRecord::Migration[7.0]
       t.json :request, null: false
       t.json :response, null: false
       t.date :created_at, null: false
+      t.string :user_agent, null: false
     end
   end
 end

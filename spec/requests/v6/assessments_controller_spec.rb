@@ -3,9 +3,10 @@ require "rails_helper"
 module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
-      let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" } }
+      let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
       let(:assessment) { parsed_response.fetch(:assessment).except(:id) }
       let(:employed) { false }
+      let(:user_agent) { Faker::ProgrammingLanguage.name }
       let(:current_date) { Date.new(2022, 6, 6) }
       let(:submission_date_params) { { submission_date: current_date.to_s } }
       let(:default_params) do
@@ -237,32 +238,37 @@ module V6
           expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
         end
 
-        it "creates a log record" do
+        it "creates a log record with a user agent" do
           expect(log_record)
             .to have_attributes(created_at: Time.zone.today,
                                 http_status: 200,
-                                request: { "assessment" => { "submission_date" => "2022-06-06" },
-                                           "applicant" => { "date_of_birth" => "2001-02-02", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
-                                           "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
-                                           "dependants" => [{
-                                             "date_of_birth" => "2014-06-11",
-                                             "in_full_time_education" => true,
-                                             "relationship" => "child_relative",
-                                             "monthly_income" => 0,
-                                             "assets_value" => 0.0,
-                                           },
-                                                            {
-                                                              "date_of_birth" => "2013-06-11",
-                                                              "in_full_time_education" => true,
-                                                              "relationship" => "child_relative",
-                                                              "monthly_income" => 0,
-                                                              "assets_value" => 0.0,
-                                                            },
-                                                            { "date_of_birth" => "2004-06-11",
-                                                              "in_full_time_education" => true,
-                                                              "relationship" => "child_relative",
-                                                              "monthly_income" => 0,
-                                                              "assets_value" => 0.0 }] })
+                                user_agent:,
+                                request: {
+                                  "assessment" => { "submission_date" => "2022-06-06" },
+                                  "applicant" => { "date_of_birth" => "2001-02-02", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
+                                  "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
+                                  "dependants" => [
+                                    {
+                                      "date_of_birth" => "2014-06-11",
+                                      "in_full_time_education" => true,
+                                      "relationship" => "child_relative",
+                                      "monthly_income" => 0,
+                                      "assets_value" => 0.0,
+                                    },
+                                    {
+                                      "date_of_birth" => "2013-06-11",
+                                      "in_full_time_education" => true,
+                                      "relationship" => "child_relative",
+                                      "monthly_income" => 0,
+                                      "assets_value" => 0.0,
+                                    },
+                                    { "date_of_birth" => "2004-06-11",
+                                      "in_full_time_education" => true,
+                                      "relationship" => "child_relative",
+                                      "monthly_income" => 0,
+                                      "assets_value" => 0.0 },
+                                  ],
+                                })
           expect(log_record.response.symbolize_keys.except(:timestamp, :assessment)).to eq(
             version: "6",
             success: true,

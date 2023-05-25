@@ -235,6 +235,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_25_075629) do
     t.json "request", null: false
     t.json "response", null: false
     t.date "created_at", null: false
+    t.string "user_agent", null: false
   end
 
   create_table "state_benefit_payments", force: :cascade do |t|
