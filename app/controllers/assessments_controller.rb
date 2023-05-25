@@ -67,6 +67,6 @@ private
   end
 
   def decorator_klass
-    Decorators::V5::AssessmentDecorator
+    Decorators::V6::AssessmentDecorator
   end
 end

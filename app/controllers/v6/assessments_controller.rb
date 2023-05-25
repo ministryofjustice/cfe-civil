@@ -15,7 +15,7 @@ module V6
                                                           self_employments: parse_self_employments(self_employments),
                                                           partner_self_employments: parse_self_employments(partner_self_employments))
 
-        render json: Decorators::V5::AssessmentDecorator.new(create.assessment, calculation_output).as_json
+        render json: Decorators::V6::AssessmentDecorator.new(create.assessment, calculation_output).as_json
       else
         render_unprocessable(create.errors)
       end
