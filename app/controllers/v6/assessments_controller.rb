@@ -1,5 +1,5 @@
 module V6
-  class AssessmentsController < CreationController
+  class AssessmentsController < ApplicationController
     before_action :validate
 
     SelfEmployment = Data.define(:income, :client_reference)

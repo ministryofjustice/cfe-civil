@@ -34,7 +34,10 @@ class ApplicationController < ActionController::API
 
 private
 
-  def load_assessment
-    @assessment = Assessment.find_by(id: params[:assessment_id]) || render_unprocessable(["No such assessment id"])
+  def validate_swagger_schema(schema_name, parameters)
+    json_validator = JsonSwaggerValidator.new(schema_name, parameters)
+    unless json_validator.valid?
+      render_unprocessable(json_validator.errors)
+    end
   end
 end
