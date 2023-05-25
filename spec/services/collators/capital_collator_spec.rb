@@ -10,11 +10,13 @@ module Collators
     let(:pcd_value) { 0 }
     let(:smod_value) { 0 }
     let(:level_of_help) { "controlled" }
+    let(:vehicles) { [] }
 
     describe "#call" do
       subject(:collator) do
         described_class.call submission_date: assessment.submission_date,
                              capital_summary: assessment.applicant_capital_summary,
+                             vehicles:,
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
                              level_of_help:
@@ -50,6 +52,12 @@ module Collators
 
       context "with a main home and an additional property" do
         let(:smod_value) { 60_000 }
+        let(:vehicles) do
+          [
+            build(:vehicle, subject_matter_of_dispute: true, value: 15_000, in_regular_use: false),
+            build(:vehicle, subject_matter_of_dispute: false, value: 3_500, in_regular_use: false),
+          ]
+        end
 
         before do
           capital_summary
@@ -58,12 +66,6 @@ module Collators
               attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
                                         value: 280_000, outstanding_mortgage: 50_000),
               attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
-            ])
-          capital_summary
-            .vehicles
-            .build([
-              attributes_for(:vehicle, subject_matter_of_dispute: true, value: 15_000, in_regular_use: false),
-              attributes_for(:vehicle, subject_matter_of_dispute: false, value: 3_500, in_regular_use: false),
             ])
           capital_summary
             .non_liquid_capital_items
@@ -89,12 +91,8 @@ module Collators
       end
 
       context "vehicle assessment" do
-        before do
-          capital_summary
-            .vehicles
-            .build([
-              attributes_for(:vehicle, value: 2_500, in_regular_use: false),
-            ])
+        let(:vehicles) do
+          [build(:vehicle, value: 2_500, in_regular_use: false)]
         end
 
         it "instantiates and calls the Vehicle Assesment service" do
@@ -118,6 +116,11 @@ module Collators
 
       context "summarization of result_fields" do
         let(:pcd_value) { 100_000 }
+        let(:vehicles) do
+          [
+            build(:vehicle, value: 2_500, in_regular_use: false),
+          ]
+        end
 
         before do
           capital_summary
@@ -134,11 +137,6 @@ module Collators
             .non_liquid_capital_items
             .build([
               attributes_for(:non_liquid_capital_item, value: 500),
-            ])
-          capital_summary
-            .vehicles
-            .build([
-              attributes_for(:vehicle, value: 2_500, in_regular_use: false),
             ])
         end
 

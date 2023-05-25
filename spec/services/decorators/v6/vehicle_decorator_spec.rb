@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe Decorators::V6::VehicleDecorator do
   let(:purchase_date) { Date.new(2022, 8, 13) }
   let(:vehicle) do
-    create :vehicle,
-           value: 12_000.0,
-           loan_amount_outstanding: 1250.44,
-           date_of_purchase: purchase_date,
-           in_regular_use: false
+    build :vehicle,
+          value: 12_000.0,
+          loan_amount_outstanding: 1250.44,
+          date_of_purchase: purchase_date,
+          in_regular_use: false
   end
 
   subject(:decorator) { described_class.new(vehicle, OpenStruct.new(assessed_value: 0, included_in_assessment: false)) }

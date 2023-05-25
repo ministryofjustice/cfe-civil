@@ -1,14 +1,14 @@
 module Workflows
   class MainWorkflow
     class << self
-      def call(assessment:, self_employments:, partner_self_employments:)
+      def call(assessment:, applicant:, partner:)
         version_5_verification(assessment)
         calculation_output = if no_means_assessment_needed?(assessment)
                                blank_calculation_result
                              elsif assessment.applicant.receives_qualifying_benefit?
-                               PassportedWorkflow.call(assessment)
+                               PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner.vehicles)
                              else
-                               NonPassportedWorkflow.call(assessment:, self_employments:, partner_self_employments:)
+                               NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
         RemarkGenerators::Orchestrator.call(assessment, calculation_output.capital_subtotals.combined_assessed_capital)
         Assessors::MainAssessor.call(assessment)

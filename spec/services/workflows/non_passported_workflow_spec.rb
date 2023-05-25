@@ -8,6 +8,7 @@ module Workflows
              submission_date: Date.new(2022, 6, 7),
              applicant:, proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
     end
+    let(:person_blank) { PersonData.new(self_employments: [], vehicles: []) }
 
     before do
       assessment.proceeding_type_codes.each do |ptc|
@@ -24,7 +25,7 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, self_employments:, partner_self_employments: [])
+        described_class.call(assessment:, applicant: person_blank, partner: person_blank)
         Assessors::MainAssessor.call(assessment)
         assessment.assessment_result
       end
@@ -42,7 +43,9 @@ module Workflows
           let(:applicant) { build :applicant }
           let(:calculation_output) do
             assessment.reload
-            described_class.call(assessment:, self_employments:, partner_self_employments: []).tap do |_output|
+            described_class.call(assessment:,
+                                 applicant: PersonData.new(self_employments:, vehicles: []),
+                                 partner: person_blank).tap do
               Assessors::MainAssessor.call(assessment)
             end
           end

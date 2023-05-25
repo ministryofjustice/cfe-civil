@@ -32,11 +32,7 @@ module Assessors
       end
 
       def too_old_to_count(vehicle, submission_date)
-        age_in_months(vehicle, submission_date) >= vehicle_out_of_scope_age(submission_date)
-      end
-
-      def age_in_months(vehicle, submission_date)
-        Calculators::VehicleAgeCalculator.new(vehicle.date_of_purchase, submission_date).in_months
+        vehicle.age_in_months(submission_date) >= vehicle_out_of_scope_age(submission_date)
       end
 
       def vehicle_out_of_scope_age(submission_date)

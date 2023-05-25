@@ -85,7 +85,6 @@ RSpec.describe CullStaleAssessmentsService do
       RegularTransaction,
       StateBenefitPayment,
       StateBenefit,
-      Vehicle,
     ]
   end
 

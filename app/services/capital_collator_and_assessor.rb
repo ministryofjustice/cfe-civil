@@ -1,11 +1,12 @@
 class CapitalCollatorAndAssessor
   class << self
-    def call(assessment)
+    def call(assessment:, vehicles:, partner_vehicles:)
       pensioner_capital_disregard = pensioner_capital_disregard(assessment)
-      applicant_subtotals = collate_applicant_capital(assessment, pensioner_capital_disregard:)
+      applicant_subtotals = collate_applicant_capital(assessment, pensioner_capital_disregard:, vehicles:)
       if assessment.partner.present?
         partner_subtotals = collate_partner_capital(assessment,
-                                                    pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied)
+                                                    pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
+                                                    vehicles: partner_vehicles)
         combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
       else
         partner_subtotals = PersonCapitalSubtotals.blank
@@ -22,8 +23,9 @@ class CapitalCollatorAndAssessor
 
   private
 
-    def collate_applicant_capital(assessment, pensioner_capital_disregard:)
+    def collate_applicant_capital(assessment, pensioner_capital_disregard:, vehicles:)
       Collators::CapitalCollator.call(
+        vehicles:,
         submission_date: assessment.submission_date,
         capital_summary: assessment.applicant_capital_summary,
         maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(assessment),
@@ -32,8 +34,9 @@ class CapitalCollatorAndAssessor
       )
     end
 
-    def collate_partner_capital(assessment, pensioner_capital_disregard:)
+    def collate_partner_capital(assessment, pensioner_capital_disregard:, vehicles:)
       Collators::CapitalCollator.call(
+        vehicles:,
         submission_date: assessment.submission_date,
         capital_summary: assessment.partner_capital_summary,
         pensioner_capital_disregard:,

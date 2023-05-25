@@ -1,16 +1,16 @@
 module Workflows
   class NonPassportedWorkflow
     class << self
-      def call(assessment:, self_employments:, partner_self_employments:)
+      def call(assessment:, applicant:, partner:)
         gross_income_subtotals = collate_and_assess_gross_income(assessment:,
-                                                                 self_employments:,
-                                                                 partner_self_employments:)
+                                                                 self_employments: applicant.self_employments,
+                                                                 partner_self_employments: partner.self_employments)
         return CalculationOutput.new(gross_income_subtotals:) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_income_subtotals = disposable_income_assessment(assessment, gross_income_subtotals)
         return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:) if assessment.applicant_disposable_income_summary.ineligible?
 
-        capital_subtotals = collate_and_assess_capital assessment
+        capital_subtotals = collate_and_assess_capital(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner.vehicles)
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
       end
 
@@ -190,8 +190,8 @@ module Workflows
         )
       end
 
-      def collate_and_assess_capital(assessment)
-        CapitalCollatorAndAssessor.call assessment
+      def collate_and_assess_capital(assessment:, vehicles:, partner_vehicles:)
+        CapitalCollatorAndAssessor.call assessment:, vehicles:, partner_vehicles:
       end
 
       def calculate_childcare_eligibility(assessment, applicant, partner = nil)
