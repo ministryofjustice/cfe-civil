@@ -13,8 +13,7 @@ RSpec.configure do |config|
     # Check financial eligibility for legal aid.
 
     ## Usage:
-      - Create an assessment by POSTing a payload to `/v6/assessments`
-        and store the `assessment_id` returned.
+      - Calculate eligibility by POSTing a payload to `/v6/assessments`
       - Add assessment components, such as applicant, capitals and properties in the payload
   DESCRIPTION
 
