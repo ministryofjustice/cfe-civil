@@ -49,7 +49,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
   end
 
   def headers
-    { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" }
+    { "CONTENT_TYPE" => "application/json", "Accept" => "application/json;version=6" }
   end
 
   def payload
