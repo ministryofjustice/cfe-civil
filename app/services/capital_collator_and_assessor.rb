@@ -11,7 +11,7 @@ class CapitalCollatorAndAssessor
         partner_subtotals = PersonCapitalSubtotals.blank
         combined_assessed_capital = applicant_subtotals.assessed_capital
       end
-      capital_contribution = Assessors::CapitalAssessor.call(assessment.capital_summary, combined_assessed_capital)
+      capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
@@ -25,7 +25,7 @@ class CapitalCollatorAndAssessor
     def collate_applicant_capital(assessment, pensioner_capital_disregard:)
       Collators::CapitalCollator.call(
         submission_date: assessment.submission_date,
-        capital_summary: assessment.capital_summary,
+        capital_summary: assessment.applicant_capital_summary,
         maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(assessment),
         pensioner_capital_disregard:,
         level_of_help: assessment.level_of_help,
@@ -45,10 +45,10 @@ class CapitalCollatorAndAssessor
 
     def total_disposable_income(assessment)
       if assessment.partner.present?
-        assessment.disposable_income_summary.total_disposable_income +
+        assessment.applicant_disposable_income_summary.total_disposable_income +
           assessment.partner_disposable_income_summary.total_disposable_income
       else
-        assessment.disposable_income_summary.total_disposable_income
+        assessment.applicant_disposable_income_summary.total_disposable_income
       end
     end
 

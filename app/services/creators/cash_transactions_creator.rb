@@ -7,13 +7,14 @@ module Creators
     end
 
     class << self
-      def call(assessment:, cash_transaction_params:)
-        new(assessment:, cash_transaction_params:).call
+      def call(submission_date:, gross_income_summary:, cash_transaction_params:)
+        new(submission_date:, gross_income_summary:, cash_transaction_params:).call
       end
     end
 
-    def initialize(assessment:, cash_transaction_params:)
-      @assessment = assessment
+    def initialize(submission_date:, gross_income_summary:, cash_transaction_params:)
+      @submission_date = submission_date
+      @gross_income_summary = gross_income_summary
       @cash_transaction_params = cash_transaction_params
     end
 
@@ -24,7 +25,7 @@ module Creators
   private
 
     def valid_dates
-      base_date = @assessment.submission_date.beginning_of_month
+      base_date = @submission_date.beginning_of_month
       @valid_dates ||= [
         base_date - 4.months,
         base_date - 3.months,
@@ -72,7 +73,7 @@ module Creators
     end
 
     def create_category(category_hash, operation)
-      cash_transaction_category = CashTransactionCategory.create!(gross_income_summary: @assessment.gross_income_summary,
+      cash_transaction_category = CashTransactionCategory.create!(gross_income_summary: @gross_income_summary,
                                                                   name: category_hash[:category],
                                                                   operation:)
       category_hash[:payments].each { |payment| create_cash_transaction(payment, cash_transaction_category) }

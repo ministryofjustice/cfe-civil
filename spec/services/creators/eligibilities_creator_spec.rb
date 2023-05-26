@@ -11,7 +11,7 @@ module Creators
         let(:assessment) { create :assessment, :with_everything }
 
         it "creates an upper threshold" do
-          expect(assessment.gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2657.0])
+          expect(assessment.applicant_gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2657.0])
         end
       end
 
@@ -27,7 +27,7 @@ module Creators
         end
 
         it "creates an uplifted upper threshold" do
-          expect(assessment.gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2879.0])
+          expect(assessment.applicant_gross_income_summary.eligibilities.map(&:upper_threshold)).to eq([2879.0])
         end
       end
     end

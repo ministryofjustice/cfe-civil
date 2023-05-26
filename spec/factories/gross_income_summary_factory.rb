@@ -61,5 +61,7 @@ FactoryBot.define do
         create :irregular_income_payment, gross_income_summary: gross_income_summary
       end
     end
+
+    factory :partner_gross_income_summary
   end
 end

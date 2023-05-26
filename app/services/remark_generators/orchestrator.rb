@@ -2,11 +2,7 @@ module RemarkGenerators
   class Orchestrator
     attr_reader :assessment
 
-    delegate :gross_income_summary, :disposable_income_summary, to: :assessment
-
     delegate :state_benefit_payments, to: :state_benefits
-
-    delegate :outgoings, to: :disposable_income_summary
 
     def self.call(assessment, assessed_capital)
       new(assessment, assessed_capital).call
@@ -41,7 +37,7 @@ module RemarkGenerators
     end
 
     def check_outgoings_variation
-      outgoings.group_by(&:type).each do |_type, collection|
+      assessment.applicant_disposable_income_summary.outgoings.group_by(&:type).each do |_type, collection|
         AmountVariationChecker.call(@assessment, collection)
       end
     end
@@ -65,16 +61,18 @@ module RemarkGenerators
       state_benefits.each { |sb| MultiBenefitChecker.call(@assessment, sb.state_benefit_payments) }
     end
 
+    # These 3 methods are both possible sources of (minor) defects
+    # because we're not passing gross_income_summary or disposable_income_summary
     def state_benefits
-      gross_income_summary.state_benefits
+      assessment.applicant_gross_income_summary.state_benefits
     end
 
     def other_income_sources
-      gross_income_summary.other_income_sources
+      assessment.applicant_gross_income_summary.other_income_sources
     end
 
     def outgoings
-      disposable_income_summary.outgoings
+      assessment.applicant_disposable_income_summary.outgoings
     end
   end
 end

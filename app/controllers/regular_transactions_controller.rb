@@ -4,7 +4,7 @@ class RegularTransactionsController < CreationController
   def create
     swagger_validate_and_render "regular_transactions", regular_transaction_params, lambda {
       Creators::RegularTransactionsCreator.call(
-        gross_income_summary: @assessment.gross_income_summary,
+        gross_income_summary: @assessment.applicant_gross_income_summary,
         regular_transaction_params:,
       )
     }

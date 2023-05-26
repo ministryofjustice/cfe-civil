@@ -3,11 +3,6 @@ module Decorators
     class ResultSummaryDecorator
       attr_reader :assessment
 
-      delegate :capital_summary,
-               :disposable_income_summary,
-               :gross_income_summary,
-               to: :assessment
-
       def initialize(assessment, calculation_output)
         @assessment = assessment
         @calculation_output = calculation_output
@@ -18,21 +13,21 @@ module Decorators
           overall_result: {
             result: @assessment.assessment_result,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
-            income_contribution: disposable_income_summary.income_contribution.to_f,
+            income_contribution: assessment.applicant_disposable_income_summary.income_contribution.to_f,
             proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
           },
-          gross_income: GrossIncomeResultDecorator.new(gross_income_summary,
+          gross_income: GrossIncomeResultDecorator.new(assessment.applicant_gross_income_summary,
                                                        @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
                                                        @calculation_output.gross_income_subtotals.combined_monthly_gross_income.to_f),
           disposable_income: DisposableIncomeResultDecorator.new(
-            disposable_income_summary,
-            gross_income_summary,
+            assessment.applicant_disposable_income_summary,
+            assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
             partner_present: assessment.partner.present?,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
           ),
           capital: ApplicantCapitalResultDecorator.new(
-            summary: capital_summary,
+            summary: assessment.applicant_capital_summary,
             applicant_capital_subtotals: @calculation_output.capital_subtotals.applicant_capital_subtotals,
             partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,

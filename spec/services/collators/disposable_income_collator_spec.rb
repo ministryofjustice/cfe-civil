@@ -18,7 +18,7 @@ module Collators
     let(:total_gross_income) { 0 }
     let(:gross_income_subtotals) do
       PersonGrossIncomeSubtotals.new(
-        gross_income_summary: assessment.gross_income_summary,
+        gross_income_summary: assessment.applicant_gross_income_summary,
         regular_income_categories: [],
         employment_income_subtotals: EmploymentIncomeSubtotals.new(
           benefits_in_kind: 0,
@@ -64,8 +64,8 @@ module Collators
 
     describe ".call" do
       subject(:collator) do
-        described_class.call(gross_income_summary: assessment.gross_income_summary,
-                             disposable_income_summary: assessment.disposable_income_summary,
+        described_class.call(gross_income_summary: assessment.applicant_gross_income_summary,
+                             disposable_income_summary:,
                              partner_allowance:,
                              gross_income_subtotals:,
                              outgoings: OutgoingsCollator::Result.new(dependant_allowance_under_16:, dependant_allowance_over_16:))

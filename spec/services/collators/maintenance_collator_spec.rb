@@ -5,7 +5,7 @@ module Collators
     before { create :bank_holiday }
 
     let(:assessment) { create :assessment, :with_disposable_income_summary }
-    let(:disposable_income_summary) { assessment.disposable_income_summary }
+    let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
 
     describe ".call" do
       subject(:collator) { described_class.call(disposable_income_summary) }

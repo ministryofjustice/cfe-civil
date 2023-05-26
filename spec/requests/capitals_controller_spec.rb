@@ -43,7 +43,7 @@ RSpec.describe CapitalsController, type: :request do
         end
 
         it "creates two LiquidCapitalItem records" do
-          expect(assessment.capital_summary.liquid_capital_items.size).to eq 2
+          expect(assessment.applicant_capital_summary.liquid_capital_items.size).to eq 2
         end
       end
 
@@ -77,7 +77,7 @@ RSpec.describe CapitalsController, type: :request do
         end
 
         it "creates 2 NonLiquidCapitalItem records" do
-          expect(assessment.capital_summary.non_liquid_capital_items.size).to eq 2
+          expect(assessment.applicant_capital_summary.non_liquid_capital_items.size).to eq 2
         end
       end
 

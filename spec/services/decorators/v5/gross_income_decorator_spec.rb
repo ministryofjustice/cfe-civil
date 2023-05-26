@@ -150,7 +150,7 @@ module Decorators
         end
 
         subject(:decorator) do
-          described_class.new(assessment.gross_income_summary,
+          described_class.new(assessment.applicant_gross_income_summary,
                               assessment.employments, subtotals, []).as_json
         end
 

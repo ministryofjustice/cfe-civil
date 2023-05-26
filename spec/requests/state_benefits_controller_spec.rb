@@ -4,7 +4,7 @@ RSpec.describe StateBenefitsController, type: :request do
   describe "POST state_benefit" do
     let(:assessment) { create :assessment, :with_gross_income_summary }
     let(:assessment_id) { assessment.id }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:params) { state_benefit_params }
     let(:headers) { { "CONTENT_TYPE" => "application/json" } }
     let(:client_ids) { [SecureRandom.uuid, SecureRandom.uuid, SecureRandom.uuid] }

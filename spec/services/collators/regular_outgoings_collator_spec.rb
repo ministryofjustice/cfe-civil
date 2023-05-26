@@ -12,8 +12,8 @@ require "rails_helper"
 
 RSpec.describe Collators::RegularOutgoingsCollator do
   let(:assessment) { create(:assessment, :with_applicant, :with_gross_income_summary, :with_disposable_income_summary) }
-  let(:gross_income_summary) { assessment.gross_income_summary }
-  let(:disposable_income_summary) { assessment.disposable_income_summary }
+  let(:gross_income_summary) { assessment.applicant_gross_income_summary }
+  let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
   let(:eligible_for_childcare) { true }
 
   describe ".call" do
@@ -272,7 +272,7 @@ RSpec.describe Collators::RegularOutgoingsCollator do
 
     context "with existing data" do
       before do
-        assessment.disposable_income_summary.update!(
+        assessment.applicant_disposable_income_summary.update!(
           maintenance_out_bank: 0.0,
           maintenance_out_cash: 333.33,
           maintenance_out_all_sources: 333.33,

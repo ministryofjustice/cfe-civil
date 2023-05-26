@@ -6,13 +6,13 @@ module Collators
 
     describe ".call" do
       let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
-      let(:disposable_income_summary) { assessment.disposable_income_summary }
-      let(:gross_income_summary) { assessment.gross_income_summary }
+      let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
+      let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
       subject(:collator) do
-        described_class.call(disposable_income_summary: assessment.disposable_income_summary,
+        described_class.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
                              person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
-                             gross_income_summary: assessment.gross_income_summary,
+                             gross_income_summary: assessment.applicant_gross_income_summary,
                              submission_date: assessment.submission_date,
                              allow_negative_net: false)
       end

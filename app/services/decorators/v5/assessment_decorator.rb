@@ -33,11 +33,11 @@ module Decorators
           applicant: ApplicantDecorator.new(assessment.applicant),
           gross_income:,
           disposable_income: DisposableIncomeDecorator.new(
-            summary: assessment.disposable_income_summary,
+            summary: assessment.applicant_disposable_income_summary,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
             state_benefits: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.state_benefits,
           ),
-          capital: CapitalDecorator.new(assessment.capital_summary,
+          capital: CapitalDecorator.new(assessment.applicant_capital_summary,
                                         @calculation_output.capital_subtotals.applicant_capital_subtotals),
           remarks: RemarksDecorator.new(assessment.remarks, assessment),
         }
@@ -49,7 +49,7 @@ module Decorators
       end
 
       def gross_income
-        GrossIncomeDecorator.new(assessment.gross_income_summary,
+        GrossIncomeDecorator.new(assessment.applicant_gross_income_summary,
                                  assessment.employments,
                                  @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
                                  @calculation_output.gross_income_subtotals.self_employments)

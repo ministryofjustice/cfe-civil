@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe CashTransactionCategory do
   let(:assessment) { create :assessment, :with_gross_income_summary }
-  let(:gross_income_summary) { assessment.gross_income_summary }
+  let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
   describe "validation" do
     let(:category) { described_class.new(gross_income_summary:, operation:, name:) }

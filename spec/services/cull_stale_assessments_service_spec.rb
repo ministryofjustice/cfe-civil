@@ -39,20 +39,27 @@ RSpec.describe CullStaleAssessmentsService do
   end
 
   def create_assessment_and_associated_records
-    ass = create :assessment
-    create :applicant, assessment: ass
-    create_list :dependant, 2, assessment: ass
-    create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
-    create :gross_income_summary,
-           :with_all_records,
-           :with_employment,
-           :with_everything,
-           :with_eligibilities, assessment: ass
-    create :disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
-    create :explicit_remark, assessment: ass
-    create :regular_transaction, gross_income_summary: ass.gross_income_summary
-    create :request_log, assessment_id: ass.id
-    ass
+    create(:assessment).tap do |ass|
+      create :applicant, assessment: ass
+      create_list :dependant, 2, assessment: ass
+      create :partner, assessment: ass
+      create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :partner_capital_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :partner_capital_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :gross_income_summary,
+             :with_all_records,
+             :with_employment,
+             :with_everything,
+             :with_eligibilities, assessment: ass
+      create :partner_gross_income_summary, assessment: ass
+      create :partner_gross_income_summary, assessment: ass
+      create :disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :partner_disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :partner_disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :explicit_remark, assessment: ass
+      create :regular_transaction, gross_income_summary: ass.applicant_gross_income_summary
+      create :request_log, assessment_id: ass.id
+    end
   end
 
   def associated_models
@@ -73,6 +80,7 @@ RSpec.describe CullStaleAssessmentsService do
       OtherIncomePayment,
       OtherIncomeSource,
       Outgoings::BaseOutgoing,
+      Partner,
       ProceedingType,
       Property,
       RegularTransaction,

@@ -4,7 +4,7 @@ class PropertiesController < CreationController
   def create
     swagger_validate_and_render("properties", properties_params, lambda {
       Creators::PropertiesCreator.call(
-        capital_summary: @assessment.capital_summary,
+        capital_summary: @assessment.applicant_capital_summary,
         properties_params:,
       )
     })

@@ -21,7 +21,7 @@ RSpec.describe Creators::RegularTransactionsCreator do
 
   describe ".call" do
     subject(:creator) do
-      described_class.call(gross_income_summary: assessment.gross_income_summary,
+      described_class.call(gross_income_summary: assessment.applicant_gross_income_summary,
                            regular_transaction_params: params)
     end
 
@@ -37,12 +37,12 @@ RSpec.describe Creators::RegularTransactionsCreator do
       let(:params) { valid_params }
 
       it "creates a regular transaction record" do
-        expect { creator }.to change(assessment.gross_income_summary.regular_transactions, :count).by(1)
+        expect { creator }.to change(assessment.applicant_gross_income_summary.regular_transactions, :count).by(1)
       end
 
       it "creates a regular transaction record with expected attributes" do
         creator
-        regular_transaction = assessment.gross_income_summary.regular_transactions.last
+        regular_transaction = assessment.applicant_gross_income_summary.regular_transactions.last
 
         expect(regular_transaction).to have_attributes(category: "maintenance_in",
                                                        operation: "credit",
@@ -73,7 +73,7 @@ RSpec.describe Creators::RegularTransactionsCreator do
       end
 
       it "creates a regular transaction record" do
-        expect { creator }.to change(assessment.gross_income_summary.regular_transactions, :count).by(1)
+        expect { creator }.to change(assessment.applicant_gross_income_summary.regular_transactions, :count).by(1)
       end
     end
 
@@ -87,7 +87,7 @@ RSpec.describe Creators::RegularTransactionsCreator do
       end
 
       it "creates a regular transaction record" do
-        expect { creator }.to change(assessment.gross_income_summary.regular_transactions, :count).by(1)
+        expect { creator }.to change(assessment.applicant_gross_income_summary.regular_transactions, :count).by(1)
       end
     end
 

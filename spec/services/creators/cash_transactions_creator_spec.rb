@@ -3,14 +3,17 @@ require "rails_helper"
 describe Creators::CashTransactionsCreator do
   describe ".call" do
     let(:assessment) { create :assessment, :with_gross_income_summary }
-    let(:gross_income_summary) { assessment.gross_income_summary }
+    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:cash_transaction_params) { params }
     let(:month0) { Date.current.beginning_of_month - 4.months }
     let(:month1) { Date.current.beginning_of_month - 3.months }
     let(:month2) { Date.current.beginning_of_month - 2.months }
     let(:month3) { Date.current.beginning_of_month - 1.month }
 
-    subject(:creator) { described_class.call(assessment:, cash_transaction_params:) }
+    subject(:creator) do
+      described_class.call(submission_date: assessment.submission_date,
+                           gross_income_summary: assessment.applicant_gross_income_summary, cash_transaction_params:)
+    end
 
     context "happy_path" do
       let(:params) { valid_params }

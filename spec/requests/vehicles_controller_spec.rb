@@ -16,7 +16,7 @@ RSpec.describe VehiclesController, type: :request do
     end
 
     it "creates vehicles" do
-      expect { post_payload }.to change { assessment.vehicles.count }.by(2)
+      expect { post_payload }.to change { assessment.applicant_capital_summary.vehicles.count }.by(2)
     end
 
     it "sets success flag to true" do

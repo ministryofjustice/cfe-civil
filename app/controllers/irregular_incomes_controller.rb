@@ -5,7 +5,7 @@ class IrregularIncomesController < CreationController
     swagger_validate_and_render "irregular_incomes", irregular_income_params, lambda {
       Creators::IrregularIncomeCreator.call(
         irregular_income_params:,
-        gross_income_summary: @assessment.gross_income_summary,
+        gross_income_summary: @assessment.applicant_gross_income_summary,
       )
     }
   end

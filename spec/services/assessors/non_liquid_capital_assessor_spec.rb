@@ -3,7 +3,7 @@ require "rails_helper"
 module Assessors
   RSpec.describe NonLiquidCapitalAssessor do
     let(:assessment) { create :assessment, :with_capital_summary }
-    let(:capital_summary) { assessment.capital_summary }
+    let(:capital_summary) { assessment.applicant_capital_summary }
 
     context "all positive supplied" do
       before do

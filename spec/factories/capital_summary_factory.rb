@@ -47,5 +47,7 @@ FactoryBot.define do
         end
       end
     end
+
+    factory :partner_capital_summary
   end
 end

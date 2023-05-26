@@ -3,7 +3,7 @@ require "rails_helper"
 module Creators
   RSpec.describe PropertiesCreator do
     let(:assessment) { create :assessment, :with_capital_summary }
-    let(:capital_summary) { assessment.capital_summary }
+    let(:capital_summary) { assessment.applicant_capital_summary }
     let(:main_home) do
       {
         value: 500_000,
@@ -80,7 +80,7 @@ module Creators
         it "creates 3 property records for this assessment" do
           expect {
             creator
-          }.to change { assessment.properties.count }.by(3)
+          }.to change { assessment.applicant_capital_summary.properties.count }.by(3)
         end
       end
     end

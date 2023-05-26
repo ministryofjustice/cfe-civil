@@ -47,7 +47,7 @@ RSpec.describe RegularTransactionsController, type: :request do
       end
 
       it "creates the regular transaction" do
-        expect { request }.to change(assessment.gross_income_summary.regular_transactions, :count).by(1)
+        expect { request }.to change(assessment.applicant_gross_income_summary.regular_transactions, :count).by(1)
       end
 
       it "response contains success true" do

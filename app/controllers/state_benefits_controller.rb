@@ -4,7 +4,7 @@ class StateBenefitsController < CreationController
   def create
     swagger_validate_and_render "state_benefits", state_benefits_params, lambda {
       Creators::StateBenefitsCreator.call(
-        gross_income_summary: @assessment.gross_income_summary,
+        gross_income_summary: @assessment.applicant_gross_income_summary,
         state_benefits_params:,
       )
     }

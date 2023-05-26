@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Creators
   RSpec.describe DisposableIncomeEligibilityCreator do
-    let(:summary) { assessment.disposable_income_summary }
+    let(:summary) { assessment.applicant_disposable_income_summary }
 
     around do |example|
       travel_to Date.new(2022, 4, 20)
@@ -11,7 +11,7 @@ module Creators
     end
 
     context "version 5" do
-      let(:eligibilities) { assessment.disposable_income_summary.eligibilities }
+      let(:eligibilities) { assessment.applicant_disposable_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
       let(:proceeding_hash) { [%w[DA002 A], %w[SE013 Z], %w[IM030 A]] }
 

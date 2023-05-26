@@ -11,8 +11,8 @@ module Workflows
 
     before do
       assessment.proceeding_type_codes.each do |ptc|
-        create :gross_income_eligibility, gross_income_summary: assessment.gross_income_summary, proceeding_type_code: ptc
-        create :disposable_income_eligibility, disposable_income_summary: assessment.disposable_income_summary,
+        create :gross_income_eligibility, gross_income_summary: assessment.applicant_gross_income_summary, proceeding_type_code: ptc
+        create :disposable_income_eligibility, disposable_income_summary: assessment.applicant_disposable_income_summary,
                                                lower_threshold: 500,
                                                proceeding_type_code: ptc
       end
@@ -145,7 +145,7 @@ module Workflows
           let(:applicant) { build :applicant, :under_pensionable_age }
 
           before do
-            create(:property, :additional_property, capital_summary: assessment.capital_summary,
+            create(:property, :additional_property, capital_summary: assessment.applicant_capital_summary,
                                                     value: property_value, outstanding_mortgage: 0, percentage_owned: 100)
           end
 
@@ -185,7 +185,7 @@ module Workflows
 
         context "with capital" do
           before do
-            create(:property, :additional_property, capital_summary: assessment.capital_summary,
+            create(:property, :additional_property, capital_summary: assessment.applicant_capital_summary,
                                                     value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)
           end
 
@@ -232,7 +232,7 @@ module Workflows
 
             before do
               create(:child_care_transaction_category,
-                     gross_income_summary: assessment.gross_income_summary,
+                     gross_income_summary: assessment.applicant_gross_income_summary,
                      cash_transactions: build_list(:cash_transaction, 1, amount: 800))
               create(:dependant, :under15, assessment:)
             end
@@ -283,7 +283,7 @@ module Workflows
               create(:employment, :with_monthly_payments, assessment:,
                                                           gross_monthly_income: 3_000)
               create(:housing_cost, amount: 1000,
-                                    gross_income_summary: assessment.gross_income_summary)
+                                    gross_income_summary: assessment.applicant_gross_income_summary)
             end
 
             it "is not eligible due to housing cost cap" do

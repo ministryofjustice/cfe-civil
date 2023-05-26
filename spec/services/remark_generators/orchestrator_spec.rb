@@ -3,14 +3,14 @@ require "rails_helper"
 module RemarkGenerators
   RSpec.describe Orchestrator do
     let(:assessment) { create :assessment }
-    let(:state_benefits) { assessment.gross_income_summary.state_benefits }
+    let(:state_benefits) { assessment.applicant_gross_income_summary.state_benefits }
     let(:state_benefit_payments) { state_benefits.first.state_benefit_payments }
-    let(:other_income_sources) { assessment.gross_income_summary.other_income_sources }
+    let(:other_income_sources) { assessment.applicant_gross_income_summary.other_income_sources }
     let(:other_income_payments) { other_income_sources.first.other_income_payments }
-    let(:childcare_outgoings) { assessment.disposable_income_summary.childcare_outgoings }
-    let(:maintenance_outgoings) { assessment.disposable_income_summary.maintenance_outgoings }
-    let(:housing_outgoings) { assessment.disposable_income_summary.housing_cost_outgoings }
-    let(:legal_aid_outgoings) { assessment.disposable_income_summary.legal_aid_outgoings }
+    let(:childcare_outgoings) { assessment.applicant_disposable_income_summary.childcare_outgoings }
+    let(:maintenance_outgoings) { assessment.applicant_disposable_income_summary.maintenance_outgoings }
+    let(:housing_outgoings) { assessment.applicant_disposable_income_summary.housing_cost_outgoings }
+    let(:legal_aid_outgoings) { assessment.applicant_disposable_income_summary.legal_aid_outgoings }
     let(:employment_payments) { assessment.employments.first.employment_payments }
 
     before do
