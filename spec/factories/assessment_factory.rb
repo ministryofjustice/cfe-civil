@@ -3,7 +3,7 @@ FactoryBot.define do
     sequence(:client_reference_id) { |n| sprintf("CLIENT-REF-%<number>04d", number: n) }
     remote_ip { Faker::Internet.ip_v4_address }
     submission_date { Date.current }
-    version { "5" }
+    version { "6" }
     transient do
       # the proceedings transient is an array of arrays, each item comprising a proceeding type code and it's associated client involvement type,
       # e.g. [ ['DA003', 'A'], ['SE014', 'Z']]

@@ -34,7 +34,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
   end
 
   def post_assessment
-    post v6_assessments_path, params: payload.to_json, headers: v6_headers
+    post v6_assessments_path, params: payload.to_json, headers: headers
     output_response(:post, :assessment)
   end
 
@@ -48,7 +48,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
     ENV["VERBOSE"] == "true"
   end
 
-  def v6_headers
+  def headers
     { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" }
   end
 

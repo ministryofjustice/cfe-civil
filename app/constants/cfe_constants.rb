@@ -1,9 +1,8 @@
 module CFEConstants
   # Versions
   #
-  DEFAULT_ASSESSMENT_VERSION = "5".freeze
-  FULL_ASSESSMENT_VERSION = "6".freeze
-  VALID_ASSESSMENT_VERSIONS = %w[5 6].freeze
+  DEFAULT_ASSESSMENT_VERSION = "6".freeze
+  VALID_ASSESSMENT_VERSIONS = %w[6].freeze
 
   # Valid CCMS Codes for proceeding types - probably need to get this from LFA in future
   #
