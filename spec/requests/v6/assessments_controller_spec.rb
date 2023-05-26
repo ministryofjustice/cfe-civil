@@ -111,6 +111,11 @@ module V6
             frequency: "annual",
             amount: 456.78,
           },
+          {
+            income_type: "unspecified_source",
+            frequency: "monthly",
+            amount: 10.92,
+          },
         ]
       end
       let(:irregular_income_params) { { payments: irregular_income_payments } }
@@ -739,7 +744,7 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 80.47,
+                  income_contribution: 90.3,
                 })
             end
           end
@@ -751,9 +756,9 @@ module V6
                                                             :total_outgoings_and_allowances))
               .to eq(
                 {
-                  dependant_allowance: 0.0,
                   dependant_allowance_under_16: 0.0,
                   dependant_allowance_over_16: 0.0,
+                  dependant_allowance: 0.0,
                   gross_housing_costs: 117.16,
                   housing_benefit: 0.0,
                   net_housing_costs: 117.16,
@@ -766,7 +771,7 @@ module V6
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
-                  income_contribution: 80.47,
+                  income_contribution: 90.3,
                   partner_allowance: 191.41,
                 },
               )
@@ -783,7 +788,7 @@ module V6
                 net_housing_costs: 117.16,
                 maintenance_allowance: 333.07,
                 total_outgoings_and_allowances: 1630.51,
-                total_disposable_income: -433.835,
+                total_disposable_income: -422.915,
                 employment_income: {
                   gross_income: 846.0,
                   benefits_in_kind: 16.6,
@@ -877,7 +882,7 @@ module V6
 
             it "has irregular income" do
               expect(gross_income.fetch(:irregular_income)).to eq(
-                { monthly_equivalents: { student_loan: 38.065, unspecified_source: 0.0 } },
+                { monthly_equivalents: { student_loan: 38.065, unspecified_source: 10.92 } },
               )
             end
 
@@ -953,7 +958,7 @@ module V6
               expect(partner_gross_income.dig(:irregular_income, :monthly_equivalents)).to eq(
                 {
                   student_loan: 38.065,
-                  unspecified_source: 0.0,
+                  unspecified_source: 10.92,
                 },
               )
             end
