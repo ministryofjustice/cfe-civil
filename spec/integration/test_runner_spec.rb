@@ -22,7 +22,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
   let(:spreadsheet_file) { Rails.root.join("tmp/integration_test_data.xlsx") }
   let(:spreadsheet) { Roo::Spreadsheet.open(spreadsheet_file.to_s) }
   let(:worksheet_names) { spreadsheet.sheets }
-  let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json;version=5" } }
+  let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" } }
 
   before { setup_test_data }
 
@@ -69,13 +69,6 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
     def run_test_case(worksheet)
       worksheet.parse_worksheet
       payloads_hash = worksheet.payload_objects.reject(&:blank?).map { |obj| [obj.url_method, obj.payload] }.to_h
-      assessment_id = post_assessment(worksheet)
-      payloads_hash.each do |url_method, payload|
-        url = Rails.application.routes.url_helpers.__send__(url_method, assessment_id)
-        noisy_post(url, payload, worksheet.version)
-      end
-      v1_api_results = get_assessment(assessment_id, worksheet.version)
-      worksheet.compare_results(v1_api_results)
       url_method_mapping = {
         assessment_capitals_path: :capitals,
         assessment_cash_transactions_path: :cash_transactions,
@@ -88,7 +81,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
           payload
         end
       end
-      single_shot_payload = v6_payloads.reduce(assessment: worksheet.assessment.payload) { |hash, elem| hash.merge(elem) }
+      single_shot_payload = v6_payloads.reduce(assessment: worksheet.assessment.attributes) { |hash, elem| hash.merge(elem) }
       v6_api_results = noisy_post("/v6/assessments", single_shot_payload, worksheet.version)
       puts Hashdiff.diff(*[v1_api_results, v6_api_results].map { |x| remove_result_noise(x) }) unless silent?
       worksheet.compare_results(v6_api_results)

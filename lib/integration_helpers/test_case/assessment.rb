@@ -8,14 +8,10 @@ module TestCase
     end
 
     def url
-      Rails.application.routes.url_helpers.assessments_path
+      Rails.application.routes.url_helpers.v6_assessments_path
     end
 
-    def payload
-      version_5_payload
-    end
-
-    def version_5_payload
+    def attributes
       {
         client_reference_id: @worksheet_name,
         submission_date: @submission_date,

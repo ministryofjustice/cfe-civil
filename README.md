@@ -20,7 +20,7 @@ Not (yet) suitable for:
   * Self Employed: Sub-contractor applicants
   * Self Employed: Applicants in a Business Partnership
   * Self Employed: Shareholders in PLC/Company Directors
-  * Applicants under 18 in Family cases 
+  * Applicants under 18 in Family cases
   * Applicants under 18 in Non-Family cases
   * Police officer applicants
   * Prisoner applicants
@@ -28,7 +28,7 @@ Not (yet) suitable for:
   * Applicants in the HM Forces
   * Applicants who are Insolvent
   * Applicants who are Bankrupt
-  * Applicants subject to a freezing order 
+  * Applicants subject to a freezing order
 
 ## Unforking
 
@@ -46,13 +46,12 @@ CFE-Civil has enhancements over the original CFE:
 API documentation is available as:
 
 * as a Swagger page on the running service, at `<hostname>/api-docs/index.html`
-* as a Swagger definition in this repo: swagger/v5/swagger.yaml
+* as a Swagger definition in this repo: swagger/v6/swagger.yaml
 
 ## API Versioning
 
 The API version in the URL path:
 
-* v5 API - path contains no version number e.g. `/assessments/{assessment_id}/applicant`
 * v6 API - path `/v6/assessments`
 
 ## API Changelog
@@ -60,16 +59,11 @@ The API version in the URL path:
 ### 2023-04-03 v6 "one shot API"
 
 See design reasoning: [ADR12 One Shot API](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4405395614/ADR12+One+shot+API)
-### 2022-07-12 v5
+### 2022-07-12 v5 (decommissioned)
 
 This was the last release of the API by the Civil Apply team.
 
 There were previous releases, but they have since been removed from the code base.
-#### v5 usage
-
-The client will create an assessment by posting a payload to the `/assessments` endpoint, which will respond with an `assessment_id`.  This assessment id
-is then given on all subsequent posts to the other endpoints to build up a record of capital, income and outgoings, finally requesting an assessment result
-by sending a GET request to the /assessments endpoint.
 
 **TODO** When in future this API has endpoints to allow direct submission of monthly income and outgoings figures (rather than collections of transactions from which these figures are inferred), make clear in the documentation for those endpoints that for controlled work that the API client should only submit figures that are valid for the calendar month leading up to the submission date, not an average of the previous 3 months.
 
@@ -358,7 +352,7 @@ on a local machine
 
 # Deployment
 
-This app is deployed on Cloud Platform by CircleCI, using the Helm chart in deploy/helm. 
+This app is deployed on Cloud Platform by CircleCI, using the Helm chart in deploy/helm.
 
 [CircleCI pipeline for cfe-civil](https://app.circleci.com/pipelines/github/ministryofjustice/cfe-civil)
 

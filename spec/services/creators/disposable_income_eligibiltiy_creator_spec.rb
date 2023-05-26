@@ -10,7 +10,7 @@ module Creators
       travel_back
     end
 
-    context "version 5" do
+    context "version 6" do
       let(:eligibilities) { assessment.applicant_disposable_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
       let(:proceeding_hash) { [%w[DA002 A], %w[SE013 Z], %w[IM030 A]] }

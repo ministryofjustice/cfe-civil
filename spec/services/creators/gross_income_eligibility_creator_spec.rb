@@ -17,7 +17,7 @@ module Creators
                            assessment.submission_date)
     end
 
-    context "version 5" do
+    context "version 6" do
       let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
       let(:eligibilities) { assessment.applicant_gross_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }

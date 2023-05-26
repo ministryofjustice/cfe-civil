@@ -4,13 +4,13 @@ require Rails.root.join("spec/fixtures/assessment_request_fixture.rb")
 RSpec.describe Assessment, type: :model do
   let(:payload) { AssessmentRequestFixture.json }
 
-  context "version 5" do
+  context "version 6" do
     let(:param_hash) do
       {
         client_reference_id: "client-ref-1",
         submission_date: Date.current,
         remote_ip: "127.0.0.1",
-        version: "5",
+        version: "6",
       }
     end
 
@@ -26,7 +26,7 @@ RSpec.describe Assessment, type: :model do
       {
         client_reference_id: "client-ref-1",
         submission_date: Date.current,
-        version: "5",
+        version: "6",
       }
     end
 

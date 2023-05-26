@@ -72,7 +72,7 @@ module Workflows
       end
     end
 
-    context "version 5" do
+    context "version 6" do
       let(:assessment) do
         create :assessment,
                :with_capital_summary,
@@ -80,7 +80,7 @@ module Workflows
                :with_gross_income_summary,
                :with_disposable_income_summary,
                proceedings: proceedings_hash,
-               version: "5",
+               version: "6",
                applicant:
       end
       let(:applicant) { create :applicant, :without_qualifying_benefits }

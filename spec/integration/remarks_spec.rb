@@ -14,17 +14,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
   end
 
   it "returns the expected payload with all remarks" do
-    assessment_id = post_assessment
-    post_applicant(assessment_id)
-    post_proceeding_types(assessment_id)
-    post_capitals(assessment_id)
-    post_other_incomes(assessment_id)
-    post_outgoings(assessment_id)
-    post_state_benefits(assessment_id)
-    post_explicit_remarks(assessment_id)
-
-    get assessment_path(assessment_id), headers: v5_headers
-    output_response(:get, :assessment)
+    post_assessment
     expect(deep_orderless_match(parsed_response[:assessment][:remarks], expected_remarks)).to be true
   end
 
@@ -44,44 +34,8 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
   end
 
   def post_assessment
-    post assessments_path, params: assessment_params, headers: v5_headers
+    post v6_assessments_path, params: payload.to_json, headers: headers
     output_response(:post, :assessment)
-    parsed_response[:assessment_id]
-  end
-
-  def post_applicant(assessment_id)
-    post assessment_applicant_path(assessment_id), params: applicant_params, headers: v5_headers
-    output_response(:post, :applicant)
-  end
-
-  def post_proceeding_types(assessment_id)
-    post assessment_proceeding_types_path(assessment_id), params: proceeding_types_params, headers: v5_headers
-    output_response(:post, :applicant)
-  end
-
-  def post_capitals(assessment_id)
-    post assessment_capitals_path(assessment_id), params: capitals_params, headers: v5_headers
-    output_response(:post, :capitals)
-  end
-
-  def post_other_incomes(assessment_id)
-    post assessment_other_incomes_path(assessment_id), params: other_income_params, headers: v5_headers
-    output_response(:post, :other_incomes)
-  end
-
-  def post_outgoings(assessment_id)
-    post assessment_outgoings_path(assessment_id), params: outgoings_params, headers: v5_headers
-    output_response(:post, :outgoings)
-  end
-
-  def post_state_benefits(assessment_id)
-    post assessment_state_benefits_path(assessment_id), params: state_benefit_params, headers: v5_headers
-    output_response(:post, :state_benefits)
-  end
-
-  def post_explicit_remarks(assessment_id)
-    post assessment_explicit_remarks_path(assessment_id), params: explicit_remarks_params, headers: v5_headers
-    output_response(:post, :explicit_remarks)
   end
 
   def output_response(method, object)
@@ -94,15 +48,30 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
     ENV["VERBOSE"] == "true"
   end
 
-  def v5_headers
-    { "CONTENT_TYPE" => "application/json", "Accept" => "application/json;version=5" }
+  def headers
+    { "CONTENT_TYPE" => "application/json", "Accept" => "application/json;version=6" }
+  end
+
+  def payload
+    [
+      *assessment_params,
+      *applicant_params,
+      *proceeding_types_params,
+      *capitals_params,
+      *other_income_params,
+      *outgoings_params,
+      *state_benefit_params,
+      *explicit_remarks_params,
+    ].to_h
   end
 
   def assessment_params
     {
-      client_reference_id: "psr-123",
-      submission_date: "2019-06-06",
-    }.to_json
+      assessment: {
+        client_reference_id: "psr-123",
+        submission_date: "2019-06-06",
+      },
+    }
   end
 
   def applicant_params
@@ -112,7 +81,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
         has_partner_opponent: false,
         receives_qualifying_benefit: true,
       },
-    }.to_json
+    }
   end
 
   def proceeding_types_params
@@ -123,32 +92,34 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
           client_involvement_type: "A",
         },
       ],
-    }.to_json
+    }
   end
 
   def capitals_params
     {
-      bank_accounts: [
-        {
-          description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-        {
-          description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-      ],
-      non_liquid_capital: [
-        {
-          description: "Ming vase",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-        {
-          description: "Aramco shares",
-          value: Faker::Number.decimal(r_digits: 2),
-        },
-      ],
-    }.to_json
+      capitals: {
+        bank_accounts: [
+          {
+            description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+          {
+            description: "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+        ],
+        non_liquid_capital: [
+          {
+            description: "Ming vase",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+          {
+            description: "Aramco shares",
+            value: Faker::Number.decimal(r_digits: 2),
+          },
+        ],
+      },
+    }
   end
 
   def other_income_params
@@ -195,7 +166,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
           ],
         },
       ],
-    }.to_json
+    }
   end
 
   def outgoings_params
@@ -265,7 +236,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
           ],
         },
       ],
-    }.to_json
+    }
   end
 
   def state_benefit_params
@@ -312,7 +283,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
           ],
         },
       ],
-    }.to_json
+    }
   end
 
   def explicit_remarks_params
@@ -326,7 +297,7 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
           ],
         },
       ],
-    }.to_json
+    }
   end
 
   def expected_remarks
