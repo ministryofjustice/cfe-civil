@@ -3,36 +3,23 @@ module Collators
     Result = Data.define(:cash, :bank)
 
     class << self
-      def call(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:)
-        new(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:).call
+      def call(cash_transactions:, childcare_outgoings:, eligible_for_childcare:)
+        if eligible_for_childcare
+          Result.new(bank: child_care_bank(childcare_outgoings), cash: child_care_cash(cash_transactions))
+        else
+          Result.new(bank: 0, cash: 0)
+        end
       end
-    end
 
-    def initialize(childcare_outgoings:, gross_income_summary:, eligible_for_childcare:)
-      @childcare_outgoings = childcare_outgoings
-      @gross_income_summary = gross_income_summary
-      @eligible_for_childcare = eligible_for_childcare
-    end
+    private
 
-    def call
-      # TODO: Return these values instead of persisting them
-      if @eligible_for_childcare
-        Result.new(bank: child_care_bank, cash: child_care_cash)
-      else
-        Result.new(bank: 0, cash: 0)
+      def child_care_bank(childcare_outgoings)
+        Calculators::MonthlyEquivalentCalculator.call(collection: childcare_outgoings)
       end
-    end
 
-  private
-
-    def child_care_bank
-      Calculators::MonthlyEquivalentCalculator.call(
-        collection: @childcare_outgoings,
-      )
-    end
-
-    def child_care_cash
-      Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category: :child_care)
+      def child_care_cash(cash_transactions)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+      end
     end
   end
 end

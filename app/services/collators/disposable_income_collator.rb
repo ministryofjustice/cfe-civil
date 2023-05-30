@@ -53,7 +53,8 @@ module Collators
       if category == :child_care
         @disposable_income_summary.child_care_cash
       else
-        Calculators::MonthlyCashTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category:)
+        cash_transactions = @gross_income_summary.cash_transactions(:debit, category)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
       end
     end
 

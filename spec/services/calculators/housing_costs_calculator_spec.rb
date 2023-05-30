@@ -3,7 +3,7 @@ require "rails_helper"
 module Calculators
   RSpec.describe HousingCostsCalculator do
     subject(:calculator) do
-      described_class.new(disposable_income_summary: assessment.applicant_disposable_income_summary,
+      described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
                           person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                           submission_date: assessment.submission_date,
                           gross_income_summary: assessment.applicant_gross_income_summary)
@@ -328,7 +328,7 @@ module Calculators
 
     context "when using regular_transactions", :calls_bank_holiday do
       let(:instance) do
-        described_class.new(disposable_income_summary: assessment.applicant_disposable_income_summary,
+        described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
                             gross_income_summary: assessment.applicant_gross_income_summary,
                             person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
                             submission_date: assessment.submission_date)
