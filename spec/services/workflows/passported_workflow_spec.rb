@@ -18,7 +18,7 @@ module Workflows
     end
 
     describe ".call" do
-      subject(:workflow_call) { described_class.call(assessment) }
+      subject(:workflow_call) { described_class.call(assessment:, vehicles: [], partner_vehicles: []) }
 
       it "calls Capital collator and return some data" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)

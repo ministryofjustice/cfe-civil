@@ -1,7 +1,7 @@
 module Collators
   class CapitalCollator
     class << self
-      def call(submission_date:, capital_summary:, pensioner_capital_disregard:, maximum_subject_matter_of_dispute_disregard:, level_of_help:)
+      def call(submission_date:, capital_summary:, pensioner_capital_disregard:, maximum_subject_matter_of_dispute_disregard:, level_of_help:, vehicles:)
         disputed_liquid = capital_summary.liquid_capital_items.select(&:subject_matter_of_dispute)
         non_disputed_liquid = capital_summary.liquid_capital_items.reject(&:subject_matter_of_dispute)
 
@@ -19,9 +19,9 @@ module Collators
                                                           smod_cap: maximum_subject_matter_of_dispute_disregard,
                                                           level_of_help:)
         property_smod = properties.sum(&:smod_allowance)
-        vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.reject(&:subject_matter_of_dispute), submission_date)
-        smod_vehicles = Assessors::VehicleAssessor.call(capital_summary.vehicles.select(&:subject_matter_of_dispute), submission_date)
-        vehicle_value = vehicles.map(&:result).sum(&:assessed_value)
+        undisputed_vehicles = Assessors::VehicleAssessor.call(vehicles.reject(&:subject_matter_of_dispute), submission_date)
+        smod_vehicles = Assessors::VehicleAssessor.call(vehicles.select(&:subject_matter_of_dispute), submission_date)
+        vehicle_value = undisputed_vehicles.map(&:result).sum(&:assessed_value)
         smod_vehicle_value = smod_vehicles.map(&:result).sum(&:assessed_value)
         non_property_smod_allowance = Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
           disputed_capital_items: disputed_liquid + disputed_non_liquid,
@@ -32,7 +32,7 @@ module Collators
         PersonCapitalSubtotals.new(
           total_liquid: liquid_capital + smod_liquid_capital,
           total_non_liquid: non_liquid_capital + smod_non_liquid_capital,
-          non_disputed_vehicles: vehicles,
+          non_disputed_vehicles: undisputed_vehicles,
           disputed_vehicles: smod_vehicles,
           total_mortgage_allowance: property_maximum_mortgage_allowance_threshold(submission_date),
           pensioner_capital_disregard:,

@@ -37,7 +37,6 @@ module Creators
       errors.concat(create_state_benefits.errors)
       errors.concat(create_additional_properties.errors)
       errors.concat(create_capitals.errors)
-      errors.concat(create_vehicles.errors)
       errors.concat(create_dependants.errors)
       errors.concat(create_outgoings.errors)
       Result.new(errors:).freeze
@@ -112,15 +111,6 @@ module Creators
       )
     end
 
-    def create_vehicles
-      return Result.new(errors: []).freeze if vehicle_params.blank?
-
-      VehicleCreator.call(
-        vehicles_params: { vehicles: vehicle_params },
-        capital_summary: assessment.partner_capital_summary,
-      )
-    end
-
     def create_outgoings
       return Result.new(errors: []).freeze if outgoings_params.blank?
 
@@ -165,10 +155,6 @@ module Creators
 
     def capital_params
       @capital_params ||= @partner_financials_params[:capitals]
-    end
-
-    def vehicle_params
-      @vehicle_params ||= @partner_financials_params[:vehicles]
     end
 
     def dependant_params

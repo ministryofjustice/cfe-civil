@@ -34,7 +34,6 @@ FactoryBot.define do
       after(:create) do |record|
         create :non_liquid_capital_item, capital_summary: record
         create :liquid_capital_item, capital_summary: record
-        create :vehicle, capital_summary: record
         create :property, :main_home, capital_summary: record
         create :property, :additional_property, capital_summary: record
       end

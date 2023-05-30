@@ -2,17 +2,13 @@ require "rails_helper"
 
 module Assessors
   RSpec.describe VehicleAssessor do
-    let(:assessment) { create :assessment, :with_capital_summary }
-    let(:vehicle) { described_class.call(capital_summary.vehicles, assessment.submission_date).first.result }
-    let(:capital_summary) { assessment.applicant_capital_summary }
-
-    before do
-      create :vehicle,
-             capital_summary:,
-             value: estimated_value,
-             loan_amount_outstanding:,
-             date_of_purchase:,
-             in_regular_use:
+    let(:vehicle) do
+      input = build(:vehicle,
+                    value: estimated_value,
+                    loan_amount_outstanding:,
+                    date_of_purchase:,
+                    in_regular_use:)
+      described_class.call([input], Date.current).first.result
     end
 
     describe "#call" do

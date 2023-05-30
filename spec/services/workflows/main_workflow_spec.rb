@@ -10,6 +10,7 @@ module Workflows
              proceedings: proceedings_hash,
              applicant:
     end
+    let(:person_blank) { PersonData.new(self_employments: [], vehicles: []) }
 
     before do
       allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holiday_response)
@@ -21,7 +22,7 @@ module Workflows
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
         expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-        MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: [])
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
       end
 
       context "for immigration/asylum proceeding types" do
@@ -31,7 +32,7 @@ module Workflows
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
           expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-          MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: [])
+          MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
         end
       end
     end
@@ -39,11 +40,13 @@ module Workflows
     context "applicant is passported" do
       let(:applicant) { create :applicant, :with_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
+      subject(:workflow_call) do
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+      end
 
       it "calls PassportedWorkflow" do
         allow(Assessors::MainAssessor).to receive(:call)
-        allow(PassportedWorkflow).to receive(:call).with(assessment).and_return(CalculationOutput.new)
+        allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [], partner_vehicles: []).and_return(CalculationOutput.new)
         workflow_call
       end
 
@@ -57,7 +60,9 @@ module Workflows
     context "applicant is not passported" do
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
+      subject(:workflow_call) do
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+      end
 
       it "calls NonPassportedWorkflow" do
         allow(Assessors::MainAssessor).to receive(:call)
@@ -85,7 +90,9 @@ module Workflows
       end
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
-      subject(:workflow_call) { MainWorkflow.call(assessment:, self_employments: [], partner_self_employments: []) }
+      subject(:workflow_call) do
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+      end
 
       context "with proceeding types" do
         it "Populates proceeding types with thresholds" do

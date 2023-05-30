@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_25_075629) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_25_105349) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -265,16 +265,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_25_075629) do
     t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
 
-  create_table "vehicles", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.decimal "value"
-    t.decimal "loan_amount_outstanding"
-    t.date "date_of_purchase"
-    t.boolean "in_regular_use"
-    t.uuid "capital_summary_id"
-    t.boolean "subject_matter_of_dispute"
-    t.index ["capital_summary_id"], name: "index_vehicles_on_capital_summary_id"
-  end
-
   add_foreign_key "applicants", "assessments"
   add_foreign_key "capital_items", "capital_summaries"
   add_foreign_key "capital_summaries", "assessments"
@@ -295,5 +285,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_25_075629) do
   add_foreign_key "state_benefit_payments", "state_benefits"
   add_foreign_key "state_benefits", "gross_income_summaries"
   add_foreign_key "state_benefits", "state_benefit_types"
-  add_foreign_key "vehicles", "capital_summaries"
 end
