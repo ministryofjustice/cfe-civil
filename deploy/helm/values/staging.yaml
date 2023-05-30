@@ -33,7 +33,7 @@ threshold:
   useTestData: 'true'
 
 legalFrameworkApi:
-  host: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
+  host: https://legal-framework-api.cloud-platform.service.justice.gov.uk
 
 sentry:
   enabled: enabled
