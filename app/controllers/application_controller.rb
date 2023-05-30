@@ -1,6 +1,4 @@
 class ApplicationController < ActionController::API
-  around_action :log_request
-
   class ErrorSerializer < ApiErrorHandler::Serializers::BaseSerializer
     def serialize(_serializer_options)
       { success: false, errors: ["#{@error.class}: #{@error.message}"] }
@@ -13,6 +11,19 @@ class ApplicationController < ActionController::API
 
   handle_api_errors(serializer: ErrorSerializer, error_reporter: :sentry)
 
+  ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
+    event = ActiveSupport::Notifications::Event.new(*args)
+    if event.payload.fetch(:controller) == V6::AssessmentsController.to_s
+      RequestLog.create!(
+        request: event.payload.fetch(:params).except("controller", "action"),
+        http_status: event.payload.fetch(:status),
+        response: JSON.parse(event.payload.fetch(:response).body),
+        duration: event.duration,
+        user_agent: event.payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
+      )
+    end
+  end
+
   def render_unprocessable(message)
     messages = Array.wrap(message)
     sentry_message = messages.join(", ")
@@ -22,14 +33,6 @@ class ApplicationController < ActionController::API
 
   def render_success
     render json: { success: true, errors: [] }
-  end
-
-  def log_request
-    start_time = Time.zone.now
-    rec = RequestLog.create_from_request(request) if /^\/assessment/.match?(request.path)
-    yield
-    duration = Time.zone.now - start_time
-    rec.update_from_response(response, duration) if /^\/assessment/.match?(request.path)
   end
 
 private

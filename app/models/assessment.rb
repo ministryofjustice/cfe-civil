@@ -36,7 +36,6 @@ class Assessment < ApplicationRecord
            dependent: :destroy
   has_many :proceeding_types,
            dependent: :destroy
-  has_many :request_logs, dependent: :destroy
 
   enum :level_of_help, { certificated: 0, controlled: 1 }
 
