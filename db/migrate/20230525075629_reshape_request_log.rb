@@ -8,10 +8,10 @@ class ReshapeRequestLog < ActiveRecord::Migration[7.0]
       t.remove :response, type: :string
       t.change_null(:http_status, false)
       t.change_null(:duration, false)
-      t.json :request, null: false
-      t.json :response, null: false
-      t.date :created_at, null: false
-      t.string :user_agent, null: false
+      t.json :request
+      t.json :response
+      t.date :created_at
+      t.string :user_agent
     end
   end
 end
