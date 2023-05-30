@@ -32,7 +32,7 @@ executors:
           - PGHOST=localhost
           - PGUSER=user
           - TZ: "Europe/London"
-      - image: cimg/postgres:10.18
+      - image: cimg/postgres:14.8
         environment:
           - POSTGRES_USER=user
           - POSTGRES_DB=cfe_civil_test
@@ -47,7 +47,7 @@ executors:
           PGUSER: postgres
           TZ: "Europe/London"
           CFE_HOST: http://localhost:3000
-      - image: cimg/postgres:10.18
+      - image: cimg/postgres:14.8
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: ccq_test
@@ -257,6 +257,11 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
+      - run:
+          name: Grab postgres chart from bitnami
+          working_directory: deploy/helm
+          command: |
+            helm dependency update
       - deploy:
           name: Helm deployment to UAT
           command: |

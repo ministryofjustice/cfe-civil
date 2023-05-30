@@ -46,3 +46,6 @@
 
 # Cucumber report
 report.html
+
+# Helm charts
+deploy/helm/charts/*.tgz

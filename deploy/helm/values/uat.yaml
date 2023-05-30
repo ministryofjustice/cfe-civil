@@ -29,11 +29,14 @@ postgresql:
     requests:
       cpu: 250m
       memory: 256Mi
+  auth:
+    enablePostgresUser: true
+    postgresPassword: postgres
+    database: cfe_civil
   postgresqlUsername: postgres
-  postgresqlPassword: postgres
-  postgresqlDatabase: cfe_civil
-  persistence:
-    enabled: false
+  primary:
+    persistence:
+      enabled: false
 
 sentry:
   enabled: not_enabled
