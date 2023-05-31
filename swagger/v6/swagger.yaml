@@ -388,7 +388,6 @@ components:
       description: Object describing pertinent applicant details
       required:
       - date_of_birth
-      - employed
       - receives_qualifying_benefit
       additionalProperties: false
       properties:

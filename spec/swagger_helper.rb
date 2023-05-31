@@ -384,7 +384,7 @@ RSpec.configure do |config|
           Applicant: {
             type: :object,
             description: "Object describing pertinent applicant details",
-            required: %i[date_of_birth employed receives_qualifying_benefit],
+            required: %i[date_of_birth receives_qualifying_benefit],
             additionalProperties: false,
             properties: {
               date_of_birth: { type: :string,
