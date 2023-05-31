@@ -95,7 +95,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
       puts ">>>>>>>>>>>> #{assessment_path(assessment_id)} #{__FILE__}:#{__LINE__} <<<<<<<<<<<<".yellow unless silent?
       get assessment_path(assessment_id), headers: headers(version)
       pp parsed_response if noisy?
-      raise "Unsuccessful response" unless parsed_response[:success]
+      raise "Unsuccessful response: #{parsed_response.inspect}" unless parsed_response[:success]
 
       parsed_response
     end

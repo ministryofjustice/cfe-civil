@@ -5,13 +5,13 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
     let(:employment) { create(:employment) }
 
     it "calls the tax and national insurance refund calculator" do
-      allow(Calculators::TaxNiRefundCalculator).to receive(:call)
+      allow(Calculators::TaxNiRefundCalculator).to receive(:call).and_return([])
 
       described_class.call employment, employment.assessment.submission_date, []
 
       expect(Calculators::TaxNiRefundCalculator)
         .to have_received(:call)
-        .with(employment)
+        .with(employment_payments: employment.employment_payments)
         .exactly(1).time
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the most recent payment" do
-          expect(described_class.call(employment, employment.assessment.submission_date, payments))
+          expect(described_class.call(employment, employment.assessment.submission_date, payments).values)
             .to eq(
               monthly_gross_income: 490,
               monthly_benefits_in_kind: 10,
@@ -47,10 +47,8 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
         end
 
         it "does not add a remark to the assessment" do
-          described_class.call employment, employment.assessment.submission_date, payments
-
-          remarks = employment.assessment.remarks.remarks_hash
-          expect(remarks).to be_blank
+          remarks = described_class.call(employment, employment.assessment.submission_date, payments).remarks
+          expect(remarks).to eq([])
         end
       end
 
@@ -67,7 +65,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
 
         it "updates the monthly gross income, national insurance, and tax to " \
            "the blunt average" do
-          expect(described_class.call(employment, employment.assessment.submission_date, payments))
+          expect(described_class.call(employment, employment.assessment.submission_date, payments).values)
             .to eq(
               monthly_gross_income: 290,
               monthly_national_insurance: 15,
@@ -77,19 +75,17 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
         end
 
         it "adds a remark to the assessment" do
-          described_class.call employment, employment.assessment.submission_date, payments
+          remarks = described_class.call(employment, employment.assessment.submission_date, payments).remarks
 
-          remarks = employment.assessment.remarks.remarks_hash
           employment_payments = employment.employment_payments
-          expect(remarks[:employment_gross_income][:amount_variation])
-            .to contain_exactly(*employment_payments.map(&:client_id))
+          expect(remarks).to eq([RemarksData.new(type: :employment_gross_income, issue: :amount_variation, ids: employment_payments.map(&:client_id))])
         end
       end
     end
 
     context "when there are no employment payments" do
       it "zeros the monthly gross income, national insurance, and tax" do
-        expect(described_class.call(employment, employment.assessment.submission_date, []))
+        expect(described_class.call(employment, employment.assessment.submission_date, []).values)
           .to eq(
             monthly_gross_income: 0,
             monthly_national_insurance: 0,

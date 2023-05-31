@@ -21,16 +21,29 @@ module Workflows
                                    :actively_working?,
                                    :monthly_benefits_in_kind, :monthly_national_insurance)
 
-      def convert_employments(employments, submission_date)
-        employments.map do
+      # local define for employment and monthly_values
+      EmploymentResult = Data.define(:employment, :values)
+
+      def convert_employments(assessment, employments, submission_date)
+        remarks = assessment.remarks
+
+        answers = employments.map do
           monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(_1.employment_payments)
-          result = Calculators::EmploymentMonthlyValueCalculator.call(_1, submission_date, monthly_equivalent_payments)
-          EmploymentData.new(monthly_tax: result.fetch(:monthly_tax),
-                             monthly_gross_income: result.fetch(:monthly_gross_income),
-                             monthly_national_insurance: result.fetch(:monthly_national_insurance),
-                             actively_working?: _1.actively_working?,
-                             client_id: _1.client_id,
-                             monthly_benefits_in_kind: result.fetch(:monthly_benefits_in_kind))
+          remarks_and_values = Calculators::EmploymentMonthlyValueCalculator.call(_1, submission_date, monthly_equivalent_payments)
+          remarks_and_values.remarks.each do |remark|
+            remarks.add(remark.type, remark.issue, remark.ids)
+          end
+          EmploymentResult.new employment: _1, values: remarks_and_values.values
+        end
+        assessment.update!(remarks:)
+
+        answers.map do
+          EmploymentData.new(monthly_tax: _1.values.fetch(:monthly_tax),
+                             monthly_gross_income: _1.values.fetch(:monthly_gross_income),
+                             monthly_national_insurance: _1.values.fetch(:monthly_national_insurance),
+                             actively_working?: _1.employment.actively_working?,
+                             client_id: _1.employment.client_id,
+                             monthly_benefits_in_kind: _1.values.fetch(:monthly_benefits_in_kind))
         end
       end
 
@@ -68,13 +81,13 @@ module Workflows
       end
 
       def collate_and_assess_gross_income(assessment:, self_employments:, partner_self_employments:)
-        converted_employments = convert_employments(assessment.employments, assessment.submission_date)
+        converted_employments = convert_employments(assessment, assessment.employments, assessment.submission_date)
         applicant_gross_income_subtotals = Collators::GrossIncomeCollator.call(assessment:,
                                                                                submission_date: assessment.submission_date,
                                                                                employments: converted_employments + aggregate_self_employments(self_employments),
                                                                                gross_income_summary: assessment.applicant_gross_income_summary)
         partner_gross_income_subtotals = if assessment.partner.present?
-                                           partner_employments = convert_employments(assessment.partner_employments, assessment.submission_date)
+                                           partner_employments = convert_employments(assessment, assessment.partner_employments, assessment.submission_date)
 
                                            Collators::GrossIncomeCollator.call(
                                              assessment:,

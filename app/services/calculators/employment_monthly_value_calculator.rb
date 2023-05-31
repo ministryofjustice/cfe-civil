@@ -1,14 +1,16 @@
 module Calculators
   class EmploymentMonthlyValueCalculator
+    Result = Data.define(:values, :remarks)
     class << self
       def call(employment, submission_date, monthly_equivalent_payments)
-        Calculators::TaxNiRefundCalculator.call(employment)
-        if employment_income_variation_below_threshold?(monthly_equivalent_payments, submission_date)
-          calculate_monthly_values(monthly_equivalent_payments, calculation: :most_recent)
-        else
-          add_variation_remarks(employment)
-          calculate_monthly_values(monthly_equivalent_payments, calculation: :blunt_average)
-        end
+        remarks_data = Calculators::TaxNiRefundCalculator.call(employment_payments: employment.employment_payments)
+        values = if employment_income_variation_below_threshold?(monthly_equivalent_payments, submission_date)
+                   calculate_monthly_values(monthly_equivalent_payments, calculation: :most_recent)
+                 else
+                   remarks_data << RemarksData.new(type: :employment_gross_income, issue: :amount_variation, ids: employment.employment_payments.map(&:client_id))
+                   calculate_monthly_values(monthly_equivalent_payments, calculation: :blunt_average)
+                 end
+        Result.new(values:, remarks: remarks_data)
       end
 
       def employment_income_variation_below_threshold?(payments, submission_date)
@@ -36,12 +38,6 @@ module Calculators
       def most_recent(payments, attribute)
         payment = payments.max_by(&:date)
         payment.public_send(attribute)
-      end
-
-      def add_variation_remarks(employment)
-        remarks = employment.assessment.remarks
-        remarks.add(:employment_gross_income, :amount_variation, employment.employment_payments.map(&:client_id))
-        employment.assessment.update!(remarks:)
       end
     end
   end
