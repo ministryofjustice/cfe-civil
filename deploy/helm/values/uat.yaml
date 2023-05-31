@@ -30,10 +30,10 @@ postgresql:
       cpu: 250m
       memory: 256Mi
   auth:
-    enablePostgresUser: true
-    postgresPassword: postgres
+    enablePostgresUser: false
+    username: cfe_civil_user
+    password: cfe_civil_pass
     database: cfe_civil
-  postgresqlUsername: postgres
   primary:
     persistence:
       enabled: false
