@@ -164,6 +164,22 @@ module V6
         end
       end
 
+      context "with an applicant without partner opponent" do
+        let(:params) do
+          { applicant: { date_of_birth: "2001-02-02",
+                         receives_qualifying_benefit: false,
+                         employed: } }
+        end
+
+        it "returns http success" do
+          expect(response).to have_http_status(:success)
+        end
+
+        it "returns nil for has_partner_opponent" do
+          expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to be_nil
+        end
+      end
+
       context "with an applicant error" do
         let(:params) do
           { applicant: { has_partner_opponent: false,
