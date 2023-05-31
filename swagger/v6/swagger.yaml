@@ -388,6 +388,7 @@ components:
       description: Object describing pertinent applicant details
       required:
       - date_of_birth
+      - employed
       - receives_qualifying_benefit
       additionalProperties: false
       properties:
@@ -401,7 +402,7 @@ components:
           - type: boolean
           - type: 'null'
           example: true
-          description: Applicant is employed (unused in calculation)
+          description: Applicant is employed
         has_partner_opponent:
           type: boolean
           example: false
@@ -1557,6 +1558,7 @@ paths:
                       description: The partner of the applicant
                       required:
                       - date_of_birth
+                      - employed
                       properties:
                         date_of_birth:
                           type: string
@@ -1566,8 +1568,7 @@ paths:
                         employed:
                           type: boolean
                           example: true
-                          description: Applicant's partner is employed (unused in
-                            calculation)
+                          description: Applicant's partner is employed
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
