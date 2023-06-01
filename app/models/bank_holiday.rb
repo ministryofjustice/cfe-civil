@@ -18,5 +18,6 @@ class BankHoliday < ApplicationRecord
     rec = BankHoliday.first || BankHoliday.new
     rec.dates = GovukBankHolidayRetriever.dates
     rec.save!
+    rec.touch
   end
 end
