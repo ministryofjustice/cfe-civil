@@ -384,7 +384,7 @@ RSpec.configure do |config|
           Applicant: {
             type: :object,
             description: "Object describing pertinent applicant details",
-            required: %i[date_of_birth has_partner_opponent receives_qualifying_benefit],
+            required: %i[date_of_birth receives_qualifying_benefit],
             additionalProperties: false,
             properties: {
               date_of_birth: { type: :string,
@@ -394,6 +394,7 @@ RSpec.configure do |config|
               employed: {
                 oneOf: [{ type: :boolean }, { type: :null }],
                 example: true,
+                description: "Applicant is employed",
               },
               has_partner_opponent: { type: :boolean,
                                       example: false,

@@ -94,7 +94,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             employed: {
                               type: :boolean,
                               example: true,
-                              description: "Whether the applicant's partner is employed",
+                              description: "Applicant's partner is employed",
                             },
                           },
                         },
