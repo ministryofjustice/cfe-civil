@@ -117,8 +117,8 @@ references:
   restore_gems_cache: &restore_gems_cache
     restore_cache:
       keys:
-        - cfe-civil-{{ checksum "Gemfile.lock" }}
-        - cfe-civil
+        - cfe-civil-gems-{{ checksum "Gemfile.lock" }}
+        - cfe-civil-gems
   install_gems: &install_gems
     run:
       name: Install ruby gems
@@ -127,9 +127,19 @@ references:
         bundle install --without development --path=vendor/bundle --jobs=4 && bundle clean
   save_gems_cache: &save_gems_cache
     save_cache:
-      key: cfe-civil-{{ checksum "Gemfile.lock" }}
+      key: cfe-civil-gems-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
+  restore_helm_cache: &restore_helm_cache
+    restore_cache:
+      keys:
+        - cfe-civil-helm-{{ checksum "deploy/helm/Chart.lock" }}
+        - cfe-civil-helm
+  save_helm_cache: &save_helm_cache
+    save_cache:
+      key: cfe-civil-helm-{{ checksum "deploy/helm/Chart.lock" }}
+      paths:
+        - deploy/helm/charts
   setup_database: &setup_database
     run:
       name: Database Setup
@@ -148,6 +158,19 @@ jobs:
       - run:
           name: Run Rubocop
           command:  bundle exec rubocop
+
+  create_helm_cache:
+    executor: cloud-platform-executor
+    steps:
+      - checkout
+      - *restore_helm_cache
+      - run:
+          name: Grab postgres chart from bitnami
+          working_directory: deploy/helm
+          command: |
+            helm repo add bitnami https://charts.bitnami.com/bitnami
+            helm dependency build
+      - *save_helm_cache
 
   end2end_tests:
     executor: ccq-executor
@@ -257,11 +280,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - run:
-          name: Grab postgres chart from bitnami
-          working_directory: deploy/helm
-          command: |
-            helm dependency update
+      - *restore_helm_cache
       - deploy:
           name: Helm deployment to UAT
           command: |
@@ -277,6 +296,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
+      - *restore_helm_cache
       - deploy:
           name: Helm deploy CFE Civil to Staging
           command: |
@@ -294,6 +314,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
+      - *restore_helm_cache
       - deploy:
           name: Helm deploy CFE Civil to Production
           command: |
@@ -350,12 +371,17 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
+      - create_helm_cache:
+          filters:
+            branches:
+              ignore: main
       - end2end_tests:
           filters:
             branches:
               ignore: main
           requires:
             - build_and_push
+            - create_helm_cache
       - integration_tests:
           filters:
             branches:
@@ -413,7 +439,12 @@ workflows:
               only: main
           requires:
             - build_and_push
+            - create_helm_cache
       - integration_tests:
+          filters:
+            branches:
+              only: main
+      - create_helm_cache:
           filters:
             branches:
               only: main
