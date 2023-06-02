@@ -36,6 +36,13 @@ RSpec.describe BankHoliday, type: :model do
         expect(described_class.count).to eq 1
       end
     end
+
+    context "Bank holiday dates should have been retrieved within 10 days" do
+      it "updates the updated_at column" do
+        described_class.populate_dates
+        expect(described_class.first.updated_at > 10.days.ago).to eq true
+      end
+    end
   end
 
   describe ".dates" do
