@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Collators
   RSpec.describe GrossIncomeCollator do
-    let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary, proceedings: proceeding_type_codes }
+    let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: proceeding_type_codes }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
 
@@ -112,7 +112,7 @@ module Collators
         end
 
         context "bank and cash transactions" do
-          let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary_and_records }
+          let(:assessment) { create :assessment, :with_gross_income_summary_and_records }
 
           it "updates with totals for all categories based on bank and cash transactions" do
             response = collator
@@ -148,7 +148,7 @@ module Collators
         end
 
         context "gross_employment_income" do
-          let(:assessment) { create :assessment, :with_applicant, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
+          let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
             assessment.employments.map do |_e|

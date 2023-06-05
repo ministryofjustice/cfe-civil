@@ -4,7 +4,6 @@ module Decorators
       def initialize(summary, employments, subtotals, self_employments)
         @summary = summary
         @employments = employments
-        @categories = income_categories_excluding_benefits
         @subtotals = subtotals
         @self_employments = self_employments
       end
@@ -37,10 +36,6 @@ module Decorators
             result.merge!(client_reference: self_employment.client_id) if self_employment.client_id
           end
         end
-      end
-
-      def income_categories_excluding_benefits
-        CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym) - [:benefits]
       end
 
       def employment_incomes

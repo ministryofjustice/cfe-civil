@@ -11,7 +11,7 @@ require "rails_helper"
 #
 
 RSpec.describe Collators::RegularOutgoingsCollator do
-  let(:assessment) { create(:assessment, :with_applicant, :with_gross_income_summary, :with_disposable_income_summary) }
+  let(:assessment) { create(:assessment, :with_gross_income_summary, :with_disposable_income_summary) }
   let(:gross_income_summary) { assessment.applicant_gross_income_summary }
   let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
   let(:eligible_for_childcare) { true }

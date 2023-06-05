@@ -1,9 +1,10 @@
 FactoryBot.define do
   factory :applicant do
-    assessment
+    initialize_with { new(**attributes) }
+
+    employed { false }
+    receives_asylum_support { false }
     date_of_birth { Faker::Date.between(from: 18.years.ago, to: 49.years.ago) }
-    involvement_type { "applicant" }
-    has_partner_opponent { false }
     receives_qualifying_benefit { false }
 
     trait :with_qualifying_benefits do

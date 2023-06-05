@@ -1,6 +1,4 @@
 class DisposableIncomeSummary < ApplicationRecord
-  extend EnumHash
-
   belongs_to :assessment
   has_many :outgoings, dependent: :destroy, class_name: "Outgoings::BaseOutgoing"
   has_many :childcare_outgoings, dependent: :destroy, class_name: "Outgoings::Childcare"

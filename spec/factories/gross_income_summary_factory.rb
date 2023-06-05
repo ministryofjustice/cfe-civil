@@ -62,6 +62,8 @@ FactoryBot.define do
       end
     end
 
-    factory :partner_gross_income_summary
+    factory :partner_gross_income_summary do
+      type { "PartnerGrossIncomeSummary" }
+    end
   end
 end

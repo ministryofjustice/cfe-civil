@@ -3,9 +3,10 @@ module Decorators
     class ResultSummaryDecorator
       attr_reader :assessment
 
-      def initialize(assessment, calculation_output)
+      def initialize(assessment, calculation_output, partner_present)
         @assessment = assessment
         @calculation_output = calculation_output
+        @partner_present = partner_present
       end
 
       def as_json
@@ -23,7 +24,6 @@ module Decorators
             assessment.applicant_disposable_income_summary,
             assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
-            partner_present: assessment.partner.present?,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
           ),
           capital: ApplicantCapitalResultDecorator.new(
@@ -34,7 +34,7 @@ module Decorators
             combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f,
           ),
         }
-        result = if assessment.partner
+        result = if @partner_present
                    details.merge(partner_capital:, partner_gross_income:, partner_disposable_income:)
                  else
                    details
@@ -53,7 +53,6 @@ module Decorators
           assessment.partner_disposable_income_summary,
           assessment.partner_gross_income_summary,
           @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals,
-          partner_present: true,
           disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
         )
       end

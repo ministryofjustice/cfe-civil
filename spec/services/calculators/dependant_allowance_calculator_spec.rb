@@ -70,6 +70,8 @@ module Calculators
 
         context "16 or 17 years old" do
           context "in full time education" do
+            let(:assessment) { build(:assessment) }
+
             context "with  no income" do
               let(:dependant) { build :dependant, :aged16or17, monthly_income: 0.0, in_full_time_education: true, submission_date: }
 

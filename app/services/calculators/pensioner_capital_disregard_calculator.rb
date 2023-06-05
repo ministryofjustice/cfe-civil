@@ -1,8 +1,8 @@
 module Calculators
   class PensionerCapitalDisregardCalculator
-    def initialize(submission_date:, person:, total_disposable_income:, receives_qualifying_benefit:)
+    def initialize(submission_date:, date_of_birth:, total_disposable_income:, receives_qualifying_benefit:)
       @submission_date = submission_date
-      @person = person
+      @date_of_birth = date_of_birth
       @total_disposable_income = total_disposable_income
       @receives_qualifying_benefit = receives_qualifying_benefit
     end
@@ -32,7 +32,7 @@ module Calculators
     end
 
     def person_dob
-      @person.date_of_birth
+      @date_of_birth
     end
 
     def passported?

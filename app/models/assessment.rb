@@ -1,14 +1,10 @@
 class Assessment < ApplicationRecord
-  extend EnumHash
-
   serialize :remarks
 
   validates :remote_ip,
             :submission_date,
             presence: true
   validates :version, inclusion: { in: CFEConstants::VALID_ASSESSMENT_VERSIONS, message: "not valid in Accept header" }
-
-  has_one :applicant, dependent: :destroy
 
   # Just in case we get multiple POSTs to partner endpoint
   has_many :capital_summaries, dependent: :destroy
@@ -19,7 +15,6 @@ class Assessment < ApplicationRecord
   has_one :applicant_gross_income_summary
   has_one :applicant_disposable_income_summary
 
-  has_one :partner, dependent: :destroy
   has_one :partner_capital_summary
   has_one :partner_gross_income_summary
   has_one :partner_disposable_income_summary

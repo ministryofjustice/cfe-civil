@@ -8,7 +8,6 @@ module Decorators
                :with_gross_income_summary,
                :with_disposable_income_summary,
                :with_capital_summary,
-               :with_applicant,
                :with_eligibilities
       end
       let(:calculation_output) do
@@ -36,7 +35,12 @@ module Decorators
       end
 
       describe "#as_json" do
-        subject(:decorator) { described_class.new(assessment.reload, calculation_output).as_json }
+        subject(:decorator) do
+          described_class.new(assessment: assessment.reload, calculation_output:,
+                              applicant: PersonData.new(details: build(:applicant), self_employments: [], vehicles: [], dependants: []),
+                              partner:).as_json
+        end
+        let(:partner) { nil }
 
         it "has the required keys in the returned hash" do
           expected_keys = %i[
@@ -64,8 +68,12 @@ module Decorators
         end
 
         context "with partner" do
+          let(:partner) { build(:applicant) }
+
           before do
-            create(:partner, assessment:)
+            create(:partner_capital_summary, assessment:)
+            create(:partner_gross_income_summary, assessment:)
+            create(:partner_disposable_income_summary, assessment:)
           end
 
           it "includes partner information" do

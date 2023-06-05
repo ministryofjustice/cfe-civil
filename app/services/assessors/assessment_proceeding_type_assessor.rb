@@ -1,5 +1,5 @@
 module Assessors
-  class AssessmentProceedingTypeAssessor < BaseWorkflowService
+  class AssessmentProceedingTypeAssessor
     # this class examines the assessment results on capital, gross_income and
     # disposable income _eligibility records for the specified proceeding type code
     # and updates the corresponding assessment_eligibility records with an overall
@@ -7,9 +7,17 @@ module Assessors
     #
     class AssessmentError < StandardError; end
 
-    def initialize(assessment, proceeding_type_code)
-      super(assessment)
+    class << self
+      def call(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:)
+        new(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:).call
+      end
+    end
+
+    def initialize(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:)
+      @assessment = assessment
       @proceeding_type_code = proceeding_type_code
+      @receives_qualifying_benefit = receives_qualifying_benefit
+      @receives_asylum_support = receives_asylum_support
     end
 
     def call
@@ -18,8 +26,10 @@ module Assessors
 
   private
 
+    attr_reader :assessment
+
     def result
-      return "eligible" if this_is_an_immigration_or_asylum_case? && applicant.receives_asylum_support
+      return "eligible" if this_is_an_immigration_or_asylum_case? && @receives_asylum_support
 
       passported? ? passported_assessment : gross_income_assessment
     end
@@ -29,7 +39,7 @@ module Assessors
     end
 
     def passported?
-      applicant.receives_qualifying_benefit?
+      @receives_qualifying_benefit
     end
 
     def passported_assessment

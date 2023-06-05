@@ -1,20 +1,19 @@
 module Assessors
-  class MainAssessor < BaseWorkflowService
-    delegate :eligibilities, to: :assessment
+  class MainAssessor
+    class << self
+      def call(assessment:, receives_qualifying_benefit:, receives_asylum_support:)
+        assessment.proceeding_types.map(&:ccms_code).each do |ptc|
+          AssessmentProceedingTypeAssessor.call(assessment:, proceeding_type_code: ptc,
+                                                receives_qualifying_benefit:, receives_asylum_support:)
+        end
+        assessment.update!(assessment_result: summarized_result(assessment.eligibilities))
+      end
 
-    def call
-      proceeding_type_codes.each { |ptc| AssessmentProceedingTypeAssessor.call(assessment, ptc) }
-      assessment.update!(assessment_result: summarized_result)
-    end
+    private
 
-  private
-
-    def proceeding_type_codes
-      assessment.proceeding_types.map(&:ccms_code)
-    end
-
-    def summarized_result
-      Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
+      def summarized_result(eligibilities)
+        Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
+      end
     end
   end
 end

@@ -15,7 +15,7 @@ module Decorators
         end
 
         context "applicant exists" do
-          let(:applicant) { create :applicant }
+          let(:applicant) { build :applicant }
 
           it "has all expected keys present in the returned hash" do
             expected_keys = %i[
