@@ -10,7 +10,7 @@ module Workflows
              proceedings: proceedings_hash,
              applicant:
     end
-    let(:person_blank) { PersonData.new(self_employments: [], vehicles: []) }
+    let(:person_blank) { PersonData.new(self_employments: [], vehicles: [], dependants: []) }
 
     before do
       allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holiday_response)
@@ -98,7 +98,7 @@ module Workflows
         it "Populates proceeding types with thresholds" do
           expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
 
-          allow(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
+          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
@@ -107,7 +107,7 @@ module Workflows
         end
 
         it "creates the eligibility records" do
-          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment)
+          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(CalculationOutput.new)

@@ -37,7 +37,6 @@ module Creators
       errors.concat(create_state_benefits.errors)
       errors.concat(create_additional_properties.errors)
       errors.concat(create_capitals.errors)
-      errors.concat(create_dependants.errors)
       errors.concat(create_outgoings.errors)
       Result.new(errors:).freeze
     rescue ActiveRecord::RecordInvalid => e
@@ -120,15 +119,6 @@ module Creators
       )
     end
 
-    def create_dependants
-      return Result.new(errors: []).freeze if dependant_params.blank?
-
-      DependantsCreator.call(
-        dependants: @assessment.partner_dependants,
-        dependants_params: { dependants: dependant_params },
-      )
-    end
-
     def partner_attributes
       @partner_attributes ||= @partner_financials_params[:partner]
     end
@@ -155,10 +145,6 @@ module Creators
 
     def capital_params
       @capital_params ||= @partner_financials_params[:capitals]
-    end
-
-    def dependant_params
-      @dependant_params ||= @partner_financials_params[:dependants]
     end
 
     def outgoings_params

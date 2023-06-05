@@ -9,10 +9,22 @@ module V6
                                                     params: full_assessment_params)
 
       if create.success?
-        calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                          applicant: person_data(full_assessment_params),
-                                                          partner: person_data(full_assessment_params.fetch(:partner, {})))
+        applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
+        render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
 
+        partner_params = full_assessment_params[:partner]
+        if partner_params.present?
+          partner_dependants = dependants partner_params, create.assessment.submission_date
+          render_unprocessable(dependant_errors(partner_dependants)) && return if partner_dependants.reject(&:valid?).any?
+
+          calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
+                                                            applicant: person_data(full_assessment_params, applicant_dependants.map(&:freeze)),
+                                                            partner: person_data(partner_params, partner_dependants.map(&:freeze)))
+        else
+          calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
+                                                            applicant: person_data(full_assessment_params, applicant_dependants.map(&:freeze)),
+                                                            partner: nil)
+        end
         render json: Decorators::V6::AssessmentDecorator.new(create.assessment, calculation_output).as_json
       else
         render_unprocessable(create.errors)
@@ -21,10 +33,19 @@ module V6
 
   private
 
-    def person_data(input_params)
+    def dependants(input_params, submission_date)
+      dependant_params = input_params.fetch(:dependants, [])
+      dependant_params.map { |p| Dependant.new(p.merge(submission_date:)) }
+    end
+
+    def dependant_errors(dependants)
+      dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
+    end
+
+    def person_data(input_params, dependants)
       self_employments = parse_self_employments(input_params.fetch(:employment_or_self_employment, []))
       vehicles = parse_vehicles(input_params.fetch(:vehicles, []))
-      PersonData.new(self_employments:, vehicles:)
+      PersonData.new(self_employments:, vehicles:, dependants:)
     end
 
     def parse_vehicles(vehicles)
@@ -47,7 +68,7 @@ module V6
     end
 
     def full_assessment_params
-      @full_assessment_params ||= JSON.parse(request.raw_post, symbolize_names: true)
+      @full_assessment_params ||= JSON.parse(request.raw_post, symbolize_names: true, decimal_class: BigDecimal)
     end
   end
 end

@@ -83,7 +83,6 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
       end
       single_shot_payload = v6_payloads.reduce(assessment: worksheet.assessment.attributes) { |hash, elem| hash.merge(elem) }
       v6_api_results = noisy_post("/v6/assessments", single_shot_payload, worksheet.version)
-      puts Hashdiff.diff(*[v1_api_results, v6_api_results].map { |x| remove_result_noise(x) }) unless silent?
       worksheet.compare_results(v6_api_results)
     end
 

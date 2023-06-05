@@ -586,7 +586,6 @@ components:
           enum:
           - child_relative
           - adult_relative
-          example: child_relative
           description: Dependant's relationship to the applicant
         monthly_income:
           "$ref": "#/components/schemas/currency"

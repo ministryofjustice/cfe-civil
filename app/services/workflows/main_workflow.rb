@@ -2,11 +2,11 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        version_5_verification(assessment)
+        populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
         calculation_output = if no_means_assessment_needed?(assessment)
                                blank_calculation_result
                              elsif assessment.applicant.receives_qualifying_benefit?
-                               PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner.vehicles)
+                               PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner&.vehicles || [])
                              else
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
@@ -17,9 +17,9 @@ module Workflows
 
     private
 
-      def version_5_verification(assessment)
+      def populate_eligibility_records(assessment:, dependants:, partner_dependants:)
         Utilities::ProceedingTypeThresholdPopulator.call(assessment)
-        Creators::EligibilitiesCreator.call(assessment)
+        Creators::EligibilitiesCreator.call(assessment:, client_dependants: dependants, partner_dependants:)
       end
 
       def no_means_assessment_needed?(assessment)

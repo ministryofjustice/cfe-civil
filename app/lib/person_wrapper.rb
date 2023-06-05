@@ -7,7 +7,7 @@ class PersonWrapper
   def initialize(person:, is_single:, dependants:, gross_income_summary:, submission_date:)
     @person = person
     @is_single = is_single
-    @dependants = dependants.map { |d| DependantWrapper.new(dependant: d, submission_date:) }
+    @dependants = dependants
     @gross_income_summary = gross_income_summary
     @submission_date = submission_date
   end

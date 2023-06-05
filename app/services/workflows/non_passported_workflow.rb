@@ -4,13 +4,15 @@ module Workflows
       def call(assessment:, applicant:, partner:)
         gross_income_subtotals = collate_and_assess_gross_income(assessment:,
                                                                  self_employments: applicant.self_employments,
-                                                                 partner_self_employments: partner.self_employments)
+                                                                 partner_self_employments: partner&.self_employments || [])
         return CalculationOutput.new(gross_income_subtotals:) if assessment.applicant_gross_income_summary.ineligible?
 
-        disposable_income_subtotals = disposable_income_assessment(assessment, gross_income_subtotals)
+        disposable_income_subtotals = disposable_income_assessment(assessment:, gross_income_subtotals:,
+                                                                   dependants: applicant.dependants,
+                                                                   partner_dependants: partner&.dependants || [])
         return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:) if assessment.applicant_disposable_income_summary.ineligible?
 
-        capital_subtotals = collate_and_assess_capital(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner.vehicles)
+        capital_subtotals = collate_and_assess_capital(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner&.vehicles || [])
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
       end
 
@@ -112,11 +114,11 @@ module Workflows
         end
       end
 
-      def disposable_income_assessment(assessment, gross_income_subtotals)
+      def disposable_income_assessment(assessment:, gross_income_subtotals:, dependants:, partner_dependants:)
         result = if assessment.partner.present?
-                   partner_disposable_income_assessment(assessment, gross_income_subtotals)
+                   partner_disposable_income_assessment(assessment:, gross_income_subtotals:, dependants:, partner_dependants:)
                  else
-                   single_disposable_income_assessment(assessment, gross_income_subtotals)
+                   single_disposable_income_assessment(assessment:, gross_income_subtotals:, dependants:)
                  end
         result.tap do
           Assessors::DisposableIncomeAssessor.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
@@ -125,14 +127,14 @@ module Workflows
       end
 
       # TODO: make the Collators::DisposableIncomeCollator increment/sum to existing values so order of "collation" becomes unimportant
-      def partner_disposable_income_assessment(assessment, gross_income_subtotals)
+      def partner_disposable_income_assessment(assessment:, gross_income_subtotals:, dependants:, partner_dependants:)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: false,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.client_dependants, gross_income_summary: assessment.applicant_gross_income_summary
+                                      dependants:, gross_income_summary: assessment.applicant_gross_income_summary
         partner = PersonWrapper.new person: assessment.partner, is_single: false,
                                     submission_date: assessment.submission_date,
-                                    dependants: assessment.partner_dependants, gross_income_summary: assessment.partner_gross_income_summary
-        eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant, partner)
+                                    dependants: partner_dependants, gross_income_summary: assessment.partner_gross_income_summary
+        eligible_for_childcare = calculate_partner_childcare_eligibility(assessment, applicant, partner)
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
                                                       gross_income_summary: assessment.applicant_gross_income_summary.freeze,
@@ -176,10 +178,10 @@ module Workflows
         )
       end
 
-      def single_disposable_income_assessment(assessment, gross_income_subtotals)
+      def single_disposable_income_assessment(assessment:, gross_income_subtotals:, dependants:)
         applicant = PersonWrapper.new person: assessment.applicant, is_single: true,
                                       submission_date: assessment.submission_date,
-                                      dependants: assessment.client_dependants, gross_income_summary: assessment.applicant_gross_income_summary
+                                      dependants:, gross_income_summary: assessment.applicant_gross_income_summary
         eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant)
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
@@ -207,11 +209,18 @@ module Workflows
         CapitalCollatorAndAssessor.call assessment:, vehicles:, partner_vehicles:
       end
 
-      def calculate_childcare_eligibility(assessment, applicant, partner = nil)
+      def calculate_childcare_eligibility(assessment, applicant)
         Calculators::ChildcareEligibilityCalculator.call(
-          applicant:,
-          partner:,
-          dependants: assessment.client_dependants + assessment.partner_dependants, # Ensure we consider both client and partner dependants
+          applicants: [applicant],
+          dependants: applicant.dependants, # Ensure we consider both client and partner dependants
+          submission_date: assessment.submission_date,
+        )
+      end
+
+      def calculate_partner_childcare_eligibility(assessment, applicant, partner)
+        Calculators::ChildcareEligibilityCalculator.call(
+          applicants: [applicant, partner],
+          dependants: applicant.dependants + partner.dependants, # Ensure we consider both client and partner dependants
           submission_date: assessment.submission_date,
         )
       end

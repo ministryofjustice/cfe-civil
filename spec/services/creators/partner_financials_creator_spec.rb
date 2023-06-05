@@ -279,33 +279,6 @@ module Creators
           expect(creator.success?).to be true
         end
       end
-
-      context "with valid dependants" do
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            dependants: [
-              {
-                in_full_time_education: false,
-                date_of_birth: 1.year.ago.to_date.to_s,
-                relationship: "child_relative",
-              },
-            ],
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-
-        it "creates dependants" do
-          creator
-          expect(assessment.partner_dependants.count).to eq 1
-        end
-      end
     end
   end
 end

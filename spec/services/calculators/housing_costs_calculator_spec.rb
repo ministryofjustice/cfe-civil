@@ -4,7 +4,8 @@ module Calculators
   RSpec.describe HousingCostsCalculator do
     subject(:calculator) do
       described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
-                          person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
+                          person: instance_double(PersonWrapper, single?: true,
+                                                                 dependants: build_list(:dependant, children, :child_relative, submission_date: assessment.submission_date)),
                           submission_date: assessment.submission_date,
                           gross_income_summary: assessment.applicant_gross_income_summary)
     end
@@ -14,8 +15,7 @@ module Calculators
       let(:assessment) do
         create :assessment, :with_gross_income_summary_and_records,
                :with_disposable_income_summary,
-               submission_date: current_date,
-               with_child_dependants: children
+               submission_date: current_date
       end
       let(:rent_or_mortgage_category) { assessment.applicant_gross_income_summary.cash_transaction_categories.detect { |cat| cat.name == "rent_or_mortgage" } }
       let(:rent_or_mortgage_transactions) { rent_or_mortgage_category.cash_transactions.order(:date) }
@@ -330,7 +330,8 @@ module Calculators
       let(:instance) do
         described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
                             gross_income_summary: assessment.applicant_gross_income_summary,
-                            person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
+                            person: instance_double(PersonWrapper, single?: true,
+                                                                   dependants:),
                             submission_date: assessment.submission_date)
       end
       let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
@@ -340,10 +341,14 @@ module Calculators
         subject(:gross_housing_costs) { instance.gross_housing_costs }
 
         context "with no housing costs" do
+          let(:dependants) { [] }
+
           it { is_expected.to eq 0 }
         end
 
         context "with all forms of housing costs" do
+          let(:dependants) { [] }
+
           before do
             # add monthly equivalent bank transactions of 111.11
             create(:housing_cost_outgoing, disposable_income_summary: assessment.applicant_disposable_income_summary, payment_date: dates[0], amount: 333.33)
@@ -369,6 +374,8 @@ module Calculators
         subject(:monthly_housing_benefit) { instance.monthly_housing_benefit }
 
         context "with state_benefits of housing_benefit type" do
+          let(:dependants) { [] }
+
           before do
             housing_benefit = create(:state_benefit,
                                      gross_income_summary: assessment.applicant_gross_income_summary,
@@ -384,6 +391,8 @@ module Calculators
         end
 
         context "with regular_transactions of housing_benefit type" do
+          let(:dependants) { [] }
+
           before do
             create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "three_monthly", amount: 1000.00)
           end
@@ -398,6 +407,8 @@ module Calculators
         subject(:net_housing_costs) { instance.net_housing_costs }
 
         context "when single, with no dependants" do
+          let(:dependants) { [] }
+
           it "returns gross housing cost less benefits" do
             create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
             create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
@@ -414,9 +425,7 @@ module Calculators
         end
 
         context "when has dependants and receives housing benefit" do
-          before do
-            create(:dependant, :child_relative, assessment:)
-          end
+          let(:dependants) { build_list(:dependant, 1, :child_relative, submission_date: assessment.submission_date) }
 
           it "returns gross housing cost less benefits" do
             create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
@@ -430,9 +439,7 @@ module Calculators
         # or when not single and with no dependants??
         #
         context "when any other situation" do
-          before do
-            create(:dependant, :child_relative, assessment:)
-          end
+          let(:dependants) { build_list(:dependant, 1, :child_relative, submission_date: assessment.submission_date) }
 
           it "returns gross housing without a cap" do
             create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
