@@ -7,6 +7,7 @@ module V6
       let(:assessment) { parsed_response.fetch(:assessment).except(:id) }
       let(:employed) { false }
       let(:user_agent) { Faker::ProgrammingLanguage.name }
+      let(:log_record) { RequestLog.last }
       let(:current_date) { Date.new(2022, 6, 6) }
       let(:submission_date_params) { { submission_date: current_date.to_s } }
       let(:default_params) do
@@ -72,7 +73,7 @@ module V6
       end
       let(:dependant_params) do
         [
-          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2014-06-11"),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11"),
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2013-06-11"),
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2004-06-11"),
         ]
@@ -218,7 +219,7 @@ module V6
                                 http_status: 422,
                                 request: {
                                   "assessment" => { "submission_date" => "2022-06-06" },
-                                  "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2900-01-09", "employed" => false },
+                                  "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2899-06-06", "employed" => false },
                                   "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
                                 },
                                 response: {
@@ -243,7 +244,6 @@ module V6
 
       context "with dependants" do
         let(:params) { { dependants: dependant_params } }
-        let(:log_record) { RequestLog.last }
 
         it "returns http success" do
           expect(response).to have_http_status(:success)
@@ -259,31 +259,31 @@ module V6
           expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
         end
 
-        it "creates a log record with a user agent" do
+        it "creates a log record with a user agent and imprecise DOBs" do
           expect(log_record)
             .to have_attributes(created_at: Time.zone.today,
                                 http_status: 200,
                                 user_agent:,
                                 request: {
                                   "assessment" => { "submission_date" => "2022-06-06" },
-                                  "applicant" => { "date_of_birth" => "2001-02-02", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
+                                  "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
                                   "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
                                   "dependants" => [
                                     {
-                                      "date_of_birth" => "2014-06-11",
+                                      "date_of_birth" => "2014-06-06",
                                       "in_full_time_education" => true,
                                       "relationship" => "child_relative",
                                       "monthly_income" => 0,
                                       "assets_value" => 0.0,
                                     },
                                     {
-                                      "date_of_birth" => "2013-06-11",
+                                      "date_of_birth" => "2013-06-06",
                                       "in_full_time_education" => true,
                                       "relationship" => "child_relative",
                                       "monthly_income" => 0,
                                       "assets_value" => 0.0,
                                     },
-                                    { "date_of_birth" => "2004-06-11",
+                                    { "date_of_birth" => "2004-06-06",
                                       "in_full_time_education" => true,
                                       "relationship" => "child_relative",
                                       "monthly_income" => 0,
@@ -686,22 +686,14 @@ module V6
           [
             {
               source: "maintenance_in",
-              payments: [
-                {
-                  date: "2022-11-01",
-                },
-                {
-                  date: "2022-10-01",
-                },
-                {
-                  date: "2022-09-01",
-                },
-              ].map.with_index do |p, index|
-                p.merge(
-                  amount: 1046.44,
-                  client_id: "oi-m-#{index}",
-                )
-              end,
+              payments: [{ date: "2022-11-01" },
+                         { date: "2022-10-01" },
+                         { date: "2022-09-01" }].map.with_index do |p, index|
+                          p.merge(
+                            amount: 1046.44,
+                            client_id: "oi-m-#{index}",
+                          )
+                        end,
             },
             {
               source: "friends_or_family",
@@ -726,7 +718,7 @@ module V6
           ]
         end
 
-        let(:client_ids) { [SecureRandom.uuid, SecureRandom.uuid, SecureRandom.uuid] }
+        let(:client_ids) { %w[1 2 3] }
 
         let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
         let(:state_benefit_type2) { create :state_benefit_type, exclude_from_gross_income: false }
@@ -800,6 +792,17 @@ module V6
 
         it "returns http success" do
           expect(response).to have_http_status(:success)
+        end
+
+        it "logs redacted DOBs" do
+          expect(log_record.request["partner"].deep_symbolize_keys.except(:irregular_incomes, :employments, :outgoings, :capitals, :vehicles,
+                                                                          :regular_transactions, :state_benefits, :additional_properties))
+            .to eq(
+              { partner: { date_of_birth: "1987-06-06", employed: true },
+                dependants: [{ date_of_birth: "2014-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                             { date_of_birth: "2013-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                             { date_of_birth: "2004-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }] },
+            )
         end
 
         it "contains JSON version and success" do

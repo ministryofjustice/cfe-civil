@@ -1,19 +1,19 @@
 Given("I am undertaking a certificated assessment") do
   StateBenefitType.create! label: "housing_benefit", name: "Housing benefit", exclude_from_gross_income: true
   @assessment_data = { client_reference_id: "N/A", submission_date: "2022-05-10" }
-  @applicant_data = { applicant: { date_of_birth: "1979-12-20",
-                                   involvement_type: "applicant",
-                                   has_partner_opponent: false,
-                                   receives_qualifying_benefit: false } }
+  @applicant_data = { date_of_birth: "1979-12-20",
+                      involvement_type: "applicant",
+                      has_partner_opponent: false,
+                      receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "SE003", client_involvement_type: "A" }] }
 end
 
 Given("An applicant who receives passporting benefits") do
-  @applicant_data.merge! applicant: @applicant_data.fetch(:applicant).merge(receives_qualifying_benefit: true)
+  @applicant_data.merge! receives_qualifying_benefit: true
 end
 
 Given("An applicant who is a pensioner") do
-  @applicant_data.merge! applicant: @applicant_data.fetch(:applicant).merge(date_of_birth: "1939-12-20")
+  @applicant_data.merge! date_of_birth: "1939-12-20"
 end
 
 Given("A submission date of {string}") do |date|
@@ -23,10 +23,10 @@ end
 Given("I am undertaking a controlled assessment") do
   StateBenefitType.create! label: "housing_benefit", name: "Housing benefit", exclude_from_gross_income: true
   @assessment_data = { client_reference_id: "N/A", submission_date: "2022-05-10", level_of_help: "controlled" }
-  @applicant_data = { applicant: { date_of_birth: "1989-12-20",
-                                   involvement_type: "applicant",
-                                   has_partner_opponent: false,
-                                   receives_qualifying_benefit: false } }
+  @applicant_data = { date_of_birth: "1989-12-20",
+                      involvement_type: "applicant",
+                      has_partner_opponent: false,
+                      receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "DA001", client_involvement_type: "A" }] }
 end
 
@@ -58,7 +58,7 @@ Given("I create an assessment with the following details:") do |table|
 end
 
 Given("I add the following applicant details for the current assessment:") do |table|
-  @applicant_data = { "applicant": cast_values(table.rows_hash) }
+  @applicant_data = cast_values(table.rows_hash)
 end
 
 Given("I add the following dependent details for the current assessment:") do |table|
@@ -92,7 +92,7 @@ Given("I add the following statutory sick pay details for the client:") do |tabl
                     "client_id": "B",
                     "receiving_only_statutory_sick_or_maternity_pay": true,
                     "payments": table.hashes.map { cast_values(_1) } }]
-  @applicant_data = { applicant: @applicant_data.fetch(:applicant).merge(employed: true) }
+  @applicant_data.merge! employed: true
 end
 
 Given("I add the following employment details for the partner:") do |table|
@@ -105,7 +105,7 @@ Given("I add the following employment details:") do |table|
   @employments = [{ "name": "A",
                     "client_id": "B",
                     "payments": table.hashes.map { cast_values(_1) } }]
-  @applicant_data = { applicant: @applicant_data.fetch(:applicant).merge(employed: true) }
+  @applicant_data.merge! employed: true
 end
 
 Given("I add the following regular_transaction details for the partner:") do |table|
@@ -164,9 +164,8 @@ When("I retrieve the final assessment") do
     end
   end
 
-  single_shot_api_data = { assessment: @assessment_data }
-                           .merge(@applicant_data)
-                           .merge(@proceeding_type_data)
+  single_shot_api_data = { assessment: @assessment_data,
+                           applicant: @applicant_data }.merge(@proceeding_type_data)
   single_shot_api_data.merge!(@dependant_data) if @dependant_data
   single_shot_api_data.merge!(employments_data) if employments_data
   single_shot_api_data.merge!(@other_incomes_data) if @other_incomes_data
@@ -183,7 +182,7 @@ When("I retrieve the final assessment") do
   single_shot_api_data[:partner] = partner_data if partner_data
   single_shot_api_data[:employment_or_self_employment] = @self_employment_data[:client] if @self_employment_data && @self_employment_data.key?(:client)
 
-  @single_shot_response = submit_request :post, "/v6/assessments", single_shot_api_data
+  @single_shot_response = submit_post_request "/v6/assessments", single_shot_api_data
 end
 
 Then("I should see the following overall summary:") do |table|

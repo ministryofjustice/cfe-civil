@@ -14,13 +14,7 @@ class ApplicationController < ActionController::API
   ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
     event = ActiveSupport::Notifications::Event.new(*args)
     if event.payload.fetch(:controller) == V6::AssessmentsController.to_s
-      RequestLog.create!(
-        request: event.payload.fetch(:params).except("controller", "action"),
-        http_status: event.payload.fetch(:status),
-        response: JSON.parse(event.payload.fetch(:response).body),
-        duration: event.duration,
-        user_agent: event.payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
-      )
+      RequestLogger.log_request event.duration, event.payload
     end
   end
 
