@@ -19,8 +19,8 @@ RUN bundle config --local without test:development && \
     bundle install && \
     # remove gem cache
     rm -rf /usr/local/bundle/cache && \
-    # fix permissions of files that were found to be world writable
-    chmod -R o-w /usr/local/bundle/gems/os-1.1.4
+    # fix permissions for security - the 'os' gem was found to be world writable
+    chmod -R o-w /usr/local/bundle
 
 #
 # Build stage: Assemble final image
