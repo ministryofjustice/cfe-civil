@@ -1,13 +1,6 @@
-def submit_request(method, path, payload = nil)
-  headers = { "HTTP_ACCEPT" => "application/json", "HTTP_CONTENT_TYPE" => "application/json" }
-  case method
-  when :post
-    page.driver.post(path, payload.to_json, headers)
-  when :get
-    page.driver.get(path, headers)
-  else
-    raise "Unrecognised request method provided #{method}"
-  end
+def submit_post_request(path, payload)
+  headers = { "CONTENT_TYPE" => "application/json", "Accept" => "application/json" }
+  page.driver.post(path, payload.to_json, headers)
   result = JSON.parse(page.body)
   raise(result["errors"]&.join("\n")) unless result["success"]
 
