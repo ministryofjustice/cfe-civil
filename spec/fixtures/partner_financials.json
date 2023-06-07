@@ -20,8 +20,8 @@
           "date": "1992-07-22",
           "gross": 101.01,
           "benefits_in_kind": 0,
-          "tax": 11,
-          "national_insurance": 3
+          "tax": -11,
+          "national_insurance": -3
         }
       ]
     }

@@ -242,12 +242,12 @@ components:
           tax:
             "$ref": "#/components/schemas/currency"
             description: Amount of tax paid - normally negative, but can be positive
-              for a tax refund
+              for a refund
             example: -10.01
           national_insurance:
             "$ref": "#/components/schemas/currency"
             description: Amount of national insurance paid - normally negative, but
-              can be positive for a tax refund
+              can be positive for a refund
             example: -5.24
           net_employment_income:
             "$ref": "#/components/schemas/currency"
@@ -855,18 +855,24 @@ components:
               type: number
               format: decimal
               minimum: 0
+              description: A positive number representing gross income payments
+              example: '2000.00'
             benefits_in_kind:
               type: number
               format: decimal
               minimum: 0
+              description: A positive number representing a benefit in kind payment
+              example: '100.00'
             tax:
               type: number
               format: decimal
-              minimum: 0
+              description: A negative number representing a tax deduction
+              example: "-250.20"
             national_insurance:
               type: number
               format: decimal
-              minimum: 0
+              description: A negative number representing a National Insurance deduction
+              example: "-150.20"
     StateBenefit:
       type: object
       required:
@@ -878,7 +884,7 @@ components:
         name:
           type: string
           description: Name of the state benefit
-          example: my_state_bnefit
+          example: my_state_benefit
         payments:
           type: array
           description: One or more state benefit payments details
@@ -982,7 +988,7 @@ components:
           type: number
           format: decimal
         total_mortgage_allowance:
-          description: Maxiumum mortgage allowance used in submission. Cases post-April
+          description: Maximum mortgage allowance used in submission. Cases post-April
             2020 will all be set to 999_999_999
           type: number
           format: decimal
@@ -1012,8 +1018,14 @@ components:
               type: number
             tax:
               type: number
+              format: decimal
+              description: A negative number representing a tax deduction
+              example: "-250.20"
             national_insurance:
               type: number
+              format: decimal
+              description: A negative number representing a National Insurance deduction
+              example: "-150.20"
             fixed_employment_deduction:
               type: number
               format: decimal
@@ -1355,18 +1367,30 @@ paths:
                                       type: number
                                       format: decimal
                                       minimum: 0
+                                      description: A positive number representing
+                                        a gross income
+                                      example: '2050.20'
                                     tax:
                                       type: number
-                                      maximum: 0
                                       format: decimal
+                                      maximum: 0
+                                      description: A negative number representing
+                                        a tax deduction
+                                      example: "-250.20"
+                                    national_insurance:
+                                      type: number
+                                      format: decimal
+                                      maximum: 0
+                                      description: A negative number representing
+                                        a National Insurance deduction
+                                      example: "-150.20"
                                     benefits_in_kind:
                                       type: number
                                       minimum: 0
                                       format: decimal
-                                    national_insurance:
-                                      maximum: 0
-                                      type: number
-                                      format: decimal
+                                      description: A positive number representing
+                                        a benefit in kind payment
+                                      example: '100.00'
                       disposable_income:
                         type: object
                       capital:
@@ -1479,7 +1503,7 @@ paths:
                     "$ref": "#/components/schemas/RegularTransaction"
                 state_benefits:
                   type: array
-                  description: One or more state benefits receved by the applicant
+                  description: One or more state benefits received by the applicant
                     and categorized by name
                   items:
                     "$ref": "#/components/schemas/StateBenefit"
@@ -1514,8 +1538,8 @@ paths:
                         date: '1992-07-22'
                         gross: 101.01
                         benefits_in_kind: 0
-                        tax: 11
-                        national_insurance: 3
+                        tax: -11
+                        national_insurance: -3
                     regular_transactions:
                     - category: benefits
                       operation: credit
