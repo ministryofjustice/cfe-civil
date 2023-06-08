@@ -40,4 +40,4 @@ sentry:
 
 notifications:
   errorMessageTemplateId: 59fae8bd-fed2-4548-a372-6fcaf195644d
-  recipient: patrick.gleeson@digital.justice.gov.uk,michael.blatherwick@digital.justice.gov.uk,stephen.p.dicks@digital.justice.gov.uk,william.clarke@digital.justice.gov.uk
+  recipient: neil.hathaway@digital.justice.gov.uk,stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
