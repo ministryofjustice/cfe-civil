@@ -96,4 +96,8 @@ module CFEConstants
 
   # Number of days before assessment is considered stale and eligible for deletion
   STALE_ASSESSMENT_THRESHOLD_DAYS = 14
+
+  # Redactions
+  #   The value to persist when it is redacted
+  REDACTED_MESSAGE = "** REDACTED **".freeze
 end
