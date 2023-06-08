@@ -1,15 +1,15 @@
 FactoryBot.define do
   factory :partner do
     assessment
-    date_of_birth { Faker::Date.between(from: 18.years.ago, to: 59.years.ago) }
+    date_of_birth { Faker::Date.between(from: 18.years.ago, to: 49.years.ago) }
     employed { false }
 
     trait :over_pensionable_age do
-      date_of_birth { 61.years.ago.to_date }
+      date_of_birth { 71.years.ago.to_date }
     end
 
     trait :under_pensionable_age do
-      date_of_birth { 59.years.ago.to_date }
+      date_of_birth { 49.years.ago.to_date }
     end
 
     after(:create) do |partner|
