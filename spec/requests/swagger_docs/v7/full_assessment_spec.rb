@@ -93,7 +93,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         partner: {
                           type: :object,
                           description: "The partner of the applicant",
-                          required: %i[date_of_birth employed],
+                          required: %i[date_of_birth],
                           additionalProperties: false,
                           properties: {
                             date_of_birth: {
@@ -104,8 +104,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                             employed: {
                               type: :boolean,
-                              example: true,
-                              description: "Applicant's partner is employed",
+                              description: "Deprecated - employment is determined by presence of gross employment income",
+                              deprecated: true,
                             },
                           },
                         },

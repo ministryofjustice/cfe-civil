@@ -48,7 +48,7 @@ class EmploymentIncomeSubtotals
   end
 
   def in_work?
-    @self_employment_results.any? || (@employment_details_results + [@employment_result]).compact.map(&:employment).any?(&:actively_working?)
+    self_employment_details.sum(&:monthly_gross_income).positive? || (@employment_details_results + [@employment_result]).compact.map(&:employment).any?(&:actively_working?)
   end
 
 private
