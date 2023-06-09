@@ -6,6 +6,7 @@ Given("I am undertaking a certificated assessment") do
                       has_partner_opponent: false,
                       receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "SE003", client_involvement_type: "A" }] }
+  @employments = []
 end
 
 Given("An applicant who receives passporting benefits") do
@@ -28,6 +29,7 @@ Given("I am undertaking a controlled assessment") do
                       has_partner_opponent: false,
                       receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "DA001", client_involvement_type: "A" }] }
+  @employments = []
 end
 
 Given("A domestic abuse case") do
@@ -45,6 +47,7 @@ end
 Given("I am using version {int} of the API") do |int|
   @api_version = int
   @capitals_data = {}
+  @employments = []
 end
 
 Given("I create an assessment with the following details:") do |table|
@@ -102,9 +105,9 @@ Given("I add the following employment details for the partner:") do |table|
 end
 
 Given("I add the following employment details:") do |table|
-  @employments = [{ "name": "A",
+  @employments << { "name": "A",
                     "client_id": "B",
-                    "payments": table.hashes.map { cast_values(_1) } }]
+                    "payments": table.hashes.map { cast_values(_1) } }
   @applicant_data.merge! employed: true
 end
 
