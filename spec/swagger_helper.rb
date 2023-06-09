@@ -531,8 +531,7 @@ RSpec.configure do |config|
               },
               relationship: {
                 type: :string,
-                enum: Dependant.relationships.values,
-                example: Dependant.relationships.values.first,
+                enum: %i[child_relative adult_relative],
                 description: "Dependant's relationship to the applicant",
               },
               monthly_income: {

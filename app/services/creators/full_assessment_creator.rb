@@ -30,12 +30,6 @@ module Creators
                                           applicant_params: { applicant: params[:applicant] })
         },
         lambda { |assessment, params|
-          if params[:dependants]
-            Creators::DependantsCreator.call(dependants: assessment.client_dependants,
-                                             dependants_params: { dependants: params[:dependants] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:cash_transactions]
             Creators::CashTransactionsCreator.call(submission_date: assessment.submission_date,
                                                    gross_income_summary: assessment.applicant_gross_income_summary,

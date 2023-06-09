@@ -8,7 +8,7 @@ module Calculators
       let(:partner) { nil }
       let(:submission_date) { 1.year.ago }
 
-      subject(:calculated_result) { described_class.call(applicant:, partner:, dependants:, submission_date:) }
+      subject(:calculated_result) { described_class.call(applicants: [applicant, partner].compact, dependants:, submission_date:) }
 
       context "with no dependants, an employed applicant and no partner" do
         it "returns false" do

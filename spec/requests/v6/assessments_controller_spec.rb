@@ -230,7 +230,11 @@ module V6
       end
 
       context "with an dependant error" do
-        let(:params) { { dependants: {} } }
+        let(:params) do
+          { dependants: [
+            attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11"),
+          ] }
+        end
 
         it "returns error" do
           expect(response).to have_http_status(:unprocessable_entity)
@@ -238,7 +242,27 @@ module V6
 
         it "returns error JSON" do
           expect(parsed_response[:errors])
-            .to include(/The property '#\/dependants' of type object did not match the following type: array in schema/)
+            .to include(/Date of birth cannot be in the future/)
+        end
+      end
+
+      context "with a partner dependant error" do
+        let(:params) do
+          {
+            partner: { partner: attributes_for(:partner),
+                       dependants: [
+                         attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
+                       ] },
+          }
+        end
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors])
+            .to include(/Date of birth cannot be in the future/)
         end
       end
 

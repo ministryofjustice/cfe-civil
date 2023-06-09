@@ -11,7 +11,7 @@ module Collators
 
       subject(:collator) do
         described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
-                             person: OpenStruct.new(single?: true, dependants: assessment.client_dependants),
+                             person: instance_double(PersonWrapper, single?: true, dependants: []),
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              submission_date: assessment.submission_date,
                              allow_negative_net: false)

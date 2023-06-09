@@ -41,7 +41,6 @@ RSpec.describe CullStaleAssessmentsService do
   def create_assessment_and_associated_records
     create(:assessment).tap do |ass|
       create :applicant, assessment: ass
-      create_list :dependant, 2, assessment: ass
       create :partner, assessment: ass
       create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
       create :partner_capital_summary, :with_everything, assessment: ass
@@ -68,7 +67,6 @@ RSpec.describe CullStaleAssessmentsService do
       CapitalSummary,
       CashTransactionCategory,
       CashTransaction,
-      Dependant,
       DisposableIncomeSummary,
       Eligibility::Base,
       EmploymentPayment,

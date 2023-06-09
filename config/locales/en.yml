@@ -32,6 +32,13 @@
 
 en:
   hello: "Hello world"
+  activemodel:
+    errors:
+      models:
+        dependant:
+          attributes:
+            date_of_birth:
+              not_in_the_future: cannot be in the future
   activerecord:
     errors:
       models:

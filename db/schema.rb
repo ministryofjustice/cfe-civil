@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_25_105349) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_05_122445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -74,16 +74,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_25_105349) do
     t.decimal "amount"
     t.string "client_id"
     t.index ["cash_transaction_category_id"], name: "index_cash_transactions_on_cash_transaction_category_id"
-  end
-
-  create_table "dependants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.date "date_of_birth"
-    t.boolean "in_full_time_education"
-    t.string "relationship"
-    t.decimal "monthly_income"
-    t.decimal "assets_value"
-    t.string "type", default: "ApplicantDependant"
   end
 
   create_table "disposable_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

@@ -5,10 +5,7 @@ module Collators
     let(:submission_date) { Date.current }
 
     subject(:collator) do
-      described_class.call(dependants: dependants.map do |x|
-                                         DependantWrapper.new(dependant: x,
-                                                              submission_date:)
-                                       end,
+      described_class.call(dependants:,
                            submission_date:)
     end
 
@@ -22,9 +19,9 @@ module Collators
       end
 
       context "with dependants" do
-        let(:dependant1) { build :dependant, :under15, in_full_time_education: true }
-        let(:dependant2) { build :dependant, :over18, in_full_time_education: true }
-        let(:dependant3) { build :dependant, :aged16or17, in_full_time_education: true }
+        let(:dependant1) { build :dependant, :under15, in_full_time_education: true, submission_date: }
+        let(:dependant2) { build :dependant, :over18, in_full_time_education: true, submission_date: }
+        let(:dependant3) { build :dependant, :aged16or17, in_full_time_education: true, submission_date: }
         let(:dependants) { [dependant1, dependant2, dependant3] }
 
         it "returns the under_16s / over_16s grouped together" do

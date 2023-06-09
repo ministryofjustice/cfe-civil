@@ -12,7 +12,7 @@ module Creators
 
     subject(:creator) do
       described_class.call(assessment.applicant_gross_income_summary,
-                           assessment.client_dependants,
+                           dependants,
                            assessment.proceeding_types,
                            assessment.submission_date)
     end
@@ -21,6 +21,7 @@ module Creators
       let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
       let(:eligibilities) { assessment.applicant_gross_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
+      let(:dependants) { [] }
 
       it "creates a capital eligibility record for each proceeding type" do
         creator
@@ -37,6 +38,8 @@ module Creators
       end
 
       context "no dependants" do
+        let(:dependants) { [] }
+
         it "creates eligibility record with correct un-waived thresholds" do
           creator
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
@@ -47,9 +50,9 @@ module Creators
       end
 
       context "two children" do
-        before do
-          create_list(:dependant, 2, :child_relative, assessment:)
-          create_list(:dependant, 4, :adult_relative, assessment:)
+        let(:dependants) do
+          build_list(:dependant, 2, :child_relative, submission_date: assessment.submission_date) +
+            build_list(:dependant, 4, :adult_relative, submission_date: assessment.submission_date)
         end
 
         it "creates eligibility record with no dependant uplift on threshold" do
@@ -63,10 +66,7 @@ module Creators
 
       context "six children" do
         let(:expected_uplift) { 222 * 2 }
-
-        before do
-          create_list :dependant, 6, :child_relative, assessment:
-        end
+        let(:dependants) { build_list :dependant, 6, :child_relative, submission_date: assessment.submission_date }
 
         it "creates a record with the uplifted threshold" do
           creator

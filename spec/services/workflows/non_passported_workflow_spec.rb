@@ -8,7 +8,8 @@ module Workflows
              submission_date: Date.new(2022, 6, 7),
              applicant:, proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
     end
-    let(:person_blank) { PersonData.new(self_employments: [], vehicles: []) }
+    let(:person_blank) { PersonData.new(self_employments: [], vehicles: [], dependants: []) }
+    let(:person_applicant) { PersonData.new(self_employments: [], vehicles: [], dependants:) }
 
     before do
       assessment.proceeding_type_codes.each do |ptc|
@@ -25,7 +26,7 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: person_blank, partner: person_blank)
+        described_class.call(assessment:, applicant: person_applicant, partner: person_blank)
         Assessors::MainAssessor.call(assessment)
         assessment.assessment_result
       end
@@ -38,13 +39,14 @@ module Workflows
 
       context "with controlled work" do
         let(:level_of_help) { "controlled" }
+        let(:dependants) { [] }
 
         describe "self employed" do
           let(:applicant) { build :applicant }
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: PersonData.new(self_employments:, vehicles: []),
+                                 applicant: PersonData.new(self_employments:, vehicles: [], dependants: []),
                                  partner: person_blank).tap do
               Assessors::MainAssessor.call(assessment)
             end
@@ -187,6 +189,8 @@ module Workflows
         let(:self_employments) { [] }
 
         context "with capital" do
+          let(:dependants) { [] }
+
           before do
             create(:property, :additional_property, capital_summary: assessment.applicant_capital_summary,
                                                     value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)
@@ -232,12 +236,12 @@ module Workflows
 
           context "with childcare costs (and at least 1 dependent child)" do
             let(:salary) { 19_000 }
+            let(:dependants) { build_list(:dependant, 1, :under15, submission_date: assessment.submission_date) }
 
             before do
               create(:child_care_transaction_category,
                      gross_income_summary: assessment.applicant_gross_income_summary,
                      cash_transactions: build_list(:cash_transaction, 1, amount: 800))
-              create(:dependant, :under15, assessment:)
             end
 
             context "when employed" do
@@ -281,6 +285,7 @@ module Workflows
 
           context "with housing costs" do
             let(:employed) { true }
+            let(:dependants) { [] }
 
             before do
               create(:employment, :with_monthly_payments, assessment:,
@@ -308,6 +313,7 @@ module Workflows
 
           context "with employment" do
             let(:salary) { 15_000 }
+            let(:dependants) { [] }
 
             context "when unemployed" do
               let(:employed) { false }
