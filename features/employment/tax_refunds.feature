@@ -1,5 +1,9 @@
 Feature:
   "Tax Refunds"
+#  If there is a tax (or NI) refund on any given pay period supplied by HMRC to the Apply service
+#  CFE cannot complete the calculation in (1) because there are too many variables as to why a refund was paid.
+#  Therefore CFE simply should do a 'blunt average' and treat any tax/NI refunds as zero to achieve this.
+#  Then Apply refers the 'calculation problem' to an LAA caseworker to decide what to do
 
   Scenario: The client is employed, but received a tax refund during the calculation period
     Given I am using version 6 of the API
@@ -34,6 +38,13 @@ Feature:
       | employment_nic             | refunds          |
       | employment_gross_income    | amount_variation |
 
+#  When there are multiple employments, HMRC does not provide unique identifiers tying each pay period to a specific employment
+#  Therefore once again the calculation in (1) cannot be achieved but for a different reason/s.
+#  So once again - CFE gives up and refers to caseworker.
+#
+#  Note - Apply has to know how to handle tax/NI refunds and multiple employments with no unique pay period identifier as a
+#  consequence of the way HMRC data is returned.
+#
   Scenario: The client is employed, but has more than one job
     Given I am using version 6 of the API
     And I create an assessment with the following details:
