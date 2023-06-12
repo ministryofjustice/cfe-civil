@@ -594,8 +594,8 @@ module V6
                                                 is_employment: false,
                                                 gross: 934,
                                                 benefits_in_kind: 26,
-                                                tax: 527,
-                                                national_insurance: 34,
+                                                tax: -527,
+                                                national_insurance: -34,
                                                 frequency: "monthly",
                                               } }],
           }

@@ -69,8 +69,8 @@ module Workflows
       def convert_self_employments(self_employments)
         self_employments.map do |self_employment|
           monthly_gross_income = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.gross)
-          monthly_national_insurance = -Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.national_insurance)
-          monthly_tax = -Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.tax)
+          monthly_national_insurance = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.national_insurance)
+          monthly_tax = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.tax)
           monthly_benefits_in_kind = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.benefits_in_kind)
 
           EmploymentData.new(monthly_tax:,

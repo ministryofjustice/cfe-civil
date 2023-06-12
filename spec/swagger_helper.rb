@@ -226,12 +226,12 @@ RSpec.configure do |config|
                 },
                 tax: {
                   "$ref" => "#/components/schemas/currency",
-                  description: "Amount of tax paid - normally negative, but can be positive for a tax refund",
+                  description: "Amount of tax paid - normally negative, but can be positive for a refund",
                   example: -10.01,
                 },
                 national_insurance: {
                   "$ref" => "#/components/schemas/currency",
-                  description: "Amount of national insurance paid - normally negative, but can be positive for a tax refund",
+                  description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
                   example: -5.24,
                 },
                 net_employment_income: {
@@ -722,21 +722,27 @@ RSpec.configure do |config|
                     type: :number,
                     format: :decimal,
                     minimum: 0,
+                    description: "A positive number representing gross income payments",
+                    example: "2000.00",
                   },
                   benefits_in_kind: {
                     type: :number,
                     format: :decimal,
                     minimum: 0,
+                    description: "A positive number representing a benefit in kind payment",
+                    example: "100.00",
                   },
                   tax: {
                     type: :number,
                     format: :decimal,
-                    minimum: 0,
+                    description: "A negative number representing a tax deduction",
+                    example: "-250.20",
                   },
                   national_insurance: {
                     type: :number,
                     format: :decimal,
-                    minimum: 0,
+                    description: "A negative number representing a National Insurance deduction",
+                    example: "-150.20",
                   },
                 },
               },
@@ -751,7 +757,7 @@ RSpec.configure do |config|
               name: {
                 type: :string,
                 description: "Name of the state benefit",
-                example: "my_state_bnefit",
+                example: "my_state_benefit",
               },
               payments: {
                 type: :array,
@@ -874,7 +880,7 @@ RSpec.configure do |config|
                 format: :decimal,
               },
               total_mortgage_allowance: {
-                description: "Maxiumum mortgage allowance used in submission. Cases post-April 2020 will all be set to 999_999_999",
+                description: "Maximum mortgage allowance used in submission. Cases post-April 2020 will all be set to 999_999_999",
                 type: :number,
                 format: :decimal,
               },
@@ -902,8 +908,18 @@ RSpec.configure do |config|
                 properties: {
                   gross_income: { type: :number },
                   benefits_in_kind: { type: :number },
-                  tax: { type: :number },
-                  national_insurance: { type: :number },
+                  tax: {
+                    type: :number,
+                    format: :decimal,
+                    description: "A negative number representing a tax deduction",
+                    example: "-250.20",
+                  },
+                  national_insurance: {
+                    type: :number,
+                    format: :decimal,
+                    description: "A negative number representing a National Insurance deduction",
+                    example: "-150.20",
+                  },
                   fixed_employment_deduction: {
                     type: :number,
                     format: :decimal,

@@ -19,8 +19,8 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
       let(:monthly_equiv_payment_data) { Utilities::EmploymentIncomeMonthlyEquivalentCalculator::MonthlyEquivPaymentData }
       let(:payments) do
         [
-          monthly_equiv_payment_data.new(date: Date.yesterday, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 90, national_insurance_monthly_equiv: 10, tax_monthly_equiv: 20),
-          monthly_equiv_payment_data.new(date: Date.current, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 490, national_insurance_monthly_equiv: 20, tax_monthly_equiv: 50),
+          monthly_equiv_payment_data.new(date: Date.yesterday, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 90, national_insurance_monthly_equiv: -10, tax_monthly_equiv: -20),
+          monthly_equiv_payment_data.new(date: Date.current, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 490, national_insurance_monthly_equiv: -20, tax_monthly_equiv: -50),
         ]
       end
 
@@ -41,8 +41,8 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
             .to eq(
               monthly_gross_income: 490,
               monthly_benefits_in_kind: 10,
-              monthly_national_insurance: 20,
-              monthly_tax: 50,
+              monthly_national_insurance: -20,
+              monthly_tax: -50,
             )
         end
 
@@ -68,8 +68,8 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
           expect(described_class.call(employment, employment.assessment.submission_date, payments).values)
             .to eq(
               monthly_gross_income: 290,
-              monthly_national_insurance: 15,
-              monthly_tax: 35,
+              monthly_national_insurance: -15,
+              monthly_tax: -35,
               monthly_benefits_in_kind: 10,
             )
         end
