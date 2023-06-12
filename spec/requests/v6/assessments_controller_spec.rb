@@ -179,7 +179,6 @@ module V6
                 ],
               },
             ],
-
             properties: {
               main_home: {
                 value: 0.0,

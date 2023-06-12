@@ -75,7 +75,7 @@ class PersonCapitalSubtotals
     if main_home.present?
       PropertySubtotals.new(main_home)
     else
-      PropertySubtotals.new
+      PropertySubtotals.blank(main_home: true)
     end
   end
 
