@@ -3,40 +3,47 @@ class PersonCapitalSubtotals
   # This structure helps enforce that so that e.g. tests are updated when the structure changes
   class << self
     def blank
-      new(disputed_vehicles: [], non_disputed_vehicles: [], total_liquid: 0,
-          total_mortgage_allowance: 0.0, total_non_liquid: 0.0,
+      new(vehicles: [],
+          properties: [],
+          liquid_capital_items: [], non_liquid_capital_items: [],
+          total_mortgage_allowance: 0.0,
           disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
-          properties: [], disputed_non_property_disregard: 0.0, disputed_non_property_capital: 0.0, non_disputed_non_property_capital: 0.0)
+          maximum_smod_disregard: 0.0)
     end
   end
 
-  def initialize(disputed_vehicles:, non_disputed_vehicles:, total_liquid:,
-                 total_mortgage_allowance:, total_non_liquid:,
+  def initialize(vehicles:,
+                 properties:,
+                 liquid_capital_items:,
+                 non_liquid_capital_items:,
+                 total_mortgage_allowance:,
                  disputed_property_disregard:, pensioner_capital_disregard:,
-                 properties:, disputed_non_property_disregard:,
-                 disputed_non_property_capital:, non_disputed_non_property_capital:)
-    @disputed_vehicles = disputed_vehicles
-    @non_disputed_vehicles = non_disputed_vehicles
-    @total_liquid = total_liquid
+                 maximum_smod_disregard:)
+    @disputed_vehicles = vehicles.select { |v| v.vehicle.subject_matter_of_dispute }
+    @undisputed_vehicles = vehicles.reject { |v| v.vehicle.subject_matter_of_dispute }
     @total_mortgage_allowance = total_mortgage_allowance
-    @total_non_liquid = total_non_liquid
     @pensioner_capital_disregard = pensioner_capital_disregard
     @disputed_property_disregard = disputed_property_disregard
-    @disputed_non_property_disregard = disputed_non_property_disregard
     @properties = properties
-    @disputed_non_property_capital = disputed_non_property_capital
-    @non_disputed_non_property_capital = non_disputed_non_property_capital
+    @liquid_capital_items = liquid_capital_items
+    @non_liquid_capital_items = non_liquid_capital_items
+    @maximum_smod_disregard = maximum_smod_disregard
   end
 
-  attr_reader :total_liquid,
-              :total_mortgage_allowance,
-              :total_non_liquid,
+  attr_reader :total_mortgage_allowance,
               :pensioner_capital_disregard,
-              :disputed_non_property_disregard,
               :disputed_property_disregard
 
+  def total_liquid
+    @liquid_capital_items.map(&:result).sum(&:value)
+  end
+
+  def total_non_liquid
+    @non_liquid_capital_items.map(&:result).sum(&:value)
+  end
+
   def vehicles
-    @disputed_vehicles + @non_disputed_vehicles
+    @disputed_vehicles + @undisputed_vehicles
   end
 
   def total_vehicle
@@ -82,10 +89,42 @@ class PersonCapitalSubtotals
   end
 
   def total_non_disputed_capital
-    @properties.reject(&:subject_matter_of_dispute).sum(&:assessed_equity) + @non_disputed_non_property_capital
+    @properties.reject(&:subject_matter_of_dispute).sum(&:assessed_equity) +
+      undisputed_liquid_items.sum(&:value) +
+      undisputed_non_liquid_items.sum(&:value) +
+      @undisputed_vehicles.map(&:result).sum(&:assessed_value)
   end
 
   def total_disputed_capital
-    @properties.select(&:subject_matter_of_dispute).sum(&:assessed_equity) + @disputed_non_property_capital
+    @properties.select(&:subject_matter_of_dispute).sum(&:assessed_equity) +
+      disputed_liquid_items.sum(&:value) +
+      disputed_non_liquid_items.sum(&:value) +
+      @disputed_vehicles.map(&:result).sum(&:assessed_value) - disputed_non_property_disregard
+  end
+
+  def disputed_non_property_disregard
+    Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
+      disputed_capital_items: disputed_liquid_items + disputed_non_liquid_items,
+      disputed_vehicles: @disputed_vehicles.map(&:result),
+      maximum_disregard: @maximum_smod_disregard,
+    )
+  end
+
+private
+
+  def disputed_liquid_items
+    @liquid_capital_items.select { |c| c.capital_item.subject_matter_of_dispute }.map(&:result)
+  end
+
+  def undisputed_liquid_items
+    @liquid_capital_items.reject { |c| c.capital_item.subject_matter_of_dispute }.map(&:result)
+  end
+
+  def disputed_non_liquid_items
+    @non_liquid_capital_items.select { |c| c.capital_item.subject_matter_of_dispute }.map(&:result)
+  end
+
+  def undisputed_non_liquid_items
+    @non_liquid_capital_items.reject { |c| c.capital_item.subject_matter_of_dispute }.map(&:result)
   end
 end
