@@ -5,12 +5,12 @@ module Workflows
         gross_income_subtotals = collate_and_assess_gross_income(assessment:,
                                                                  self_employments: applicant.self_employments,
                                                                  partner_self_employments: partner&.self_employments || [])
-        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: dummy_capital_subtotals(applicant:, partner:)) if assessment.applicant_gross_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_income_subtotals = disposable_income_assessment(assessment:, gross_income_subtotals:,
                                                                    dependants: applicant.dependants,
                                                                    partner_dependants: partner&.dependants || [])
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: dummy_capital_subtotals(applicant:, partner:)) if assessment.applicant_disposable_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_disposable_income_summary.ineligible?
 
         capital_subtotals = collate_and_assess_capital(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner&.vehicles || [])
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
@@ -227,29 +227,6 @@ module Workflows
 
       def partner_allowance(submission_date)
         Threshold.value_for(:partner_allowance, at: submission_date)
-      end
-
-      def vehicles(vehicles, disputed: true)
-        (disputed ? vehicles.select(&:subject_matter_of_dispute) : vehicles.reject(&:subject_matter_of_dispute)).map do |vehicle|
-          Assessors::VehicleAssessor::VehicleData.new(vehicle:, result: Assessors::VehicleAssessor::Result.new(assessed_value: 0, included_in_assessment: false))
-        end
-      end
-
-      def person_capital_subtotals(person)
-        person_vehicles = person&.vehicles || []
-        PersonCapitalSubtotals.new(disputed_vehicles: vehicles(person_vehicles, disputed: true), non_disputed_vehicles: vehicles(person_vehicles, disputed: false), total_liquid: 0,
-                                   total_mortgage_allowance: 0.0, total_non_liquid: 0.0,
-                                   disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
-                                   properties: [], disputed_non_property_disregard: 0.0, disputed_non_property_capital: 0.0, non_disputed_non_property_capital: 0.0)
-      end
-
-      def dummy_capital_subtotals(applicant:, partner:)
-        CapitalSubtotals.new(
-          applicant_capital_subtotals: person_capital_subtotals(applicant),
-          partner_capital_subtotals: person_capital_subtotals(partner),
-          capital_contribution: 0,
-          combined_assessed_capital: 0,
-        )
       end
     end
   end
