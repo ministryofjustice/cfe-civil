@@ -14,7 +14,7 @@ module Workflows
     let(:applicant_capital_summary) { assessment.applicant_capital_summary }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:capital_data) do
-      PersonCapitalSubtotals.blank
+      PersonCapitalSubtotals.unassessed(vehicles: [])
     end
 
     describe ".call" do

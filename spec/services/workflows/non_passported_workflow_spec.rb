@@ -13,15 +13,69 @@ module Workflows
 
     before do
       assessment.proceeding_type_codes.each do |ptc|
-        create :gross_income_eligibility, gross_income_summary: assessment.applicant_gross_income_summary, proceeding_type_code: ptc
+        create :gross_income_eligibility, gross_income_summary: assessment.applicant_gross_income_summary, upper_threshold: gross_income_upper_threshold, proceeding_type_code: ptc
         create :disposable_income_eligibility, disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                               upper_threshold: disposable_income_upper_threshold,
                                                lower_threshold: 500,
                                                proceeding_type_code: ptc
       end
       Creators::CapitalEligibilityCreator.call(assessment)
     end
 
+    context "vehicle collection output", :calls_bank_holiday do
+      let(:disposable_income_upper_threshold) { 5000 }
+      let(:applicant) { build :applicant }
+      let(:proceeding_types) { %w[SE003] }
+      let(:level_of_help) { "certificated" }
+      let(:self_employments) do
+        [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
+                                                         national_insurance: 150, gross: 2900, frequency: "monthly"))]
+      end
+      let(:person_applicant) { PersonData.new(self_employments: [], vehicles: build_list(:vehicle, 1), dependants: []) }
+      let(:partner_applicant) { person_applicant }
+
+      subject(:calculation_output) do
+        assessment.reload
+        described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant).tap do
+          Assessors::MainAssessor.call(assessment)
+        end
+      end
+
+      before do
+        create(:partner, assessment:)
+        create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: 4000)
+        assessment.proceeding_type_codes.each do |ptc|
+          create(:assessment_eligibility, assessment:, proceeding_type_code: ptc)
+        end
+      end
+
+      context "with gross income exceeded" do
+        let(:gross_income_upper_threshold) { 2000 }
+
+        it "contains vehicles" do
+          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
+          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).first).to have_attributes(assessed_value: 0, included_in_assessment: false)
+
+          expect(calculation_output.capital_subtotals.partner_capital_subtotals.vehicles.map(&:result).size).to eq(1)
+        end
+      end
+
+      context "with disposable income exceeded" do
+        let(:gross_income_upper_threshold) { 5000 }
+        let(:disposable_income_upper_threshold) { 2000 }
+
+        it "contains vehicles" do
+          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
+          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).first).to have_attributes(assessed_value: 0, included_in_assessment: false)
+
+          expect(calculation_output.capital_subtotals.partner_capital_subtotals.vehicles.map(&:result).size).to eq(1)
+        end
+      end
+    end
+
     describe "#call", :calls_bank_holiday do
+      let(:gross_income_upper_threshold) { 9_999_999_999 }
+      let(:disposable_income_upper_threshold) { 9_999_999_999 }
       let(:proceeding_types) { %w[SE003] }
 
       subject(:assessment_result) do
