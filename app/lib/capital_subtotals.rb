@@ -1,17 +1,18 @@
 class CapitalSubtotals
   class << self
-    def unassessed(applicant:, partner:, submission_date:)
+    def unassessed(applicant:, partner:)
       new(
-        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: assessed_vehicles(applicant, submission_date)),
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: assessed_vehicles(partner, submission_date)),
+        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant)),
+        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(partner)),
         capital_contribution: 0,
         combined_assessed_capital: 0,
       )
     end
 
-    def assessed_vehicles(person, submission_date)
-      vehicles = person&.vehicles || []
-      Assessors::VehicleAssessor.call(vehicles, submission_date)
+    def unassessed_vehicles(person)
+      (person&.vehicles || []).map do |vehicle|
+        Assessors::VehicleAssessor::VehicleData.new(vehicle:, result: Assessors::VehicleAssessor::Result.new(assessed_value: 0, included_in_assessment: false))
+      end
     end
   end
 
