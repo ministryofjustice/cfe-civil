@@ -214,7 +214,7 @@ module V6
         end
 
         it "creates a log record" do
-          expect(RequestLog.last)
+          expect(log_record)
             .to have_attributes(created_at: Time.zone.today,
                                 http_status: 422,
                                 request: {
@@ -420,6 +420,52 @@ module V6
                 ],
               },
           }
+        end
+
+        it "redacts the client ids in the log" do
+          expect(log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes, :dependants))
+            .to eq(
+              {
+                cash_transactions: {
+                  income: [{ category: "maintenance_in",
+                             payments: [{ date: "2022-04-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                        { date: "2022-05-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                        { date: "2022-03-01", amount: 1033.44, client_id: "** REDACTED **" }] },
+                           { category: "friends_or_family",
+                             payments: [{ date: "2022-04-01", amount: 250.0, client_id: "** REDACTED **" },
+                                        { date: "2022-05-01", amount: 250.0, client_id: "** REDACTED **" },
+                                        { date: "2022-03-01", amount: 250.0, client_id: "** REDACTED **" }] },
+                           { category: "benefits",
+                             payments: [{ date: "2022-04-01", amount: 65.12, client_id: "** REDACTED **" },
+                                        { date: "2022-05-01", amount: 65.12, client_id: "** REDACTED **" },
+                                        { date: "2022-03-01", amount: 65.12, client_id: "** REDACTED **" }] },
+                           { category: "property_or_lodger",
+                             payments: [{ date: "2022-04-01", amount: 91.87, client_id: "** REDACTED **" },
+                                        { date: "2022-05-01", amount: 91.87, client_id: "** REDACTED **" },
+                                        { date: "2022-03-01", amount: 91.87, client_id: "** REDACTED **" }] },
+                           { category: "pension",
+                             payments: [{ date: "2022-04-01", amount: 34.12, client_id: "** REDACTED **" },
+                                        { date: "2022-05-01", amount: 34.12, client_id: "** REDACTED **" },
+                                        { date: "2022-03-01", amount: 34.12, client_id: "** REDACTED **" }] }],
+                  outgoings: [{ category: "maintenance_out",
+                                payments: [{ date: "2022-04-01", amount: 256.0, client_id: "** REDACTED **" },
+                                           { date: "2022-05-01", amount: 256.0, client_id: "** REDACTED **" },
+                                           { date: "2022-03-01", amount: 256.0, client_id: "** REDACTED **" }] },
+                              { category: "child_care",
+                                payments: [{ date: "2022-04-01", amount: 257.0, client_id: "** REDACTED **" },
+                                           { date: "2022-05-01", amount: 257.0, client_id: "** REDACTED **" },
+                                           { date: "2022-03-01", amount: 257.0, client_id: "** REDACTED **" }] },
+                              { category: "legal_aid",
+                                payments: [{ date: "2022-04-01", amount: 44.54, client_id: "** REDACTED **" },
+                                           { date: "2022-05-01", amount: 44.54, client_id: "** REDACTED **" },
+                                           { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] },
+                              { category: "rent_or_mortgage",
+                                payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **" },
+                                           { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **" },
+                                           { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **" }] }],
+                },
+              },
+            )
         end
 
         it "has other_income" do
@@ -818,15 +864,105 @@ module V6
           expect(response).to have_http_status(:success)
         end
 
-        it "logs redacted DOBs" do
-          expect(log_record.request["partner"].deep_symbolize_keys.except(:irregular_incomes, :employments, :outgoings, :capitals, :vehicles,
-                                                                          :regular_transactions, :state_benefits, :additional_properties))
-            .to eq(
-              { partner: { date_of_birth: "1987-06-06", employed: true },
-                dependants: [{ date_of_birth: "2014-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                             { date_of_birth: "2013-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                             { date_of_birth: "2004-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }] },
-            )
+        describe "redacted logs" do
+          let(:partner_log) do
+            log_record.request["partner"].deep_symbolize_keys.except(:irregular_incomes, :employments, :capitals, :vehicles,
+                                                                     :regular_transactions, :additional_properties)
+          end
+          let(:redacted_log) do
+            log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes,
+                                                          :regular_transactions,
+                                                          :properties, :vehicles, :dependants, :partner)
+          end
+
+          it "logs redacted partner dob" do
+            expect(partner_log.fetch(:partner))
+              .to eq(
+                { date_of_birth: "1987-06-06", employed: true },
+              )
+          end
+
+          it "logs redacted dependants dob" do
+            expect(partner_log.fetch(:dependants))
+              .to eq(
+                [{ date_of_birth: "2014-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: "2013-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: "2004-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }],
+              )
+          end
+
+          it "redacts partner state benefits client ids" do
+            expect(partner_log.fetch(:state_benefits).map { |sb| sb.fetch(:payments) })
+              .to eq(
+                [
+                  [{ date: "2022-11-01", amount: 1033.44, client_id: "** REDACTED **" },
+                   { date: "2022-10-01", amount: 1033.44, client_id: "** REDACTED **" },
+                   { date: "2022-09-01", amount: 1033.44, client_id: "** REDACTED **" }],
+                  [{ date: "2022-11-01", amount: 266.02, client_id: "** REDACTED **" },
+                   { date: "2022-10-01", amount: 266.02, client_id: "** REDACTED **" },
+                   { date: "2022-09-01", amount: 266.02, client_id: "** REDACTED **" }],
+                ],
+              )
+          end
+
+          it "logs redacted" do
+            expect(partner_log.except(:partner, :dependants, :state_benefits))
+              .to eq(
+                {
+                  outgoings: [{ name: "child_care", payments: [{ payment_date: "2022-05-15", amount: 29.12, client_id: "** REDACTED **" }] },
+                              { name: "legal_aid", payments: [{ payment_date: "2022-05-15", amount: 19.87, client_id: "** REDACTED **" }] },
+                              { name: "maintenance_out",
+                                payments: [{ amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-10-15" },
+                                           { amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-11-15" },
+                                           { amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-12-15" }] },
+                              { name: "rent_or_mortgage", payments: [{ payment_date: "2022-05-15", amount: 351.49, housing_cost_type: "rent", client_id: "** REDACTED **" }] }],
+                },
+              )
+          end
+
+          it "redacts state benefits client ids" do
+            expect(redacted_log.fetch(:state_benefits).map { |sb| sb.fetch(:payments) })
+              .to eq(
+                [
+                  [{ date: "2022-11-01", amount: 1033.44, client_id: "** REDACTED **" },
+                   { date: "2022-10-01", amount: 1033.44, client_id: "** REDACTED **" },
+                   { date: "2022-09-01", amount: 1033.44, client_id: "** REDACTED **" }],
+                  [{ date: "2022-11-01", amount: 266.02, client_id: "** REDACTED **" },
+                   { date: "2022-10-01", amount: 266.02, client_id: "** REDACTED **" },
+                   { date: "2022-09-01", amount: 266.02, client_id: "** REDACTED **" }],
+                ],
+              )
+          end
+
+          it "redacts the client ids in the log" do
+            expect(redacted_log.except(:state_benefits))
+              .to eq(
+                {
+                  other_incomes: [
+                    { source: "maintenance_in",
+                      payments: [{ date: "2022-11-01", amount: 1046.44, client_id: "** REDACTED **" },
+                                 { date: "2022-10-01", amount: 1046.44, client_id: "** REDACTED **" },
+                                 { date: "2022-09-01", amount: 1046.44, client_id: "** REDACTED **" }] },
+                    { source: "friends_or_family",
+                      payments: [{ date: "2022-11-01", amount: 250.0, client_id: "** REDACTED **" },
+                                 { date: "2022-10-01", amount: 266.02, client_id: "** REDACTED **" },
+                                 { date: "2022-09-01", amount: 250.0, client_id: "** REDACTED **" }] },
+                  ],
+                  outgoings: [
+                    { name: "child_care", payments: [{ payment_date: "2022-05-15", amount: 29.12, client_id: "** REDACTED **" }] },
+                    { name: "legal_aid", payments: [{ payment_date: "2022-05-15", amount: 19.87, client_id: "** REDACTED **" }] },
+                    { name: "maintenance_out",
+                      payments: [{ amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-10-15" },
+                                 { amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-11-15" },
+                                 { amount: 333.07, client_id: "** REDACTED **", payment_date: "2022-12-15" }] },
+                    { name: "rent_or_mortgage",
+                      payments: [
+                        { payment_date: "2022-05-15", amount: 351.49, housing_cost_type: "rent", client_id: "** REDACTED **" },
+                      ] },
+                  ],
+                },
+              )
+          end
         end
 
         it "contains JSON version and success" do
