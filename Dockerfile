@@ -1,3 +1,6 @@
+#
+# Build stage: Gem compilation
+#
 FROM ruby:3.2.2-alpine3.17 as builder
 
 ENV RAILS_ENV production
@@ -11,9 +14,17 @@ COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 
 RUN gem update --system
-RUN bundle config --local without test:development && bundle install
+# Gems installed (includes compilation)
+RUN bundle config --local without test:development && \
+    bundle install && \
+    # remove gem cache
+    rm -rf /usr/local/bundle/cache && \
+    # fix permissions for security - the 'os' gem was found to be world writable
+    chmod -R o-w /usr/local/bundle
 
-
+#
+# Build stage: Assemble final image
+#
 FROM ruby:3.2.2-alpine3.17
 RUN apk --no-cache add postgresql-client
 
