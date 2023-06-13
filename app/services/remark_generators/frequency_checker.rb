@@ -2,8 +2,8 @@ module RemarkGenerators
   class FrequencyChecker < BaseChecker
     include Exemptable
 
-    def self.call(assessment, collection, date_attribute = :payment_date)
-      new(assessment, collection).call(date_attribute) unless collection.empty?
+    def self.call(disposable_income_summary, collection, date_attribute = :payment_date)
+      new(disposable_income_summary, collection).call(date_attribute) unless collection.empty?
     end
 
     def call(date_attribute = :payment_date)
@@ -22,9 +22,7 @@ module RemarkGenerators
     end
 
     def populate_remarks
-      my_remarks = @assessment.remarks
-      my_remarks.add(record_type, :unknown_frequency, @collection.map(&:client_id))
-      @assessment.update!(remarks: my_remarks)
+      RemarksData.new(type: record_type, issue: :unknown_frequency, ids: @collection.map(&:client_id))
     end
   end
 end

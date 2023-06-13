@@ -13,9 +13,7 @@ module RemarkGenerators
     end
 
     def populate_remarks
-      my_remarks = @assessment.remarks
-      my_remarks.add(record_type, :amount_variation, @collection.map(&:client_id))
-      @assessment.update!(remarks: my_remarks)
+      RemarksData.new(record_type, :amount_variation, @collection.map(&:client_id))
     end
   end
 end

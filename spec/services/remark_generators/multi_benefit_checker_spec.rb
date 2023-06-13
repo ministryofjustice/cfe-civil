@@ -8,7 +8,6 @@ module RemarkGenerators
       let(:state_benefit) { create :state_benefit }
       let(:assessment) { state_benefit.gross_income_summary.assessment }
       let(:collection) { [payment1, payment2, payment3] }
-      let!(:original_remarks) { assessment.remarks.as_json }
 
       subject(:checker) { described_class.call(assessment, collection) }
 
@@ -18,8 +17,7 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[2] }
 
         it "does not update the remarks class" do
-          checker
-          expect(assessment.reload.remarks.as_json).to eq original_remarks
+          expect(checker).to be_nil
         end
       end
 
@@ -29,13 +27,7 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, :with_multi_benefit_flag, state_benefit:, amount:, payment_date: dates[2] }
 
         it "adds the remark" do
-          expect_any_instance_of(Remarks).to receive(:add).with(:state_benefit_payment, :multi_benefit, collection.map(&:client_id))
-          checker
-        end
-
-        it "stores the changed the remarks class on the assessment" do
-          checker
-          expect(assessment.reload.remarks.as_json).not_to eq original_remarks
+          expect(checker).to eq(RemarksData.new(type: :state_benefit_payment, issue: :multi_benefit, ids: collection.map(&:client_id)))
         end
       end
     end

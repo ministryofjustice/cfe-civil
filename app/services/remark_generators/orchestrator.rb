@@ -1,78 +1,64 @@
 module RemarkGenerators
   class Orchestrator
-    attr_reader :assessment
-
-    delegate :state_benefit_payments, to: :state_benefits
-
-    def self.call(assessment, assessed_capital)
-      new(assessment, assessed_capital).call
-    end
-
-    def initialize(assessment, assessed_capital)
-      @assessment = assessment
-      @assessed_capital = assessed_capital
-    end
-
-    def call
-      check_amount_variations
-      check_frequencies
-      check_residual_balances
-      check_flags
-    end
-
-  private
-
-    def check_amount_variations
-      check_state_benefit_variations
-      check_other_income_variaions
-      check_outgoings_variation
-    end
-
-    def check_state_benefit_variations
-      state_benefits.each { |sb| AmountVariationChecker.call(@assessment, sb.state_benefit_payments) }
-    end
-
-    def check_other_income_variaions
-      other_income_sources.each { |oi| AmountVariationChecker.call(@assessment, oi.other_income_payments) }
-    end
-
-    def check_outgoings_variation
-      assessment.applicant_disposable_income_summary.outgoings.group_by(&:type).each do |_type, collection|
-        AmountVariationChecker.call(@assessment, collection)
+    class << self
+      def call(assessment:, employments:, disposable_income_summary:, gross_income_summary:, capital_summary:, assessed_capital:, lower_capital_threshold:)
+        my_remarks = assessment.remarks
+        remarks(assessed_capital:, employments:, disposable_income_summary:,
+                lower_capital_threshold:,
+                other_income_sources: gross_income_summary.other_income_sources,
+                state_benefits: gross_income_summary.state_benefits, capital_summary:).each do |remark|
+          my_remarks.add(remark.type, remark.issue, remark.ids)
+        end
+        assessment.update!(remarks: my_remarks)
       end
-    end
 
-    def check_frequencies
-      state_benefits.each { |sb| FrequencyChecker.call(@assessment, sb.state_benefit_payments) }
-      other_income_sources.each { |oi| FrequencyChecker.call(@assessment, oi.other_income_payments) }
-      outgoings.group_by(&:type).each do |_type, collection|
-        FrequencyChecker.call(@assessment, collection)
+    private
+
+      def remarks(disposable_income_summary:, employments:, state_benefits:, other_income_sources:, capital_summary:,
+                  assessed_capital:, lower_capital_threshold:)
+        check_amount_variations(state_benefits:,
+                                other_income_sources:,
+                                disposable_income_summary:) +
+          check_frequencies(employments:,
+                            other_income_sources:,
+                            state_benefits:,
+                            disposable_income_summary:) +
+          check_residual_balances(capital_summary, assessed_capital, lower_capital_threshold) +
+          check_flags(state_benefits, disposable_income_summary)
       end
-      assessment.employments.each do |job|
-        FrequencyChecker.call(@assessment, job.employment_payments, :date)
+
+      def check_amount_variations(state_benefits:, other_income_sources:, disposable_income_summary:)
+        check_state_benefit_variations(state_benefits, disposable_income_summary) +
+          check_other_income_variations(other_income_sources, disposable_income_summary) +
+          check_outgoings_variation(disposable_income_summary)
       end
-    end
 
-    def check_residual_balances
-      ResidualBalanceChecker.call(@assessment, @assessed_capital)
-    end
+      def check_state_benefit_variations(state_benefits, disposable_income_summary)
+        state_benefits.map { |sb| AmountVariationChecker.call(disposable_income_summary, sb.state_benefit_payments) }.compact
+      end
 
-    def check_flags
-      state_benefits.each { |sb| MultiBenefitChecker.call(@assessment, sb.state_benefit_payments) }
-    end
+      def check_other_income_variations(other_income_sources, disposable_income_summary)
+        other_income_sources.map { |oi| AmountVariationChecker.call(disposable_income_summary, oi.other_income_payments) }.compact
+      end
 
-    # These 3 methods are both possible sources of (minor) defects
-    # because we're not passing gross_income_summary or disposable_income_summary
-    def state_benefits
-      assessment.applicant_gross_income_summary.state_benefits
-    end
+      def check_outgoings_variation(disposable_income_summary)
+        disposable_income_summary.outgoings.group_by(&:type).values.flat_map { |collection| AmountVariationChecker.call(disposable_income_summary, collection) }.compact
+      end
 
-    def other_income_sources
-      assessment.applicant_gross_income_summary.other_income_sources
-    end
+      def check_frequencies(employments:, state_benefits:, disposable_income_summary:, other_income_sources:)
+        state_benefits.map { |sb| FrequencyChecker.call(disposable_income_summary, sb.state_benefit_payments) }.compact +
+          other_income_sources.map { |oi| FrequencyChecker.call(disposable_income_summary, oi.other_income_payments) }.compact +
+          disposable_income_summary.outgoings.group_by(&:type).values.flat_map { |collection| FrequencyChecker.call(disposable_income_summary, collection) }.compact +
+          employments.map { |job| FrequencyChecker.call(disposable_income_summary, job.employment_payments, :date) }.compact
+      end
 
-    def outgoings
-      assessment.applicant_disposable_income_summary.outgoings
+      def check_residual_balances(capital_summary, assessed_capital, lower_capital_threshold)
+        [ResidualBalanceChecker.call(capital_summary, assessed_capital, lower_capital_threshold)].compact
+      end
+
+      def check_flags(state_benefits, disposable_income_summary)
+        state_benefits.map { |sb| MultiBenefitChecker.call(disposable_income_summary, sb.state_benefit_payments) }.compact
+      end
     end
   end
 end

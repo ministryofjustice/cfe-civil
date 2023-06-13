@@ -23,7 +23,7 @@ module Workflows
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
         expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
       end
 
       context "for immigration/asylum proceeding types" do
@@ -33,7 +33,7 @@ module Workflows
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
           expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-          MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+          MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
         end
       end
     end
@@ -42,7 +42,7 @@ module Workflows
       let(:applicant) { create :applicant, :with_qualifying_benefits }
 
       subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
       end
 
       it "calls PassportedWorkflow" do
@@ -62,7 +62,7 @@ module Workflows
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
       end
 
       it "calls NonPassportedWorkflow" do
@@ -85,6 +85,7 @@ module Workflows
                :with_capital_summary,
                :with_gross_income_summary,
                :with_disposable_income_summary,
+               :with_eligibilities,
                proceedings: proceedings_hash,
                version: "6",
                applicant:
@@ -92,7 +93,7 @@ module Workflows
       let(:applicant) { create :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: person_blank)
+        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
       end
 
       context "with proceeding types" do
@@ -102,7 +103,12 @@ module Workflows
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+                                                                       lower_capital_threshold: 3000,
+                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                       capital_summary: assessment.applicant_capital_summary,
+                                                                       assessed_capital: 0)
 
           workflow_call
         end
@@ -113,7 +119,12 @@ module Workflows
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment, 0)
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+                                                                       lower_capital_threshold: 3000,
+                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                       capital_summary: assessment.applicant_capital_summary,
+                                                                       assessed_capital: 0)
 
           workflow_call
         end

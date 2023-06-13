@@ -11,9 +11,7 @@ module RemarkGenerators
     end
 
     def populate_remarks
-      my_remarks = @assessment.remarks
-      my_remarks.add(record_type, :multi_benefit, @collection.map(&:client_id))
-      @assessment.update!(remarks: my_remarks)
+      RemarksData.new(type: record_type, issue: :multi_benefit, ids: @collection.map(&:client_id))
     end
   end
 end

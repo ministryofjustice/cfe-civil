@@ -1100,7 +1100,7 @@ module V6
 
             it "has outgoings_housing_cost" do
               expect(remarks.fetch(:outgoings_housing_cost)).to eq(
-                { unknown_frequency: ["hc-r-1"] },
+                { unknown_frequency: ["hc-r-1", "hc-r-1"] },
               )
             end
           end

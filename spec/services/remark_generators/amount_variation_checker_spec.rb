@@ -15,9 +15,7 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[2] }
 
         it "does not update the remarks class" do
-          original_remarks = assessment.remarks.as_json
-          described_class.call(assessment, collection)
-          expect(assessment.reload.remarks.as_json).to eq original_remarks
+          expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
         end
       end
 
@@ -27,14 +25,9 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, state_benefit:, amount: amount - 0.02, payment_date: dates[2] }
 
         it "adds the remark" do
-          expect_any_instance_of(Remarks).to receive(:add).with(:state_benefit_payment, :amount_variation, collection.map(&:client_id))
-          described_class.call(assessment, collection)
-        end
-
-        it "stores the changed the remarks class on the assessment" do
-          original_remarks = assessment.remarks.as_json
-          described_class.call(assessment, collection)
-          expect(assessment.reload.remarks.as_json).not_to eq original_remarks
+          expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+            .to eq(RemarksData.new(type: :state_benefit_payment,
+                                   issue: :amount_variation, ids: collection.map(&:client_id)))
         end
       end
     end
@@ -55,9 +48,7 @@ module RemarkGenerators
         end
 
         it "does not update the remarks class" do
-          original_remarks = assessment.remarks.as_json
-          described_class.call(assessment, collection)
-          expect(assessment.reload.remarks.as_json).to eq original_remarks
+          expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
         end
       end
 
@@ -71,14 +62,9 @@ module RemarkGenerators
         end
 
         it "adds the remark" do
-          expect_any_instance_of(Remarks).to receive(:add).with(:outgoings_housing_cost, :amount_variation, collection.map(&:client_id))
-          described_class.call(assessment, collection)
-        end
-
-        it "stores the changed the remarks class on the assessment" do
-          original_remarks = assessment.remarks.as_json
-          described_class.call(assessment, collection)
-          expect(assessment.reload.remarks.as_json).not_to eq original_remarks
+          expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+            .to eq(RemarksData.new(type: :outgoings_housing_cost,
+                                   issue: :amount_variation, ids: collection.map(&:client_id)))
         end
       end
 
@@ -95,22 +81,15 @@ module RemarkGenerators
           before { disposable_income_summary.update!(child_care_bank: 1) }
 
           it "adds the remark" do
-            expect_any_instance_of(Remarks).to receive(:add).with(:outgoings_childcare, :amount_variation, collection.map(&:client_id))
-            described_class.call(assessment, collection)
-          end
-
-          it "stores the changed the remarks class on the assessment" do
-            original_remarks = assessment.remarks.as_json
-            described_class.call(assessment, collection)
-            expect(assessment.reload.remarks.as_json).not_to eq original_remarks
+            expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+              .to eq(RemarksData.new(type: :outgoings_childcare,
+                                     issue: :amount_variation, ids: collection.map(&:client_id)))
           end
         end
 
         context "if the childcare costs are not allowed as an outgoing" do
           it "does not update the remarks class" do
-            original_remarks = assessment.remarks.as_json
-            described_class.call(assessment, collection)
-            expect(assessment.reload.remarks.as_json).to eq original_remarks
+            expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
           end
         end
       end
