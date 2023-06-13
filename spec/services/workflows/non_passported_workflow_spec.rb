@@ -22,7 +22,7 @@ module Workflows
       Creators::CapitalEligibilityCreator.call(assessment)
     end
 
-    context "shortcircuit with vehicles", :calls_bank_holiday do
+    context "vehicle collection output", :calls_bank_holiday do
       let(:disposable_income_upper_threshold) { 5000 }
       let(:applicant) { build :applicant }
       let(:proceeding_types) { %w[SE003] }
