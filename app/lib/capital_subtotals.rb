@@ -9,8 +9,8 @@ class CapitalSubtotals
 
     def unassessed(applicant:, partner:)
       new(
-        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(applicant, disputed: true), non_disputed_vehicles: unassessed_vehicles(applicant, disputed: false), properties: []),
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(partner, disputed: true), non_disputed_vehicles: unassessed_vehicles(partner, disputed: false), properties: []),
+        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(applicant, disputed: true), non_disputed_vehicles: unassessed_vehicles(applicant, disputed: false)),
+        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(partner, disputed: true), non_disputed_vehicles: unassessed_vehicles(partner, disputed: false)),
         capital_contribution: 0,
         combined_assessed_capital: 0,
       )
