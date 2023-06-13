@@ -2,20 +2,13 @@ class PersonCapitalSubtotals
   # This (and other similar classes) has 2 use cases: (a) fully-populated and (b) blank
   # This structure helps enforce that so that e.g. tests are updated when the structure changes
   class << self
-    def blank
-      new(vehicles: [],
+    def unassessed(vehicles:)
+      new(vehicles:,
           properties: [],
           liquid_capital_items: [], non_liquid_capital_items: [],
           total_mortgage_allowance: 0.0,
           disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
           maximum_smod_disregard: 0.0)
-    end
-
-    def unassessed(disputed_vehicles:, non_disputed_vehicles:)
-      new(disputed_vehicles:, non_disputed_vehicles:, total_liquid: 0,
-          total_mortgage_allowance: 0.0, total_non_liquid: 0.0,
-          disputed_property_disregard: 0.0, pensioner_capital_disregard: 0.0,
-          properties: [], disputed_non_property_disregard: 0.0, disputed_non_property_capital: 0.0, non_disputed_non_property_capital: 0.0)
     end
   end
 

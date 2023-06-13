@@ -5,12 +5,12 @@ module Workflows
         gross_income_subtotals = collate_and_assess_gross_income(assessment:,
                                                                  self_employments: applicant.self_employments,
                                                                  partner_self_employments: partner&.self_employments || [])
-        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_gross_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:, submission_date: assessment.submission_date)) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_income_subtotals = disposable_income_assessment(assessment:, gross_income_subtotals:,
                                                                    dependants: applicant.dependants,
                                                                    partner_dependants: partner&.dependants || [])
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_disposable_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:, submission_date: assessment.submission_date)) if assessment.applicant_disposable_income_summary.ineligible?
 
         capital_subtotals = collate_and_assess_capital(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner&.vehicles || [])
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)

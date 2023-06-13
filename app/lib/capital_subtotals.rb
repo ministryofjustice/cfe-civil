@@ -1,26 +1,17 @@
 class CapitalSubtotals
   class << self
-    def blank
-      new(applicant_capital_subtotals: PersonCapitalSubtotals.blank,
-          partner_capital_subtotals: PersonCapitalSubtotals.blank,
-          capital_contribution: 0,
-          combined_assessed_capital: 0)
-    end
-
-    def unassessed(applicant:, partner:)
+    def unassessed(applicant:, partner:, submission_date:)
       new(
-        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(applicant, disputed: true), non_disputed_vehicles: unassessed_vehicles(applicant, disputed: false)),
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(disputed_vehicles: unassessed_vehicles(partner, disputed: true), non_disputed_vehicles: unassessed_vehicles(partner, disputed: false)),
+        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: assessed_vehicles(applicant, submission_date)),
+        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: assessed_vehicles(partner, submission_date)),
         capital_contribution: 0,
         combined_assessed_capital: 0,
       )
     end
 
-    def unassessed_vehicles(person, disputed: true)
+    def assessed_vehicles(person, submission_date)
       vehicles = person&.vehicles || []
-      (disputed ? vehicles.select(&:subject_matter_of_dispute) : vehicles.reject(&:subject_matter_of_dispute)).map do |vehicle|
-        Assessors::VehicleAssessor::VehicleData.new(vehicle:, result: Assessors::VehicleAssessor::Result.new(assessed_value: 0, included_in_assessment: false))
-      end
+      Assessors::VehicleAssessor.call(vehicles, submission_date)
     end
   end
 

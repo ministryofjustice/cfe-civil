@@ -9,7 +9,7 @@ class CapitalCollatorAndAssessor
                                                     vehicles: partner_vehicles)
         combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
       else
-        partner_subtotals = PersonCapitalSubtotals.blank
+        partner_subtotals = PersonCapitalSubtotals.unassessed(vehicles: partner_vehicles)
         combined_assessed_capital = applicant_subtotals.assessed_capital
       end
       capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
