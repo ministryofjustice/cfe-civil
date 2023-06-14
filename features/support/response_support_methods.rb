@@ -21,6 +21,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "employment" => "result_summary.disposable_income.employment_income",
     "partner_employment" => "result_summary.partner_disposable_income.employment_income",
     "combined_assessed_capital" => "result_summary.capital.combined_assessed_capital",
+    "remarks" => "assessment.remarks",
   },
 }.freeze
 
@@ -66,7 +67,11 @@ end
 def validate_response(result, value, attribute, condition: nil)
   return if value.to_s == result.to_s
 
+  value_mismatch attribute, value, result, condition:
+end
+
+def value_mismatch(attribute, expected, actual, condition: nil)
   condition_clause = " with condition: #{condition}" if condition
 
-  "\n==> [#{attribute}] Value mismatch. Expected (++), Actual (--): \n++ #{value}\n-- #{result}\n\nfor attribute #{attribute}#{condition_clause}."
+  "\n==> [#{attribute}] Value mismatch. Expected (++), Actual (--): \n++ #{expected}\n-- #{actual}\n\nfor attribute #{attribute}#{condition_clause}."
 end
