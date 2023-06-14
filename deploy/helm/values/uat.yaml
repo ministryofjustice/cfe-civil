@@ -43,7 +43,7 @@ sentry:
 
 notifications:
   errorMessageTemplateId: 55ec1022-736a-40bf-b3f4-0fe85de17525
-  recipient: neil.hathaway@digital.justice.gov.uk,stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
+  recipient: stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
 
 threshold:
   useTestData: 'true'
