@@ -847,6 +847,7 @@ components:
               - four_weekly
               - monthly
               - three_monthly
+              - annually
             is_employment:
               type: boolean
               description: set 'true' if this is a 'salary' type income (e.g. company
