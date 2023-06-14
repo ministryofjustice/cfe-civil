@@ -52,9 +52,6 @@ gem "google_drive", ">= 3.0.7"
 # Improve backtrace in nested error recues
 gem "nesty"
 
-# parse spreadsheets
-gem "roo", "~> 2.10.0"
-
 # Required following upgrade to ruby 3.1.0
 gem "net-imap"
 gem "net-pop"
@@ -75,8 +72,20 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "hashdiff"
-  gem "pry-byebug"
   gem "rack-mini-profiler", require: false
+
+  source "https://oss:Q7U7p2q2XlpY45kwqjCpXLIPf122rjkR@gem.mutant.dev" do
+    gem "mutant-license"
+  end
+  gem "mutant-rspec"
+
+  # use leading-edge rugged for removal of ruby 3.2 warning
+  gem "rugged", github: "libgit2/rugged", submodules: true
+
+  gem "pronto"
+  gem "pronto-mutant", github: "mknapik/pronto-mutant", require: false
+  gem "pronto-rubocop", require: false
+
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.0"
   gem "rswag-specs"
@@ -92,6 +101,8 @@ group :development do
   gem "guard-rubocop"
   gem "guard-shell"
   gem "listen", ">= 3.0.5", "< 3.9"
+
+  gem "pry-byebug"
   gem "pry-rescue"
   gem "pry-stack_explorer"
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
@@ -101,6 +112,10 @@ end
 group :test do
   gem "cucumber-rails", require: false
   gem "database_cleaner"
+  # pronto-mutant needs this :-(
+  gem "pry"
+  # parse spreadsheets
+  gem "roo"
   gem "shoulda-matchers"
   gem "simplecov"
   gem "simplecov-lcov"

@@ -12,8 +12,8 @@ module Calculators
                           receives_qualifying_benefit: applicant.receives_qualifying_benefit,
                           total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income)
     end
-    let(:assessment) { create :assessment, applicant_disposable_income_summary: disposable_income_summary }
-    let(:disposable_income_summary) { create :disposable_income_summary, total_disposable_income: disposable_income }
+    let(:assessment) { build :assessment, applicant_disposable_income_summary: disposable_income_summary }
+    let(:disposable_income_summary) { build :disposable_income_summary, total_disposable_income: disposable_income }
     let(:disposable_income) { 0 }
 
     describe "#value" do

@@ -1,0 +1,18 @@
+github:
+  slug: ministryofjustice/cfe-civil
+  access_token: B26354
+  api_endpoint: https://api.github.com/
+  web_endpoint: https://github.com/
+max_warnings: 150
+warnings_per_review: 30
+verbose: true
+mutant:
+  includes:
+    - app/services/calculators
+  integration: rspec
+  requires:
+    - childcare_eligibility_calculator
+  matcher:
+    subjects:
+      - Calculators*
+runners: [rubocop]

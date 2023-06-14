@@ -1,0 +1,6 @@
+for i in app/services/assessors/[d-l,n-v]*.rb; do date; bundle exec mutant run -r `basename $i .rb` | fgrep -v progress; done
+for i in app/services/workflows/*.rb; do date; bundle exec mutant run -r `basename $i .rb` | fgrep -v progress; done
+for i in app/services/calculators/*.rb; do date; bundle exec mutant run -r `basename $i .rb`| fgrep -v progress; done
+for i in app/services/utilities/*.rb; do date; bundle exec mutant run -r `basename $i .rb` | fgrep -v progress; done
+for i in app/services/collators/*.rb; do date; bundle exec mutant run -r `basename $i .rb` | fgrep -v progress; done
+for i in app/services/decorators/v6/*.rb; do date; bundle exec mutant run -r `basename $i .rb` | fgrep -v progress; done

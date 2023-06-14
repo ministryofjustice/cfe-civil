@@ -156,8 +156,9 @@ jobs:
       - *install_gems
       - *save_gems_cache
       - run:
-          name: Run Rubocop
-          command:  bundle exec rubocop
+          name: Run pronto
+          command: |
+            bundle exec pronto run -c origin/main --exit-code
 
   create_helm_cache:
     executor: cloud-platform-executor
@@ -223,14 +224,32 @@ jobs:
           name: Upload Code Climate Test coverage
           command: |
             ./tmp/cc-test-reporter upload-coverage -i tmp/coverage/codeclimate.json
-      - run:
-          name: Check coverage with undercover
-          command: |
-            bundle exec undercover -l coverage/lcov.info
       - store_test_results:
           path: /tmp/test-results/rspec
       - store_artifacts:
           path: ./coverage
+      - run:
+          name: Check coverage with undercover
+          command: |
+            bundle exec undercover -l coverage/lcov.info
+
+  mutant:
+    executor: test-executor
+    steps:
+      - checkout
+      - *install_packages_for_testing
+      - *restore_gems_cache
+      - *install_gems
+      - *save_gems_cache
+      - *setup_database
+      - run:
+          name: Run mutant
+          environment:
+            GOOGLE_SHEETS_PRIVATE_KEY_ID: ""
+            NOCOVERAGE: true
+          command: |
+            bin/run_mutant
+          no_output_timeout: 30m
 
   integration_tests:
     executor: test-executor
@@ -367,6 +386,11 @@ workflows:
               ignore: main
       #          <<: *generic-slack-fail-post-step
       - unit_tests:
+          filters:
+            branches:
+              ignore: main
+      #          <<: *generic-slack-fail-post-step
+      - mutant:
           filters:
             branches:
               ignore: main

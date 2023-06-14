@@ -204,10 +204,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_06_141257) do
   create_table "request_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "http_status", null: false
     t.decimal "duration", null: false
-    t.json "request"
-    t.json "response"
-    t.date "created_at"
-    t.string "user_agent"
+    t.json "request", null: false
+    t.json "response", null: false
+    t.date "created_at", null: false
+    t.string "user_agent", null: false
   end
 
   create_table "state_benefit_payments", force: :cascade do |t|
