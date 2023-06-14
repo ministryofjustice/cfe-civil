@@ -34,10 +34,15 @@ module Utilities
         (value * 52 / 12).round(2)
       end
 
+      def annually_to_monthly(value)
+        (value / 12).round(2)
+      end
+
       def frequency_conversions
         { three_monthly: :three_monthly_to_monthly,
           monthly: :monthly_to_monthly,
           four_weekly: :four_weekly_to_monthly,
+          annually: :annually_to_monthly,
           two_weekly: :two_weekly_to_monthly,
           weekly: :weekly_to_monthly }.with_indifferent_access
       end
