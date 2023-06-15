@@ -33,22 +33,6 @@ FactoryBot.define do
       record.save!
     end
 
-    trait :with_applicant do
-      applicant { create :applicant, :under_pensionable_age }
-    end
-
-    trait :with_passported_applicant do
-      applicant { create :applicant, :with_qualifying_benefits }
-    end
-
-    trait :with_non_passported_applicant do
-      applicant { create :applicant, :without_qualifying_benefits }
-    end
-
-    trait :with_applicant_over_pensionable_age do
-      applicant { create :applicant, :over_pensionable_age }
-    end
-
     trait :with_disposable_income_summary do
       after(:create) do |assessment|
         create :disposable_income_summary, assessment:
@@ -106,11 +90,7 @@ FactoryBot.define do
       end
     end
 
-    # NOTE: this ends up creating two assessments because the :with_non_passported_applicant trait
-    # creates one too
-    #
     trait :with_everything do
-      with_non_passported_applicant
       after(:create) do |assessment|
         create(:gross_income_summary, :with_everything, assessment:)
         create(:disposable_income_summary, :with_everything, assessment:)
@@ -119,7 +99,6 @@ FactoryBot.define do
     end
 
     trait :passported do
-      with_passported_applicant
       after(:create) do |assessment|
         create :capital_summary, :with_everything, :with_eligibilities, assessment:
       end

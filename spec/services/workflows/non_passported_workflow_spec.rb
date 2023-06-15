@@ -6,10 +6,10 @@ module Workflows
       create :assessment, :with_capital_summary, :with_disposable_income_summary,
              :with_gross_income_summary,
              submission_date: Date.new(2022, 6, 7),
-             applicant:, proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
+             proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
     end
-    let(:person_blank) { PersonData.new(self_employments: [], vehicles: [], dependants: []) }
-    let(:person_applicant) { PersonData.new(self_employments: [], vehicles: [], dependants:) }
+    let(:partner) { nil }
+    let(:applicant) { build(:applicant, employed:, dependants:) }
 
     before do
       assessment.proceeding_type_codes.each do |ptc|
@@ -31,18 +31,21 @@ module Workflows
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
                                                          national_insurance: 150, gross: 2900, frequency: "monthly"))]
       end
-      let(:person_applicant) { PersonData.new(self_employments: [], vehicles: build_list(:vehicle, 1), dependants: []) }
+      let(:person_applicant) { PersonData.new(details: applicant, self_employments: [], vehicles: build_list(:vehicle, 1), dependants: []) }
       let(:partner_applicant) { person_applicant }
 
       subject(:calculation_output) do
         assessment.reload
         described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant).tap do
-          Assessors::MainAssessor.call(assessment)
+          Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         end
       end
 
       before do
-        create(:partner, assessment:)
+        create(:partner_capital_summary, assessment:)
+        create(:partner_gross_income_summary, assessment:)
+        create(:partner_disposable_income_summary, assessment:)
+
         create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: 4000)
         assessment.proceeding_type_codes.each do |ptc|
           create(:assessment_eligibility, assessment:, proceeding_type_code: ptc)
@@ -80,8 +83,9 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: person_applicant, partner: person_blank)
-        Assessors::MainAssessor.call(assessment)
+        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants:),
+                             partner: partner.present? ? PersonData.new(details: partner, self_employments: [], vehicles: [], dependants: []) : nil)
+        Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
 
@@ -100,9 +104,9 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: PersonData.new(self_employments:, vehicles: [], dependants: []),
-                                 partner: person_blank).tap do
-              Assessors::MainAssessor.call(assessment)
+                                 applicant: PersonData.new(details: build(:applicant), self_employments:, vehicles: [], dependants: []),
+                                 partner:).tap do
+              Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
           end
           let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
@@ -272,9 +276,12 @@ module Workflows
 
           context "with pensionable partner" do
             let(:applicant) { build :applicant, :under_pensionable_age }
+            let(:partner) { build :applicant, :over_pensionable_age }
 
             before do
-              create(:partner, :over_pensionable_age, assessment:)
+              create(:partner_capital_summary, assessment:)
+              create(:partner_gross_income_summary, assessment:)
+              create(:partner_disposable_income_summary, assessment:)
             end
 
             it "is eligible" do
@@ -284,10 +291,14 @@ module Workflows
 
           context "when both pensioners" do
             let(:applicant) { build :applicant, :over_pensionable_age }
+            let(:partner) { build :applicant, :over_pensionable_age }
 
             before do
-              create(:partner, :over_pensionable_age, assessment:)
-              create(:property, :additional_property, capital_summary: assessment.partner_capital_summary,
+              pcs = create(:partner_capital_summary, assessment:)
+              create(:partner_gross_income_summary, assessment:)
+              create(:partner_disposable_income_summary, assessment:)
+
+              create(:property, :additional_property, capital_summary: pcs,
                                                       value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)
             end
 
@@ -325,9 +336,16 @@ module Workflows
             context "when unemployed with partner" do
               let(:employed) { false }
 
+              before do
+                create(:partner_capital_summary, assessment:)
+                create(:partner_gross_income_summary, assessment:)
+                create(:partner_disposable_income_summary, assessment:)
+              end
+
               context "with partner employment" do
+                let(:partner) { build :applicant, employed: true }
+
                 before do
-                  create(:partner, assessment:, employed: true)
                   create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
                 end
 
@@ -337,8 +355,9 @@ module Workflows
               end
 
               context "with partner student loan" do
+                let(:partner) { build :applicant, employed: false }
+
                 before do
-                  create(:partner, assessment:, employed: false)
                   create(:student_loan_payment, gross_income_summary: assessment.reload.partner_gross_income_summary)
                 end
 
@@ -365,10 +384,12 @@ module Workflows
             end
 
             context "with partner" do
+              let(:partner) { build(:applicant) }
+
               before do
-                create(:partner, assessment:)
-                create(:gross_income_summary, assessment:, type: "PartnerGrossIncomeSummary")
-                create(:disposable_income_summary, assessment:, type: "PartnerDisposableIncomeSummary")
+                create(:partner_capital_summary, assessment:)
+                create(:partner_gross_income_summary, assessment:)
+                create(:partner_disposable_income_summary, assessment:)
               end
 
               it "is eligible due to cap being removed" do
@@ -389,8 +410,12 @@ module Workflows
               end
 
               context "with an employed partner" do
+                let(:partner) { build(:applicant, employed: true) }
+
                 before do
-                  create(:partner, assessment:, employed: true)
+                  create(:partner_capital_summary, assessment:)
+                  create(:partner_gross_income_summary, assessment:)
+                  create(:partner_disposable_income_summary, assessment:)
                   create(:partner_employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
                 end
 

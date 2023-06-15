@@ -1,11 +1,10 @@
 module Decorators
   module V6
     class DisposableIncomeResultDecorator
-      def initialize(summary, gross_income_summary, employment_income_subtotals, partner_present:, disposable_income_subtotals:)
+      def initialize(summary, gross_income_summary, employment_income_subtotals, disposable_income_subtotals:)
         @summary = summary
         @gross_income_summary = gross_income_summary
         @employment_income_subtotals = employment_income_subtotals
-        @partner_present = partner_present
         @disposable_income_subtotals = disposable_income_subtotals
       end
 
@@ -54,9 +53,7 @@ module Decorators
       end
 
       def partner_allowance
-        return 0 unless @partner_present
-
-        Threshold.value_for(:partner_allowance, at: @summary.assessment.submission_date)
+        @disposable_income_subtotals.partner_allowance
       end
 
       def combined_total_disposable_income

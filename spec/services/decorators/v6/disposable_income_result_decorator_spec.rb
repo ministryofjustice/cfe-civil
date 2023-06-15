@@ -31,7 +31,6 @@ module Decorators
         }
       end
       let(:proceeding_hash) { [%w[DA003 A], %w[DA005 A], %w[SE003 A], %w[SE014 A]] }
-      let(:partner_present) { true }
       let(:expected_result) do
         {
           dependant_allowance: 220.21,
@@ -106,8 +105,8 @@ module Decorators
       subject(:decorator) do
         described_class
           .new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
-               partner_present:,
                disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
+                                                            partner_allowance: 191.41,
                                                             dependant_allowance_under_16: 28.34,
                                                             dependant_allowance_over_16: 98.12,
                                                             dependant_allowance: 220.21)).as_json

@@ -22,43 +22,8 @@ module Creators
           expect(creator.success?).to be true
         end
 
-        it "creates an applicant" do
-          expect { creator }.to change(Partner, :count).by 1
-        end
-
         it "returns an empty error array" do
           expect(creator.errors).to be_empty
-        end
-      end
-
-      context "with invalid basic partner payload" do
-        context "date of birth cannot be in future" do
-          let(:date_of_birth) { Date.tomorrow.to_date.to_s }
-
-          it "flags self as false" do
-            expect(creator.success?).to be false
-          end
-
-          it "returns error" do
-            expect(creator.errors.size).to eq 1
-            expect(creator.errors[0]).to eq "Date of birth cannot be in the future"
-          end
-
-          it "does not create a Partner" do
-            expect { creator }.not_to change(Partner, :count)
-          end
-        end
-
-        context "partner already exists" do
-          before { create :partner, assessment: }
-
-          it "signals failure" do
-            expect(creator.success?).to be false
-          end
-
-          it "returns error" do
-            expect(creator.errors[0]).to eq "Assessment There is already a partner for this assesssment"
-          end
         end
       end
 

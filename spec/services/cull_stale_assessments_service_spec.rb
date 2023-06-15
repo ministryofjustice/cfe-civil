@@ -40,8 +40,6 @@ RSpec.describe CullStaleAssessmentsService do
 
   def create_assessment_and_associated_records
     create(:assessment).tap do |ass|
-      create :applicant, assessment: ass
-      create :partner, assessment: ass
       create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
       create :partner_capital_summary, :with_everything, assessment: ass
       create :partner_capital_summary, :with_everything, assessment: ass
@@ -62,7 +60,6 @@ RSpec.describe CullStaleAssessmentsService do
 
   def associated_models
     [
-      Applicant,
       CapitalItem,
       CapitalSummary,
       CashTransactionCategory,
@@ -77,7 +74,6 @@ RSpec.describe CullStaleAssessmentsService do
       OtherIncomePayment,
       OtherIncomeSource,
       Outgoings::BaseOutgoing,
-      Partner,
       ProceedingType,
       Property,
       RegularTransaction,

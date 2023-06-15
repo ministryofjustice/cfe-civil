@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Collators
   RSpec.describe CapitalCollator do
-    let(:assessment) { create :assessment, :with_capital_summary, :with_disposable_income_summary, :with_applicant }
+    let(:assessment) { create :assessment, :with_capital_summary, :with_disposable_income_summary }
     let(:request_hash) { AssessmentRequestFixture.ruby_hash }
     let(:submission_date) { assessment.submission_date }
     let(:capital_summary) { assessment.applicant_capital_summary }

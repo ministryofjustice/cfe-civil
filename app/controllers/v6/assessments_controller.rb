@@ -7,25 +7,38 @@ module V6
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
-
       if create.success?
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
+
+        applicant_model = Applicant.new(full_assessment_params.fetch(:applicant, {}))
+        render_unprocessable(applicant_model.errors.full_messages) && return unless applicant_model.valid?
+
+        applicant = person_data(full_assessment_params,
+                                applicant_dependants,
+                                applicant_model)
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?
           partner_dependants = dependants partner_params, create.assessment.submission_date
           render_unprocessable(dependant_errors(partner_dependants)) && return if partner_dependants.reject(&:valid?).any?
 
+          partner_model = Applicant.new(partner_params.fetch(:partner, {}))
+          render_unprocessable(partner_model.errors.full_messages) && return unless partner_model.valid?
+
+          partner = person_data(partner_params,
+                                partner_dependants,
+                                partner_model)
+
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                            applicant: person_data(full_assessment_params, applicant_dependants.map(&:freeze)),
-                                                            partner: person_data(partner_params, partner_dependants.map(&:freeze)))
+                                                            applicant:,
+                                                            partner:)
         else
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                            applicant: person_data(full_assessment_params, applicant_dependants.map(&:freeze)),
+                                                            applicant:,
                                                             partner: nil)
         end
-        render json: Decorators::V6::AssessmentDecorator.new(create.assessment, calculation_output).as_json
+        render json: Decorators::V6::AssessmentDecorator.new(assessment: create.assessment, calculation_output:, applicant:, partner:).as_json
       else
         render_unprocessable(create.errors)
       end
@@ -42,10 +55,11 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants)
-      self_employments = parse_self_employments(input_params.fetch(:employment_or_self_employment, []))
-      vehicles = parse_vehicles(input_params.fetch(:vehicles, []))
-      PersonData.new(self_employments:, vehicles:, dependants:)
+    def person_data(input_params, dependants, applicant)
+      PersonData.new(details: applicant.freeze,
+                     self_employments: parse_self_employments(input_params.fetch(:employment_or_self_employment, [])),
+                     vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
+                     dependants: dependants.map(&:freeze))
     end
 
     def parse_vehicles(vehicles)

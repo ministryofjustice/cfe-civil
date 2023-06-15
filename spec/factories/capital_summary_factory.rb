@@ -47,6 +47,8 @@ FactoryBot.define do
       end
     end
 
-    factory :partner_capital_summary
+    factory :partner_capital_summary do
+      type { "PartnerCapitalSummary" }
+    end
   end
 end

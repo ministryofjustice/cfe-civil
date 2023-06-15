@@ -1,10 +1,19 @@
-class Applicant < ApplicationRecord
-  extend EnumHash
+class Applicant
+  include ActiveModel::Model
+  include ActiveModel::Attributes
 
-  belongs_to :assessment, optional: true
-  validates :assessment_id, uniqueness: { message: "There is already an applicant for this assesssment" }
+  attribute :date_of_birth, :date
+  attribute :employed, :boolean
+  attribute :receives_qualifying_benefit, :boolean, default: false
+  attribute :receives_asylum_support, :boolean, default: false
+  attribute :has_partner_opponent, :boolean, default: false
+  attribute :involvement_type, :string, default: "applicant"
 
-  enum involvement_type: enum_hash_for(:applicant)
+  validates :date_of_birth, date: {
+    before: proc { Time.zone.tomorrow }, message: :not_in_the_future
+  }
 
-  validates :date_of_birth, comparison: { less_than_or_equal_to: Date.current }
+  def receives_qualifying_benefit?
+    receives_qualifying_benefit
+  end
 end

@@ -1,29 +1,28 @@
 require "rails_helper"
 
 module Workflows
-  RSpec.describe ".call" do
+  RSpec.describe MainWorkflow do
     let(:proceedings_hash) { [%w[DA003 A], %w[SE013 I]] }
     let(:bank_holiday_response) { %w[2015-01-01 2015-04-03 2015-04-06] }
     let(:assessment) do
       create :assessment,
              :with_everything,
-             proceedings: proceedings_hash,
-             applicant:
+             proceedings: proceedings_hash
     end
     let(:calculation_output) { instance_double(CalculationOutput, capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0)) }
-    let(:person_blank) { PersonData.new(self_employments: [], vehicles: [], dependants: []) }
+    let(:person_blank) { nil }
 
     before do
       allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holiday_response)
     end
 
     context "applicant is asylum_supported" do
-      let(:applicant) { create :applicant, receives_asylum_support: true }
+      let(:applicant) { build(:applicant, receives_asylum_support: true) }
 
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
+        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
+        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
       end
 
       context "for immigration/asylum proceeding types" do
@@ -32,37 +31,70 @@ module Workflows
         it "does not call a workflow" do
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
-          expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-          MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
+          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
+          described_class.call(assessment:,
+                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
+                               partner: nil)
         end
       end
     end
 
     context "applicant is passported" do
-      let(:applicant) { create :applicant, :with_qualifying_benefits }
+      let(:applicant) { build(:applicant, receives_qualifying_benefit: true) }
 
-      subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
+      context "without partner" do
+        subject(:workflow_call) do
+          described_class.call(assessment:,
+                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
+                               partner: nil)
+        end
+
+        it "calls PassportedWorkflow" do
+          allow(Assessors::MainAssessor).to receive(:call)
+          allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [],
+                                                           date_of_birth: applicant.date_of_birth,
+                                                           receives_qualifying_benefit: true).and_return(calculation_output)
+          workflow_call
+        end
+
+        it "calls MainAssessor" do
+          allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
+          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: true)
+          workflow_call
+        end
       end
 
-      it "calls PassportedWorkflow" do
-        allow(Assessors::MainAssessor).to receive(:call)
-        allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [], partner_vehicles: []).and_return(calculation_output)
-        workflow_call
-      end
+      context "with partner" do
+        let(:partner) { build(:applicant) }
 
-      it "calls MainAssessor" do
-        allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment)
-        workflow_call
+        subject(:workflow_call) do
+          described_class.call(assessment:,
+                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
+                               partner: PersonData.new(details: partner, self_employments: [], vehicles: [], dependants: []))
+        end
+
+        before do
+          create(:partner_capital_summary, assessment:)
+          create(:partner_gross_income_summary, assessment:)
+          create(:partner_disposable_income_summary, assessment:)
+        end
+
+        it "calls PassportedWorkflow" do
+          allow(Assessors::MainAssessor).to receive(:call)
+          expect(PassportedWorkflow).to receive(:partner).with(assessment:, vehicles: [], partner_vehicles: [],
+                                                               partner_date_of_birth: partner.date_of_birth,
+                                                               date_of_birth: applicant.date_of_birth,
+                                                               receives_qualifying_benefit: true).and_call_original
+          workflow_call
+        end
       end
     end
 
     context "applicant is not passported" do
-      let(:applicant) { create :applicant, :without_qualifying_benefits }
+      let(:applicant) { build(:applicant, :without_qualifying_benefits) }
 
       subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
+        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
       end
 
       it "calls NonPassportedWorkflow" do
@@ -73,7 +105,7 @@ module Workflows
 
       it "calls MainAssessor" do
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment)
+        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
         workflow_call
       end
     end
@@ -87,13 +119,12 @@ module Workflows
                :with_disposable_income_summary,
                :with_eligibilities,
                proceedings: proceedings_hash,
-               version: "6",
-               applicant:
+               version: "6"
       end
-      let(:applicant) { create :applicant, :without_qualifying_benefits }
+      let(:applicant) { build :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
-        MainWorkflow.call(assessment:, applicant: person_blank, partner: nil)
+        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
       end
 
       context "with proceeding types" do
@@ -102,7 +133,7 @@ module Workflows
 
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment)
+          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        disposable_income_summary: assessment.applicant_disposable_income_summary,
@@ -118,7 +149,7 @@ module Workflows
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment)
+          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        disposable_income_summary: assessment.applicant_disposable_income_summary,

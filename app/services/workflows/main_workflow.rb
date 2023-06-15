@@ -3,10 +3,20 @@ module Workflows
     class << self
       def call(assessment:, applicant:, partner:)
         populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
-        calculation_output = if no_means_assessment_needed?(assessment)
+        calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(applicant:, partner:)
-                             elsif assessment.applicant.receives_qualifying_benefit?
-                               PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles, partner_vehicles: partner&.vehicles || [])
+                             elsif applicant.details.receives_qualifying_benefit?
+                               if partner.present?
+                                 PassportedWorkflow.partner(assessment:, vehicles: applicant.vehicles,
+                                                            partner_vehicles: partner.vehicles,
+                                                            date_of_birth: applicant.details.date_of_birth,
+                                                            partner_date_of_birth: partner.details.date_of_birth,
+                                                            receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                               else
+                                 PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles,
+                                                         date_of_birth: applicant.details.date_of_birth,
+                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                               end
                              else
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
@@ -27,7 +37,8 @@ module Workflows
                                               lower_capital_threshold:,
                                               assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
-        Assessors::MainAssessor.call(assessment)
+        Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
+                                     receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output
       end
 
@@ -38,9 +49,9 @@ module Workflows
         Creators::EligibilitiesCreator.call(assessment:, client_dependants: dependants, partner_dependants:)
       end
 
-      def no_means_assessment_needed?(assessment)
-        assessment.proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } &&
-          assessment.applicant.receives_asylum_support
+      def no_means_assessment_needed?(proceeding_types, applicant)
+        proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } &&
+          applicant.receives_asylum_support
       end
 
       def blank_calculation_result(applicant:, partner:)

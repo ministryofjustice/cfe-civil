@@ -10,21 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_05_122445) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_06_141257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
-
-  create_table "applicants", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id", null: false
-    t.date "date_of_birth"
-    t.string "involvement_type"
-    t.boolean "has_partner_opponent"
-    t.boolean "receives_qualifying_benefit"
-    t.boolean "employed"
-    t.boolean "receives_asylum_support", default: false, null: false
-    t.index ["assessment_id"], name: "index_applicants_on_assessment_id", unique: true
-  end
 
   create_table "assessments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "client_reference_id"
@@ -181,13 +170,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_122445) do
     t.index ["disposable_income_summary_id"], name: "index_outgoings_on_disposable_income_summary_id"
   end
 
-  create_table "partners", force: :cascade do |t|
-    t.uuid "assessment_id", null: false
-    t.date "date_of_birth"
-    t.boolean "employed"
-    t.index ["assessment_id"], name: "index_partners_on_assessment_id", unique: true
-  end
-
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
@@ -255,7 +237,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_122445) do
     t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
 
-  add_foreign_key "applicants", "assessments"
   add_foreign_key "capital_items", "capital_summaries"
   add_foreign_key "capital_summaries", "assessments"
   add_foreign_key "cash_transaction_categories", "gross_income_summaries"
@@ -268,7 +249,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_05_122445) do
   add_foreign_key "other_income_payments", "other_income_sources"
   add_foreign_key "other_income_sources", "gross_income_summaries"
   add_foreign_key "outgoings", "disposable_income_summaries"
-  add_foreign_key "partners", "assessments"
   add_foreign_key "proceeding_types", "assessments"
   add_foreign_key "properties", "capital_summaries"
   add_foreign_key "regular_transactions", "gross_income_summaries"

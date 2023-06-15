@@ -176,8 +176,8 @@ module V6
           expect(response).to have_http_status(:success)
         end
 
-        it "returns nil for has_partner_opponent" do
-          expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to be_nil
+        it "returns false for has_partner_opponent" do
+          expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to eq(false)
         end
       end
 
@@ -210,7 +210,7 @@ module V6
         end
 
         it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(/Date of birth cannot be in future/)
+          expect(parsed_response[:errors]).to include(/Date of birth cannot be in the future/)
         end
 
         it "creates a log record" do
@@ -224,7 +224,7 @@ module V6
                                 },
                                 response: {
                                   "success" => false,
-                                  "errors" => ["Date of birth cannot be in future"],
+                                  "errors" => ["Date of birth cannot be in the future"],
                                 })
         end
       end
@@ -249,7 +249,7 @@ module V6
       context "with a partner dependant error" do
         let(:params) do
           {
-            partner: { partner: attributes_for(:partner),
+            partner: { partner: attributes_for(:applicant),
                        dependants: [
                          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
                        ] },
@@ -706,6 +706,51 @@ module V6
         end
       end
 
+      context "with an invalid partner" do
+        let(:params) do
+          {
+            partner: {
+              partner: { date_of_birth: "2087-08-08", employed: true },
+            },
+          }
+        end
+
+        it "errors" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "contains the error" do
+          expect(parsed_response).to eq({ success: false, errors: ["Date of birth cannot be in the future"] })
+        end
+      end
+
+      context "with invalid outgoings" do
+        let(:params) do
+          {
+            outgoings: [
+              {
+                name: "child_care",
+                payments: [
+                  {
+                    payment_date: "2090-01-01",
+                    amount: 29.12,
+                    client_id: SecureRandom.uuid,
+                  },
+                ],
+              },
+            ],
+          }
+        end
+
+        it "errors" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "contains the error" do
+          expect(parsed_response).to eq({ success: false, errors: ["Payment date cannot be in the future"] })
+        end
+      end
+
       context "without dependants, cash transactions or employment income" do
         let(:payment_date) { "2022-05-15" }
         let(:outgoings_params) do
@@ -1109,7 +1154,7 @@ module V6
             expect(assessment.fetch(:applicant)).to eq(
               {
                 date_of_birth: "2001-02-02",
-                involvement_type: nil,
+                involvement_type: "applicant",
                 employed: false,
                 has_partner_opponent: false,
                 receives_qualifying_benefit: false,

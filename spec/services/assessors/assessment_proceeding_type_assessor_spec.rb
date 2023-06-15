@@ -8,9 +8,10 @@ module Assessors
              :with_gross_income_summary,
              :with_disposable_income_summary,
              :with_eligibilities,
-             :with_applicant,
              proceedings: [[ptc, "A"]]
     end
+    let(:receives_qualifying_benefit) { false }
+    let(:receives_asylum_support) { false }
     let(:ptc) { "DA003" }
     let(:gross_income_eligibility) { assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
     let(:disposable_income_eligibility) { assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
@@ -20,7 +21,7 @@ module Assessors
     describe ".call" do
       describe "successful result" do
         context "asylum supported applicant" do
-          before { assessment.applicant.update!(receives_asylum_support: true) }
+          let(:receives_asylum_support) { true }
 
           context "when using non-immigration/asylum proceeding type codes" do
             # specify assessment results in order: gross_income_eligibility, disposable_income_eligibility, capital_eligibility
@@ -62,14 +63,14 @@ module Assessors
             let(:ptc) { "IM030" }
 
             it "returns eligible for immigration/asylum proceeding type codes" do
-              described_class.call(assessment, ptc)
+              described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:)
               expect(assessment_eligibility.assessment_result).to eq "eligible"
             end
           end
         end
 
         context "passported applicant" do
-          before { assessment.applicant.update!(receives_qualifying_benefit: true) }
+          let(:receives_qualifying_benefit) { true }
 
           # specify assessment results in order: gross_income_eligibility, disposable_income_eligibility, capital_eligibility
           [
@@ -85,7 +86,7 @@ module Assessors
         end
 
         context "non-passported applicant" do
-          before { assessment.applicant.update!(receives_qualifying_benefit: false) }
+          # before { assessment.applicant.update!(receives_qualifying_benefit: false) }
 
           # specify assessment results in order: gross_income_eligibility, disposable_income_eligibility, capital_eligibility
           [
@@ -125,7 +126,7 @@ module Assessors
 
       describe "invalid assessment_results on summary records" do
         context "passported applicant" do
-          before { assessment.applicant.update!(receives_qualifying_benefit: true) }
+          let(:receives_qualifying_benefit) { true }
 
           it "raises the expected error" do
             # specify assessment results in order: gross_income_eligibility, disposable_income_eligibility, capital_eligibility
@@ -177,7 +178,7 @@ module Assessors
         end
 
         context "non_passported_applicant" do
-          before { assessment.applicant.update!(receives_qualifying_benefit: false) }
+          let(:receives_qualifying_benefit) { false }
 
           it "raises the expected error" do
             # specify assessment results in order: gross_income_eligibility, disposable_income_eligibility, capital_eligibility
@@ -212,7 +213,7 @@ module Assessors
         disposable_income_eligibility.update!(assessment_result: transform_result(disposable_income_result))
 
         begin
-          described_class.call(assessment, ptc)
+          described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:)
         rescue StandardError => e
           raise "Unexpected exception: #{e.class}" unless e.is_a?(Assessors::AssessmentProceedingTypeAssessor::AssessmentError)
 
@@ -226,7 +227,7 @@ module Assessors
         gross_income_eligibility.update!(assessment_result: transform_result(gross_income_result))
         disposable_income_eligibility.update!(assessment_result: transform_result(disposable_income_result))
 
-        described_class.call(assessment, ptc)
+        described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:)
         assessment_eligibility.assessment_result
       end
 

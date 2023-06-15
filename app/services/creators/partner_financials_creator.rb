@@ -29,7 +29,6 @@ module Creators
 
     def create_records
       errors = []
-      errors.concat(create_partner.errors)
       errors.concat(create_summaries.errors)
       errors.concat(create_irregular_income.errors)
       errors.concat(create_employments.errors)
@@ -41,11 +40,6 @@ module Creators
       Result.new(errors:).freeze
     rescue ActiveRecord::RecordInvalid => e
       Result.new(errors: e.record.errors.full_messages).freeze
-    end
-
-    def create_partner
-      assessment.create_partner!(partner_attributes.slice(:date_of_birth, :employed))
-      Result.new(errors: []).freeze
     end
 
     def create_summaries
@@ -117,10 +111,6 @@ module Creators
         disposable_income_summary: assessment.partner_disposable_income_summary,
         outgoings_params: { outgoings: outgoings_params },
       )
-    end
-
-    def partner_attributes
-      @partner_attributes ||= @partner_financials_params[:partner]
     end
 
     def irregular_income_params

@@ -1,15 +1,17 @@
 # used to convert DB layer into domain layer for rules
 class PersonWrapper
-  delegate :employed?, to: :@person
-
   attr_reader :dependants
 
-  def initialize(person:, is_single:, dependants:, gross_income_summary:, submission_date:)
-    @person = person
+  def initialize(employed:, is_single:, dependants:, gross_income_summary:, submission_date:)
+    @employed = employed
     @is_single = is_single
     @dependants = dependants
     @gross_income_summary = gross_income_summary
     @submission_date = submission_date
+  end
+
+  def employed?
+    @employed
   end
 
   def is_student?
