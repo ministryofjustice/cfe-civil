@@ -16,28 +16,33 @@ module RemarkGenerators
     before do
       create(:disposable_income_summary, :with_everything, assessment:)
       create(:gross_income_summary, :with_everything, :with_employment, assessment:)
+      create(:capital_summary, :with_eligibilities, assessment:)
       create :bank_holiday
     end
 
     it "calls the checkers with each collection" do
-      expect(MultiBenefitChecker).to receive(:call).with(assessment, state_benefit_payments)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, state_benefit_payments)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, other_income_payments)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, childcare_outgoings)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, maintenance_outgoings)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, housing_outgoings)
-      expect(AmountVariationChecker).to receive(:call).with(assessment, legal_aid_outgoings)
-      expect(FrequencyChecker).to receive(:call).with(assessment, state_benefit_payments)
-      expect(FrequencyChecker).to receive(:call).with(assessment, other_income_payments)
-      expect(FrequencyChecker).to receive(:call).with(assessment, childcare_outgoings)
-      expect(FrequencyChecker).to receive(:call).with(assessment, maintenance_outgoings)
-      expect(FrequencyChecker).to receive(:call).with(assessment, housing_outgoings)
-      expect(FrequencyChecker).to receive(:call).with(assessment, legal_aid_outgoings)
-      expect(FrequencyChecker).to receive(:call).with(assessment, employment_payments, :date)
+      expect(MultiBenefitChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, other_income_payments).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, childcare_outgoings).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, maintenance_outgoings).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, housing_outgoings).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, legal_aid_outgoings).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, other_income_payments).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, childcare_outgoings).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, maintenance_outgoings).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, housing_outgoings).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, legal_aid_outgoings).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, employment_payments, :date).and_call_original
 
-      expect(ResidualBalanceChecker).to receive(:call).with(assessment, 0)
+      expect(ResidualBalanceChecker).to receive(:call).with(assessment.applicant_capital_summary, 0, 100).and_call_original
 
-      described_class.call(assessment, 0)
+      described_class.call(assessment:, capital_summary: assessment.applicant_capital_summary,
+                           lower_capital_threshold: 100,
+                           disposable_income_summary: assessment.applicant_disposable_income_summary,
+                           employments: assessment.employments,
+                           gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
     end
   end
 end

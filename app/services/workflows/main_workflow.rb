@@ -10,7 +10,23 @@ module Workflows
                              else
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
-        RemarkGenerators::Orchestrator.call(assessment, calculation_output.capital_subtotals.combined_assessed_capital)
+        # we can take the lower threshold from the first eligibility records as they are all the same
+        lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
+
+        RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.employments,
+                                            gross_income_summary: assessment.applicant_gross_income_summary,
+                                            disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                            capital_summary: assessment.applicant_capital_summary,
+                                            lower_capital_threshold:,
+                                            assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+        if partner.present?
+          RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.partner_employments,
+                                              gross_income_summary: assessment.partner_gross_income_summary,
+                                              disposable_income_summary: assessment.partner_disposable_income_summary,
+                                              capital_summary: assessment.partner_capital_summary,
+                                              lower_capital_threshold:,
+                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+        end
         Assessors::MainAssessor.call(assessment)
         calculation_output
       end

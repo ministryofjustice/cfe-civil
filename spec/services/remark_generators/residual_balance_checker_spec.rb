@@ -10,22 +10,14 @@ module RemarkGenerators
       before { create :liquid_capital_item, description: "Current accounts", value: 100, capital_summary: }
 
       it "adds the remark when a residual balance exists" do
-        expect_any_instance_of(Remarks).to receive(:add).with(:current_account_balance, :residual_balance, [])
-        described_class.call(assessment, assessed_capital)
-      end
-
-      it "stores the changed the remarks class on the assessment" do
-        original_remarks = assessment.remarks.as_json
-        described_class.call(assessment, assessed_capital)
-        expect(assessment.reload.remarks.as_json).not_to eq original_remarks
+        expect(described_class.call(assessment.applicant_capital_summary, assessed_capital, 0))
+          .to eq(RemarksData.new(type: :current_account_balance, issue: :residual_balance, ids: []))
       end
     end
 
     context "when there is no residual balance" do
       it "does not update the remarks class" do
-        original_remarks = assessment.remarks.as_json
-        described_class.call(assessment, assessed_capital)
-        expect(assessment.reload.remarks.as_json).to eq original_remarks
+        expect(described_class.call(assessment.applicant_capital_summary, assessed_capital, 0)).to be_nil
       end
     end
 
@@ -33,9 +25,7 @@ module RemarkGenerators
       let(:capital_summary) { create :capital_summary, :with_eligibilities }
 
       it "does not update the remarks class" do
-        original_remarks = assessment.remarks.as_json
-        described_class.call(assessment, 0)
-        expect(assessment.reload.remarks.as_json).to eq original_remarks
+        expect(described_class.call(assessment.applicant_capital_summary, 0, 0)).to be_nil
       end
     end
 
@@ -45,9 +35,7 @@ module RemarkGenerators
       let(:capital_summary) { create :capital_summary, :with_eligibilities }
 
       it "does not update the remarks class" do
-        original_remarks = assessment.remarks.as_json
-        described_class.call(assessment, assessed_capital)
-        expect(assessment.reload.remarks.as_json).to eq original_remarks
+        expect(described_class.call(assessment.applicant_capital_summary, assessed_capital, 0)).to be_nil
       end
     end
 
@@ -59,8 +47,8 @@ module RemarkGenerators
         end
 
         it "adds the remark when a residual balance exists" do
-          expect_any_instance_of(Remarks).to receive(:add).with(:current_account_balance, :residual_balance, [])
-          described_class.call(assessment, assessed_capital)
+          expect(described_class.call(assessment.applicant_capital_summary, assessed_capital, 0))
+            .to eq(RemarksData.new(type: :current_account_balance, issue: :residual_balance, ids: []))
         end
       end
 
@@ -71,9 +59,7 @@ module RemarkGenerators
         end
 
         it "does not update the remarks class" do
-          original_remarks = assessment.remarks.as_json
-          described_class.call(assessment, assessed_capital)
-          expect(assessment.reload.remarks.as_json).to eq original_remarks
+          expect(described_class.call(assessment.applicant_capital_summary, assessed_capital, 0)).to be_nil
         end
       end
     end
