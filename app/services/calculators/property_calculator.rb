@@ -15,7 +15,7 @@ module Calculators
               .freeze
       end
 
-      private
+    private
 
       def property_transaction_allowance_cap(property, level_of_help, submission_date)
         level_of_help == "controlled" ? 0.0 : (property.value * notional_transaction_cost_pctg(submission_date)).round(2)

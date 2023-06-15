@@ -1,16 +1,21 @@
 module Assessors
   class PropertyAssessor
-    Result = Struct.new(:transaction_allowance,
-                        :net_value,
-                        :net_equity,
-                        :property,
-                        :main_home_equity_disregard,
-                        :assessed_equity,
-                        :smod_allowance,
-                        keyword_init: true) do
-      delegate :main_home, :value, :subject_matter_of_dispute,
-               :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, to: :property
-    end
+    Result = Data.define(
+      :transaction_allowance,
+      :net_value,
+      :net_equity,
+      :main_home_equity_disregard,
+      :assessed_equity,
+      :smod_allowance,
+      :main_home,
+      :value,
+      :subject_matter_of_dispute,
+      :outstanding_mortgage,
+      :percentage_owned,
+      :shared_with_housing_assoc,
+    )
+
+    PropertyData = Data.define(:property, :result)
 
     Disregard = Data.define(:result, :applied)
 
@@ -37,17 +42,26 @@ module Assessors
 
           equity_disregard = apply_disregard smod_disregard.result, main_home_equity_disregard_cap(property, submission_date)
 
-          Result.new(transaction_allowance: transaction_allowance,
-                     net_value: net_value,
-                     net_equity: net_equity,
-                     main_home_equity_disregard: equity_disregard.applied,
-                     property:,
-                     smod_allowance: smod_disregard.applied,
-                     assessed_equity: equity_disregard.result).freeze
+          result = Result.new(
+            transaction_allowance:,
+            net_value:,
+            net_equity:,
+            main_home_equity_disregard: equity_disregard.applied,
+            main_home: property.main_home,
+            value: property.value,
+            subject_matter_of_dispute: property.subject_matter_of_dispute,
+            outstanding_mortgage: property.outstanding_mortgage,
+            percentage_owned: property.percentage_owned,
+            shared_with_housing_assoc: property.shared_with_housing_assoc,
+            smod_allowance: smod_disregard.applied,
+            assessed_equity: equity_disregard.result,
+          ).freeze
+
+          PropertyData.new(property:, result:)
         end
       end
 
-      private
+    private
 
       def apply_disregard(equity, disregard)
         equity_after_disregard = Utilities::NumberUtilities.negative_to_zero equity - disregard
