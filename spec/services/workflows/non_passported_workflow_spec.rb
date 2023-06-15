@@ -126,6 +126,18 @@ module Workflows
               end
             end
 
+            context "annually" do
+              let(:frequency) { "annually" }
+
+              it "returns employment figures" do
+                expect(employment_income_subtotals)
+                  .to have_attributes(gross_employment_income: 75.0,
+                                      national_insurance: -12.50,
+                                      benefits_in_kind: 8.33,
+                                      tax: -16.67)
+              end
+            end
+
             context "weekly" do
               let(:frequency) { "weekly" }
 
