@@ -1,4 +1,4 @@
-module Assessors
+module Calculators
   class PropertyCalculator
     Result = Struct.new(:transaction_allowance,
                         :net_value,
