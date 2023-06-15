@@ -59,6 +59,7 @@ module V6
       PersonData.new(details: applicant.freeze,
                      self_employments: parse_self_employments(input_params.fetch(:employment_or_self_employment, [])),
                      vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
+                     properties: parse_properties(input_params.fetch(:properties, {})),
                      dependants: dependants.map(&:freeze))
     end
 
@@ -67,6 +68,21 @@ module V6
         x = v.merge(date_of_purchase: Date.parse(v.fetch(:date_of_purchase)),
                     subject_matter_of_dispute: v.fetch(:subject_matter_of_dispute, false))
         Vehicle.new(**x)
+      end
+    end
+
+    def parse_properties(properties)
+      properties.map do |k, v|
+        case k
+        when :main_home
+          main_home = v.merge(main_home: false, subject_matter_of_dispute: false)
+          PropertyObject.new(**main_home)
+        when :additional_properties
+          v.each do |additional_property|
+            x = additional_property.merge(main_home: false, subject_matter_of_dispute: false)
+            PropertyObject.new(**x)
+          end
+        end
       end
     end
 
