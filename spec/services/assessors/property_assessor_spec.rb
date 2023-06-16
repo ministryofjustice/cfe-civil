@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Calculators
-  RSpec.describe PropertyCalculator do
+module Assessors
+  RSpec.describe PropertyAssessor do
     let(:assessment) { create :assessment, :with_capital_summary, submission_date: }
     let(:capital_summary) { assessment.applicant_capital_summary }
     let(:submission_date) { Time.zone.local(2020, 10, 10) }

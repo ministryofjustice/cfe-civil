@@ -5,7 +5,7 @@ module Collators
         liquid_capital_result = Assessors::LiquidCapitalAssessor.call(capital_summary.liquid_capital_items)
         non_liquid_capital_result = Assessors::NonLiquidCapitalAssessor.call(capital_summary.non_liquid_capital_items)
 
-        properties = Calculators::PropertyCalculator.call(submission_date:,
+        properties = Assessors::PropertyAssessor.call(submission_date:,
                                                           properties: capital_summary.properties,
                                                           smod_cap: maximum_subject_matter_of_dispute_disregard,
                                                           level_of_help:)
