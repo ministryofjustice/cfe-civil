@@ -8,7 +8,7 @@ class CapitalCollatorAndAssessor
       capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: []),
+        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
         capital_contribution:,
         combined_assessed_capital:,
       )

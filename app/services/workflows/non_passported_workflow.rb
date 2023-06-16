@@ -6,7 +6,10 @@ module Workflows
                                                                  partner_present: partner.present?,
                                                                  self_employments: applicant.self_employments,
                                                                  partner_self_employments: partner&.self_employments || [])
-        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_gross_income_summary.ineligible?
+        unassessed_capital = CapitalSubtotals.unassessed(applicant:, partner:,
+                                                         applicant_properties: assessment.applicant_capital_summary.properties,
+                                                         partner_properties: assessment.partner_capital_summary&.properties || [])
+        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_income_subtotals = if partner.present?
                                         partner_disposable_income_assessment(assessment:, gross_income_subtotals:,
@@ -24,7 +27,7 @@ module Workflows
           total_disposable_income: assessment.applicant_disposable_income_summary.combined_total_disposable_income,
         )
 
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:)) if assessment.applicant_disposable_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_disposable_income_summary.ineligible?
 
         capital_subtotals = if partner.present?
                               CapitalCollatorAndAssessor.partner assessment:,
