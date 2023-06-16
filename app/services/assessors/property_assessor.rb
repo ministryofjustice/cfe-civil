@@ -22,9 +22,9 @@ module Assessors
           allowable_outstanding_mortgage = calculate_outstanding_mortgage(property, remaining_mortgage_allowance)
           remaining_mortgage_allowance -= allowable_outstanding_mortgage
           calculator_result = Calculators::PropertyCalculator.call(property:,
-                                                             allowable_outstanding_mortgage:,
-                                                             level_of_help:,
-                                                             submission_date:)
+                                                                   allowable_outstanding_mortgage:,
+                                                                   level_of_help:,
+                                                                   submission_date:)
 
           smod_disregard = if property.subject_matter_of_dispute
                              apply_disregard(calculator_result.net_equity, smod_cap)

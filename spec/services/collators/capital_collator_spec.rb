@@ -43,8 +43,8 @@ module Collators
 
         it "instantiates and calls the Property Assessment service" do
           property_result = Assessors::PropertyAssessor::Result.new(assessed_equity: 23_000.0,
-                                                                        property: assessment.applicant_capital_summary.main_home,
-                                                                        smod_allowance: 0)
+                                                                    property: assessment.applicant_capital_summary.main_home,
+                                                                    smod_allowance: 0)
           allow(Assessors::PropertyAssessor).to receive(:call).and_return([property_result])
           expect(collator.total_property).to eq 23_000.0
         end
@@ -142,8 +142,8 @@ module Collators
 
         it "summarizes the results it gets from the subservices" do
           property_result = Assessors::PropertyAssessor::Result.new(assessed_equity: 23_000.0,
-                                                                        property: assessment.applicant_capital_summary.main_home,
-                                                                        smod_allowance: 0)
+                                                                    property: assessment.applicant_capital_summary.main_home,
+                                                                    smod_allowance: 0)
 
           allow(Assessors::PropertyAssessor).to receive(:call).and_return([property_result])
 

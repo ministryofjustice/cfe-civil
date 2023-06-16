@@ -25,7 +25,7 @@ module Decorators
           end
           let(:property) do
             result = Assessors::PropertyAssessor.call(submission_date: Date.current, properties: [record],
-                                                          level_of_help: "certificated", smod_cap: 100_000)
+                                                      level_of_help: "certificated", smod_cap: 100_000)
             PropertySubtotals.new result.first
           end
 
