@@ -119,7 +119,7 @@ components:
           type: number
           minimum: 0.0
         percentage_owned:
-          type: integer
+          type: number
           minimum: 0
           maximum: 100
         main_home:
