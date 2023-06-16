@@ -24,8 +24,12 @@ module Decorators
                    shared_with_housing_assoc: false
           end
           let(:property) do
-            assessed_properties = Assessors::PropertyAssessor.call(submission_date: Date.current, properties: [record],
-                                                                   level_of_help: "certificated", smod_cap: 100_000)
+            assessed_properties = Assessors::PropertyAssessor.call(
+              submission_date: Date.current,
+              properties: [record],
+              level_of_help: "certificated",
+              smod_cap: 100_000,
+            )
             assessed_properties.first
           end
 

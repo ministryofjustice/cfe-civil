@@ -15,7 +15,7 @@ module Assessors
 
     PropertyData = Data.define(:property, :result) do
       def self.blank
-        new(property: Property.blank, result: Result.blank)
+        new(property: Property.blank_main_home, result: Result.blank)
       end
     end
 

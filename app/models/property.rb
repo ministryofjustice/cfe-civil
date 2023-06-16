@@ -6,7 +6,7 @@ class Property < ApplicationRecord
   scope :disputed, -> { where(subject_matter_of_dispute: true) }
 
   class << self
-    def blank
+    def blank_main_home
       new(main_home: true, value: 0, outstanding_mortgage: 0, percentage_owned: 0, shared_with_housing_assoc: false, subject_matter_of_dispute: false)
     end
   end
