@@ -71,32 +71,28 @@ class PersonCapitalSubtotals
   end
 
   def main_home
-    main_home = @properties.detect(&:main_home)
-    if main_home.present?
-      PropertySubtotals.new(main_home)
-    else
-      PropertySubtotals.new
-    end
+    main_home = @properties.detect { |p| p.property.main_home }
+    (main_home.presence || Assessors::PropertyAssessor::PropertyData.blank)
   end
 
   def additional_properties
-    @properties.reject(&:main_home).map { |p| PropertySubtotals.new(p) }
+    @properties.reject { |p| p.property.main_home }
   end
 
   # subject matter of dispute is calculated earlier for property, so this value already includes SMOD disregards
   def total_property
-    @properties.sum(&:assessed_equity)
+    @properties.map(&:result).sum(&:assessed_equity)
   end
 
   def total_non_disputed_capital
-    @properties.reject(&:subject_matter_of_dispute).sum(&:assessed_equity) +
+    @properties.reject { |p| p.property.subject_matter_of_dispute }.map(&:result).sum(&:assessed_equity) +
       undisputed_liquid_items.sum(&:value) +
       undisputed_non_liquid_items.sum(&:value) +
       @undisputed_vehicles.map(&:result).sum(&:assessed_value)
   end
 
   def total_disputed_capital
-    @properties.select(&:subject_matter_of_dispute).sum(&:assessed_equity) +
+    @properties.select { |p| p.property.subject_matter_of_dispute }.map(&:result).sum(&:assessed_equity) +
       disputed_liquid_items.sum(&:value) +
       disputed_non_liquid_items.sum(&:value) +
       @disputed_vehicles.map(&:result).sum(&:assessed_value) - disputed_non_property_disregard

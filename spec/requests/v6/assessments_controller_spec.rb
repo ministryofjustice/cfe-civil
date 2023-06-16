@@ -1374,8 +1374,8 @@ module V6
                     .to eq({
                       value: 0.0,
                       outstanding_mortgage: 0.0,
-                      percentage_owned: 0,
-                      main_home: false,
+                      percentage_owned: 0.0,
+                      main_home: true,
                       shared_with_housing_assoc: false,
                       transaction_allowance: 0.0,
                       allowable_outstanding_mortgage: 0.0,

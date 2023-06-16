@@ -4,4 +4,10 @@ class Property < ApplicationRecord
   scope :main_home, -> { where(main_home: true) }
   scope :additional, -> { where(main_home: false) }
   scope :disputed, -> { where(subject_matter_of_dispute: true) }
+
+  class << self
+    def blank
+      new(main_home: true, value: 0, outstanding_mortgage: 0, percentage_owned: 0, shared_with_housing_assoc: false, subject_matter_of_dispute: false)
+    end
+  end
 end
