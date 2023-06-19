@@ -29,7 +29,7 @@ module Decorators
 
       def properties
         {
-          main_home: PropertyDecorator.new(@capital_subtotals.main_home&.property, @capital_subtotals.main_home&.result).as_json,
+          main_home: PropertyDecorator.new(@capital_subtotals.main_home.property, @capital_subtotals.main_home.result).as_json,
           additional_properties:,
         }
       end
