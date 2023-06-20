@@ -9,7 +9,6 @@ module Collators
                                                                properties: capital_summary.properties,
                                                                smod_cap: maximum_subject_matter_of_dispute_disregard,
                                                                level_of_help:)
-        property_smod = assessed_properties.map(&:result).sum(&:smod_allowance)
         assessed_vehicles = Assessors::VehicleAssessor.call(vehicles, submission_date)
 
         PersonCapitalSubtotals.new(
@@ -19,8 +18,7 @@ module Collators
           non_liquid_capital_items: non_liquid_capital_result,
           total_mortgage_allowance: property_maximum_mortgage_allowance_threshold(submission_date),
           pensioner_capital_disregard:,
-          disputed_property_disregard: property_smod,
-          maximum_smod_disregard: maximum_subject_matter_of_dispute_disregard - property_smod,
+          maximum_subject_matter_of_dispute_disregard:,
         )
       end
 
