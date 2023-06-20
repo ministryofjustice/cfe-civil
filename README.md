@@ -172,22 +172,30 @@ Try this simple test, to ensure it's working:
 $ curl http://127.0.0.1:3000/healthcheck
 {"checks":{"database":true}}
 ```
-## Generation of API documentation using Rswag
+## Swagger schema and docs
 
-See [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md) for initial setup and/or modifications.
+The API is advertised to clients using Swagger (OpenAPI 3), including:
 
-The `swagger` folder in the root directory has one `swagger.yaml` within a version number folder - e.g. `swagger/v4/swagger.yaml`. This file is what defines the swagger ui page displayed at `/api-docs`. This file is generated using rswag's rake task - `rake rswag:specs:swaggerize`.
+* a Swagger schema: <swagger/v6/swagger.yaml>
+* a Swagger UI documentation, served at: /api-docs/index.html
 
-The `swagger.yaml` file that is generated is defined by a combination of "global" settings in `spec/swagger_helper.rb` and indivual spec files that are, by our convention, stored in `spec/requests/swagger_docs/<version>/*.spec.rb`.
+The Swagger stuff is originally authored in Ruby:
 
-You can generate a new endpoint spec file using:
-```sh
-rails generate rspec:swagger MyController
-```
+* spec/swagger_helper.rb
+* spec/requests/swagger_docs/v6/full_assessment_spec.rb
+* spec/requests/swagger_docs/VERSION/*.spec.rb (in general)
 
-You can update an existing endpoint by modifying it's spec and then running:
+and then [Rswag](https://github.com/rswag/rswag/blob/master/README.md) is used to generate the Swagger schema and HTML:
+
 ```sh
 rake rswag:specs:swaggerize
+```
+
+We have chosen to include the Swagger schema and docs in the repository, because it's handy to have them in this form. However it means developers need to remember to re-generate them when the .rb files are changed, and commit both sets of changes together, so they stay in step. It's recommended to run [Guard](#guard) to automate this.
+
+If you create a new API endpoint, then you can set-up the rspec for Swagger like this:
+```sh
+rails generate rspec:swagger MyController
 ```
 
 ## Threshold configuration files

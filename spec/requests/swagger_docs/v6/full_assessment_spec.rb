@@ -17,6 +17,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                 schema: {
                   type: :object,
                   required: %i[assessment applicant proceeding_types],
+                  additionalProperties: false,
                   properties: {
                     assessment: { "$ref" => "#/components/schemas/Assessment" },
                     applicant: { "$ref" => "#/components/schemas/Applicant" },
@@ -45,6 +46,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       type: :object,
                       required: %i[],
                       description: "A main home and additional properties",
+                      additionalProperties: false,
                       properties: {
                         main_home: { "$ref" => "#/components/schemas/Property" },
                         additional_properties: {
@@ -79,11 +81,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       required: %i[partner],
                       description: "Full information about an applicant's partner",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+                      additionalProperties: false,
                       properties: {
                         partner: {
                           type: :object,
                           description: "The partner of the applicant",
                           required: %i[date_of_birth employed],
+                          additionalProperties: false,
                           properties: {
                             date_of_birth: {
                               type: :string,
@@ -106,6 +110,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           items: {
                             type: :object,
                             description: "Employment income detail",
+                            additionalProperties: false,
                             properties: {
                               name: {
                                 type: :string,
@@ -139,7 +144,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           description: "One or more additional properties owned by the applicant's partner",
                           items: { "$ref" => "#/components/schemas/Property" },
                         },
-                        capital_items: { "$ref" => "#/components/schemas/Capitals" },
+                        capitals: { "$ref" => "#/components/schemas/Capitals" },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
@@ -321,6 +326,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                  },
                  assessment: {
                    type: :object,
+                   additionalProperties: false,
                    properties: {
                      id: { type: :string },
                      client_reference_id: { type: :string, nullable: true, example: "ref-11-22" },
@@ -334,15 +340,15 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      applicant: { type: :object },
                      gross_income: {
                        type: :object,
-                       additionalProperties: false,
                        required: %i[employment_income irregular_income state_benefits other_income],
+                       additionalProperties: false,
                        properties: {
                          employment_income: {
                            type: :array,
                            items: {
                              type: :object,
-                             additionalProperties: false,
                              required: %i[name payments],
+                             additionalProperties: false,
                              properties: {
                                name: { type: :string },
                                payments: { type: :array },
@@ -351,13 +357,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                          irregular_income: {
                            type: :object,
-                           additionalProperties: false,
                            required: %i[monthly_equivalents],
+                           additionalProperties: false,
                            properties: {
                              monthly_equivalents: {
                                type: :object,
-                               additionalProperties: false,
                                required: %i[student_loan unspecified_source],
+                               additionalProperties: false,
                                properties: {
                                  student_loan: { type: :number },
                                  unspecified_source: { type: :number },
@@ -393,8 +399,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            type: :array,
                            items: {
                              type: :object,
-                             additionalProperties: false,
                              required: %i[monthly_income],
+                             additionalProperties: false,
                              properties: {
                                client_reference: {
                                  type: :string,
@@ -403,8 +409,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                monthly_income: {
                                  type: :object,
                                  description: "Monthly versions of input data",
-                                 additionalProperties: false,
                                  required: %i[gross tax national_insurance benefits_in_kind],
+                                 additionalProperties: false,
                                  properties: {
                                    gross: {
                                      type: :number,
@@ -448,8 +454,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        properties: {
                          capital_items: {
                            type: :object,
-                           additionalProperties: false,
                            required: %i[liquid non_liquid vehicles properties],
+                           additionalProperties: false,
                            properties: {
                              liquid: {
                                type: :array,

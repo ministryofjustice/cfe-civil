@@ -152,8 +152,8 @@ RSpec.configure do |config|
             items: {
               type: :object,
               description: "Account detail",
-              additionalProperties: false,
               required: %i[value description],
+              additionalProperties: false,
               properties: {
                 value: { "$ref" => "#/components/schemas/currency" },
                 description: {
@@ -201,8 +201,8 @@ RSpec.configure do |config|
             description: "0 or more employment payment details",
             items: {
               type: :object,
-              additionalProperties: false,
               required: %i[client_id date gross benefits_in_kind tax national_insurance],
+              additionalProperties: false,
               properties: {
                 client_id: {
                   type: :string,
@@ -243,9 +243,9 @@ RSpec.configure do |config|
           },
           NonPropertyAsset: {
             type: :object,
-            additionalProperties: false,
             description: "Non-property Asset",
             required: %i[value description],
+            additionalProperties: false,
             properties: {
               value: {
                 type: :number,
@@ -263,9 +263,9 @@ RSpec.configure do |config|
             description: "One or more employment income details",
             items: {
               type: :object,
-              additionalProperties: false,
               required: %i[name client_id payments],
               description: "Employment income detail",
+              additionalProperties: false,
               properties: {
                 name: {
                   type: :string,
@@ -291,8 +291,8 @@ RSpec.configure do |config|
                 {
                   type: :object,
                   required: %i[name payments],
-                  additionalProperties: false,
                   description: "Outgoing payments detail",
+                  additionalProperties: false,
                   properties: {
                     name: {
                       type: :string,
@@ -305,9 +305,9 @@ RSpec.configure do |config|
                       description: "One or more outgoing payments detail",
                       items: {
                         type: :object,
-                        additionalProperties: false,
                         required: %i[client_id payment_date amount],
                         description: "Payment detail",
+                        additionalProperties: false,
                         properties: {
                           client_id: {
                             type: :string,
@@ -334,8 +334,8 @@ RSpec.configure do |config|
                 {
                   type: :object,
                   required: %i[name payments],
-                  additionalProperties: false,
                   description: "Outgoing payments detail",
+                  additionalProperties: false,
                   properties: {
                     name: {
                       type: :string,
@@ -347,9 +347,9 @@ RSpec.configure do |config|
                       description: "One or more outgoing payments detail",
                       items: {
                         type: :object,
-                        additionalProperties: false,
                         required: %i[client_id payment_date amount housing_cost_type],
                         description: "Payment detail",
+                        additionalProperties: false,
                         properties: {
                           client_id: {
                             type: :string,
@@ -413,8 +413,8 @@ RSpec.configure do |config|
           },
           Assessment: {
             type: :object,
-            additionalProperties: false,
             required: %i[submission_date],
+            additionalProperties: false,
             properties: {
               client_reference_id: {
                 type: :string,
@@ -441,6 +441,7 @@ RSpec.configure do |config|
                                     .gsub("3.months.ago", "2022-01-01")
                                     .gsub("2.months.ago", "2022-02-01")
                                     .gsub("1.month.ago", "2022-03-01")),
+            additionalProperties: false,
             properties: {
               income: {
                 type: :array,
@@ -448,8 +449,8 @@ RSpec.configure do |config|
                 items: {
                   type: :object,
                   description: "Income detail",
-                  additionalProperties: false,
                   required: %i[category payments],
+                  additionalProperties: false,
                   properties: {
                     category: {
                       type: :string,
@@ -462,8 +463,8 @@ RSpec.configure do |config|
                       items: {
                         type: :object,
                         description: "Payment detail",
-                        additionalProperties: false,
                         required: %i[amount client_id date],
+                        additionalProperties: false,
                         properties: {
                           date: {
                             type: :string,
@@ -486,8 +487,8 @@ RSpec.configure do |config|
                 type: :array,
                 items: {
                   type: :object,
-                  additionalProperties: false,
                   required: %i[category payments],
+                  additionalProperties: false,
                   properties: {
                     category: {
                       description: "The category of the outgoing transaction",
@@ -500,6 +501,7 @@ RSpec.configure do |config|
                       items: {
                         type: :object,
                         required: %i[amount client_id date],
+                        additionalProperties: false,
                         properties: {
                           amount: { "$ref" => "#/components/schemas/positive_currency" },
                           client_id: { type: :string },
@@ -518,6 +520,7 @@ RSpec.configure do |config|
           Dependant: {
             type: :object,
             required: %i[date_of_birth in_full_time_education relationship],
+            additionalProperties: false,
             properties: {
               date_of_birth: {
                 type: :string,
@@ -553,6 +556,7 @@ RSpec.configure do |config|
               type: :object,
               required: %i[income_type frequency amount],
               description: "Irregular payment detail",
+              additionalProperties: false,
               properties: {
                 income_type: {
                   type: :string,
@@ -577,6 +581,7 @@ RSpec.configure do |config|
               type: :object,
               description: "Other regular income detail",
               required: %i[source payments],
+              additionalProperties: false,
               properties: {
                 source: {
                   type: :string,
@@ -591,6 +596,7 @@ RSpec.configure do |config|
                     type: :object,
                     description: "Payment detail",
                     required: %i[date amount client_id],
+                    additionalProperties: false,
                     properties: {
                       date: {
                         type: :string,
@@ -621,6 +627,7 @@ RSpec.configure do |config|
             items: {
               type: :object,
               required: %i[ccms_code client_involvement_type],
+              additionalProperties: false,
               properties: {
                 ccms_code: {
                   type: :string,
@@ -640,6 +647,7 @@ RSpec.configure do |config|
           Property: {
             type: :object,
             required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
+            additionalProperties: false,
             properties: {
               value: {
                 "$ref" => "#/components/schemas/currency",
@@ -697,8 +705,8 @@ RSpec.configure do |config|
           SelfEmployment: {
             type: :object,
             required: %i[income],
-            additionalProperties: false,
             description: "This should be filled out when the client or partner is self employed",
+            additionalProperties: false,
             properties: {
               client_reference: {
                 type: :string,
@@ -751,8 +759,8 @@ RSpec.configure do |config|
           StateBenefit: {
             type: :object,
             required: %i[name payments],
-            additionalProperties: false,
             description: "State benefit payment detail",
+            additionalProperties: false,
             properties: {
               name: {
                 type: :string,
@@ -764,9 +772,9 @@ RSpec.configure do |config|
                 description: "One or more state benefit payments details",
                 items: {
                   required: %i[client_id date amount],
-                  additionalProperties: false,
                   type: :object,
                   description: "Payment detail",
+                  additionalProperties: false,
                   properties: {
                     client_id: {
                       type: :string,
@@ -788,6 +796,7 @@ RSpec.configure do |config|
                       type: :object,
                       description: "Line items that should be flagged to caseworkers for review",
                       example: { multi_benefit: true },
+                      additionalProperties: false,
                       properties: {
                         multi_benefit: {
                           type: :boolean,
@@ -802,6 +811,7 @@ RSpec.configure do |config|
           Vehicle: {
             type: :object,
             required: %i[value date_of_purchase],
+            additionalProperties: false,
             properties: {
               value: {
                 "$ref" => "#/components/schemas/positive_currency",
@@ -833,6 +843,7 @@ RSpec.configure do |config|
               type: :object,
               required: %i[category details],
               description: "Explicit remark",
+              additionalProperties: false,
               properties: {
                 category: {
                   type: :string,

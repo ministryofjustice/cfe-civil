@@ -86,10 +86,12 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
 
   def capitals_params
     {
-      bank_accounts:
-          [{ description: "Money not in a bank account", value: 50.0 }],
-      non_liquid_capital:
-          [{ description: "Any valuable items worth more than £500", value: 700.0 }],
+      capitals: {
+        bank_accounts:
+            [{ description: "Money not in a bank account", value: 50.0 }],
+        non_liquid_capital:
+            [{ description: "Any valuable items worth more than £500", value: 700.0 }],
+      }
     }
   end
 
@@ -251,14 +253,16 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
 
   def irregular_income_params
     {
-      payments: [
-        { income_type: "student_loan",
-          frequency: "annual",
-          amount: 100.0 },
-        { income_type: "unspecified_source",
-          frequency: "quarterly",
-          amount: 303.0 },
-      ],
+      irregular_incomes: {
+        payments: [
+          { income_type: "student_loan",
+            frequency: "annual",
+            amount: 100.0 },
+          { income_type: "unspecified_source",
+            frequency: "quarterly",
+            amount: 303.0 },
+        ],
+      }
     }
   end
 

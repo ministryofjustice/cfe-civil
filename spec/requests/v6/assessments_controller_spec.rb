@@ -249,7 +249,7 @@ module V6
       context "with a partner dependant error" do
         let(:params) do
           {
-            partner: { partner: attributes_for(:applicant),
+            partner: { date_of_birth: "1987-08-08", employed: true,
                        dependants: [
                          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
                        ] },
