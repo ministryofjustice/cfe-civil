@@ -13,7 +13,7 @@ class Dependant
     before: proc { Time.zone.tomorrow }, message: :not_in_the_future
   }
 
-  def becomes_adult_on
+  def becomes_16_on
     date_of_birth.years_since(16)
   end
 

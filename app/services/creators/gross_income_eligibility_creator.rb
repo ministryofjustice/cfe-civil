@@ -1,57 +1,46 @@
 module Creators
   class GrossIncomeEligibilityCreator
-    def self.call(summary, dependants, proceeding_types, submission_date)
-      new(summary, dependants, proceeding_types, submission_date).call
-    end
-
-    def initialize(summary, dependants, proceeding_types, submission_date)
-      @summary = summary
-      @dependants = dependants
-      @proceeding_types = proceeding_types
-      @submission_date = submission_date
-    end
-
-    def call
-      @proceeding_types.map(&:ccms_code).each { |ptc| create_eligibility(ptc) }
-    end
+    class << self
+      def call(summary, dependants, proceeding_types, submission_date)
+        proceeding_types.each { |proceeding_type| create_eligibility(summary:, submission_date:, dependants:, proceeding_type:) }
+      end
 
   private
 
-    def create_eligibility(ptc)
-      @summary.eligibilities.create!(
-        proceeding_type_code: ptc,
-        upper_threshold: upper_threshold(ptc),
-        assessment_result: "pending",
-      )
-    end
+      def create_eligibility(summary:, dependants:, proceeding_type:, submission_date:)
+        summary.eligibilities.create!(
+          proceeding_type_code: proceeding_type.ccms_code,
+          upper_threshold: upper_threshold(proceeding_type:, submission_date:, dependants:),
+          assessment_result: "pending",
+        )
+      end
 
-    def upper_threshold(ptc)
-      base_threshold = threshold_from_proceeding_type(ptc)
-      return base_threshold if base_threshold == 999_999_999_999
+      def upper_threshold(proceeding_type:, submission_date:, dependants:)
+        base_threshold = proceeding_type.gross_income_upper_threshold
+        return base_threshold if base_threshold == 999_999_999_999
 
-      base_threshold + dependant_increase
-    end
+        base_threshold + dependant_increase(dependants, submission_date)
+      end
 
-    def threshold_from_proceeding_type(ptc)
-      @proceeding_types.detect { |pt| pt.ccms_code == ptc }.gross_income_upper_threshold
-    end
+      def dependant_increase(dependants, submission_date)
+        return 0 unless number_of_child_dependants(dependants) > dependant_increase_starts_after(submission_date)
 
-    def dependant_increase
-      return 0 unless number_of_child_dependants > dependant_increase_starts_after
+        (number_of_child_dependants(dependants) - dependant_increase_starts_after(submission_date)) * dependant_step(submission_date)
+      end
 
-      (number_of_child_dependants - dependant_increase_starts_after) * dependant_step
-    end
+      # We check 'child_relative' here is this is the important test (they could be >18 but still dependant)
+      # rather than the 'over_16' test for childcare eligibility
+      def number_of_child_dependants(dependants)
+        dependants.count { |c| c.relationship == "child_relative" }
+      end
 
-    def number_of_child_dependants
-      @dependants.count { |c| c.relationship == "child_relative" }
-    end
+      def dependant_increase_starts_after(submission_date)
+        Threshold.value_for(:dependant_increase_starts_after, at: submission_date)
+      end
 
-    def dependant_increase_starts_after
-      Threshold.value_for(:dependant_increase_starts_after, at: @submission_date)
-    end
-
-    def dependant_step
-      Threshold.value_for(:dependant_step, at: @submission_date)
-    end
+      def dependant_step(submission_date)
+        Threshold.value_for(:dependant_step, at: submission_date)
+      end
+  end
   end
 end
