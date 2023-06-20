@@ -409,7 +409,7 @@ data:
             "options": [],
             "query": "label_values(kube_deployment_metadata_generation, namespace)",
             "refresh": 1,
-            "regex": "/^cfe-civil/",
+            "regex": "/^cfe-/",
             "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
