@@ -30,7 +30,7 @@ data:
           }
         ]
       },
-      "description": "CFE Civil Ingress",
+      "description": "CFE Ingress",
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
@@ -681,7 +681,7 @@ data:
               "refId": "Prometheus-namespace-Variable-Query"
             },
             "refresh": 1,
-            "regex": "/^cfe-civil/",
+            "regex": "/^cfe-/",
             "skipUrlSync": false,
             "sort": 1,
             "tagValuesQuery": "",
@@ -749,7 +749,7 @@ data:
         ]
       },
       "timezone": "browser",
-      "title": "CFE Civil / Ingress",
+      "title": "CFE / Ingress",
       "uid": "JC1OFKVbXxSY",
       "version": 3,
       "weekStart": ""
