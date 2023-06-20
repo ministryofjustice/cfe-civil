@@ -9,12 +9,12 @@ module Assessors
       :smod_allowance,
     ) do
       def self.blank
-        new(0, 0, 0, 0, 0, 0)
+        new(transaction_allowance: 0, net_value: 0, net_equity: 0, main_home_equity_disregard: 0, assessed_equity: 0, smod_allowance: 0)
       end
     end
 
     PropertyData = Data.define(:property, :result) do
-      def self.blank
+      def self.blank_main_home
         new(property: Property.blank_main_home, result: Result.blank)
       end
     end
