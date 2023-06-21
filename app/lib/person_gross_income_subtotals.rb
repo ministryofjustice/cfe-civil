@@ -19,6 +19,8 @@ class PersonGrossIncomeSubtotals
     @employment_income_subtotals = employment_income_subtotals
   end
 
+  attr_reader :employment_income_subtotals
+
   def state_benefits
     @gross_income_summary.state_benefits.map do |sb|
       StateBenefitData.new state_benefit_name: sb.state_benefit_name,
@@ -32,10 +34,6 @@ class PersonGrossIncomeSubtotals
       @regular_income_categories.sum(&:all_sources) +
       monthly_student_loan +
       monthly_unspecified_source
-  end
-
-  def employment_income_subtotals
-    @employment_income_subtotals || EmploymentIncomeSubtotals.blank
   end
 
   def monthly_regular_incomes(income_type, income_category)

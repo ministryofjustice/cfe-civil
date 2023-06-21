@@ -706,43 +706,79 @@ RSpec.configure do |config|
               },
               income: {
                 type: :object,
-                required: %i[frequency gross tax benefits_in_kind national_insurance receiving_only_statutory_sick_or_maternity_pay is_employment],
+                required: %i[frequency gross tax national_insurance],
                 additionalProperties: false,
                 properties: {
-                  receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
                   frequency: {
                     type: :string,
-                    enum: SelfEmploymentIncome::PAYMENT_FREQUENCIES,
-                  },
-                  is_employment: {
-                    type: :boolean,
-                    description: "set 'true' if this is a 'salary' type income (e.g. company director salary)",
+                    enum: EmploymentIncome::PAYMENT_FREQUENCIES,
                   },
                   gross: {
                     type: :number,
                     format: :decimal,
                     minimum: 0,
-                    description: "A positive number representing gross income payments",
+                    description: "Gross income from this undertaking",
+                  },
+                  tax: {
+                    type: :number,
+                    format: :decimal,
+                    maximum: 0,
+                    description: "Tax paid (negative) on this income",
+                  },
+                  national_insurance: {
+                    type: :number,
+                    maximum: 0,
+                    format: :decimal,
+                    description: "NI paid (negative) on this income",
+                  },
+                },
+              },
+            },
+          },
+          EmploymentDetails: {
+            type: :object,
+            required: %i[income],
+            additionalProperties: false,
+            description: "Details about standard employment",
+            properties: {
+              client_reference: {
+                type: :string,
+                description: "Optional reference, echoed in response",
+              },
+              income: {
+                type: :object,
+                required: %i[frequency gross tax benefits_in_kind national_insurance receiving_only_statutory_sick_or_maternity_pay],
+                additionalProperties: false,
+                properties: {
+                  receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
+                  frequency: {
+                    type: :string,
+                    enum: EmploymentIncome::PAYMENT_FREQUENCIES,
+                  },
+                  gross: {
+                    type: :number,
+                    format: :decimal,
+                    minimum: 0,
+                    description: "Gross income from this employment",
                     example: "2000.00",
                   },
                   benefits_in_kind: {
                     type: :number,
                     format: :decimal,
                     minimum: 0,
-                    description: "A positive number representing a benefit in kind payment",
-                    example: "100.00",
+                    description: "Regular benefits in kind from this employment",
                   },
                   tax: {
                     type: :number,
                     format: :decimal,
-                    description: "A negative number representing a tax deduction",
-                    example: "-250.20",
+                    maximum: 0,
+                    description: "tax paid (negative) on this employment",
                   },
                   national_insurance: {
                     type: :number,
                     format: :decimal,
-                    description: "A negative number representing a National Insurance deduction",
-                    example: "-150.20",
+                    maximum: 0,
+                    description: "NI paid (negative) on this employment",
                   },
                 },
               },
@@ -911,14 +947,14 @@ RSpec.configure do |config|
                   tax: {
                     type: :number,
                     format: :decimal,
-                    description: "A negative number representing a tax deduction",
-                    example: "-250.20",
+                    maximum: 0,
+                    description: "(negative) monthly tax paid",
                   },
                   national_insurance: {
                     type: :number,
                     format: :decimal,
-                    description: "A negative number representing a National Insurance deduction",
-                    example: "-150.20",
+                    maximum: 0,
+                    description: "(negative) monthly NI paid",
                   },
                   fixed_employment_deduction: {
                     type: :number,

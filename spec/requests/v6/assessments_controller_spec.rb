@@ -746,20 +746,39 @@ module V6
         let(:params) do
           {
             assessment: submission_date_params.merge(level_of_help: "controlled"),
-            employment_or_self_employment: [{ client_reference: "12345",
-                                              income: {
-                                                receiving_only_statutory_sick_or_maternity_pay: false,
-                                                is_employment: false,
-                                                gross: 934,
-                                                benefits_in_kind: 26,
-                                                tax: -527,
-                                                national_insurance: -34,
-                                                frequency: "monthly",
-                                              } }],
+            self_employment_details: [{ client_reference: "12345",
+                                        income: {
+                                          gross: 480,
+                                          tax: -263,
+                                          national_insurance: -34,
+                                          frequency: "monthly",
+                                        } }],
+            employment_details: [
+              { client_reference: "54321",
+                income: {
+                  receiving_only_statutory_sick_or_maternity_pay: true,
+                  gross: 220,
+                  benefits_in_kind: 20,
+                  tax: -131.50,
+                  national_insurance: -17,
+                  frequency: "monthly",
+                } },
+              {
+                income: {
+                  receiving_only_statutory_sick_or_maternity_pay: true,
+                  gross: 220,
+                  benefits_in_kind: 20,
+                  tax: -131.50,
+                  national_insurance: -17,
+                  frequency: "monthly",
+                },
+              },
+            ],
           }
         end
         let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
-        let(:self_employment_incomes) { parsed_response.dig(:assessment, :gross_income, :self_employments) }
+        let(:self_employment_incomes) { parsed_response.dig(:assessment, :gross_income, :self_employment_details) }
+        let(:employment_incomes) { parsed_response.dig(:assessment, :gross_income, :employment_details) }
 
         it "is successful" do
           expect(response).to have_http_status(:success)
@@ -767,28 +786,44 @@ module V6
 
         it "has employment income without fixed employment deduction" do
           expect(employment_income)
-            .to eq(
-              {
-                gross_income: 934.0,
-                benefits_in_kind: 26.0,
-                tax: -527.0,
-                national_insurance: -34.0,
-                fixed_employment_deduction: 0.0,
-                net_employment_income: 399.0,
-              },
-            )
+            .to eq({ gross_income: 920.0,
+                     benefits_in_kind: 40.0,
+                     fixed_employment_deduction: 0.0,
+                     tax: -526.0,
+                     national_insurance: -68.0,
+                     net_employment_income: 366.0 })
         end
 
         it "has self employments in the response" do
           expect(self_employment_incomes).to eq([{
             client_reference: "12345",
             monthly_income: {
-              gross: 934.0,
-              benefits_in_kind: 26.0,
-              tax: -527.0,
+              gross: 480.0,
+              tax: -263.0,
               national_insurance: -34.0,
+              benefits_in_kind: 0.0,
             },
           }])
+        end
+
+        it "has employments in the response" do
+          expect(employment_incomes).to match_array([
+            { client_reference: "54321",
+              monthly_income: {
+                gross: 220.0,
+                tax: -131.50,
+                national_insurance: -17.0,
+                benefits_in_kind: 20.0,
+              } },
+            {
+              monthly_income: {
+                gross: 220.0,
+                tax: -131.50,
+                national_insurance: -17.0,
+                benefits_in_kind: 20.0,
+              },
+            },
+          ])
         end
       end
 

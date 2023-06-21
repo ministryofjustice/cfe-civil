@@ -151,7 +151,7 @@ module Decorators
 
         subject(:decorator) do
           described_class.new(assessment.applicant_gross_income_summary,
-                              assessment.employments, subtotals, []).as_json
+                              assessment.employments, subtotals).as_json
         end
 
         it "returns the expected structure" do

@@ -1,12 +1,12 @@
 module Calculators
   class EmploymentIncomeCalculator
+    EmploymentResult = Data.define(:employment, :result)
+    Result = Data.define(:fixed_employment_allowance)
+
     class << self
       def call(submission_date:, employment:)
-        EmploymentIncomeSubtotals.new(gross_employment_income: employment.monthly_gross_income,
-                                      benefits_in_kind: employment.monthly_benefits_in_kind,
-                                      fixed_employment_allowance: allowance(employment, submission_date),
-                                      tax: employment.monthly_tax,
-                                      national_insurance: employment.monthly_national_insurance)
+        EmploymentResult.new(employment:,
+                             result: Result.new(fixed_employment_allowance: allowance(employment, submission_date)))
       end
 
     private

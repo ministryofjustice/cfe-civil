@@ -23,7 +23,7 @@ module Calculators
       context "at least one employment record exists" do
         it "adds the fixed employment allowance from the threshold files" do
           expect(described_class.call(submission_date: assessment.submission_date,
-                                      employment: employment1).fixed_employment_allowance).to eq(-45)
+                                      employment: employment1).result.fixed_employment_allowance).to eq(-45)
         end
 
         context "if applicant is not in work" do
@@ -31,7 +31,7 @@ module Calculators
 
           it "ignores fixed employment allowance" do
             expect(described_class.call(submission_date: assessment.submission_date,
-                                        employment: employment1).fixed_employment_allowance).to eq(0)
+                                        employment: employment1).result.fixed_employment_allowance).to eq(0)
           end
         end
       end
