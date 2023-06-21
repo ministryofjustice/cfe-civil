@@ -12,19 +12,19 @@ class RedactService
 
     def redact_data(hash)
       submission_date = hash.dig(:assessment, :submission_date)
-      filter_client_ids(submission_date, hash)
+      filter_payload(submission_date, hash)
     end
 
-    def filter_client_ids(submission_date, hash)
+    def filter_payload(submission_date, hash)
       hash.each do |key, value|
         if key == :client_id
           hash[key] = CFEConstants::REDACTED_MESSAGE
         elsif key == :date_of_birth
           hash[key] = RequestLogger.redact_dob(submission_date, hash[key])
         elsif value.is_a?(Hash)
-          filter_client_ids(submission_date, value)
+          filter_payload(submission_date, value)
         elsif value.is_a?(Array)
-          value.select { |v| v.is_a?(Hash) }.each { |item| filter_client_ids(submission_date, item) }
+          value.select { |v| v.is_a?(Hash) }.each { |item| filter_payload(submission_date, item) }
         end
       end
     end
