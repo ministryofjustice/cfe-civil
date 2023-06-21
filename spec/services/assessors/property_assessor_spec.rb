@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Calculators
-  RSpec.describe PropertyCalculator do
+module Assessors
+  RSpec.describe PropertyAssessor do
     let(:assessment) { create :assessment, :with_capital_summary, submission_date: }
     let(:capital_summary) { assessment.applicant_capital_summary }
     let(:submission_date) { Time.zone.local(2020, 10, 10) }
@@ -20,7 +20,7 @@ module Calculators
         end
 
         let(:result) do
-          properties.detect(&:main_home)
+          properties.detect { |p| p.property.main_home }.result
         end
 
         context "100% owned" do
@@ -236,11 +236,11 @@ module Calculators
                 percentage_owned: 100.0
         end
         let(:additional_properties) do
-          properties.reject(&:main_home).map(&:to_h).map { |c| c.except(:property) }
+          properties.reject { |p| p.property.main_home }.map(&:result)
         end
-        let(:main_home_result) { properties.detect(&:main_home) }
-        let(:ap1_result) { properties.detect { |p| p.value == 350_000 } }
-        let(:ap2_result) { properties.detect { |p| p.value == 270_000 } }
+        let(:main_home_result) { properties.detect { |p| p.property.main_home }.result }
+        let(:ap1_result) { properties.detect { |p| p.property.value == 350_000 }.result }
+        let(:ap2_result) { properties.detect { |p| p.property.value == 270_000 }.result }
 
         let(:ap1) do
           build :property,
@@ -268,14 +268,14 @@ module Calculators
 
         context "main dwelling wholly owned and additional properties wholly owned" do
           it "deducts a maximum of £100k mortgage over all properties" do
-            expect(additional_properties.each_with_object(Hash.new(0)) { |ap, h| ap.each { |k, v| h[k] += v } })
+            expect(additional_properties.map(&:to_h).each_with_object(Hash.new(0)) { |ap, h| ap.each { |k, v| h[k] += v } })
               .to eq({ transaction_allowance: 18_600.0,
                        net_value: 536_400.0,
                        smod_allowance: 0,
                        net_equity: 536_400.0,
                        main_home_equity_disregard: 0.0,
                        assessed_equity: 536_400.0 })
-            expect(main_home_result.to_h.except(:property))
+            expect(main_home_result.to_h)
               .to eq({ transaction_allowance: 6_600.0,
                        net_value: 178_400.0,
                        net_equity: 178_400.0,
@@ -330,7 +330,7 @@ module Calculators
                 outstanding_mortgage: 55_000,
                 percentage_owned: 100.0
         end
-        let(:additional_property) { properties.first }
+        let(:additional_property) { properties.map(&:result).first }
 
         before do
           ap1.save!

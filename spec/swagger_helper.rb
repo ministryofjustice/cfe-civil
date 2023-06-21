@@ -104,7 +104,7 @@ RSpec.configure do |config|
               },
               # The minimum has to be zero because we have to have a 'dummy' main home sometimes
               percentage_owned: {
-                type: :integer,
+                type: :number,
                 minimum: 0,
                 maximum: 100,
               },

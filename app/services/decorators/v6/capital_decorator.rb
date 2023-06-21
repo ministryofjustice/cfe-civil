@@ -29,7 +29,7 @@ module Decorators
 
       def properties
         {
-          main_home: PropertyDecorator.new(@capital_subtotals.main_home).as_json,
+          main_home: PropertyDecorator.new(@capital_subtotals.main_home.property, @capital_subtotals.main_home.result).as_json,
           additional_properties:,
         }
       end
@@ -43,7 +43,7 @@ module Decorators
       end
 
       def additional_properties
-        @capital_subtotals.additional_properties.map { |p| PropertyDecorator.new(p).as_json }
+        @capital_subtotals.additional_properties.map { |p| PropertyDecorator.new(p.property, p.result).as_json }
       end
 
       def vehicles
