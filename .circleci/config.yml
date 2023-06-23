@@ -3,7 +3,10 @@ version: 2.1
 parameters:
   approval_job_name:
     type: string
-    default: "deploy_uat_without_approval"
+    default: "deploy_uat_approval"
+  approval_required:
+    type: boolean
+    default: false
 
 orbs:
   slack: circleci/slack@4.5.2
