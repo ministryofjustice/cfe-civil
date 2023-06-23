@@ -495,6 +495,7 @@ workflows:
                 - main
 
   deploy_main_approval_required:
+    when: << pipeline.parameters.approval_required >>
     jobs:
       - lint_checks:
           filters:
@@ -565,6 +566,7 @@ workflows:
                 - main
   
   deploy_main:
+    unless: << pipeline.parameters.approval_required >>
     jobs:
       - lint_checks:
           filters:
