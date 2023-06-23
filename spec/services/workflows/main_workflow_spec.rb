@@ -22,7 +22,9 @@ module Workflows
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
         expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
-        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
+        described_class.call(assessment:,
+                             applicant: build(:person_data, details: applicant),
+                             partner: nil)
       end
 
       context "for immigration/asylum proceeding types" do
@@ -33,7 +35,7 @@ module Workflows
           expect(NonPassportedWorkflow).not_to receive(:call)
           expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
           described_class.call(assessment:,
-                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
+                               applicant: build(:person_data, details: applicant),
                                partner: nil)
         end
       end
@@ -45,7 +47,7 @@ module Workflows
       context "without partner" do
         subject(:workflow_call) do
           described_class.call(assessment:,
-                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
+                               applicant: build(:person_data, details: applicant),
                                partner: nil)
         end
 
@@ -69,8 +71,8 @@ module Workflows
 
         subject(:workflow_call) do
           described_class.call(assessment:,
-                               applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []),
-                               partner: PersonData.new(details: partner, self_employments: [], vehicles: [], dependants: []))
+                               applicant: build(:person_data, details: applicant),
+                               partner: build(:person_data, details: partner))
         end
 
         before do
@@ -94,7 +96,9 @@ module Workflows
       let(:applicant) { build(:applicant, :without_qualifying_benefits) }
 
       subject(:workflow_call) do
-        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
+        described_class.call(assessment:,
+                             applicant: build(:person_data, details: applicant),
+                             partner: nil)
       end
 
       it "calls NonPassportedWorkflow" do
@@ -124,7 +128,9 @@ module Workflows
       let(:applicant) { build :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
-        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants: []), partner: nil)
+        described_class.call(assessment:,
+                             applicant: build(:person_data, details: applicant),
+                             partner: nil)
       end
 
       context "with proceeding types" do
