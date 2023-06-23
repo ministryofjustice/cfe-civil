@@ -24,11 +24,11 @@ RSpec.describe Dependant, type: :model do
     end
   end
 
-  describe "#becomes_adult_on" do
+  describe "#becomes_16_on" do
     let(:dependant) { build(:dependant, date_of_birth: Date.new(2000, 1, 1)) }
 
     it "returns the dependant's 16th birthday" do
-      expect(dependant.becomes_adult_on).to eq Date.new(2016, 1, 1)
+      expect(dependant.becomes_16_on).to eq Date.new(2016, 1, 1)
     end
   end
 end
