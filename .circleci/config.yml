@@ -466,10 +466,18 @@ workflows:
           requires:
             - end2end_tests
       #          <<: *generic-slack-fail-post-step
+      - deploy_staging_approval:
+          type: approval
+          requires:
+            - end2end_tests
+          filters:
+            branches:
+              only:
+                - main
       - deploy_staging:
           context: cfe-civil-staging
           requires:
-            - end2end_tests
+            - deploy_staging_approval
           filters:
             branches:
               only:
