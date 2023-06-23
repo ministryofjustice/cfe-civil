@@ -15,5 +15,4 @@ Bug Fix: Vehicles missing from response when calculation short-circuited due to 
 # 31st May 2023
 ### LEP-165
 
-Removal: Removal of all v5 endpoints in favour of single-shot v6 endpoint,
-         allowing subsequent removal of database tables
+Removal: Removal of all v5 endpoints in favour of single-shot v6 endpoint allowing subsequent removal of database tables
