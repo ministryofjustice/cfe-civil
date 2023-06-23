@@ -473,7 +473,7 @@ workflows:
           filters:
             branches:
               only:
-                - LEP-216-deployment-is-done-on-automatic-schedule
+                - main
       - deploy_staging:
           context: cfe-civil-staging
           requires:
@@ -481,7 +481,7 @@ workflows:
           filters:
             branches:
               only:
-                - LEP-216-deployment-is-done-on-automatic-schedule
+                - main
       - deploy_production_approval:
           type: approval
           requires:
