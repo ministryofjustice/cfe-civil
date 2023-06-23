@@ -3,6 +3,9 @@ version: 2.1
 parameters:
   approval_required:
     type: boolean
+    default: true
+  branch_approval_required:
+    type: boolean
     default: false
 
 orbs:
@@ -365,7 +368,7 @@ jobs:
 workflows:
   version: 2
   deploy_branch_approval_required:
-    when: << pipeline.parameters.approval_required >>
+    when: << pipeline.parameters.branch_approval_required >>
     jobs:
       - lint_checks:
           filters:
@@ -432,7 +435,7 @@ workflows:
                 - main
 
   deploy_branch:
-    unless: << pipeline.parameters.approval_required >>
+    unless: << pipeline.parameters.branch_approval_required >>
     jobs:
       - lint_checks:
           filters:
