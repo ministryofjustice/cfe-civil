@@ -6,7 +6,7 @@ Includes changes that are material to the client - refactors are ignored.
 
 ## 23rd June 2023
 
-* LEP-214 **Bug Fix** Properties missing from response when calculation short-circuited due to income
+* LEP-214 **Bug Fix** Properties missing from response if gross/disposable income test is ineligible
 
 ## 15th June 2023
 
@@ -15,7 +15,7 @@ Includes changes that are material to the client - refactors are ignored.
 
 ## 14th June 2203
 
-* LEP-207 **Bug Fix** Vehicles missing from response when calculation short-circuited due to income
+* LEP-207 **Bug Fix** Vehicles missing from response if gross/disposable income test is ineligible
 
 ## 31st May 2023
 
