@@ -1,11 +1,8 @@
 ---
 includes:
-  - app/services
   - app/services/calculators
   - app/services/collators
-  - app/services/decorators/v6
   - app/services/assessors
-  - app/services/workflows
   - app/services/utilities
 integration:
   name: rspec
