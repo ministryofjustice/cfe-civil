@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  require_approval:
+    type: boolean
+    default: false
+
 orbs:
   slack: circleci/slack@4.5.2
 
@@ -408,7 +413,14 @@ workflows:
       - deploy_uat:
           context: cfe-civil-uat
           requires:
+            when: << pipeline.parameters.require_approval >>
             - deploy_uat_approval
+            unless: << pipeline.parameters.require_approval >>
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
+            - end2end_tests
       - delete_dependabot_deployment:
           context: cfe-civil-uat
           filters:
