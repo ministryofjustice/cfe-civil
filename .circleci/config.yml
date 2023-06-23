@@ -429,6 +429,7 @@ workflows:
                 - main
 
   deploy_without_approval:
+    unless: << pipeline.parameters.approval_required >>
     jobs:
       - lint_checks:
           filters:
