@@ -403,15 +403,18 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
-      - deploy_uat:
+      - deploy_uat_approval:
           type: approval
-          context: cfe-civil-uat
           requires:
             - lint_checks
             - check_swagger
             - unit_tests
             - integration_tests
             - end2end_tests
+      - deploy_uat:
+          context: cfe-civil-uat
+          requires:
+            - deploy_uat_approval
       - delete_dependabot_deployment:
           context: cfe-civil-uat
           filters:
