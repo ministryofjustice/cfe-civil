@@ -1,9 +1,6 @@
 version: 2.1
 
 parameters:
-  approval_job_name:
-    type: string
-    default: "deploy_uat_approval"
   approval_required:
     type: boolean
     default: false
@@ -368,6 +365,7 @@ jobs:
 workflows:
   version: 2
   add_branch:
+    when: << pipeline.parameters.approval_required >>
     jobs:
       - lint_checks:
           filters:
@@ -405,25 +403,14 @@ workflows:
             branches:
               ignore: main
       #          <<: *generic-slack-fail-post-step
-      - deploy_uat_approval:
-          type: approval
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
-            - end2end_tests
-      - deploy_uat_without_approval:
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
-            - end2end_tests
       - deploy_uat:
           context: cfe-civil-uat
           requires:
-            - << pipeline.parameters.approval_job_name >>
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
+            - end2end_tests
       - delete_dependabot_deployment:
           context: cfe-civil-uat
           filters:
