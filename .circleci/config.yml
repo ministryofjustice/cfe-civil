@@ -353,7 +353,7 @@ jobs:
       - checkout
       - *authenticate_k8s
       - deploy:
-          name: Deploy infrastructure (Grafana etc)
+          name: Deploy infrastructure
           command: |
             kubectl -n ${K8S_NAMESPACE} apply --record=false -f ./infrastructure/${K8S_NAMESPACE}/
 
@@ -441,21 +441,21 @@ workflows:
       - deploy_infrastructure:
           name: deploy_infrastructure_uat
           context: cfe-civil-uat
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only: main
       - deploy_infrastructure:
           name: deploy_infrastructure_staging
           context: cfe-civil-staging
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only: main
       - deploy_infrastructure:
           name: deploy_infrastructure_production
           context: cfe-civil-production
-          # filters:
-          #   branches:
-          #     only: main
+          filters:
+            branches:
+              only: main
       - create_helm_cache:
           filters:
             branches:
