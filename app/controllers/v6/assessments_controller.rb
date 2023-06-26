@@ -2,7 +2,7 @@ module V6
   class AssessmentsController < ApplicationController
     before_action :validate
 
-    EmploymentDetails = Data.define(:income, :client_reference)
+    EmploymentOrSelfEmploymentDetails = Data.define(:income, :client_reference)
 
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
@@ -73,15 +73,15 @@ module V6
 
     def parse_self_employments(self_employments)
       self_employments.map do |s|
-        EmploymentDetails.new client_reference: s[:client_reference],
-                              income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
+                                              income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
       end
     end
 
     def parse_employment_details(employments)
       employments.map do |s|
-        EmploymentDetails.new client_reference: s[:client_reference],
-                              income: StandardEmploymentIncome.new(s.fetch(:income)).freeze
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
+                                              income: EmploymentIncome.new(s.fetch(:income)).freeze
       end
     end
 

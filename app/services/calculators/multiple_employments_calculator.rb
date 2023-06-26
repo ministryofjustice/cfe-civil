@@ -2,6 +2,7 @@ module Calculators
   class MultipleEmploymentsCalculator
     class << self
       def call(submission_date)
+        # multiple employments ignores inputs - hence inputs are reflected here as a set of dummy zero figures
         EmploymentIncomeCalculator::EmploymentResult.new(
           employment: DummyEmploymentFigures.new(0, 0, 0, 0),
           result: EmploymentIncomeCalculator::Result.new(fixed_employment_allowance: fixed_employment_allowance(submission_date)),

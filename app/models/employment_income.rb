@@ -1,12 +1,8 @@
-class EmploymentIncome
-  include ActiveModel::Model
-  include ActiveModel::Attributes
+class EmploymentIncome < EmploymentOrSelfEmploymentIncome
+  attribute :receiving_only_statutory_sick_or_maternity_pay, :boolean
+  attribute :benefits_in_kind, :decimal
 
-  PAYMENT_FREQUENCIES = %w[weekly two_weekly four_weekly monthly three_monthly annually].freeze
-
-  attribute :tax, :decimal
-  attribute :national_insurance, :decimal
-  attribute :gross, :decimal
-
-  attribute :frequency, :string
+  def actively_working?
+    !receiving_only_statutory_sick_or_maternity_pay
+  end
 end

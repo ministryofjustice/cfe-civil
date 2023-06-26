@@ -711,7 +711,7 @@ RSpec.configure do |config|
                 properties: {
                   frequency: {
                     type: :string,
-                    enum: EmploymentIncome::PAYMENT_FREQUENCIES,
+                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
                   },
                   gross: {
                     type: :number,
@@ -753,7 +753,7 @@ RSpec.configure do |config|
                   receiving_only_statutory_sick_or_maternity_pay: { type: :boolean },
                   frequency: {
                     type: :string,
-                    enum: EmploymentIncome::PAYMENT_FREQUENCIES,
+                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
                   },
                   gross: {
                     type: :number,

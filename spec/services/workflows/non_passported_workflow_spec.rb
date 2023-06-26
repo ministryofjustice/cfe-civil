@@ -113,8 +113,8 @@ module Workflows
 
           describe "frequencies" do
             let(:self_employments) do
-              [OpenStruct.new(income: StandardEmploymentIncome.new(tax: -200, benefits_in_kind: 100,
-                                                                   national_insurance: -150, gross: 900, frequency:))]
+              [OpenStruct.new(income: EmploymentIncome.new(tax: -200, benefits_in_kind: 100,
+                                                           national_insurance: -150, gross: 900, frequency:))]
             end
 
             context "monthly" do
@@ -199,7 +199,7 @@ module Workflows
             let(:self_employments) do
               [
                 OpenStruct.new(income: SelfEmploymentIncome.new(tax: -220, national_insurance: -20, gross: 540, frequency: "monthly")),
-                OpenStruct.new(income: StandardEmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly")),
+                OpenStruct.new(income: EmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly")),
               ]
             end
 
