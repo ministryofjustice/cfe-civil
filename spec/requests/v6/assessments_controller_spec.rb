@@ -277,6 +277,19 @@ module V6
         end
       end
 
+      context "with no applicant" do
+        let(:default_params) { { assessment: {} } }
+        let(:params) { {} }
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors]).to include(%r{The property '#/' did not contain a required property of 'applicant'})
+        end
+      end
+
       context "with an applicant without partner opponent" do
         let(:params) do
           { applicant: { date_of_birth: "2001-02-02",
