@@ -1,29 +1,31 @@
 module Collators
   class GrossIncomeCollator
     class << self
-      def call(assessment:, submission_date:, employments:, gross_income_summary:)
-        employment_income_subtotals = derive_employment_income_subtotals(assessment:, submission_date:, employments:)
+      def call(assessment:, submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:)
+        employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
+
+        add_remarks(assessment:, employments:) if employments.count > 1
+
         perform_collation(gross_income_summary:, employment_income_subtotals:)
       end
 
     private
 
-      def derive_employment_income_subtotals(assessment:, submission_date:, employments:)
-        calculate_subtotals(submission_date:, employments:).tap do
-          add_remarks(assessment:, employments:) if employments.count > 1
-        end
-      end
-
-      def calculate_subtotals(submission_date:, employments:)
-        case employments.count
-        when 0
-          EmploymentIncomeSubtotals.blank
-        when 1
-          Calculators::EmploymentIncomeCalculator.call(submission_date:,
-                                                       employment: employments.first)
-        else
-          Calculators::MultipleEmploymentsCalculator.call(submission_date)
-        end
+      def derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
+        employment_result = case employments.count
+                            when 0
+                              nil
+                            when 1
+                              Calculators::EmploymentIncomeCalculator.call(submission_date:,
+                                                                           employment: employments.first)
+                            else
+                              Calculators::MultipleEmploymentsCalculator.call(submission_date)
+                            end
+        self_employment_results = self_employments.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
+        employment_details_results = employment_details.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
+        EmploymentIncomeSubtotals.new(employment_result:,
+                                      employment_details_results:,
+                                      self_employment_results:)
       end
 
       def add_remarks(assessment:, employments:)

@@ -831,10 +831,52 @@ components:
           - frequency
           - gross
           - tax
+          - national_insurance
+          additionalProperties: false
+          properties:
+            frequency:
+              type: string
+              enum:
+              - weekly
+              - two_weekly
+              - four_weekly
+              - monthly
+              - three_monthly
+              - annually
+            gross:
+              type: number
+              format: decimal
+              minimum: 0
+              description: Gross income from this undertaking
+            tax:
+              type: number
+              format: decimal
+              maximum: 0
+              description: Tax paid (negative) on this income
+            national_insurance:
+              type: number
+              maximum: 0
+              format: decimal
+              description: NI paid (negative) on this income
+    EmploymentDetails:
+      type: object
+      required:
+      - income
+      additionalProperties: false
+      description: Details about standard employment
+      properties:
+        client_reference:
+          type: string
+          description: Optional reference, echoed in response
+        income:
+          type: object
+          required:
+          - frequency
+          - gross
+          - tax
           - benefits_in_kind
           - national_insurance
           - receiving_only_statutory_sick_or_maternity_pay
-          - is_employment
           additionalProperties: false
           properties:
             receiving_only_statutory_sick_or_maternity_pay:
@@ -848,32 +890,27 @@ components:
               - monthly
               - three_monthly
               - annually
-            is_employment:
-              type: boolean
-              description: set 'true' if this is a 'salary' type income (e.g. company
-                director salary)
             gross:
               type: number
               format: decimal
               minimum: 0
-              description: A positive number representing gross income payments
+              description: Gross income from this employment
               example: '2000.00'
             benefits_in_kind:
               type: number
               format: decimal
               minimum: 0
-              description: A positive number representing a benefit in kind payment
-              example: '100.00'
+              description: Regular benefits in kind from this employment
             tax:
               type: number
               format: decimal
-              description: A negative number representing a tax deduction
-              example: "-250.20"
+              maximum: 0
+              description: tax paid (negative) on this employment
             national_insurance:
               type: number
               format: decimal
-              description: A negative number representing a National Insurance deduction
-              example: "-150.20"
+              maximum: 0
+              description: NI paid (negative) on this employment
     StateBenefit:
       type: object
       required:
@@ -1020,13 +1057,13 @@ components:
             tax:
               type: number
               format: decimal
-              description: A negative number representing a tax deduction
-              example: "-250.20"
+              maximum: 0
+              description: "(negative) monthly tax paid"
             national_insurance:
               type: number
               format: decimal
-              description: A negative number representing a National Insurance deduction
-              example: "-150.20"
+              maximum: 0
+              description: "(negative) monthly NI paid"
             fixed_employment_deduction:
               type: number
               format: decimal
@@ -1513,7 +1550,12 @@ paths:
                   description: One or more vehicles' details
                   items:
                     "$ref": "#/components/schemas/Vehicle"
-                employment_or_self_employment:
+                employment_details:
+                  type: array
+                  description: One or more employment details
+                  items:
+                    "$ref": "#/components/schemas/EmploymentDetails"
+                self_employment_details:
                   type: array
                   description: One or more self employment details
                   items:
@@ -1616,9 +1658,14 @@ paths:
                             description: Client supplied id to identify the employment
                           payments:
                             "$ref": "#/components/schemas/EmploymentPaymentList"
-                    employment_or_self_employment:
+                    employment_details:
                       type: array
-                      description: Partner self employment details
+                      description: One or more employment details for partner
+                      items:
+                        "$ref": "#/components/schemas/EmploymentDetails"
+                    self_employment_details:
+                      type: array
+                      description: One or more self employment details for partner
                       items:
                         "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:

@@ -150,9 +150,10 @@ When("I retrieve the final assessment") do
     employments_data = { employment_income: @employments }
   end
 
-  self_employed_partner = @self_employment_data && @self_employment_data.key?(:partner)
+  self_employed_partner = @self_employment_details && @self_employment_details.key?(:partner)
+  employed_partner = @employment_details && @employment_details.key?(:partner)
 
-  if @partner_employments || @partner_property || @partner_regular_transactions || @partner_capitals || self_employed_partner
+  if @partner_employments || @partner_property || @partner_regular_transactions || @partner_capitals || self_employed_partner || employed_partner
     employments = @partner_employments || []
     additional_properties = @partner_property || []
     regular_transactions = @partner_regular_transactions || []
@@ -181,9 +182,11 @@ When("I retrieve the final assessment") do
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
   single_shot_api_data[:capitals] = @capitals_data if @capitals_data
 
-  partner_data[:employment_or_self_employment] = @self_employment_data[:partner] if self_employed_partner
+  partner_data[:self_employment_details] = @self_employment_details[:partner] if self_employed_partner
+  partner_data[:employment_details] = @employment_details[:partner] if employed_partner
   single_shot_api_data[:partner] = partner_data if partner_data
-  single_shot_api_data[:employment_or_self_employment] = @self_employment_data[:client] if @self_employment_data && @self_employment_data.key?(:client)
+  single_shot_api_data[:self_employment_details] = @self_employment_details[:client] if @self_employment_details && @self_employment_details.key?(:client)
+  single_shot_api_data[:employment_details] = @employment_details[:client] if @employment_details && @employment_details.key?(:client)
 
   @single_shot_response = submit_post_request "/v6/assessments", single_shot_api_data
 end

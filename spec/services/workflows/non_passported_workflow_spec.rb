@@ -113,8 +113,8 @@ module Workflows
 
           describe "frequencies" do
             let(:self_employments) do
-              [OpenStruct.new(income: SelfEmploymentIncome.new(tax: -200, benefits_in_kind: 100,
-                                                               national_insurance: -150, gross: 900, frequency:))]
+              [OpenStruct.new(income: EmploymentIncome.new(tax: -200, benefits_in_kind: 100,
+                                                           national_insurance: -150, gross: 900, frequency:))]
             end
 
             context "monthly" do
@@ -198,16 +198,16 @@ module Workflows
           context "with 2 self employments" do
             let(:self_employments) do
               [
-                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -220, benefits_in_kind: 20, national_insurance: -20, gross: 520, frequency: "monthly")),
-                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly", is_employment: true)),
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -220, national_insurance: -20, gross: 540, frequency: "monthly")),
+                OpenStruct.new(income: EmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly")),
               ]
             end
 
             it "returns employment figures" do
               expect(employment_income_subtotals)
                 .to have_attributes(fixed_employment_allowance: -45.0,
-                                    gross_employment_income: 1240.0,
-                                    benefits_in_kind: 40.0,
+                                    gross_employment_income: 1260.0,
+                                    benefits_in_kind: 20.0,
                                     national_insurance: -60.0,
                                     tax: -640.0,
                                     employment_income_deductions: -700.0)

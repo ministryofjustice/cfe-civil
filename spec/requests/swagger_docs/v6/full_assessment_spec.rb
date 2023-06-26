@@ -69,7 +69,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       description: "One or more vehicles' details",
                       items: { "$ref" => "#/components/schemas/Vehicle" },
                     },
-                    employment_or_self_employment: {
+                    employment_details: {
+                      type: :array,
+                      description: "One or more employment details",
+                      items: { "$ref" => "#/components/schemas/EmploymentDetails" },
+                    },
+                    self_employment_details: {
                       type: :array,
                       description: "One or more self employment details",
                       items: { "$ref" => "#/components/schemas/SelfEmployment" },
@@ -120,9 +125,14 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
-                        employment_or_self_employment: {
+                        employment_details: {
                           type: :array,
-                          description: "Partner self employment details",
+                          description: "One or more employment details for partner",
+                          items: { "$ref" => "#/components/schemas/EmploymentDetails" },
+                        },
+                        self_employment_details: {
+                          type: :array,
+                          description: "One or more self employment details for partner",
                           items: { "$ref" => "#/components/schemas/SelfEmployment" },
                         },
                         regular_transactions: {
@@ -507,19 +517,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
             outgoings: [
               { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
               { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },
-            ],
-            employment_or_self_employment: [
-              {
-                income: {
-                  receiving_only_statutory_sick_or_maternity_pay: false,
-                  frequency: "monthly",
-                  is_employment: true,
-                  gross: 900.0,
-                  benefits_in_kind: 100.0,
-                  tax: -700.0,
-                  national_insurance: -50.0,
-                },
-              },
             ],
             cash_transactions: {
               outgoings: [

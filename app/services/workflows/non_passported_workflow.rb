@@ -2,10 +2,35 @@ module Workflows
   class NonPassportedWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        gross_income_subtotals = collate_and_assess_gross_income(assessment:,
-                                                                 partner_present: partner.present?,
-                                                                 self_employments: applicant.self_employments,
-                                                                 partner_self_employments: partner&.self_employments || [])
+        applicant_self_employments = convert_employment_details(applicant.self_employments)
+        applicant_employment_details = convert_employment_details(applicant.employment_details)
+        applicant_gross_income = collate_gross_income(assessment:,
+                                                      employments: assessment.employments,
+                                                      gross_income_summary: assessment.applicant_gross_income_summary,
+                                                      self_employments: applicant_self_employments,
+                                                      employment_details: applicant_employment_details)
+
+        gross_income_subtotals = if partner.present?
+                                   partner_self_employments = convert_employment_details(partner.self_employments)
+                                   partner_employment_details = convert_employment_details(partner.employment_details)
+                                   partner_gross_income = collate_gross_income(assessment:,
+                                                                               employments: assessment.partner_employments,
+                                                                               gross_income_summary: assessment.partner_gross_income_summary,
+                                                                               self_employments: partner_self_employments,
+                                                                               employment_details: partner_employment_details)
+
+                                   collate_and_assess_gross_income(assessment:,
+                                                                   applicant_gross_income_subtotals: applicant_gross_income,
+                                                                   partner_gross_income_subtotals: partner_gross_income,
+                                                                   self_employments: applicant_employment_details,
+                                                                   partner_self_employments: partner_employment_details)
+                                 else
+                                   collate_and_assess_gross_income(assessment:,
+                                                                   applicant_gross_income_subtotals: applicant_gross_income,
+                                                                   partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
+                                                                   self_employments: applicant_employment_details,
+                                                                   partner_self_employments: [])
+                                 end
         unassessed_capital = CapitalSubtotals.unassessed(applicant:, partner:,
                                                          applicant_properties: assessment.applicant_capital_summary.properties,
                                                          partner_properties: assessment.partner_capital_summary&.properties || [])
@@ -54,7 +79,7 @@ module Workflows
       # local define for employment and monthly_values
       EmploymentResult = Data.define(:employment, :values)
 
-      def convert_employments(assessment, employments, submission_date)
+      def convert_employment_payments(assessment, employments, submission_date)
         remarks = assessment.remarks
 
         answers = employments.map do
@@ -77,64 +102,40 @@ module Workflows
         end
       end
 
-      def aggregate_self_employments(self_employments)
-        if self_employments.any?
-          # need to aggregregate employments here to avoid the issue with multiple employments producing zero income
-          aggregated_employments = convert_self_employments(self_employments).reduce do |prev, current|
-            EmploymentData.new(monthly_tax: prev.monthly_tax + current.monthly_tax,
-                               monthly_gross_income: prev.monthly_gross_income + current.monthly_gross_income,
-                               monthly_national_insurance: prev.monthly_national_insurance + current.monthly_national_insurance,
-                               actively_working?: prev.actively_working? || current.actively_working?,
-                               client_id: "dummy_client_id",
-                               monthly_benefits_in_kind: prev.monthly_benefits_in_kind + current.monthly_benefits_in_kind)
-          end
-          [aggregated_employments]
-        else
-          []
-        end
-      end
-
-      def convert_self_employments(self_employments)
-        self_employments.map do |self_employment|
-          monthly_gross_income = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.gross)
-          monthly_national_insurance = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.national_insurance)
-          monthly_tax = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.tax)
-          monthly_benefits_in_kind = Utilities::MonthlyAmountConverter.call(self_employment.income.frequency, self_employment.income.benefits_in_kind)
+      def convert_employment_details(employment_details)
+        employment_details.map do |detail|
+          monthly_gross_income = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.gross)
+          monthly_national_insurance = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.national_insurance)
+          monthly_tax = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.tax)
+          monthly_benefits_in_kind = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.benefits_in_kind)
 
           EmploymentData.new(monthly_tax:,
                              monthly_gross_income:,
                              monthly_national_insurance:,
-                             actively_working?: self_employment.income.actively_working?,
-                             client_id: self_employment.client_reference,
+                             actively_working?: detail.income.actively_working?,
+                             client_id: detail.client_reference,
                              monthly_benefits_in_kind:)
         end
       end
 
-      def collate_gross_income(assessment:, employments:, gross_income_summary:, self_employments:)
-        converted_employments = convert_employments(assessment, employments, assessment.submission_date)
+      def collate_gross_income(assessment:, employments:, gross_income_summary:, self_employments:, employment_details:)
+        converted_employments = convert_employment_payments(assessment, employments, assessment.submission_date)
         Collators::GrossIncomeCollator.call(assessment:,
                                             submission_date: assessment.submission_date,
-                                            employments: converted_employments + aggregate_self_employments(self_employments),
+                                            self_employments:,
+                                            employment_details:,
+                                            employments: converted_employments,
                                             gross_income_summary:)
       end
 
-      def collate_and_assess_gross_income(assessment:, partner_present:, self_employments:, partner_self_employments:)
-        applicant_gross_income_subtotals = collate_gross_income(assessment:, employments: assessment.employments,
-                                                                gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                self_employments:)
-        partner_gross_income_subtotals = if partner_present
-                                           collate_gross_income(assessment:, employments: assessment.partner_employments,
-                                                                gross_income_summary: assessment.partner_gross_income_summary,
-                                                                self_employments: partner_self_employments)
-                                         else
-                                           PersonGrossIncomeSubtotals.blank
-                                         end
+      def collate_and_assess_gross_income(assessment:, self_employments:, partner_self_employments:,
+                                          applicant_gross_income_subtotals:, partner_gross_income_subtotals:)
 
         GrossIncomeSubtotals.new(
           applicant_gross_income_subtotals:,
           partner_gross_income_subtotals:,
-          self_employments: convert_self_employments(self_employments),
-          partner_self_employments: convert_self_employments(partner_self_employments),
+          self_employments:,
+          partner_self_employments:,
         ).tap do |gross_income_subtotals|
           Assessors::GrossIncomeAssessor.call(
             eligibilities: assessment.applicant_gross_income_summary.eligibilities,

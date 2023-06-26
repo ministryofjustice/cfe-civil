@@ -21,7 +21,9 @@ module Collators
         described_class.call assessment:,
                              submission_date: assessment.submission_date,
                              employments:,
-                             gross_income_summary: assessment.applicant_gross_income_summary
+                             gross_income_summary: assessment.applicant_gross_income_summary,
+                             self_employments: [],
+                             employment_details: []
       end
 
       context "only domestic abuse proceeding type codes" do
