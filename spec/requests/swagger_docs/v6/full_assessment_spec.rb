@@ -98,6 +98,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
+                        outgoings: { type: :array },
                         irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
                         employments: {
                           type: :array,
@@ -139,7 +140,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           description: "One or more additional properties owned by the applicant's partner",
                           items: { "$ref" => "#/components/schemas/Property" },
                         },
-                        capital_items: { "$ref" => "#/components/schemas/Capitals" },
+                        capitals: { "$ref" => "#/components/schemas/Capitals" },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",

@@ -779,7 +779,7 @@ module V6
             )
         end
 
-        it "outputs the monthly equivalents in the response" do
+        it "has self employments in the response" do
           expect(self_employment_incomes).to eq([{
             client_reference: "12345",
             monthly_income: {
@@ -1563,12 +1563,12 @@ module V6
 
             it "has liquid" do
               expect(partner_capital.fetch(:liquid).map { |x| x.except(:description) })
-                .to eq([{ value: 28.34 }, { value: 67.23 }])
+                .to match_array([{ value: 28.34 }, { value: 67.23 }])
             end
 
             it "has non_liquid" do
               expect(partner_capital.fetch(:non_liquid).map { |x| x.except(:description) })
-                .to eq([{ value: 17.12 }, { value: 6.19 }])
+                .to match_array([{ value: 17.12 }, { value: 6.19 }])
             end
 
             it "has vehicles" do

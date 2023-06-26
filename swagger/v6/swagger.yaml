@@ -1592,6 +1592,8 @@ paths:
                           type: boolean
                           example: true
                           description: Applicant's partner is employed
+                    outgoings:
+                      type: array
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
@@ -1636,7 +1638,7 @@ paths:
                         applicant's partner
                       items:
                         "$ref": "#/components/schemas/Property"
-                    capital_items:
+                    capitals:
                       "$ref": "#/components/schemas/Capitals"
                     vehicles:
                       type: array

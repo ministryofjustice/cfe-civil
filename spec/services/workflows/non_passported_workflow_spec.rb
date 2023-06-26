@@ -31,7 +31,7 @@ module Workflows
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
                                                          national_insurance: 150, gross: 2900, frequency: "monthly"))]
       end
-      let(:person_applicant) { PersonData.new(details: applicant, self_employments: [], vehicles: build_list(:vehicle, 1), dependants: []) }
+      let(:person_applicant) { build(:person_data, details: applicant, vehicles: build_list(:vehicle, 1)) }
       let(:partner_applicant) { person_applicant }
 
       subject(:calculation_output) do
@@ -83,8 +83,8 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants:),
-                             partner: partner.present? ? PersonData.new(details: partner, self_employments: [], vehicles: [], dependants: []) : nil)
+        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:),
+                             partner: partner.present? ? build(:person_data, details: partner) : nil)
         Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
@@ -104,7 +104,7 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: PersonData.new(details: build(:applicant), self_employments:, vehicles: [], dependants: []),
+                                 applicant: build(:person_data, details: build(:applicant), self_employments:),
                                  partner:).tap do
               Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
