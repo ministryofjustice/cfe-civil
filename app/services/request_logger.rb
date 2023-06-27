@@ -4,8 +4,11 @@ class RequestLogger
       event_params = payload.fetch(:params).except("controller", "action")
       now = event_params.dig(:assessment, :submission_date)
 
-      applicant = event_params.fetch(:applicant)
-      applicant[:date_of_birth] = redact_dob(now, applicant[:date_of_birth])
+      applicant_params = event_params[:applicant]
+      if applicant_params
+        applicant_params[:date_of_birth] = redact_dob(now, applicant_params[:date_of_birth])
+      end
+
       partner_params = event_params[:partner]
       if partner_params
         partner = partner_params[:partner]
@@ -18,6 +21,7 @@ class RequestLogger
       event_params.fetch(:dependants, []).each do |d|
         d[:date_of_birth] = redact_dob(now, d[:date_of_birth])
       end
+
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),

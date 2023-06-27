@@ -277,6 +277,19 @@ module V6
         end
       end
 
+      context "with no applicant" do
+        let(:default_params) { { assessment: {} } }
+        let(:params) { {} }
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors]).to include(%r{The property '#/' did not contain a required property of 'applicant'})
+        end
+      end
+
       context "with an applicant without partner opponent" do
         let(:params) do
           { applicant: { date_of_birth: "2001-02-02",
@@ -294,18 +307,20 @@ module V6
       end
 
       context "with an applicant error" do
-        let(:params) do
-          { applicant: { has_partner_opponent: false,
-                         receives_qualifying_benefit: false,
-                         employed: } }
-        end
+        context "missing date_of_birth" do
+          let(:params) do
+            { applicant: { has_partner_opponent: false,
+                           receives_qualifying_benefit: false,
+                           employed: } }
+          end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
+          end
         end
       end
 
