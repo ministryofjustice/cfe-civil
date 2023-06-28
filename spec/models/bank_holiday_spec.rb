@@ -7,22 +7,22 @@ RSpec.describe BankHoliday do
     end
 
     context "data returned from API" do
-      it "returns an array of dates for England and Wales" do
+      it "calls the API once" do
         expect(GovukBankHolidayRetriever).to receive(:dates)
         expect(described_class.dates).to eq expected_dates
       end
     end
 
     context "data returned from cache" do
-      it "returns an array of dates for England and Wales" do
+      it "calls the API once" do
         expect(GovukBankHolidayRetriever).to receive(:dates).once
         expect(described_class.dates).to eq expected_dates
         expect(described_class.dates).to eq expected_dates
       end
     end
 
-    context "third call (after 10 days) - data returned from API" do
-      it "returns an array of dates for England and Wales" do
+    context "data returned from API after 10 days" do
+      it "calls the API once" do
         expect(GovukBankHolidayRetriever).to receive(:dates).twice
         expect(described_class.dates).to eq expected_dates
         expect(described_class.dates).to eq expected_dates
@@ -32,8 +32,8 @@ RSpec.describe BankHoliday do
       end
     end
 
-    context "fourth call - data returned from cache (3rd call version)" do
-      it "returns an array of dates for England and Wales" do
+    context "data returned from cache after 10 days" do
+      it "calls the API twice" do
         expect(GovukBankHolidayRetriever).to receive(:dates).twice
         expect(described_class.dates).to eq expected_dates
         expect(described_class.dates).to eq expected_dates
