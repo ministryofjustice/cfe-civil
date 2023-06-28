@@ -8,7 +8,7 @@ class GovukBankHolidayRetriever
   end
 
   def data
-    return raise_error unless response.is_a?(Net::HTTPOK)
+    return raise_error unless response.status == 200
 
     @data ||= JSON.parse(response.body)
   end
@@ -22,7 +22,13 @@ class GovukBankHolidayRetriever
 private
 
   def response
-    @response ||= Net::HTTP.get_response(uri)
+    client = Faraday.new do |builder|
+      builder.use Faraday::HttpCache, store: Rails.cache
+      builder.adapter Faraday.default_adapter
+      builder.response :logger, Rails.logger, headers: true, bodies: true, log_level: :debug
+    end
+
+    @response ||= client.get(uri)
   end
 
   def uri
