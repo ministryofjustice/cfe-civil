@@ -1,9 +1,7 @@
 require "rails_helper"
 
 module Collators
-  RSpec.describe HousingCostsCollator do
-    before { create :bank_holiday }
-
+  RSpec.describe HousingCostsCollator, :calls_bank_holiday do
     describe ".call" do
       let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
       let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }

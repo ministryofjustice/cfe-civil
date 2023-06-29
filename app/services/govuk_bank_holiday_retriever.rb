@@ -1,31 +1,24 @@
-# frozen_string_literal: true
-
 class GovukBankHolidayRetriever
-  UnsuccessfulRetrievalError = Class.new(StandardError)
-
   def self.dates
     new.dates(CFEConstants::GOVUK_BANK_HOLIDAY_DEFAULT_GROUP)
   end
 
-  def data
-    return raise_error unless response.status == 200
-
-    @data ||= JSON.parse(response.body)
-  end
-
   def dates(group)
-    return if data.empty?
-
-    data.dig(group, "events")&.pluck("date")
+    JSON.parse(response.body).dig(group, "events")&.pluck("date")
   end
 
 private
 
   def response
+    store = Rails.cache
+    # store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/cache", expires_in: 5.seconds)
     client = Faraday.new do |builder|
-      builder.use Faraday::HttpCache, store: Rails.cache
+      builder.use Faraday::HttpCache, store:, strategy: Faraday::HttpCache::Strategies::ByUrl, logger: Rails.logger
       builder.adapter Faraday.default_adapter
-      builder.response :logger, Rails.logger, headers: true, bodies: true, log_level: :debug
+      builder.response :raise_error
+      # builder.response :json, parser_options: { symbolize_names: false }
+
+      # builder.response :logger, Rails.logger, headers: true, bodies: false, log_level: :debug
     end
 
     @response ||= client.get(uri)
@@ -33,9 +26,5 @@ private
 
   def uri
     URI.parse(CFEConstants::GOVUK_BANK_HOLIDAY_API_URL)
-  end
-
-  def raise_error
-    raise UnsuccessfulRetrievalError, "Retrieval Failed: #{response.message} (#{response.code}) #{response.body}"
   end
 end

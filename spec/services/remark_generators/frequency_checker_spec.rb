@@ -1,9 +1,7 @@
 require "rails_helper"
 
 module RemarkGenerators
-  RSpec.describe FrequencyChecker do
-    before { create :bank_holiday }
-
+  RSpec.describe FrequencyChecker, :calls_bank_holiday do
     around do |example|
       travel_to Date.new(2021, 4, 15) # avoid problems because of 29th Feb
       example.run

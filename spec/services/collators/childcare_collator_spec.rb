@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module Collators
-  RSpec.describe ChildcareCollator do
+  RSpec.describe ChildcareCollator, :calls_bank_holiday do
     describe ".call" do
       let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
       let(:disposable_income_summary) { assessment.disposable_income_summary }
@@ -17,10 +17,6 @@ module Collators
 
       subject(:collator) do
         described_class.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care), childcare_outgoings:, eligible_for_childcare:)
-      end
-
-      before do
-        create :bank_holiday
       end
 
       context "Not eligible for childcare" do

@@ -1,13 +1,12 @@
 require "rails_helper"
 
 module Collators
-  RSpec.describe GrossIncomeCollator do
+  RSpec.describe GrossIncomeCollator, :calls_bank_holiday do
     let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: proceeding_type_codes }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
 
     before do
-      create :bank_holiday
       assessment.proceeding_type_codes.each do |ptc|
         create :gross_income_eligibility,
                gross_income_summary:,

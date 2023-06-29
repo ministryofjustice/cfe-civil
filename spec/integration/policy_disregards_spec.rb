@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
+RSpec.describe "Eligible Full Assessment with policy disregard remarks", :calls_bank_holiday do
   let(:client_id) { "uuid or any unique string" }
 
   before do
@@ -10,7 +10,6 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
                        overwrite: true).build
 
     ENV["VERBOSE"] = "false"
-    create :bank_holiday
   end
 
   it "returns the expected payload with no policy disregards remarks" do

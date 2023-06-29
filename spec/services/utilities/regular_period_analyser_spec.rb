@@ -7,7 +7,7 @@ module Utilities
     subject(:analyser) { described_class.call(period, dates) }
 
     before do
-      BankHoliday.create!(dates: bank_holidays)
+      allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holidays)
     end
 
     context "every 7 days" do
