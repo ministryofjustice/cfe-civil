@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe BankHoliday do
+RSpec.describe GovukBankHolidayRetriever do
   describe ".dates" do
     let(:bank_holiday_stub) do
       stub_request(:get, "https://www.gov.uk/bank-holidays.json").to_return(body: json_response.to_json, status: 200) # .then.to_raise(StandardError)
@@ -42,7 +42,6 @@ RSpec.describe BankHoliday do
 
     context "data returned from cache after 10 days" do
       xit "calls the API twice" do
-        # expect(GovukBankHolidayRetriever).to receive(:dates).twice
         expect(described_class.dates).to eq expected_dates
         remove_request_stub(bank_holiday_stub)
         expect(described_class.dates).to eq expected_dates
