@@ -5,7 +5,7 @@ module Utilities
     describe ".call" do
       let(:bank_holidays) { make_dates(%w[2019-07-09 2019-07-16 2019-07-23]) }
 
-      before { BankHoliday.create!(dates: bank_holidays) }
+      before { allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holidays) }
 
       subject(:analyser) { described_class.call(dates) }
 

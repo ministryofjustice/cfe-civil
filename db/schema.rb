@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_06_141257) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -26,12 +26,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_06_141257) do
     t.string "version"
     t.integer "level_of_help", default: 0, null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
-  end
-
-  create_table "bank_holidays", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.text "dates"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "capital_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

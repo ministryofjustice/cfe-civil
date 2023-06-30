@@ -1,35 +1,26 @@
-# frozen_string_literal: true
-
 class GovukBankHolidayRetriever
-  UnsuccessfulRetrievalError = Class.new(StandardError)
-
   def self.dates
     new.dates(CFEConstants::GOVUK_BANK_HOLIDAY_DEFAULT_GROUP)
   end
 
-  def data
-    return raise_error unless response.is_a?(Net::HTTPOK)
-
-    @data ||= JSON.parse(response.body)
-  end
-
   def dates(group)
-    return if data.empty?
-
-    data.dig(group, "events")&.pluck("date")
+    JSON.parse(response.body).dig(group, "events")&.pluck("date")
   end
 
 private
 
   def response
-    @response ||= Net::HTTP.get_response(uri)
+    store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/cache", expires_in: 10.days)
+    client = Faraday.new do |builder|
+      builder.use Faraday::HttpCache, store:, strategy: Faraday::HttpCache::Strategies::ByUrl, logger: Rails.logger
+      builder.adapter Faraday.default_adapter
+      builder.response :raise_error
+    end
+
+    @response ||= client.get(uri)
   end
 
   def uri
     URI.parse(CFEConstants::GOVUK_BANK_HOLIDAY_API_URL)
-  end
-
-  def raise_error
-    raise UnsuccessfulRetrievalError, "Retrieval Failed: #{response.message} (#{response.code}) #{response.body}"
   end
 end

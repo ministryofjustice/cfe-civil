@@ -13,7 +13,7 @@ Dir[Rails.root.join("lib/integration_helpers/**/*.rb")].sort.each { |f| require 
 #
 #    bin/ispec -h # show help text
 #
-RSpec.describe "IntegrationTests::TestRunner", type: :request do
+RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, type: :request do
   let(:spreadsheet_title) { "CFE Integration Test V3" }
   let(:target_worksheet) { ENV["TARGET_WORKSHEET"] }
   let(:verbosity_level) { (ENV["VERBOSE"] || "0").to_i }
@@ -26,7 +26,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
 
   before { setup_test_data }
 
-  describe "run integration_tests", :vcr do
+  describe "run integration_tests" do
     ispec_run = ENV["ISPEC_RUN"].present?
 
     if ispec_run
@@ -130,7 +130,6 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
     end
 
     def setup_test_data
-      create :bank_holiday
       Dibber::Seeder.new(StateBenefitType, "data/state_benefit_types.yml", name_method: :label, overwrite: true).build
     end
   end
