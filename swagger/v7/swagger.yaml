@@ -560,7 +560,7 @@ components:
                   - amount
                   - client_id
                   - date
-                  additionalProperties: false
+                  additionalProperties: true
                   properties:
                     amount:
                       "$ref": "#/components/schemas/positive_currency"
@@ -1057,7 +1057,6 @@ components:
             total capital.
     DisposableIncome:
       type: object
-      additionalProperties: false
       properties:
         employment_income:
           type: object
