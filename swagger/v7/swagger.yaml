@@ -40,7 +40,6 @@ components:
       - upper_threshold
       - lower_threshold
       - result
-      additionalProperties: false
       properties:
         ccms_code:
           type: string
@@ -111,7 +110,6 @@ components:
           - contribution_required
     PropertyResult:
       type: object
-      additionalProperties: false
       properties:
         value:
           type: number
@@ -255,7 +253,6 @@ components:
             description: Deprecated field not used in calculation
     NonPropertyAsset:
       type: object
-      additionalProperties: false
       description: Non-property Asset
       required:
       - value
@@ -1015,7 +1012,6 @@ components:
               type: string
     CapitalResult:
       type: object
-      additionalProperties: false
       properties:
         total_liquid:
           type: number
