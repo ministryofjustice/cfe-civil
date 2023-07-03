@@ -557,7 +557,7 @@ components:
                   - amount
                   - client_id
                   - date
-                  additionalProperties: true
+                  additionalProperties: false
                   properties:
                     amount:
                       "$ref": "#/components/schemas/positive_currency"
@@ -1635,7 +1635,7 @@ paths:
                       required:
                       - date_of_birth
                       - employed
-                      additionalProperties: true
+                      additionalProperties: false
                       properties:
                         date_of_birth:
                           type: string

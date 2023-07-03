@@ -1507,7 +1507,7 @@ RSpec.configure do |config|
                       items: {
                         type: :object,
                         required: %i[amount client_id date],
-                        additionalProperties: true,
+                        additionalProperties: false,
                         properties: {
                           amount: { "$ref" => "#/components/schemas/positive_currency" },
                           client_id: { type: :string },

@@ -91,7 +91,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           type: :object,
                           description: "The partner of the applicant",
                           required: %i[date_of_birth employed],
-                          additionalProperties: true,
+                          additionalProperties: false,
                           properties: {
                             date_of_birth: {
                               type: :string,

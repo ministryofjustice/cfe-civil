@@ -238,6 +238,66 @@ module V7
         end
       end
 
+      context "with an property error" do
+        context "invalid additional attribute for properties" do
+          let(:params) do
+            {
+              properties: {
+                additional_attribute: "additional_attribute",
+                main_home: properties_params.first,
+                additional_properties: properties_params,
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/properties' contains additional properties})
+          end
+        end
+
+        context "invalid additional attribute for properties.main_home" do
+          let(:params) do
+            {
+              properties: {
+                main_home: properties_params.first.merge(additional_attribute: "additional_attribute"),
+                additional_properties: properties_params,
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/properties/main_home' contains additional properties})
+          end
+        end
+
+        context "invalid additional attribute for properties.additional_properties" do
+          let(:params) do
+            {
+              properties: {
+                main_home: properties_params.first,
+                additional_properties: properties_params.map { |p| p.merge(additional_attribute: "additional_attribute") },
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/properties/additional_properties/0' contains additional properties})
+          end
+        end
+      end
+
       context "with an assessment error" do
         let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
 
@@ -250,30 +310,59 @@ module V7
         end
       end
 
-      context "with an invalid proceeding type" do
-        let(:params) { { proceeding_types: [{ ccms_code: "ZZ", client_involvement_type: "A" }] } }
+      context "with vehicles error" do
+        context "invalid additional attribute for vehicles" do
+          let(:params) { { vehicles: vehicle_params.map { |v| v.merge(additional_attribute: "additional_attribute") } } }
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
-        it "returns error JSON" do
-          codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.join(", ")
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes} in schema/)
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/vehicles/0' contains additional properties})
+          end
         end
       end
 
-      context "with no proceeding types" do
-        let(:params) { { proceeding_types: [] } }
+      context "with proceeding type error" do
+        context "with an invalid proceeding type" do
+          let(:params) { { proceeding_types: [{ ccms_code: "ZZ", client_involvement_type: "A" }] } }
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.join(", ")
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes} in schema/)
+          end
         end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
+        context "with no proceeding types" do
+          let(:params) { { proceeding_types: [] } }
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
+          end
+        end
+
+        context "with an invalid additional attribute for proceeding_types" do
+          let(:params) { { proceeding_types: [attributes_for(:proceeding_type).merge!(additional_attribute: "additional_attribute")] } }
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/proceeding_types\/0' contains additional properties/)
+          end
         end
       end
 
@@ -384,6 +473,60 @@ module V7
             expect(parsed_response[:errors]).to include(%r{The property '#/partner/partner' did not contain a required property of 'date_of_birth'})
           end
         end
+
+        context "invalid additional attribute for partner" do
+          let(:params) do
+            { partner: { partner: { employed: true, date_of_birth: "1992-07-22" }, additional_attribute: "additional_attribute" } }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner' contains additional properties})
+          end
+        end
+
+        context "invalid additional attribute for partner.partner" do
+          let(:params) do
+            { partner: { partner: { employed: true, date_of_birth: "1992-07-22", additional_attribute: "additional_attribute" } } }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner/partner' contains additional properties})
+          end
+        end
+
+        context "invalid additional attribute for partner.employments" do
+          let(:params) do
+            {
+              partner: {
+                partner: { employed: true, date_of_birth: "1992-07-22" },
+                employments: [
+                  {
+                    name: "A",
+                    client_id: "B",
+                    additional_attribute: "additional_attribute",
+                    payments: [attributes_for(:employment_payment)],
+                  },
+                ],
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner/employments/0' contains additional properties})
+          end
+        end
       end
 
       context "with an dependant error" do
@@ -419,13 +562,31 @@ module V7
             expect(parsed_response[:errors]).to include(%r{The property '#/dependants/0' did not contain a required property of 'date_of_birth'})
           end
         end
+
+        context "invalid additional attribute for dependants" do
+          let(:params) do
+            {
+              dependants: [
+                attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11", additional_attribute: "additional_attribute"),
+              ],
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/dependants/0' contains additional properties})
+          end
+        end
       end
 
       context "with a partner dependant error" do
         context "with a future date of birth" do
           let(:params) do
             {
-              partner: { partner: attributes_for(:applicant),
+              partner: { partner: attributes_for(:applicant).slice(:employed, :date_of_birth),
                          dependants: [
                            attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
                          ] },
@@ -550,16 +711,97 @@ module V7
         end
       end
 
-      context "with invalid cash_transactions" do
-        let(:params) { { cash_transactions: { income: {}, outgoings: [] } } }
+      context "with an explicit remarks error" do
+        context "invalid additional attribute for explicit_remarks" do
+          let(:params) do
+            {
+              explicit_remarks: [
+                {
+                  category: "policy_disregards",
+                  details: %w[employment charity],
+                  additional_attribute: "additional_attribute",
+                },
+              ],
+            }
+          end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/explicit_remarks/0' contains additional properties})
+          end
+        end
+      end
+
+      context "with invalid cash_transactions" do
+        context "invalid value type for income" do
+          let(:params) { { cash_transactions: { income: {}, outgoings: [] } } }
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array in schema/)
+          end
         end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array in schema/)
+        context "invalid additional attribute for cash_transactions" do
+          let(:params) { { cash_transactions: { income: [], outgoings: [], additional_attribute: "additional_attribute" } } }
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/cash_transactions' contains additional properties/)
+          end
+        end
+
+        context "invalid additional property for cash_transactions.outgoings.payments" do
+          let(:params) do
+            {
+              cash_transactions: {
+                income: [],
+                outgoings: [
+                  { category: "maintenance_out",
+                    payments: [
+                      {
+                        date: "2022-02-01",
+                        amount: 256,
+                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        additional_attribute: "additional_attribute",
+                      },
+                      {
+                        date: "2022-03-01",
+                        amount: 256,
+                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        additional_attribute: "additional_attribute",
+                      },
+                      {
+                        date: "2022-04-01",
+                        amount: 256,
+                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        additional_attribute: "additional_attribute",
+                      },
+                    ] },
+                ],
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/The property '#\/cash_transactions\/outgoings\/0\/payments\/0' contains additional properties/)
+          end
         end
       end
 
@@ -979,6 +1221,75 @@ module V7
 
         it "contains the error" do
           expect(parsed_response).to eq({ success: false, errors: ["Payment date cannot be in the future"] })
+        end
+      end
+
+      context "with an invalid irregular incomes" do
+        context "invalid additional attribute for irregular_incomes" do
+          let(:params) do
+            {
+              irregular_incomes: {
+                additional_attribute: "additional_attribute",
+                payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }],
+              },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(/The property '#\/irregular_incomes' contains additional properties/)
+          end
+        end
+      end
+
+      context "with an invalid other incomes" do
+        let(:params) do
+          {
+            other_incomes: [{
+              source: "benefits",
+              additional_attribute: "additional_attribute",
+              payments: [{
+                date: "2022-02-01",
+                amount: 256,
+                client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+              }],
+            }],
+          }
+        end
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/0' contains additional properties/)
+        end
+
+        context "invalid additional attribute for other_incomes.payments" do
+          let(:params) do
+            {
+              other_incomes: [{
+                source: "benefits",
+                payments: [{
+                  date: "2022-02-01",
+                  amount: 256,
+                  client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                  additional_attribute: "additional_attribute",
+                }],
+              }],
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/0\/payments\/0' contains additional properties/)
+          end
         end
       end
 
