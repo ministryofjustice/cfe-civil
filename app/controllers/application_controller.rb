@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
 
   ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
     event = ActiveSupport::Notifications::Event.new(*args)
-    if event.payload.fetch(:controller) == V6::AssessmentsController.to_s
+    if (event.payload.fetch(:controller) == V6::AssessmentsController.to_s) || (event.payload.fetch(:controller) == V7::AssessmentsController.to_s)
       RequestLogger.log_request event.duration, event.payload
     end
   end

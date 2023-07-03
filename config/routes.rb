@@ -10,6 +10,10 @@ Rails.application.routes.draw do
     resources :assessments, only: [:create]
   end
 
+  namespace :v7 do
+    resources :assessments, only: [:create]
+  end
+
   get "ping", to: "status#ping", format: :json
   get "healthcheck", to: "status#status", format: :json
   get "status", to: "status#status", format: :json
