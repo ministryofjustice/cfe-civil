@@ -45,6 +45,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       type: :object,
                       required: %i[],
                       description: "A main home and additional properties",
+                      additionalProperties: false,
                       properties: {
                         main_home: { "$ref" => "#/components/schemas/Property" },
                         additional_properties: {
@@ -84,11 +85,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       required: %i[partner],
                       description: "Full information about an applicant's partner",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+                      additionalProperties: false,
                       properties: {
                         partner: {
                           type: :object,
                           description: "The partner of the applicant",
                           required: %i[date_of_birth employed],
+                          additionalProperties: true,
                           properties: {
                             date_of_birth: {
                               type: :string,
@@ -112,6 +115,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           items: {
                             type: :object,
                             description: "Employment income detail",
+                            additionalProperties: false,
                             properties: {
                               name: {
                                 type: :string,

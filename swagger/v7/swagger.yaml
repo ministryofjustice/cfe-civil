@@ -1534,6 +1534,7 @@ paths:
                   type: object
                   required: []
                   description: A main home and additional properties
+                  additionalProperties: false
                   properties:
                     main_home:
                       "$ref": "#/components/schemas/Property"
@@ -1626,6 +1627,7 @@ paths:
                       date_of_purchase: '2017-01-23'
                       in_regular_use: true
                       subject_matter_of_dispute: false
+                  additionalProperties: false
                   properties:
                     partner:
                       type: object
@@ -1633,6 +1635,7 @@ paths:
                       required:
                       - date_of_birth
                       - employed
+                      additionalProperties: true
                       properties:
                         date_of_birth:
                           type: string
@@ -1657,6 +1660,7 @@ paths:
                       items:
                         type: object
                         description: Employment income detail
+                        additionalProperties: false
                         properties:
                           name:
                             type: string
