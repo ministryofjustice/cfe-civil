@@ -13,7 +13,7 @@ RSpec.configure do |config|
     # Check financial eligibility for legal aid.
 
     ## Usage:
-      - Calculate eligibility by POSTing a payload to `/v6/assessments`
+      - Calculate eligibility by POSTing a payload to `/{version}/assessments`
       - Add assessment components, such as applicant, capitals and properties in the payload
   DESCRIPTION
 
@@ -28,7 +28,7 @@ RSpec.configure do |config|
       openapi: "3.0.1",
       info: {
         title: "API V6",
-        description: api_description,
+        description: api_description.gsub("{version}", "v6"),
         contact: {
           name: "Github repository",
           url: "https://github.com/ministryofjustice/cfe-civil",
@@ -1036,7 +1036,7 @@ RSpec.configure do |config|
       openapi: "3.0.1",
       info: {
         title: "API V7",
-        description: api_description,
+        description: api_description.gsub("{version}", "v7"),
         contact: {
           name: "Github repository",
           url: "https://github.com/ministryofjustice/cfe-civil",
@@ -1078,6 +1078,7 @@ RSpec.configure do |config|
           ProceedingTypeResult: {
             type: :object,
             required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+            additionalProperties: false,
             properties: {
               ccms_code: {
                 type: :string,
@@ -1449,6 +1450,7 @@ RSpec.configure do |config|
                                     .gsub("3.months.ago", "2022-01-01")
                                     .gsub("2.months.ago", "2022-02-01")
                                     .gsub("1.month.ago", "2022-03-01")),
+            additionalProperties: false,
             properties: {
               income: {
                 type: :array,
@@ -1508,6 +1510,7 @@ RSpec.configure do |config|
                       items: {
                         type: :object,
                         required: %i[amount client_id date],
+                        additionalProperties: false,
                         properties: {
                           amount: { "$ref" => "#/components/schemas/positive_currency" },
                           client_id: { type: :string },
@@ -1526,6 +1529,7 @@ RSpec.configure do |config|
           Dependant: {
             type: :object,
             required: %i[date_of_birth in_full_time_education relationship],
+            additionalProperties: false,
             properties: {
               date_of_birth: {
                 type: :string,
@@ -1561,6 +1565,7 @@ RSpec.configure do |config|
               type: :object,
               required: %i[income_type frequency amount],
               description: "Irregular payment detail",
+              additionalProperties: false,
               properties: {
                 income_type: {
                   type: :string,
@@ -1585,6 +1590,7 @@ RSpec.configure do |config|
               type: :object,
               description: "Other regular income detail",
               required: %i[source payments],
+              additionalProperties: false,
               properties: {
                 source: {
                   type: :string,
@@ -1599,6 +1605,7 @@ RSpec.configure do |config|
                     type: :object,
                     description: "Payment detail",
                     required: %i[date amount client_id],
+                    additionalProperties: false,
                     properties: {
                       date: {
                         type: :string,
@@ -1629,6 +1636,7 @@ RSpec.configure do |config|
             items: {
               type: :object,
               required: %i[ccms_code client_involvement_type],
+              additionalProperties: false,
               properties: {
                 ccms_code: {
                   type: :string,
@@ -1648,6 +1656,7 @@ RSpec.configure do |config|
           Property: {
             type: :object,
             required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
+            additionalProperties: false,
             properties: {
               value: {
                 "$ref" => "#/components/schemas/currency",
@@ -1832,6 +1841,7 @@ RSpec.configure do |config|
                       type: :object,
                       description: "Line items that should be flagged to caseworkers for review",
                       example: { multi_benefit: true },
+                      additionalProperties: false,
                       properties: {
                         multi_benefit: {
                           type: :boolean,
@@ -1846,6 +1856,7 @@ RSpec.configure do |config|
           Vehicle: {
             type: :object,
             required: %i[value date_of_purchase],
+            additionalProperties: false,
             properties: {
               value: {
                 "$ref" => "#/components/schemas/positive_currency",
@@ -1877,6 +1888,7 @@ RSpec.configure do |config|
               type: :object,
               required: %i[category details],
               description: "Explicit remark",
+              additionalProperties: false,
               properties: {
                 category: {
                   type: :string,
@@ -1896,6 +1908,7 @@ RSpec.configure do |config|
           },
           CapitalResult: {
             type: :object,
+            additionalProperties: false,
             properties: {
               total_liquid: {
                 type: :number,
@@ -1944,6 +1957,7 @@ RSpec.configure do |config|
           },
           DisposableIncome: {
             type: :object,
+            additionalProperties: false,
             properties: {
               employment_income: {
                 type: :object,

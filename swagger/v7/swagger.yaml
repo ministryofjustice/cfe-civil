@@ -6,7 +6,7 @@ info:
     # Check financial eligibility for legal aid.
 
     ## Usage:
-      - Calculate eligibility by POSTing a payload to `/v6/assessments`
+      - Calculate eligibility by POSTing a payload to `/v7/assessments`
       - Add assessment components, such as applicant, capitals and properties in the payload
   contact:
     name: Github repository
@@ -40,6 +40,7 @@ components:
       - upper_threshold
       - lower_threshold
       - result
+      additionalProperties: false
       properties:
         ccms_code:
           type: string
@@ -489,6 +490,7 @@ components:
           - date: '2022-01-01'
             amount: 256.0
             client_id: ec7b707b-d795-47c2-8b39-ccf022eae33b
+      additionalProperties: false
       properties:
         income:
           type: array
@@ -558,6 +560,7 @@ components:
                   - amount
                   - client_id
                   - date
+                  additionalProperties: false
                   properties:
                     amount:
                       "$ref": "#/components/schemas/positive_currency"
@@ -572,6 +575,7 @@ components:
       - date_of_birth
       - in_full_time_education
       - relationship
+      additionalProperties: false
       properties:
         date_of_birth:
           type: string
@@ -605,6 +609,7 @@ components:
         - frequency
         - amount
         description: Irregular payment detail
+        additionalProperties: false
         properties:
           income_type:
             type: string
@@ -632,6 +637,7 @@ components:
         required:
         - source
         - payments
+        additionalProperties: false
         properties:
           source:
             type: string
@@ -658,6 +664,7 @@ components:
               - date
               - amount
               - client_id
+              additionalProperties: false
               properties:
                 date:
                   type: string
@@ -681,6 +688,7 @@ components:
         required:
         - ccms_code
         - client_involvement_type
+        additionalProperties: false
         properties:
           ccms_code:
             type: string
@@ -750,6 +758,7 @@ components:
       - outstanding_mortgage
       - percentage_owned
       - shared_with_housing_assoc
+      additionalProperties: false
       properties:
         value:
           "$ref": "#/components/schemas/currency"
@@ -954,6 +963,7 @@ components:
                   review
                 example:
                   multi_benefit: true
+                additionalProperties: false
                 properties:
                   multi_benefit:
                     type: boolean
@@ -962,6 +972,7 @@ components:
       required:
       - value
       - date_of_purchase
+      additionalProperties: false
       properties:
         value:
           "$ref": "#/components/schemas/positive_currency"
@@ -988,6 +999,7 @@ components:
         - category
         - details
         description: Explicit remark
+        additionalProperties: false
         properties:
           category:
             type: string
@@ -1003,6 +1015,7 @@ components:
               type: string
     CapitalResult:
       type: object
+      additionalProperties: false
       properties:
         total_liquid:
           type: number
@@ -1044,6 +1057,7 @@ components:
             total capital.
     DisposableIncome:
       type: object
+      additionalProperties: false
       properties:
         employment_income:
           type: object
