@@ -531,6 +531,9 @@ components:
                       type: string
                       format: uuid
                       example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                    housing_cost_type:
+                      type: string
+                      example: rent
         outgoings:
           type: array
           items:
@@ -566,6 +569,9 @@ components:
                     date:
                       type: string
                       format: date
+                    housing_cost_type:
+                      type: string
+                      example: rent
     Dependant:
       type: object
       required:
