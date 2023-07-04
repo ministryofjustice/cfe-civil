@@ -33,6 +33,6 @@ module Creators
                                                  national_insurance: income[:national_insurance])
         end
       end
-  end
+    end
   end
 end

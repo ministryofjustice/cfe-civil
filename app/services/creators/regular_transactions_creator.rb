@@ -29,6 +29,6 @@ module Creators
           )
         end
       end
-      end
+    end
   end
 end

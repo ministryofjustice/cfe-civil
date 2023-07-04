@@ -41,6 +41,6 @@ module Creators
       def dependant_step(submission_date)
         Threshold.value_for(:dependant_step, at: submission_date)
       end
-  end
+    end
   end
 end
