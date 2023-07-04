@@ -244,7 +244,7 @@ class SwaggerDocs
                 client_id: {
                   type: :string,
                   description: "Client supplied id to identify the payment",
-                  example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                  example: "05459c0f-a620-4743-9f0c-b3daa93e571",
                 },
                 date: {
                   type: :string,
@@ -349,13 +349,13 @@ class SwaggerDocs
                           client_id: {
                             type: :string,
                             description: "Client identifier for outgoing payment",
-                            example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                            example: "05459c0f-a620-4743-9f0c-b3daa93e57",
                           },
                           payment_date: {
                             type: :string,
                             format: :date,
                             description: "Date payment made",
-                            example: "1992-07-22",
+                            example: "1992-07-23",
                           },
                           amount: {
                             type: :number,
@@ -391,13 +391,13 @@ class SwaggerDocs
                           client_id: {
                             type: :string,
                             description: "Client identifier for outgoing payment",
-                            example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                            example: "05459c0f-a620-4743-9f0c-b3daa93e5",
                           },
                           payment_date: {
                             type: :string,
                             format: :date,
                             description: "Date payment made",
-                            example: "1992-07-22",
+                            example: "1992-07-24",
                           },
                           housing_cost_type: {
                             type: :string,
@@ -426,7 +426,7 @@ class SwaggerDocs
             properties: {
               date_of_birth: { type: :string,
                                format: :date,
-                               example: "1992-07-22",
+                               example: "1992-07-25",
                                description: "Applicant date of birth" },
               employed: {
                 oneOf: [{ type: :boolean }, { type: :null }],
@@ -505,13 +505,13 @@ class SwaggerDocs
                           date: {
                             type: :string,
                             format: :date,
-                            example: "1992-07-22",
+                            example: "1992-07-26",
                           },
                           amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
                           client_id: {
                             type: :string,
                             format: :uuid,
-                            example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                            example: "05459c0f-a620-4743-9f0c-b3daa93e",
                           },
                         },
                       },
@@ -564,7 +564,7 @@ class SwaggerDocs
               date_of_birth: {
                 type: :string,
                 format: :date,
-                example: "1992-07-22",
+                example: "1992-07-27",
               },
               in_full_time_education: {
                 type: :boolean,
@@ -638,7 +638,7 @@ class SwaggerDocs
                         type: :string,
                         format: :date,
                         description: "Date payment received",
-                        example: "1992-07-22",
+                        example: "1992-07-28",
                       },
                       amount: {
                         "$ref" => SCHEMA_COMPONENTS[:positive_currency],
@@ -648,7 +648,7 @@ class SwaggerDocs
                         type: :string,
                         format: :uuid,
                         description: "Client identifier for payment received",
-                        example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                        example: "05459c0f-a620-4743-9f0c-b3daa93e",
                       },
                     },
                   },
@@ -850,13 +850,13 @@ class SwaggerDocs
                       type: :string,
                       format: :uuid,
                       description: "Client identifier for payment received",
-                      example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
+                      example: "05459c0f-a620-4743-9f0c-b3daa9",
                     },
                     date: {
                       type: :string,
                       format: :date,
                       description: "Date payment received",
-                      example: "1992-07-22",
+                      example: "1992-07-29",
                     },
                     amount: {
                       "$ref" => SCHEMA_COMPONENTS[:currency],

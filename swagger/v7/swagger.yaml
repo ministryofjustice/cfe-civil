@@ -227,7 +227,7 @@ components:
           client_id:
             type: string
             description: Client supplied id to identify the payment
-            example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+            example: '05459c0f-a620-4743-9f0c-b3daa93e571'
           date:
             type: string
             format: date
@@ -327,12 +327,12 @@ components:
                   client_id:
                     type: string
                     description: Client identifier for outgoing payment
-                    example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                    example: '05459c0f-a620-4743-9f0c-b3daa93e57'
                   payment_date:
                     type: string
                     format: date
                     description: Date payment made
-                    example: '1992-07-22'
+                    example: '1992-07-23'
                   amount:
                     type: number
                     format: decimal
@@ -366,12 +366,12 @@ components:
                   client_id:
                     type: string
                     description: Client identifier for outgoing payment
-                    example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                    example: '05459c0f-a620-4743-9f0c-b3daa93e5'
                   payment_date:
                     type: string
                     format: date
                     description: Date payment made
-                    example: '1992-07-22'
+                    example: '1992-07-24'
                   housing_cost_type:
                     type: string
                     enum:
@@ -395,7 +395,7 @@ components:
         date_of_birth:
           type: string
           format: date
-          example: '1992-07-22'
+          example: '1992-07-25'
           description: Applicant date of birth
         employed:
           oneOf:
@@ -526,13 +526,13 @@ components:
                     date:
                       type: string
                       format: date
-                      example: '1992-07-22'
+                      example: '1992-07-26'
                     amount:
                       "$ref": "#/components/schemas/positive_currency"
                     client_id:
                       type: string
                       format: uuid
-                      example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                      example: '05459c0f-a620-4743-9f0c-b3daa93e'
         outgoings:
           type: array
           items:
@@ -583,7 +583,7 @@ components:
         date_of_birth:
           type: string
           format: date
-          example: '1992-07-22'
+          example: '1992-07-27'
         in_full_time_education:
           type: boolean
           example: false
@@ -672,7 +672,7 @@ components:
                   type: string
                   format: date
                   description: Date payment received
-                  example: '1992-07-22'
+                  example: '1992-07-28'
                 amount:
                   "$ref": "#/components/schemas/positive_currency"
                   description: Amount of payment received
@@ -680,7 +680,7 @@ components:
                   type: string
                   format: uuid
                   description: Client identifier for payment received
-                  example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                  example: '05459c0f-a620-4743-9f0c-b3daa93e'
               additionalProperties: false
         additionalProperties: false
     ProceedingTypes:
@@ -952,12 +952,12 @@ components:
                 type: string
                 format: uuid
                 description: Client identifier for payment received
-                example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                example: '05459c0f-a620-4743-9f0c-b3daa9'
               date:
                 type: string
                 format: date
                 description: Date payment received
-                example: '1992-07-22'
+                example: '1992-07-29'
               amount:
                 "$ref": "#/components/schemas/currency"
                 description: Amount of payment received
