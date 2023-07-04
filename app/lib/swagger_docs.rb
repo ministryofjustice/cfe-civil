@@ -23,6 +23,8 @@ class SwaggerDocs
     property: "#/components/schemas/Property",
     proceeding_type_result: "#/components/schemas/ProceedingTypeResult",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
+    currency: "#/components/schemas/currency",
+    positive_currency: "#/components/schemas/positive_currency",
   }.freeze
 
   attr_reader :version
@@ -190,7 +192,7 @@ class SwaggerDocs
               additionalProperties: false,
               required: %i[value description],
               properties: {
-                value: { "$ref" => "#/components/schemas/currency" },
+                value: { "$ref" => SCHEMA_COMPONENTS[:currency] },
                 description: {
                   type: :string,
                 },
@@ -217,7 +219,7 @@ class SwaggerDocs
                   required: %i[value description],
                   additionalProperties: false,
                   properties: {
-                    value: { "$ref" => "#/components/schemas/positive_currency" },
+                    value: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
                     description: {
                       description: "Definition of a non-liquid capital item",
                       type: :string,
@@ -251,26 +253,26 @@ class SwaggerDocs
                   example: "1992-07-22",
                 },
                 gross: {
-                  "$ref" => "#/components/schemas/currency",
+                  "$ref" => SCHEMA_COMPONENTS[:currency],
                   description: "Gross payment income received",
                   example: "101.01",
                 },
                 benefits_in_kind: {
-                  "$ref" => "#/components/schemas/positive_currency",
+                  "$ref" => SCHEMA_COMPONENTS[:positive_currency],
                   description: "Benefit in kind amount received",
                 },
                 tax: {
-                  "$ref" => "#/components/schemas/currency",
+                  "$ref" => SCHEMA_COMPONENTS[:currency],
                   description: "Amount of tax paid - normally negative, but can be positive for a refund",
                   example: -10.01,
                 },
                 national_insurance: {
-                  "$ref" => "#/components/schemas/currency",
+                  "$ref" => SCHEMA_COMPONENTS[:currency],
                   description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
                   example: -5.24,
                 },
                 net_employment_income: {
-                  "$ref" => "#/components/schemas/currency",
+                  "$ref" => SCHEMA_COMPONENTS[:currency],
                   description: "Deprecated field not used in calculation",
                 },
               },
@@ -505,7 +507,7 @@ class SwaggerDocs
                             format: :date,
                             example: "1992-07-22",
                           },
-                          amount: { "$ref" => "#/components/schemas/positive_currency" },
+                          amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
                           client_id: {
                             type: :string,
                             format: :uuid,
@@ -536,7 +538,7 @@ class SwaggerDocs
                         type: :object,
                         required: %i[amount client_id date],
                         properties: {
-                          amount: { "$ref" => "#/components/schemas/positive_currency" },
+                          amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
                           client_id: { type: :string },
                           date: {
                             type: "string",
@@ -575,11 +577,11 @@ class SwaggerDocs
                 description: "Dependant's relationship to the applicant",
               },
               monthly_income: {
-                "$ref" => "#/components/schemas/currency",
+                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Dependant's monthly income",
               },
               assets_value: {
-                "$ref" => "#/components/schemas/currency",
+                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Dependant's total assets value",
               },
             },
@@ -606,7 +608,7 @@ class SwaggerDocs
                   description: "Frequency of the payment received",
                   example: CFEConstants::VALID_IRREGULAR_INCOME_FREQUENCIES.first,
                 },
-                amount: { "$ref" => "#/components/schemas/currency" },
+                amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
               },
             },
           },
@@ -639,7 +641,7 @@ class SwaggerDocs
                         example: "1992-07-22",
                       },
                       amount: {
-                        "$ref" => "#/components/schemas/positive_currency",
+                        "$ref" => SCHEMA_COMPONENTS[:positive_currency],
                         description: "Amount of payment received",
                       },
                       client_id: {
@@ -682,11 +684,11 @@ class SwaggerDocs
             required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
             properties: {
               value: {
-                "$ref" => "#/components/schemas/currency",
+                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Financial value of the property",
               },
               outstanding_mortgage: {
-                "$ref" => "#/components/schemas/currency",
+                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Amount outstanding on all mortgages against this property",
               },
               percentage_owned: {
@@ -731,7 +733,7 @@ class SwaggerDocs
                 description: "Frequency with which regular transaction is made or received",
                 example: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.first,
               },
-              amount: { "$ref" => "#/components/schemas/currency" },
+              amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
             },
           },
           SelfEmployment: {
@@ -857,7 +859,7 @@ class SwaggerDocs
                       example: "1992-07-22",
                     },
                     amount: {
-                      "$ref" => "#/components/schemas/currency",
+                      "$ref" => SCHEMA_COMPONENTS[:currency],
                       description: "Amount of payment received",
                     },
                     flags: {
@@ -880,11 +882,11 @@ class SwaggerDocs
             required: %i[value date_of_purchase],
             properties: {
               value: {
-                "$ref" => "#/components/schemas/positive_currency",
+                "$ref" => SCHEMA_COMPONENTS[:positive_currency],
                 description: "Financial value of the vehicle",
               },
               loan_amount_outstanding: {
-                "$ref" => "#/components/schemas/currency",
+                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Amount remaining, if any, of a loan used to purchase the vehicle",
               },
               date_of_purchase: {
