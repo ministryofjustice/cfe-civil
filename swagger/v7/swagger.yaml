@@ -1551,7 +1551,7 @@ paths:
                   version:
                     type: string
                     enum:
-                    - '6'
+                    - '7'
                     description: Version of the API used in the request
                   success:
                     type: boolean

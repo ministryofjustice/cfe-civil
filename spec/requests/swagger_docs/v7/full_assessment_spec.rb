@@ -504,7 +504,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                  },
                  version: {
                    type: :string,
-                   enum: %w[6],
+                   enum: %w[7],
                    description: "Version of the API used in the request",
                  },
                  success: {

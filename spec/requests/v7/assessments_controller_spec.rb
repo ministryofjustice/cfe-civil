@@ -644,8 +644,8 @@ module V7
           expect(response).to have_http_status(:success)
         end
 
-        it "returns a version of 6" do
-          expect(parsed_response.fetch(:version)).to eq("6")
+        it "returns a version of 7" do
+          expect(parsed_response.fetch(:version)).to eq("7")
         end
 
         it "has dependant_allowances" do
@@ -686,7 +686,7 @@ module V7
                                   ],
                                 })
           expect(log_record.response.symbolize_keys.except(:timestamp, :assessment)).to eq(
-            version: "6",
+            version: "7",
             success: true,
             result_summary: {
               "overall_result" => {
@@ -1567,7 +1567,7 @@ module V7
         end
 
         it "contains JSON version and success" do
-          expect(parsed_response.except(:timestamp, :result_summary, :assessment)).to eq({ version: "6", success: true })
+          expect(parsed_response.except(:timestamp, :result_summary, :assessment)).to eq({ version: "7", success: true })
         end
 
         describe "result summary" do
