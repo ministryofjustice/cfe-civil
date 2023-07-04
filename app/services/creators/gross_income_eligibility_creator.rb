@@ -5,7 +5,7 @@ module Creators
         proceeding_types.each { |proceeding_type| create_eligibility(summary:, submission_date:, dependants:, proceeding_type:) }
       end
 
-  private
+    private
 
       def create_eligibility(summary:, dependants:, proceeding_type:, submission_date:)
         summary.eligibilities.create!(
