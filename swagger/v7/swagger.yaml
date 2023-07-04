@@ -40,6 +40,7 @@ components:
       - upper_threshold
       - lower_threshold
       - result
+      additionalProperties: false
       properties:
         ccms_code:
           type: string
@@ -110,6 +111,7 @@ components:
           - contribution_required
     PropertyResult:
       type: object
+      additionalProperties: false
       properties:
         value:
           type: number
@@ -257,6 +259,7 @@ components:
       required:
       - value
       - description
+      additionalProperties: false
       properties:
         value:
           type: number
@@ -1018,6 +1021,7 @@ components:
               type: string
     CapitalResult:
       type: object
+      additionalProperties: true
       properties:
         total_liquid:
           type: number
@@ -1059,6 +1063,7 @@ components:
             total capital.
     DisposableIncome:
       type: object
+      additionalProperties: true
       properties:
         employment_income:
           type: object
@@ -1500,6 +1505,7 @@ paths:
               - assessment
               - applicant
               - proceeding_types
+              additionalProperties: false
               properties:
                 assessment:
                   "$ref": "#/components/schemas/Assessment"

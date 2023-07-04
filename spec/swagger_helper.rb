@@ -1078,6 +1078,7 @@ RSpec.configure do |config|
           ProceedingTypeResult: {
             type: :object,
             required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+            additionalProperties: false,
             properties: {
               ccms_code: {
                 type: :string,
@@ -1100,6 +1101,7 @@ RSpec.configure do |config|
           },
           PropertyResult: {
             type: :object,
+            additionalProperties: false,
             properties: {
               value: {
                 type: :number,
@@ -1252,6 +1254,7 @@ RSpec.configure do |config|
             type: :object,
             description: "Non-property Asset",
             required: %i[value description],
+            additionalProperties: false,
             properties: {
               value: {
                 type: :number,
@@ -1913,6 +1916,7 @@ RSpec.configure do |config|
           },
           CapitalResult: {
             type: :object,
+            additionalProperties: true, # TODO: Strict validation on response object
             properties: {
               total_liquid: {
                 type: :number,
@@ -1961,6 +1965,7 @@ RSpec.configure do |config|
           },
           DisposableIncome: {
             type: :object,
+            additionalProperties: true, # TODO: Strict validation on response object
             properties: {
               employment_income: {
                 type: :object,

@@ -126,6 +126,20 @@ module V7
         post v7_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
+      context "with top level schema error" do
+        context "invalid additional attribute for top level" do
+          let(:params) { { additional_attribute: "additional_attribute" } }
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/' contains additional properties})
+          end
+        end
+      end
+
       context "with blank main and additional homes" do
         let(:params) do
           {
