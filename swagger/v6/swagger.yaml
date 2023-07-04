@@ -566,6 +566,10 @@ components:
                     date:
                       type: string
                       format: date
+                    housing_cost_type:
+                      type: string
+                      example: rent
+                      description: required when category is 'rent_or_mortgage'
     Dependant:
       type: object
       required:

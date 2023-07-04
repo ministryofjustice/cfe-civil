@@ -507,6 +507,11 @@ RSpec.configure do |config|
                             type: "string",
                             format: "date",
                           },
+                          housing_cost_type: {
+                            type: :string,
+                            example: "rent",
+                            description: "required when category is 'rent_or_mortgage'",
+                          },
                         },
                       },
                     },
@@ -1486,10 +1491,6 @@ RSpec.configure do |config|
                             format: :uuid,
                             example: "05459c0f-a620-4743-9f0c-b3daa93e5711",
                           },
-                          housing_cost_type: {
-                            type: :string,
-                            example: "rent",
-                          },
                         },
                       },
                     },
@@ -1525,6 +1526,7 @@ RSpec.configure do |config|
                           housing_cost_type: {
                             type: :string,
                             example: "rent",
+                            description: "required when category is 'rent_or_mortgage'",
                           },
                         },
                       },
