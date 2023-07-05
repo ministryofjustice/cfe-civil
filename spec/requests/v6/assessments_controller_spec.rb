@@ -567,123 +567,215 @@ module V6
         let(:month1) { current_date.beginning_of_month - 3.months }
         let(:month2) { current_date.beginning_of_month - 2.months }
         let(:month3) { current_date.beginning_of_month - 1.month }
-        let(:params) do
-          {
-            # child_care won't show up unless student loan payments and dependants
-            irregular_incomes: irregular_income_params,
-            dependants: dependant_params,
-            cash_transactions:
-              {
-                income: [
-                  {
-                    category: "maintenance_in",
-                    payments: cash_transactions(1033.44),
-                  },
-                  {
-                    category: "friends_or_family",
-                    payments: cash_transactions(250.0),
-                  },
-                  {
-                    category: "benefits",
-                    payments: cash_transactions(65.12),
-                  },
-                  {
-                    category: "property_or_lodger",
-                    payments: cash_transactions(91.87),
-                  },
-                  {
-                    category: "pension",
-                    payments: cash_transactions(34.12),
-                  },
-                ],
-                outgoings: [
-                  {
-                    category: "maintenance_out",
-                    payments: cash_transactions(256.0),
-                  },
-                  {
-                    category: "child_care",
-                    payments: cash_transactions(257.0),
-                  },
-                  {
-                    category: "legal_aid",
-                    payments: cash_transactions(44.54),
-                  },
-                  {
-                    category: "rent_or_mortgage",
-                    payments: cash_transactions(87.54),
-                  },
-                ],
-              },
-          }
-        end
 
-        it "redacts the client ids in the log" do
-          expect(log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes, :dependants))
-            .to eq(
-              {
-                cash_transactions: {
-                  income: [{ category: "maintenance_in",
-                             payments: [{ date: "2022-04-01", amount: 1033.44, client_id: "** REDACTED **" },
-                                        { date: "2022-05-01", amount: 1033.44, client_id: "** REDACTED **" },
-                                        { date: "2022-03-01", amount: 1033.44, client_id: "** REDACTED **" }] },
-                           { category: "friends_or_family",
-                             payments: [{ date: "2022-04-01", amount: 250.0, client_id: "** REDACTED **" },
-                                        { date: "2022-05-01", amount: 250.0, client_id: "** REDACTED **" },
-                                        { date: "2022-03-01", amount: 250.0, client_id: "** REDACTED **" }] },
-                           { category: "benefits",
-                             payments: [{ date: "2022-04-01", amount: 65.12, client_id: "** REDACTED **" },
-                                        { date: "2022-05-01", amount: 65.12, client_id: "** REDACTED **" },
-                                        { date: "2022-03-01", amount: 65.12, client_id: "** REDACTED **" }] },
-                           { category: "property_or_lodger",
-                             payments: [{ date: "2022-04-01", amount: 91.87, client_id: "** REDACTED **" },
-                                        { date: "2022-05-01", amount: 91.87, client_id: "** REDACTED **" },
-                                        { date: "2022-03-01", amount: 91.87, client_id: "** REDACTED **" }] },
-                           { category: "pension",
-                             payments: [{ date: "2022-04-01", amount: 34.12, client_id: "** REDACTED **" },
-                                        { date: "2022-05-01", amount: 34.12, client_id: "** REDACTED **" },
-                                        { date: "2022-03-01", amount: 34.12, client_id: "** REDACTED **" }] }],
-                  outgoings: [{ category: "maintenance_out",
-                                payments: [{ date: "2022-04-01", amount: 256.0, client_id: "** REDACTED **" },
-                                           { date: "2022-05-01", amount: 256.0, client_id: "** REDACTED **" },
-                                           { date: "2022-03-01", amount: 256.0, client_id: "** REDACTED **" }] },
-                              { category: "child_care",
-                                payments: [{ date: "2022-04-01", amount: 257.0, client_id: "** REDACTED **" },
-                                           { date: "2022-05-01", amount: 257.0, client_id: "** REDACTED **" },
-                                           { date: "2022-03-01", amount: 257.0, client_id: "** REDACTED **" }] },
-                              { category: "legal_aid",
-                                payments: [{ date: "2022-04-01", amount: 44.54, client_id: "** REDACTED **" },
-                                           { date: "2022-05-01", amount: 44.54, client_id: "** REDACTED **" },
-                                           { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] },
-                              { category: "rent_or_mortgage",
-                                payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **" },
-                                           { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **" },
-                                           { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **" }] }],
+        context "with 'child_care' or 'maintenance_out' or 'legal_aid' selected as a category" do
+          let(:params) do
+            {
+              # child_care won't show up unless student loan payments and dependants
+              irregular_incomes: irregular_income_params,
+              dependants: dependant_params,
+              cash_transactions:
+                {
+                  income: [
+                    {
+                      category: "maintenance_in",
+                      payments: cash_transactions(1033.44),
+                    },
+                    {
+                      category: "friends_or_family",
+                      payments: cash_transactions(250.0),
+                    },
+                    {
+                      category: "benefits",
+                      payments: cash_transactions(65.12),
+                    },
+                    {
+                      category: "property_or_lodger",
+                      payments: cash_transactions(91.87),
+                    },
+                    {
+                      category: "pension",
+                      payments: cash_transactions(34.12),
+                    },
+                  ],
+                  outgoings: [
+                    {
+                      category: "maintenance_out",
+                      payments: cash_transactions(256.0),
+                    },
+                    {
+                      category: "child_care",
+                      payments: cash_transactions(257.0),
+                    },
+                    {
+                      category: "legal_aid",
+                      payments: cash_transactions(44.54),
+                    },
+                  ],
                 },
-              },
-            )
+            }
+          end
+
+          it "redacts the client ids in the log" do
+            expect(log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes, :dependants))
+              .to eq(
+                {
+                  cash_transactions: {
+                    income: [{ category: "maintenance_in",
+                               payments: [{ date: "2022-04-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 1033.44, client_id: "** REDACTED **" }] },
+                             { category: "friends_or_family",
+                               payments: [{ date: "2022-04-01", amount: 250.0, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 250.0, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 250.0, client_id: "** REDACTED **" }] },
+                             { category: "benefits",
+                               payments: [{ date: "2022-04-01", amount: 65.12, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 65.12, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 65.12, client_id: "** REDACTED **" }] },
+                             { category: "property_or_lodger",
+                               payments: [{ date: "2022-04-01", amount: 91.87, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 91.87, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 91.87, client_id: "** REDACTED **" }] },
+                             { category: "pension",
+                               payments: [{ date: "2022-04-01", amount: 34.12, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 34.12, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 34.12, client_id: "** REDACTED **" }] }],
+                    outgoings: [{ category: "maintenance_out",
+                                  payments: [{ date: "2022-04-01", amount: 256.0, client_id: "** REDACTED **" },
+                                             { date: "2022-05-01", amount: 256.0, client_id: "** REDACTED **" },
+                                             { date: "2022-03-01", amount: 256.0, client_id: "** REDACTED **" }] },
+                                { category: "child_care",
+                                  payments: [{ date: "2022-04-01", amount: 257.0, client_id: "** REDACTED **" },
+                                             { date: "2022-05-01", amount: 257.0, client_id: "** REDACTED **" },
+                                             { date: "2022-03-01", amount: 257.0, client_id: "** REDACTED **" }] },
+                                { category: "legal_aid",
+                                  payments: [{ date: "2022-04-01", amount: 44.54, client_id: "** REDACTED **" },
+                                             { date: "2022-05-01", amount: 44.54, client_id: "** REDACTED **" },
+                                             { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] }],
+                  },
+                },
+              )
+          end
+
+          it "has other_income" do
+            expect(assessment.dig(:gross_income, :other_income, :monthly_equivalents))
+              .to eq(
+                {
+                  all_sources: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
+                  bank_transactions: { friends_or_family: 0.0, maintenance_in: 0.0, property_or_lodger: 0.0, pension: 0.0 },
+                  cash_transactions: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
+                },
+              )
+          end
+
+          it "has disposable income" do
+            expect(assessment.dig(:disposable_income, :monthly_equivalents))
+              .to eq(
+                {
+                  all_sources: { child_care: 257.0, rent_or_mortgage: 0.0, maintenance_out: 256.0, legal_aid: 44.54 },
+                  bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0 },
+                  cash_transactions: { child_care: 257.0, rent_or_mortgage: 0.0, maintenance_out: 256.0, legal_aid: 44.54 },
+                },
+              )
+          end
         end
 
-        it "has other_income" do
-          expect(assessment.dig(:gross_income, :other_income, :monthly_equivalents))
-            .to eq(
-              {
-                all_sources: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
-                bank_transactions: { friends_or_family: 0.0, maintenance_in: 0.0, property_or_lodger: 0.0, pension: 0.0 },
-                cash_transactions: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
-              },
-            )
-        end
+        context "with 'rent_or_mortgage' selected as a category" do
+          let(:params) do
+            {
+              # child_care won't show up unless student loan payments and dependants
+              irregular_incomes: irregular_income_params,
+              dependants: dependant_params,
+              cash_transactions:
+                {
+                  income: [
+                    {
+                      category: "maintenance_in",
+                      payments: cash_transactions(1033.44),
+                    },
+                    {
+                      category: "friends_or_family",
+                      payments: cash_transactions(250.0),
+                    },
+                    {
+                      category: "benefits",
+                      payments: cash_transactions(65.12),
+                    },
+                    {
+                      category: "property_or_lodger",
+                      payments: cash_transactions(91.87),
+                    },
+                    {
+                      category: "pension",
+                      payments: cash_transactions(34.12),
+                    },
+                  ],
+                  outgoings: [
+                    {
+                      category: "rent_or_mortgage",
+                      payments: cash_transactions(87.54).map { |ct| ct.merge(housing_cost_type: "mortgage") },
+                    },
+                  ],
+                },
+            }
+          end
 
-        it "has disposable income" do
-          expect(assessment.dig(:disposable_income, :monthly_equivalents))
-            .to eq(
-              {
-                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54 },
-                bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0 },
-                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54 },
-              },
-            )
+          it "redacts the client ids in the log" do
+            expect(log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes, :dependants))
+              .to eq(
+                {
+                  cash_transactions: {
+                    income: [{ category: "maintenance_in",
+                               payments: [{ date: "2022-04-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 1033.44, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 1033.44, client_id: "** REDACTED **" }] },
+                             { category: "friends_or_family",
+                               payments: [{ date: "2022-04-01", amount: 250.0, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 250.0, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 250.0, client_id: "** REDACTED **" }] },
+                             { category: "benefits",
+                               payments: [{ date: "2022-04-01", amount: 65.12, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 65.12, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 65.12, client_id: "** REDACTED **" }] },
+                             { category: "property_or_lodger",
+                               payments: [{ date: "2022-04-01", amount: 91.87, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 91.87, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 91.87, client_id: "** REDACTED **" }] },
+                             { category: "pension",
+                               payments: [{ date: "2022-04-01", amount: 34.12, client_id: "** REDACTED **" },
+                                          { date: "2022-05-01", amount: 34.12, client_id: "** REDACTED **" },
+                                          { date: "2022-03-01", amount: 34.12, client_id: "** REDACTED **" }] }],
+                    outgoings: [{ category: "rent_or_mortgage",
+                                  payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" },
+                                             { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" },
+                                             { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" }] }],
+                  },
+                },
+              )
+          end
+
+          it "has other_income" do
+            expect(assessment.dig(:gross_income, :other_income, :monthly_equivalents))
+              .to eq(
+                {
+                  all_sources: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
+                  bank_transactions: { friends_or_family: 0.0, maintenance_in: 0.0, property_or_lodger: 0.0, pension: 0.0 },
+                  cash_transactions: { friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12 },
+                },
+              )
+          end
+
+          it "has disposable income" do
+            expect(assessment.dig(:disposable_income, :monthly_equivalents))
+              .to eq(
+                {
+                  all_sources: { child_care: 0.0, rent_or_mortgage: 87.54, maintenance_out: 0.0, legal_aid: 0.0 },
+                  bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0 },
+                  cash_transactions: { child_care: 0.0, rent_or_mortgage: 87.54, maintenance_out: 0.0, legal_aid: 0.0 },
+                },
+              )
+          end
         end
 
         def cash_transactions(amount)
