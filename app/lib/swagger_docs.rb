@@ -249,7 +249,6 @@ class SwaggerDocs
                 date: {
                   type: :string,
                   format: :date,
-                  description: "Date payment received",
                   example: "1992-07-22",
                 },
                 gross: {
@@ -344,7 +343,6 @@ class SwaggerDocs
                         type: :object,
                         additionalProperties: false,
                         required: %i[client_id payment_date amount],
-                        description: "Payment detail",
                         properties: {
                           client_id: {
                             type: :string,
@@ -386,7 +384,6 @@ class SwaggerDocs
                         type: :object,
                         additionalProperties: false,
                         required: %i[client_id payment_date amount housing_cost_type],
-                        description: "Payment detail",
                         properties: {
                           client_id: {
                             type: :string,
@@ -498,7 +495,6 @@ class SwaggerDocs
                       description: "One or more payment details",
                       items: {
                         type: :object,
-                        description: "Payment detail",
                         additionalProperties: false,
                         required: %i[amount client_id date],
                         properties: {
@@ -665,13 +661,11 @@ class SwaggerDocs
                   description: "One or more other regular payment details",
                   items: {
                     type: :object,
-                    description: "Payment detail",
                     required: %i[date amount client_id],
                     properties: {
                       date: {
                         type: :string,
                         format: :date,
-                        description: "Date payment received",
                         example: "1992-07-28",
                       },
                       amount: {
@@ -878,7 +872,6 @@ class SwaggerDocs
                   required: %i[client_id date amount],
                   additionalProperties: false,
                   type: :object,
-                  description: "Payment detail",
                   properties: {
                     client_id: {
                       type: :string,
@@ -889,7 +882,6 @@ class SwaggerDocs
                     date: {
                       type: :string,
                       format: :date,
-                      description: "Date payment received",
                       example: "1992-07-29",
                     },
                     amount: {

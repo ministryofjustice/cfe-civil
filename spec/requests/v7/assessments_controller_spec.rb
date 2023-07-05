@@ -5,6 +5,9 @@ module V7
     describe "POST /create" do
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
       let(:employed) { false }
+      let(:date_of_birth) { "1992-07-22" }
+      let(:date_of_birth_1) { "2022-02-02" }
+      let(:client_id) { "347b707b-d795-47c2-8b39-ccf022eae33b" }
       let(:user_agent) { Faker::ProgrammingLanguage.name }
       let(:current_date) { Date.new(2022, 6, 6) }
       let(:submission_date_params) { { submission_date: current_date.to_s } }
@@ -52,7 +55,7 @@ module V7
         context "invalid additional attribute for top level" do
           let(:params) { { additional_attribute: "additional_attribute" } }
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/' contains additional properties})
           end
         end
@@ -70,7 +73,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/properties'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/properties' contains additional properties})
           end
         end
@@ -85,7 +88,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/properties/main_home'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/properties/main_home' contains additional properties})
           end
         end
@@ -100,7 +103,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/properties/additional_properties/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/properties/additional_properties/0' contains additional properties})
           end
         end
@@ -110,7 +113,7 @@ module V7
         context "invalid additional attribute for vehicles" do
           let(:params) { { vehicles: vehicle_params.map { |v| v.merge(additional_attribute: "additional_attribute") } } }
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/vehicles/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/vehicles/0' contains additional properties})
           end
         end
@@ -120,9 +123,8 @@ module V7
         context "with an invalid additional attribute for proceeding_types" do
           let(:params) { { proceeding_types: [attributes_for(:proceeding_type).merge!(additional_attribute: "additional_attribute")] } }
 
-          it "returns error JSON" do
-            expect(parsed_response[:errors])
-              .to include(/The property '#\/proceeding_types\/0' contains additional properties/)
+          it "returns error JSON for '#/proceeding_types/0'" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/proceeding_types/0' contains additional properties})
           end
         end
       end
@@ -130,20 +132,20 @@ module V7
       context "with an partner error" do
         context "invalid additional attribute for partner" do
           let(:params) do
-            { partner: { partner: { employed: true, date_of_birth: "1992-07-22" }, additional_attribute: "additional_attribute" } }
+            { partner: { partner: { employed: true, date_of_birth: }, additional_attribute: "additional_attribute" } }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/partner'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/partner' contains additional properties})
           end
         end
 
         context "invalid additional attribute for partner.partner" do
           let(:params) do
-            { partner: { partner: { employed: true, date_of_birth: "1992-07-22", additional_attribute: "additional_attribute" } } }
+            { partner: { partner: { employed: true, date_of_birth:, additional_attribute: "additional_attribute" } } }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/partner/partner'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/partner/partner' contains additional properties})
           end
         end
@@ -152,7 +154,7 @@ module V7
           let(:params) do
             {
               partner: {
-                partner: { employed: true, date_of_birth: "1992-07-22" },
+                partner: { employed: true, date_of_birth: },
                 employments: [
                   {
                     name: "A",
@@ -165,7 +167,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/partner/employments/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/partner/employments/0' contains additional properties})
           end
         end
@@ -181,7 +183,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/dependants/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/dependants/0' contains additional properties})
           end
         end
@@ -201,7 +203,7 @@ module V7
             }
           end
 
-          it "returns error JSON" do
+          it "returns error JSON for '#/explicit_remarks/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/explicit_remarks/0' contains additional properties})
           end
         end
@@ -211,9 +213,8 @@ module V7
         context "invalid additional attribute for cash_transactions" do
           let(:params) { { cash_transactions: { income: [], outgoings: [], additional_attribute: "additional_attribute" } } }
 
-          it "returns error JSON" do
-            expect(parsed_response[:errors])
-              .to include(/The property '#\/cash_transactions' contains additional properties/)
+          it "returns error JSON for '#/cash_transactions'" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/cash_transactions' contains additional properties})
           end
         end
 
@@ -228,19 +229,19 @@ module V7
                       {
                         date: "2022-02-01",
                         amount: 256,
-                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        client_id:,
                         additional_attribute: "additional_attribute",
                       },
                       {
                         date: "2022-03-01",
                         amount: 256,
-                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        client_id:,
                         additional_attribute: "additional_attribute",
                       },
                       {
                         date: "2022-04-01",
                         amount: 256,
-                        client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                        client_id:,
                         additional_attribute: "additional_attribute",
                       },
                     ] },
@@ -249,9 +250,8 @@ module V7
             }
           end
 
-          it "returns error JSON" do
-            expect(parsed_response[:errors])
-              .to include(/The property '#\/cash_transactions\/outgoings\/0\/payments\/0' contains additional properties/)
+          it "returns error JSON for '#/cash_transactions/outgoings/0/payments/0'" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/cash_transactions/outgoings/0/payments/0' contains additional properties})
           end
         end
       end
@@ -267,8 +267,8 @@ module V7
             }
           end
 
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(/The property '#\/irregular_incomes' contains additional properties/)
+          it "returns error JSON for '#/irregular_incomes'" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/irregular_incomes' contains additional properties})
           end
         end
       end
@@ -280,16 +280,16 @@ module V7
               source: "benefits",
               additional_attribute: "additional_attribute",
               payments: [{
-                date: "2022-02-01",
+                date: date_of_birth_1,
                 amount: 256,
-                client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                client_id:,
               }],
             }],
           }
         end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/0' contains additional properties/)
+        it "returns error JSON for '#/other_incomes/0'" do
+          expect(parsed_response[:errors]).to include(%r{The property '#/other_incomes/0' contains additional properties})
         end
 
         context "invalid additional attribute for other_incomes.payments" do
@@ -298,17 +298,17 @@ module V7
               other_incomes: [{
                 source: "benefits",
                 payments: [{
-                  date: "2022-02-01",
+                  date: date_of_birth_1,
                   amount: 256,
-                  client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
+                  client_id:,
                   additional_attribute: "additional_attribute",
                 }],
               }],
             }
           end
 
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(/The property '#\/other_incomes\/0\/payments\/0' contains additional properties/)
+          it "returns error JSON for '#other_incomes/0/payments/0'" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/other_incomes/0/payments/0' contains additional properties})
           end
         end
       end

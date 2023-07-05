@@ -230,7 +230,6 @@ components:
           date:
             type: string
             format: date
-            description: Date payment received
             example: '1992-07-22'
           gross:
             "$ref": "#/components/schemas/currency"
@@ -321,7 +320,6 @@ components:
                 - client_id
                 - payment_date
                 - amount
-                description: Payment detail
                 properties:
                   client_id:
                     type: string
@@ -360,7 +358,6 @@ components:
                 - payment_date
                 - amount
                 - housing_cost_type
-                description: Payment detail
                 properties:
                   client_id:
                     type: string
@@ -515,7 +512,6 @@ components:
                 description: One or more payment details
                 items:
                   type: object
-                  description: Payment detail
                   additionalProperties: false
                   required:
                   - amount
@@ -691,7 +687,6 @@ components:
             description: One or more other regular payment details
             items:
               type: object
-              description: Payment detail
               required:
               - date
               - amount
@@ -700,7 +695,6 @@ components:
                 date:
                   type: string
                   format: date
-                  description: Date payment received
                   example: '1992-07-28'
                 amount:
                   "$ref": "#/components/schemas/positive_currency"
@@ -971,7 +965,6 @@ components:
             - amount
             additionalProperties: false
             type: object
-            description: Payment detail
             properties:
               client_id:
                 type: string
@@ -981,7 +974,6 @@ components:
               date:
                 type: string
                 format: date
-                description: Date payment received
                 example: '1992-07-29'
               amount:
                 "$ref": "#/components/schemas/currency"
