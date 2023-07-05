@@ -1,5 +1,6 @@
 require "swagger_helper"
 
+## Duplicate spec in spec/requests/swagger_docs/v6 to make it appear in swagger API documentation with multiple versions
 RSpec.describe "state_benefit_type", type: :request, swagger_doc: "v7/swagger.yaml" do
   path "/state_benefit_type" do
     get("list state_benefit_types") do
