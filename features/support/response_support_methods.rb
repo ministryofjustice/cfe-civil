@@ -22,7 +22,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "partner_employment" => "result_summary.partner_disposable_income.employment_income",
     "combined_assessed_capital" => "result_summary.capital.combined_assessed_capital",
     "remarks" => "assessment.remarks",
-  }
+  },
 }.freeze
 
 def response_section_for(version, attribute)
