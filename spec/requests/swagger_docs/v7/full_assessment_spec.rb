@@ -533,9 +533,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" }] },
                 { category: "rent_or_mortgage",
                   payments: [
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" }, # Investigate 'housing_cost_type' in payload. Supported in version 6 only
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" },
                   ] },
               ],
               income: [],
