@@ -567,7 +567,6 @@ module V6
         let(:month1) { current_date.beginning_of_month - 3.months }
         let(:month2) { current_date.beginning_of_month - 2.months }
         let(:month3) { current_date.beginning_of_month - 1.month }
-        let(:housing_cost_type) { "mortgage" }
         let(:params) do
           {
             # child_care won't show up unless student loan payments and dependants
@@ -612,7 +611,7 @@ module V6
                   },
                   {
                     category: "rent_or_mortgage",
-                    payments: cash_transactions_for_housing_cost_type(87.54),
+                    payments: cash_transactions(87.54),
                   },
                 ],
               },
@@ -657,9 +656,9 @@ module V6
                                            { date: "2022-05-01", amount: 44.54, client_id: "** REDACTED **" },
                                            { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] },
                               { category: "rent_or_mortgage",
-                                payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: },
-                                           { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: },
-                                           { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: }] }],
+                                payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **" },
+                                           { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **" },
+                                           { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **" }] }],
                 },
               },
             )
@@ -695,10 +694,6 @@ module V6
               client_id: SecureRandom.uuid,
             }
           end
-        end
-
-        def cash_transactions_for_housing_cost_type(amount)
-          cash_transactions(amount).map { |ct| ct.merge(housing_cost_type:) }
         end
       end
 
