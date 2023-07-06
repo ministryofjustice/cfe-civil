@@ -20,13 +20,22 @@ class RequestLogger
         d[:date_of_birth] = redact_dob(now, d[:date_of_birth])
       end
 
+      response = JSON.parse(payload.fetch(:response).body)
+      if response.key?("timestamp")
+        response["timestamp"] = redact_time(response["timestamp"])
+      end
+
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),
-        response: JSON.parse(payload.fetch(:response).body),
+        response:,
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
+    end
+
+    def redact_time(timestamp)
+      Date.parse(timestamp).strftime("%Y-%m-%d")
     end
 
     def redact_dob(submission_date, date_of_birth)

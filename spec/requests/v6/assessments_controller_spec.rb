@@ -1749,6 +1749,36 @@ module V6
           end
         end
       end
+
+      context "redact response timestamp" do
+        context "with successful submission" do
+          let(:params) { {} }
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
+          end
+
+          it "returns timestamp in response" do
+            expect(parsed_response).to be_key(:timestamp)
+          end
+
+          it "redact response timestamp" do
+            expect(log_record.response["timestamp"]).to eq(Date.parse(parsed_response[:timestamp]).strftime("%Y-%m-%d"))
+          end
+        end
+
+        context "with unsuccessful submission" do
+          let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
+
+          it "returns http error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "doesnt returns timestamp in response" do
+            expect(parsed_response).not_to be_key(:timestamp)
+          end
+        end
+      end
     end
   end
 end
