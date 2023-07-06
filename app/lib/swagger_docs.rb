@@ -520,71 +520,32 @@ class SwaggerDocs
               outgoings: {
                 type: :array,
                 items: {
-                  oneOf: [
-                    {
-                      type: :object,
-                      required: %i[category payments],
-                      additionalProperties: false,
-                      properties: {
-                        category: {
-                          description: "The category of the outgoing transaction",
-                          type: :string,
-                          enum: %w[child_care maintenance_out legal_aid],
-                        },
-                        payments: {
-                          type: :array,
-                          description: "The payments of the outgoing transaction",
-                          items: {
-                            type: :object,
-                            additionalProperties: false,
-                            required: %i[amount client_id date],
-                            properties: {
-                              amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
-                              client_id: { type: :string },
-                              date: {
-                                type: "string",
-                                format: "date",
-                              },
-                            },
+                  type: :object,
+                  additionalProperties: false,
+                  required: %i[category payments],
+                  properties: {
+                    category: {
+                      description: "The category of the outgoing transaction",
+                      type: :string,
+                      enum: %w[child_care rent_or_mortgage maintenance_out legal_aid],
+                    },
+                    payments: {
+                      description: "The payments of the outgoing transaction",
+                      type: :array,
+                      items: {
+                        type: :object,
+                        required: %i[amount client_id date],
+                        properties: {
+                          amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
+                          client_id: { type: :string },
+                          date: {
+                            type: "string",
+                            format: "date",
                           },
                         },
                       },
                     },
-                    {
-                      type: :object,
-                      required: %i[category payments],
-                      additionalProperties: false,
-                      properties: {
-                        category: {
-                          description: "The category of the outgoing transaction",
-                          type: :string,
-                          enum: %w[rent_or_mortgage],
-                        },
-                        payments: {
-                          type: :array,
-                          description: "The payments of the outgoing transaction",
-                          items: {
-                            type: :object,
-                            additionalProperties: false,
-                            required: %i[amount client_id date housing_cost_type],
-                            properties: {
-                              amount: { "$ref" => SCHEMA_COMPONENTS[:positive_currency] },
-                              client_id: { type: :string },
-                              date: {
-                                type: "string",
-                                format: "date",
-                              },
-                              housing_cost_type: {
-                                type: :string,
-                                enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
-                                description: "Housing cost type",
-                              },
-                            },
-                          },
-                        },
-                      },
-                    },
-                  ],
+                  },
                 },
               },
             },
