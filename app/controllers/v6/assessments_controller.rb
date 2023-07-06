@@ -6,7 +6,7 @@ module V6
 
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                    params: full_assessment_params)
+                                                    params: full_assessment_params, version:)
       if create.success?
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
@@ -86,11 +86,15 @@ module V6
     end
 
     def validate
-      validate_swagger_schema "/v6/assessments", full_assessment_params
+      validate_swagger_schema version, full_assessment_params
     end
 
     def full_assessment_params
       @full_assessment_params ||= JSON.parse(request.raw_post, symbolize_names: true, decimal_class: BigDecimal)
+    end
+
+    def version
+      "6"
     end
   end
 end

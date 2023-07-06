@@ -1,7 +1,7 @@
 require "swagger_helper"
 
-RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_doc: "v6/swagger.yaml" do
-  path "/v6/assessments" do
+RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_doc: "v7/swagger.yaml" do
+  path "/v7/assessments" do
     post("create") do
       tags "Perform assessment with single call"
       consumes "application/json"
@@ -19,6 +19,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                 schema: {
                   type: :object,
                   required: %i[assessment applicant proceeding_types],
+                  additionalProperties: false,
                   properties: {
                     assessment: { "$ref" => components[:assessment] },
                     applicant: { "$ref" => components[:applicant] },
@@ -47,6 +48,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       type: :object,
                       required: %i[],
                       description: "A main home and additional properties",
+                      additionalProperties: false,
                       properties: {
                         main_home: { "$ref" => components[:property] },
                         additional_properties: {
@@ -86,11 +88,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       required: %i[partner],
                       description: "Full information about an applicant's partner",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
+                      additionalProperties: false,
                       properties: {
                         partner: {
                           type: :object,
                           description: "The partner of the applicant",
                           required: %i[date_of_birth employed],
+                          additionalProperties: false,
                           properties: {
                             date_of_birth: {
                               type: :string,
@@ -114,6 +118,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           items: {
                             type: :object,
                             description: "Employment income detail",
+                            additionalProperties: false,
                             properties: {
                               name: {
                                 type: :string,
@@ -499,7 +504,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                  },
                  version: {
                    type: :string,
-                   enum: %w[6],
+                   enum: %w[7],
                    description: "Version of the API used in the request",
                  },
                  success: {
@@ -528,9 +533,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" }] },
                 { category: "rent_or_mortgage",
                   payments: [
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" }, # Investigate 'housing_cost_type' in payload. Supported in version 6 only
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" },
                   ] },
               ],
               income: [],

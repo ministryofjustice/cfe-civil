@@ -7,10 +7,10 @@ module Creators
         end
       end
 
-      def call(remote_ip:, params:)
+      def call(remote_ip:, params:, version: CFEConstants::DEFAULT_ASSESSMENT_VERSION)
         create = Creators::AssessmentCreator.call(remote_ip:,
                                                   assessment_params: params[:assessment],
-                                                  version: CFEConstants::DEFAULT_ASSESSMENT_VERSION)
+                                                  version:)
         assessment = create.assessment
 
         errors = CREATE_FUNCTIONS.map { |f|

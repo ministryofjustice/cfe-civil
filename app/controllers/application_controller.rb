@@ -13,7 +13,7 @@ class ApplicationController < ActionController::API
 
   ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
     event = ActiveSupport::Notifications::Event.new(*args)
-    if event.payload.fetch(:controller) == V6::AssessmentsController.to_s
+    if event.payload.fetch(:controller).in? %w[V6::AssessmentsController V7::AssessmentsController]
       RequestLogger.log_request event.duration, event.payload
     end
   end
@@ -31,8 +31,8 @@ class ApplicationController < ActionController::API
 
 private
 
-  def validate_swagger_schema(schema_name, parameters)
-    json_validator = JsonSwaggerValidator.new(schema_name, parameters)
+  def validate_swagger_schema(version, parameters)
+    json_validator = JsonSwaggerValidator.new(version, parameters)
     unless json_validator.valid?
       render_unprocessable(json_validator.errors)
     end
