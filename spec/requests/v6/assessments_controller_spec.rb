@@ -567,7 +567,6 @@ module V6
         let(:month1) { current_date.beginning_of_month - 3.months }
         let(:month2) { current_date.beginning_of_month - 2.months }
         let(:month3) { current_date.beginning_of_month - 1.month }
-        let(:housing_cost_type) { "mortgage" }
 
         context "with 'child_care' or 'maintenance_out' or 'legal_aid' selected as a category" do
           let(:params) do
@@ -653,11 +652,7 @@ module V6
                                 { category: "legal_aid",
                                   payments: [{ date: "2022-04-01", amount: 44.54, client_id: "** REDACTED **" },
                                              { date: "2022-05-01", amount: 44.54, client_id: "** REDACTED **" },
-                                             { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] },
-                                { category: "rent_or_mortgage",
-                                  payments: [{ date: "2022-04-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-05-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-03-01", amount: 0.0, client_id: "** REDACTED **" }] }],
+                                             { date: "2022-03-01", amount: 44.54, client_id: "** REDACTED **" }] }],
                   },
                 },
               )
@@ -719,7 +714,7 @@ module V6
                   outgoings: [
                     {
                       category: "rent_or_mortgage",
-                      payments: cash_transactions_for_housing_cost_type(87.54),
+                      payments: cash_transactions(87.54).map { |ct| ct.merge(housing_cost_type: "mortgage") },
                     },
                   ],
                 },
@@ -751,19 +746,7 @@ module V6
                                payments: [{ date: "2022-04-01", amount: 34.12, client_id: "** REDACTED **" },
                                           { date: "2022-05-01", amount: 34.12, client_id: "** REDACTED **" },
                                           { date: "2022-03-01", amount: 34.12, client_id: "** REDACTED **" }] }],
-                    outgoings: [{ category: "maintenance_out",
-                                  payments: [{ date: "2022-04-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-05-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-03-01", amount: 0.0, client_id: "** REDACTED **" }] },
-                                { category: "child_care",
-                                  payments: [{ date: "2022-04-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-05-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-03-01", amount: 0.0, client_id: "** REDACTED **" }] },
-                                { category: "legal_aid",
-                                  payments: [{ date: "2022-04-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-05-01", amount: 0.0, client_id: "** REDACTED **" },
-                                             { date: "2022-03-01", amount: 0.0, client_id: "** REDACTED **" }] },
-                                { category: "rent_or_mortgage",
+                    outgoings: [{ category: "rent_or_mortgage",
                                   payments: [{ date: "2022-04-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" },
                                              { date: "2022-05-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" },
                                              { date: "2022-03-01", amount: 87.54, client_id: "** REDACTED **", housing_cost_type: "mortgage" }] }],
@@ -793,10 +776,6 @@ module V6
                 },
               )
           end
-        end
-
-        def cash_transactions_for_housing_cost_type(amount)
-          cash_transactions(amount).map { |ct| ct.merge(housing_cost_type:) }
         end
 
         def cash_transactions(amount)
