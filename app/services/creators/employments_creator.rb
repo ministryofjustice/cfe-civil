@@ -14,7 +14,7 @@ module Creators
         end
       end
 
-  private
+    private
 
       def create_employment(employments_params, employment_collection)
         employments_params[:employment_income].each do |attributes|
@@ -33,6 +33,6 @@ module Creators
                                                  national_insurance: income[:national_insurance])
         end
       end
-  end
+    end
   end
 end
