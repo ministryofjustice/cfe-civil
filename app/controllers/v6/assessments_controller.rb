@@ -86,7 +86,7 @@ module V6
     end
 
     def validate
-      validate_swagger_schema "/v#{version}/assessments", full_assessment_params
+      validate_swagger_schema version, full_assessment_params
     end
 
     def full_assessment_params

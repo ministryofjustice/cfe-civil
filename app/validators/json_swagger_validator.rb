@@ -1,14 +1,8 @@
 class JsonSwaggerValidator
-  def initialize(schema_name, payload)
+  def initialize(version, payload)
     @payload = payload
-
-    swagger_yaml = if schema_name == "/v7/assessments"
-                     YAML.load_file(Rails.root.join("swagger/v7/swagger.yaml"))
-                   else
-                     YAML.load_file(Rails.root.join("swagger/v6/swagger.yaml"))
-                   end
-
-    endpoint_yaml = swagger_yaml.dig("paths", schema_name)
+    swagger_yaml = YAML.load_file(Rails.root.join("swagger/v#{version}/swagger.yaml"))
+    endpoint_yaml = swagger_yaml.dig("paths", "/v#{version}/assessments")
     components = swagger_yaml.fetch("components")
     @schema = endpoint_yaml.dig("post", "requestBody", "content", "application/json", "schema").merge(components:)
   end

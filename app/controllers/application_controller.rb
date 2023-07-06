@@ -31,8 +31,8 @@ class ApplicationController < ActionController::API
 
 private
 
-  def validate_swagger_schema(schema_name, parameters)
-    json_validator = JsonSwaggerValidator.new(schema_name, parameters)
+  def validate_swagger_schema(version, parameters)
+    json_validator = JsonSwaggerValidator.new(version, parameters)
     unless json_validator.valid?
       render_unprocessable(json_validator.errors)
     end
