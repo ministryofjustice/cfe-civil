@@ -44,17 +44,19 @@ class SwaggerDocs
   end
 
   def strict_schema
-    add_additonal_property(schema)
+    add_additional_property(schema)
   end
 
-  def add_additonal_property(object)
+  def add_additional_property(object)
     object[:additionalProperties] = false if (object.key? :type) && (object.value? :object)
-    object.map do |_key, value|
+    object.transform_values do |value|
       case value
       when Hash
-        add_additonal_property(value)
+        add_additional_property(value)
       when Array
-        value.select { |v| v.is_a?(Hash) }.each { |item| add_additonal_property(item) }
+        value.select { |v| v.is_a?(Hash) }.each { |item| add_additional_property(item) }
+      else
+        value
       end
     end
     object
