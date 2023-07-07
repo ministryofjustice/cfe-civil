@@ -1758,11 +1758,11 @@ module V6
             expect(response).to have_http_status(:success)
           end
 
-          it "returns timestamp in response" do
+          it "returns timestamp attribute in response" do
             expect(parsed_response).to be_key(:timestamp)
           end
 
-          it "redact response timestamp" do
+          it "redacts time in timestamp" do
             expect(log_record.response["timestamp"]).to eq(Date.parse(parsed_response[:timestamp]).strftime("%Y-%m-%d"))
           end
         end
@@ -1774,7 +1774,7 @@ module V6
             expect(response).to have_http_status(:unprocessable_entity)
           end
 
-          it "doesnt returns timestamp in response" do
+          it "missing timestamp attribute in response" do
             expect(parsed_response).not_to be_key(:timestamp)
           end
         end
