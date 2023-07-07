@@ -4,7 +4,7 @@ module Calculators
   RSpec.describe ChildcareEligibilityCalculator do
     describe "#call" do
       let(:dependants) { [] }
-      let(:applicant) { OpenStruct.new(employed?: true, is_student?: false) }
+      let(:applicant) { OpenStruct.new(in_work?: true, is_student?: false) }
       let(:partner) { nil }
       let(:submission_date) { 1.year.ago }
 
@@ -26,7 +26,7 @@ module Calculators
 
       context "with child dependants, a student applicant and no partner" do
         let(:dependants) { [instance_double(Dependant, becomes_16_on: submission_date + 1.year)] }
-        let(:applicant) { OpenStruct.new(employed?: false, is_student?: true) }
+        let(:applicant) { OpenStruct.new(in_work?: false, is_student?: true) }
 
         it "returns true" do
           expect(calculated_result).to eq true
@@ -43,7 +43,7 @@ module Calculators
 
       context "with child dependants, an employed applicant and an employed partner" do
         let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date + 1.year)] }
-        let(:partner) { OpenStruct.new(employed?: true, is_student?: false) }
+        let(:partner) { OpenStruct.new(in_work?: true, is_student?: false) }
 
         it "returns true" do
           expect(calculated_result).to eq true
@@ -52,7 +52,7 @@ module Calculators
 
       context "with child dependants, an employed applicant and an unemployed partner" do
         let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date + 1.year)] }
-        let(:partner) { OpenStruct.new(employed?: false, is_student?: false) }
+        let(:partner) { OpenStruct.new(in_work?: false, is_student?: false) }
 
         it "returns true" do
           expect(calculated_result).to eq false
