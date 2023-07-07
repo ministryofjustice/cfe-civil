@@ -4,7 +4,7 @@ class RedactService
   class << self
     def call
       RequestLog.find_each do |li|
-        li.update!(request: redact_data(li.request.deep_symbolize_keys))
+        li.update!(request: redact_data(li.request.deep_symbolize_keys), response: redact_response_data(li.response.deep_symbolize_keys))
       end
     end
 
@@ -27,6 +27,11 @@ class RedactService
           value.select { |v| v.is_a?(Hash) }.each { |item| filter_payload(submission_date, item) }
         end
       end
+    end
+
+    def redact_response_data(hash)
+      hash[:timestamp] = RequestLogger.redact_time(hash[:timestamp]) if hash.key? :timestamp
+      hash
     end
   end
 end
