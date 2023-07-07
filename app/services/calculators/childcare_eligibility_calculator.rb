@@ -2,7 +2,7 @@ module Calculators
   class ChildcareEligibilityCalculator
     class << self
       def call(applicants:, dependants:, submission_date:)
-        at_least_one_child_dependant?(dependants:, submission_date:) && all_applicants_are_employed_or_students?(applicants)
+        at_least_one_child_dependant?(dependants:, submission_date:) && all_applicants_are_in_work_or_students?(applicants)
       end
 
     private
@@ -15,8 +15,8 @@ module Calculators
         end
       end
 
-      def all_applicants_are_employed_or_students?(applicants)
-        applicants.all? { _1.employed? || _1.is_student? }
+      def all_applicants_are_in_work_or_students?(applicants)
+        applicants.all? { _1.in_work? || _1.is_student? }
       end
     end
   end
