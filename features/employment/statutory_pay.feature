@@ -56,7 +56,7 @@ Feature:
             | attribute                      | value      |
             | childcare_allowance            | 0.0        |
 
-    Scenario: The client is receiving statutory sick pay via new income payload structure but has entered childcare costs
+    Scenario: The client is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
         Given I am using version 6 of the API
         And I create an assessment with the following details:
             | client_reference_id | NP-FULL-1  |
