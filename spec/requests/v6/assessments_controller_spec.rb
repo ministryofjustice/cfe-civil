@@ -1749,6 +1749,46 @@ module V6
           end
         end
       end
+
+      context "redact response timestamp" do
+        around do |example|
+          travel_to Date.new(2022, 4, 20)
+          example.run
+          travel_back
+        end
+
+        context "with successful submission" do
+          let(:params) { {} }
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
+          end
+
+          it "returns timestamp attribute in response" do
+            expect(parsed_response).to be_key(:timestamp)
+          end
+
+          it "returns timestamp in response" do
+            expect(parsed_response[:timestamp]).to eq("2022-04-20T00:00:00.000Z")
+          end
+
+          it "redacts time in timestamp" do
+            expect(log_record.response["timestamp"]).to eq("2022-04-20")
+          end
+        end
+
+        context "with unsuccessful submission" do
+          let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
+
+          it "returns http error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "missing timestamp attribute in response" do
+            expect(parsed_response).not_to be_key(:timestamp)
+          end
+        end
+      end
     end
   end
 end
