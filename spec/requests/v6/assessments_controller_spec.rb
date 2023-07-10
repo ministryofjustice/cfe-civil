@@ -1751,6 +1751,12 @@ module V6
       end
 
       context "redact response timestamp" do
+        around do |example|
+          travel_to Date.new(2022, 4, 20)
+          example.run
+          travel_back
+        end
+
         context "with successful submission" do
           let(:params) { {} }
 
@@ -1762,8 +1768,12 @@ module V6
             expect(parsed_response).to be_key(:timestamp)
           end
 
+          it "returns timestamp in response" do
+            expect(parsed_response[:timestamp]).to eq("2022-04-20T00:00:00.000Z")
+          end
+
           it "redacts time in timestamp" do
-            expect(log_record.response["timestamp"]).to eq(Date.parse(parsed_response[:timestamp]).strftime("%Y-%m-%d"))
+            expect(log_record.response["timestamp"]).to eq("2022-04-20")
           end
         end
 
