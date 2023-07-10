@@ -128,6 +128,10 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                 type: :string,
                                 description: "Client supplied id to identify the employment",
                               },
+                              receiving_only_statutory_sick_or_maternity_pay: {
+                                type: :boolean,
+                                description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
+                              },
                               payments: { "$ref" => components[:employment_payment_list] },
                             },
                           },
