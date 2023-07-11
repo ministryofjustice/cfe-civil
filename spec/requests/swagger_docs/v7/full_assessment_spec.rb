@@ -111,31 +111,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         outgoings: { type: :array },
                         irregular_incomes: { "$ref" => components[:irregular_income_payments] },
-                        employments: {
-                          type: :array,
-                          required: %i[name client_id payments],
-                          description: "One or more employment income details",
-                          items: {
-                            type: :object,
-                            description: "Employment income detail",
-                            additionalProperties: false,
-                            properties: {
-                              name: {
-                                type: :string,
-                                description: "Identifying name for this employment - e.g. employer's name",
-                              },
-                              client_id: {
-                                type: :string,
-                                description: "Client supplied id to identify the employment",
-                              },
-                              receiving_only_statutory_sick_or_maternity_pay: {
-                                type: :boolean,
-                                description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
-                              },
-                              payments: { "$ref" => components[:employment_payment_list] },
-                            },
-                          },
-                        },
+                        employments: { "$ref" => components[:employments] },
                         employment_details: {
                           type: :array,
                           description: "One or more employment details for partner",
