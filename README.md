@@ -16,10 +16,6 @@ CFE-Civil is suitable for:
 Not (yet) suitable for:
 
 * Special applicant groups:
-  * Self Employed: Sole Trader applicants
-  * Self Employed: Sub-contractor applicants
-  * Self Employed: Applicants in a Business Partnership
-  * Self Employed: Shareholders in PLC/Company Directors
   * Applicants under 18 in Family cases
   * Applicants under 18 in Non-Family cases
   * Police officer applicants
