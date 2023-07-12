@@ -11,6 +11,9 @@
 #
 module Collators
   class RegularOutgoingsCollator
+    Attrs = Data.define(:attrs, :child_care_regular)
+    Result = Data.define(:child_care_regular)
+
     class << self
       def call(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
         new(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:).call
@@ -24,21 +27,21 @@ module Collators
     end
 
     def call
-      @disposable_income_summary.update!(disposable_income_attributes)
+      attrs = disposable_income_attributes
+      @disposable_income_summary.update!(attrs.attrs)
+      Result.new(child_care_regular: attrs.child_care_regular)
     end
 
   private
 
     def outgoing_categories
-      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym)
+      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym) - [:child_care]
     end
 
     def disposable_income_attributes
       attrs = initialize_attributes
 
       outgoing_categories.each do |category|
-        next if category == :child_care && !@eligible_for_childcare # see *§ above
-
         category_all_sources = "#{category}_all_sources".to_sym
         category_monthly_amount = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category:)
 
@@ -49,7 +52,15 @@ module Collators
         attrs[:total_disposable_income] -= category_monthly_amount
       end
 
-      attrs
+      if @eligible_for_childcare # see *§ above
+        childcare_monthly_amount = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category: :child_care)
+        attrs[:total_outgoings_and_allowances] += childcare_monthly_amount
+        attrs[:total_disposable_income] -= childcare_monthly_amount
+      else
+        childcare_monthly_amount = 0
+      end
+
+      Attrs.new(attrs:, child_care_regular: childcare_monthly_amount)
     end
 
     def initialize_attributes

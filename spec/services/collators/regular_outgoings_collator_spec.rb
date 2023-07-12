@@ -6,7 +6,7 @@ require "rails_helper"
 # 2. increment total_outgoings_and_allowances, except for rent_or_mortgate**
 # 3. decrement total_disposable_income, except for rent_or_mortgate**
 #
-# ** in full NonPassportedWorkflow :rent_or_mortgate will already been added
+# ** in full NonPassportedWorkflow :rent_or_mortgage will already been added
 # to totals by the HousingCostCollator/HousingCostCalculator and DisposableIncomeCollator :(
 #
 
@@ -26,7 +26,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           rent_or_mortgage_all_sources: 0.0,
           maintenance_out_all_sources: 0.0,
           legal_aid_all_sources: 0.0,
@@ -57,7 +56,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 111.11,
           rent_or_mortgage_all_sources: 0.0,
           legal_aid_all_sources: 222.22,
@@ -88,7 +86,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 120.37,
           rent_or_mortgage_all_sources: 0.0,
           legal_aid_all_sources: 240.74,
@@ -119,7 +116,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 240.74,
           rent_or_mortgage_all_sources: 0.0,
           legal_aid_all_sources: 481.48,
@@ -150,7 +146,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 481.48,
           rent_or_mortgage_all_sources: 0.0,
           legal_aid_all_sources: 962.95,
@@ -180,7 +175,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 0.0,
           rent_or_mortgage_all_sources: 222.22,
           legal_aid_all_sources: 0.00,
@@ -210,8 +204,8 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       context "when eligible for childcare" do
-        it "increments #child_care_all_sources data" do
-          expect { collator }.to change { disposable_income_summary.reload.child_care_all_sources }.from(0).to(111.11)
+        it "returns #child_care_regular data" do
+          expect(collator.child_care_regular).to eq(111.11)
         end
 
         it "increments #total_outgoings_and_allowances" do
@@ -225,10 +219,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
 
       context "when not eligible for childcare" do
         let(:eligible_for_childcare) { false }
-
-        it "does not increment #child_care_all_sources data" do
-          expect { collator }.not_to change { disposable_income_summary.reload.child_care_all_sources }.from(0)
-        end
 
         it "does not increment #total_outgoings_and_allowances" do
           expect { collator }.not_to change { disposable_income_summary.reload.total_outgoings_and_allowances }.from(0)
@@ -250,7 +240,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         collator
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
-          child_care_all_sources: 0.0,
           maintenance_out_all_sources: 333.33,
           rent_or_mortgage_all_sources: 0.0,
           legal_aid_all_sources: 0.0,
@@ -304,7 +293,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
           collator
           disposable_income_summary.reload
           expect(disposable_income_summary).to have_attributes(
-            child_care_all_sources: 0.0,
             maintenance_out_all_sources: 1_333.33,
             rent_or_mortgage_all_sources: 0.0,
             legal_aid_all_sources: 2_000.00,

@@ -1,14 +1,12 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance_under_16, :dependant_allowance_over_16)
+    Result = Data.define(:dependant_allowance, :child_care)
 
     class << self
       def call(submission_date:, person:, gross_income_summary:, disposable_income_summary:, eligible_for_childcare:, allow_negative_net:)
         child_care = Collators::ChildcareCollator.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
                                                        childcare_outgoings: disposable_income_summary.childcare_outgoings,
                                                        eligible_for_childcare:)
-        # TODO: Return these values instead of persisting them
-        disposable_income_summary.update!(child_care_bank: child_care.bank, child_care_cash: child_care.cash)
 
         dependant_allowance = Collators::DependantsAllowanceCollator.call(dependants: person.dependants,
                                                                           submission_date:)
@@ -31,8 +29,8 @@ module Collators
         # TODO: return this instead of persisting it
         disposable_income_summary.update!(legal_aid_bank:)
 
-        Result.new(dependant_allowance_under_16: dependant_allowance.under_16,
-                   dependant_allowance_over_16: dependant_allowance.over_16)
+        Result.new(dependant_allowance:,
+                   child_care:)
       end
     end
   end

@@ -9,7 +9,11 @@ module Workflows
              :with_everything,
              proceedings: proceedings_hash
     end
-    let(:calculation_output) { instance_double(CalculationOutput, capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0)) }
+    let(:calculation_output) do
+      instance_double(CalculationOutput,
+                      applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
+                      capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0))
+    end
     let(:person_blank) { nil }
 
     before do
@@ -140,12 +144,13 @@ module Workflows
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
-                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       child_care_bank: 0,
+                                                                       outgoings: assessment.applicant_disposable_income_summary.outgoings,
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
                                                                        capital_summary: assessment.applicant_capital_summary,
-                                                                       assessed_capital: 0)
+                                                                       assessed_capital: 0).and_call_original
 
           workflow_call
         end
@@ -156,12 +161,13 @@ module Workflows
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
-                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       child_care_bank: 0,
+                                                                       outgoings: assessment.applicant_disposable_income_summary.outgoings,
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
                                                                        capital_summary: assessment.applicant_capital_summary,
-                                                                       assessed_capital: 0)
+                                                                       assessed_capital: 0).and_call_original
 
           workflow_call
         end

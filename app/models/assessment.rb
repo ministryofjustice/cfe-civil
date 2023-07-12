@@ -42,4 +42,13 @@ class Assessment < ApplicationRecord
   def proceeding_type_codes
     proceeding_types.order(:ccms_code).map(&:ccms_code)
   end
+
+  def add_remarks!(new_remarks)
+    my_remarks = remarks
+
+    new_remarks.each do |remark|
+      my_remarks.add(remark.type, remark.issue, remark.ids)
+    end
+    update!(remarks: my_remarks)
+  end
 end
