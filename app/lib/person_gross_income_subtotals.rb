@@ -51,6 +51,10 @@ class PersonGrossIncomeSubtotals
     @gross_income_summary.unspecified_source_payments.sum { monthly_equivalent_amount(_1) }
   end
 
+  def is_student?
+    @gross_income_summary.student_loan_payments.any?
+  end
+
 private
 
   def monthly_equivalent_amount(payment)

@@ -47,6 +47,10 @@ class EmploymentIncomeSubtotals
     employment_results.map(&:result).map(&:fixed_employment_allowance).min || 0.0
   end
 
+  def in_work?
+    @self_employment_results.any? || (@employment_details_results + [@employment_result]).compact.map(&:employment).any?(&:actively_working?)
+  end
+
 private
 
   def employment_results

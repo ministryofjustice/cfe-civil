@@ -145,16 +145,15 @@ module Workflows
       # TODO: make the Collators::DisposableIncomeCollator increment/sum to existing values so order of "collation" becomes unimportant
       def partner_disposable_income_assessment(assessment:, gross_income_subtotals:, applicant_person_data:, partner_person_data:)
         applicant = PersonWrapper.new is_single: false,
-                                      submission_date: assessment.submission_date,
-                                      person_data: applicant_person_data,
-                                      employments: assessment.employments,
-                                      gross_income_summary: assessment.applicant_gross_income_summary
+                                      person_data: applicant_person_data
         partner = PersonWrapper.new is_single: false,
-                                    submission_date: assessment.submission_date,
-                                    gross_income_summary: assessment.partner_gross_income_summary,
-                                    person_data: partner_person_data,
-                                    employments: assessment.partner_employments
-        eligible_for_childcare = calculate_partner_childcare_eligibility(assessment, applicant, partner)
+                                    person_data: partner_person_data
+
+        eligible_for_childcare = Calculators::ChildcareEligibilityCalculator.call(
+          applicant_incomes: [gross_income_subtotals.applicant_gross_income_subtotals, gross_income_subtotals.partner_gross_income_subtotals],
+          dependants: applicant.dependants + partner.dependants, # Ensure we consider both client and partner dependants
+          submission_date: assessment.submission_date,
+        )
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
                                                       gross_income_summary: assessment.applicant_gross_income_summary.freeze,
@@ -200,11 +199,12 @@ module Workflows
 
       def single_disposable_income_assessment(assessment:, gross_income_subtotals:, applicant_person_data:)
         applicant = PersonWrapper.new person_data: applicant_person_data,
-                                      is_single: true,
-                                      submission_date: assessment.submission_date,
-                                      gross_income_summary: assessment.applicant_gross_income_summary,
-                                      employments: assessment.employments
-        eligible_for_childcare = calculate_childcare_eligibility(assessment, applicant)
+                                      is_single: true
+        eligible_for_childcare = Calculators::ChildcareEligibilityCalculator.call(
+          applicant_incomes: [gross_income_subtotals.applicant_gross_income_subtotals],
+          dependants: applicant.dependants, # Ensure we consider both client and partner dependants
+          submission_date: assessment.submission_date,
+        )
         outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
                                                       person: applicant,
                                                       gross_income_summary: assessment.applicant_gross_income_summary.freeze,
@@ -224,22 +224,6 @@ module Workflows
         DisposableIncomeSubtotals.new(
           applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(outgoings, 0),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
-        )
-      end
-
-      def calculate_childcare_eligibility(assessment, applicant)
-        Calculators::ChildcareEligibilityCalculator.call(
-          applicants: [applicant],
-          dependants: applicant.dependants, # Ensure we consider both client and partner dependants
-          submission_date: assessment.submission_date,
-        )
-      end
-
-      def calculate_partner_childcare_eligibility(assessment, applicant, partner)
-        Calculators::ChildcareEligibilityCalculator.call(
-          applicants: [applicant, partner],
-          dependants: applicant.dependants + partner.dependants, # Ensure we consider both client and partner dependants
-          submission_date: assessment.submission_date,
         )
       end
 
