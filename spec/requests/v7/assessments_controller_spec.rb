@@ -22,6 +22,26 @@ module V7
         }
       end
 
+      let(:partner_employments) do
+        [
+          {
+            name: "Job 1",
+            client_id: SecureRandom.uuid,
+            receiving_only_statutory_sick_or_maternity_pay: true,
+            payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
+              {
+                client_id: SecureRandom.uuid,
+                gross: 846.00,
+                benefits_in_kind: 16.60,
+                tax: -104.10,
+                national_insurance: -18.66,
+                date:,
+              }
+            end,
+          },
+        ]
+      end
+
       let(:vehicle_params) do
         [
           attributes_for(:vehicle, value: 2638.69, loan_amount_outstanding: 3907.77,
@@ -169,6 +189,21 @@ module V7
 
           it "returns error JSON for '#/partner/employments/0'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/partner/employments/0' contains additional properties})
+          end
+        end
+
+        context "validate 'receiving_only_statutory_sick_or_maternity_pay' for partner.employments" do
+          let(:params) do
+            {
+              partner: {
+                partner: { date_of_birth: "1987-08-08", employed: true },
+                employments: partner_employments,
+              },
+            }
+          end
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
           end
         end
       end

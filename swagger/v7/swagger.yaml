@@ -1713,26 +1713,7 @@ paths:
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
-                      type: array
-                      required:
-                      - name
-                      - client_id
-                      - payments
-                      description: One or more employment income details
-                      items:
-                        type: object
-                        description: Employment income detail
-                        additionalProperties: false
-                        properties:
-                          name:
-                            type: string
-                            description: Identifying name for this employment - e.g.
-                              employer's name
-                          client_id:
-                            type: string
-                            description: Client supplied id to identify the employment
-                          payments:
-                            "$ref": "#/components/schemas/EmploymentPaymentList"
+                      "$ref": "#/components/schemas/Employments"
                     employment_details:
                       type: array
                       description: One or more employment details for partner
