@@ -18,6 +18,7 @@ Feature:
       | main_home_equity_disregard | 100000.0 |
       | transaction_allowance      | 0.0      |
       | assessed_equity            | 50000.0  |
+      | subject_matter_of_dispute  |   false  |
     And I should see the following overall summary:
       | attribute                  | value      |
       | assessment_result          | ineligible |

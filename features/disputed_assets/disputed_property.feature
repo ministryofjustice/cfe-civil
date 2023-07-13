@@ -21,6 +21,7 @@ Feature:
         | main_home_equity_disregard |      0.0 |
         | assessed_equity            |      0.0 |
         | smod_allowance             |      0.0 |
+        | subject_matter_of_dispute  |   true   |
       And I should see the following "capital summary" details:
         | attribute                           | value   |
         | total_property                      |     0.0 |
@@ -44,6 +45,7 @@ Feature:
             | main_home_equity_disregard |      0.0 |
             | transaction_allowance      |   4000.0 |
             | assessed_equity            |      0.0 |
+            | subject_matter_of_dispute  |   true   |
         And I should see the following "capital summary" details:
             | attribute                           | value  |
             | total_property                      | 0.0    |
@@ -67,6 +69,7 @@ Feature:
             | main_home_equity_disregard | 100000.0 |
             | transaction_allowance      | 7500.0   |
             | assessed_equity            | 42500.0  |
+            | subject_matter_of_dispute  |   true   |
         And I should see the following "capital summary" details:
             | attribute                           | value    |
             | total_property                      | 42500.0  |
@@ -98,12 +101,14 @@ Feature:
             | main_home_equity_disregard |  21250.0 |
             | transaction_allowance      | 7500.0   |
             | assessed_equity            | 0.0      |
+            | subject_matter_of_dispute  |   true   |
         Then I should see the following "additional property" details:
             | attribute                  | value   |
             | value                      | 50000.0 |
             | main_home_equity_disregard | 0.0     |
             | transaction_allowance      | 1500.0  |
             | assessed_equity            | 48500.0 |
+            | subject_matter_of_dispute  |   true   |
         And I should see the following "capital summary" details:
             | attribute                           | value    |
             | total_property                      | 48500.0  |
@@ -135,12 +140,14 @@ Feature:
       | smod_allowance             | 100000.0 |
       | main_home_equity_disregard |  10000.0 |
       | assessed_equity            | 0.0      |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "additional property" details:
       | attribute                  | value   |
       | value                      | 90000.0 |
       | net_value                  | 10000.0 |
       | net_equity                 | 5000.0  |
       | assessed_equity            | 5000.0  |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "capital summary" details:
       | attribute                            | value    |
       | subject_matter_of_dispute_disregard  | 100000.0 |
@@ -172,6 +179,7 @@ Feature:
       | smod_allowance             | 100000.0 |
       | main_home_equity_disregard |  94000.0 |
       | assessed_equity            | 0.0      |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "additional property" details:
       | attribute                  | value   |
       | value                      | 60000.0 |
@@ -179,6 +187,7 @@ Feature:
       | net_value                  | 18200.0 |
       | net_equity                 | 9100.0  |
       | assessed_equity            | 9100.0  |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "capital summary" details:
       | attribute                            | value    |
       | subject_matter_of_dispute_disregard  | 100000.0 |

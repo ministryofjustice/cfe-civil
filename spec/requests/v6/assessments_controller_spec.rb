@@ -62,12 +62,14 @@ module V6
             outstanding_mortgage: 0,
             percentage_owned: 99,
             shared_with_housing_assoc: false,
+            subject_matter_of_dispute: false,
           },
           {
             value: 10_000,
             outstanding_mortgage: 40,
             percentage_owned: 80,
             shared_with_housing_assoc: true,
+            subject_matter_of_dispute: false,
           },
         ]
       end
@@ -193,6 +195,7 @@ module V6
                   outstanding_mortgage: 0.0,
                   percentage_owned: 0.0,
                   shared_with_housing_assoc: false,
+                  subject_matter_of_dispute: true,
                 },
               ],
             },
@@ -216,6 +219,7 @@ module V6
                   smod_allowance: 0,
                   main_home_equity_disregard: 0.0,
                   assessed_equity: 0.0,
+                  subject_matter_of_dispute: nil,
                 },
                 additional_properties: [
                   {
@@ -231,6 +235,7 @@ module V6
                     smod_allowance: 0,
                     main_home_equity_disregard: 0.0,
                     assessed_equity: 0.0,
+                    subject_matter_of_dispute: true,
                   },
                 ],
               },
@@ -1098,6 +1103,7 @@ module V6
                 outstanding_mortgage: 200,
                 percentage_owned: 15,
                 shared_with_housing_assoc: true,
+                subject_matter_of_dispute: false,
               },
               additional_properties: properties_params,
             },
@@ -1615,6 +1621,7 @@ module V6
                       smod_allowance: 0,
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 0.0,
+                      subject_matter_of_dispute: false,
                     })
                 end
               end
@@ -1635,6 +1642,7 @@ module V6
                       main_home_equity_disregard: 59_800.0,
                       assessed_equity: 0.0,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     })
                 end
 
@@ -1655,6 +1663,7 @@ module V6
                           main_home_equity_disregard: 0.0,
                           assessed_equity: 960.3,
                           smod_allowance: 0.0,
+                          subject_matter_of_dispute: false,
                         },
                         {
                           value: 10_000.0,
@@ -1669,6 +1678,7 @@ module V6
                           main_home_equity_disregard: 0.0,
                           assessed_equity: 7660.0,
                           smod_allowance: 0.0,
+                          subject_matter_of_dispute: false,
                         },
                       ],
                     )
@@ -1728,6 +1738,7 @@ module V6
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 960.3,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     },
                     {
                       value: 10_000.0,
@@ -1742,6 +1753,7 @@ module V6
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 7660.0,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     },
                   ],
                 )

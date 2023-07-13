@@ -66,6 +66,7 @@ Feature:
       | net_value                   | 64900.0  |
       | net_equity                  | 64900.0  |
       | assessed_equity             | 64900.0  |
+      | subject_matter_of_dispute   |   false  |
     Then I should see the following "capital summary" details:
       | attribute                   | value    |
       | total_capital               | 10000.0  |

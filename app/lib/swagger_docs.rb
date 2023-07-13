@@ -181,6 +181,9 @@ class SwaggerDocs
                 type: :number,
                 minimum: 0.0,
               },
+              subject_matter_of_dispute: {
+                type: :boolean,
+              },
             },
           },
           BankAccounts: {
