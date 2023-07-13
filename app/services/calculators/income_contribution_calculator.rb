@@ -1,11 +1,12 @@
 module Calculators
   class IncomeContributionCalculator
-    def self.call(income)
-      new(income).call
+    def self.call(income, submission_date)
+      new(income, submission_date).call
     end
 
-    def initialize(income)
+    def initialize(income, submission_date)
       @income = income
+      @submission_date = submission_date
     end
 
     def call
@@ -31,7 +32,7 @@ module Calculators
     end
 
     def bands
-      Threshold.value_for(:disposable_income_contribution_bands)
+      Threshold.value_for(:disposable_income_contribution_bands, at: @submission_date)
     end
 
     def contribution

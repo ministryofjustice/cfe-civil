@@ -48,6 +48,7 @@ module Workflows
         Assessors::DisposableIncomeAssessor.call(
           disposable_income_summary: assessment.applicant_disposable_income_summary,
           total_disposable_income: assessment.applicant_disposable_income_summary.combined_total_disposable_income,
+          submission_date: assessment.submission_date,
         )
 
         return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_disposable_income_summary.ineligible?

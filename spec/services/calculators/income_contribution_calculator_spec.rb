@@ -3,7 +3,7 @@ require "rails_helper"
 module Calculators
   RSpec.describe IncomeContributionCalculator do
     describe ".call" do
-      subject(:calculator) { described_class.call(income) }
+      subject(:calculator) { described_class.call(income, Time.zone.today) }
 
       context "income below band a" do
         let(:income) { 312.0 }
