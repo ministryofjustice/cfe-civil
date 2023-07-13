@@ -11,30 +11,93 @@ module TestCase
         @actual = actual
         @expected = expected
         @verbosity = verbosity
-        @result = true
-        @header_pattern = "%58s  %-26s %-s"
       end
+
+      attr_reader :expected, :actual, :verbosity
+
+      HEADER_PATTERN = "%58s  %-26s %-s".freeze
 
       def call
         print_headings
-        compare_assessment
-        compare_proceeding_types
-        compare_gross_income
-        compare_disposable_income
-        compare_capital
-        @result = false if RemarksComparer.call(@expected[:remarks], @actual[:assessment][:remarks], @verbosity) == false
-        @result
+        COMPARISONS.flat_map { |comp| comp.call(self) }.reject { |item| item.fetch(:expected).nil? }
       end
 
-    private
+      GROSS_COMPARABLES = {
+        monthly_other_income: ->(o) { { actual: o.actual_gross_other_income, expected: o.expected_gi_other_income } },
+        monthly_state_benefits: ->(o) { { actual: o.actual_gross_state_benefits, expected: o.expected_gi_state_benefits } },
+        monthly_student_loan: ->(o) { { actual: o.actual_student_loan, expected: o.expected_gi_student_loan } },
+        employment_income_gross: ->(o) { { actual: o.actual_employment_income[:gross_income], expected: o.expected_employment_income_gross } },
+        employment_income_benefits_in_kind: ->(o) { { actual: o.actual_employment_income[:benefits_in_kind], expected: o.expected_employment_income_benefits_in_kind } },
+        employment_income_tax: ->(o) { { actual: o.actual_employment_income[:tax], expected: o.expected_employment_income_tax } },
+        employment_income_nic: ->(o) { { actual: o.actual_employment_income[:national_insurance], expected: o.expected_employment_income_nic } },
+        fixed_employment_allowance: ->(o) { { actual: o.actual_employment_income[:fixed_employment_deduction], expected: o.expected_fixed_employment_allowance } },
+        total_gross_income: ->(o) { { actual: o.actual_total_gross_income, expected: o.expected_total_gross_income } },
+      }.freeze
+
+      DISPOSABLE_COMPARABLES = {
+        childcare: ->(o) { { actual: o.actual_disposable(:child_care), expected: o.expected_disposable(:childcare) } },
+        dependant_allowance: ->(o) { { actual: o.actual_dependant_allowance, expected: o.expected_disposable(:dependant_allowance) } },
+        legal_aid: ->(o) { { actual: o.actual_disposable(:legal_aid), expected: o.expected_disposable(:legal_aid) } },
+        maintenance: ->(o) { { actual: o.actual_disposable(:maintenance_out), expected: o.expected_disposable(:maintenance) } },
+        gross_housing_costs: ->(o) { { actual: o.disposable_income_result[:gross_housing_costs], expected: o.expected_disposable(:gross_housing_costs) } },
+        housing_benefit: ->(o) { { actual: o.disposable_income_result[:housing_benefit], expected: o.expected_disposable(:housing_benefit) } },
+        net_housing_costs: ->(o) { { actual: o.disposable_income_result[:net_housing_costs], expected: o.expected_disposable(:net_housing_costs) } },
+        total_outgoings_and_allowances: ->(o) { { actual: o.disposable_income_result[:total_outgoings_and_allowances], expected: o.expected_disposable(:total_outgoings_and_allowances) } },
+        total_disposable_income: ->(o) { { actual: o.disposable_income_result[:total_disposable_income], expected: o.expected_disposable(:total_disposable_income) } },
+        income_contribution: ->(o) { { actual: o.disposable_income_result[:income_contribution], expected: o.expected_disposable(:income_contribution) } },
+      }.freeze
+
+      COMPARISONS = [
+        lambda { |o|
+          [{ name: "assessment_result", actual: o.actual_overall_result[:result], expected: o.expected_assessment[:assessment_result] }]
+        },
+        lambda { |o|
+          if o.actual_proceeding_type_codes == o.expected_proceeding_type_codes
+            o.expected_proceeding_types
+              .flat_map do |code, expected_result_hash|
+                o.verbose "Proceeding_type #{code}", :green
+                PROCEEDING_TYPE_COMPARISONS.map do |name, method|
+                  exp_act = method.call(o, code, expected_result_hash)
+                  # o.compare_and_print("Proceeding_type #{code} #{name}", exp_act.fetch(:actual), exp_act.fetch(:expected))
+                  exp_act.merge(name: "Proceeding_type #{code} #{name}")
+                end
+              end
+          else
+            [{ name: "proceeding_type_codes", actual: actual_proceeding_type_codes.join(", "), expected: expected_proceeding_type_codes.join(", ") }]
+          end
+        },
+        lambda { |o|
+          o.verbose "Gross income >>>>>>>>>>>>>>>>>>>>>>>>>", :green
+          GROSS_COMPARABLES.map do |name, method|
+            exp_act = method.call(o)
+            exp_act.merge(name: name.to_s)
+          end
+        },
+        lambda { |o|
+          o.verbose "Disposable income >>>>>>>>>>>>>>>>>>>>>>", :green
+          DISPOSABLE_COMPARABLES.map do |name, method|
+            exp_act = method.call(o)
+            exp_act.merge(name: name.to_s)
+          end
+        },
+        lambda { |o|
+          o.verbose "Capital >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", :green
+          o.expected_capital.map do |key, value|
+            { name: key, actual: o.actual_capital[key], expected: value }
+          end
+        },
+        lambda { |o|
+          RemarksComparer.call(o.expected[:remarks], o.actual[:assessment][:remarks], o.verbosity)
+        },
+      ].freeze
 
       def silent?
         @verbosity.zero?
       end
 
       def print_headings
-        verbose sprintf(@header_pattern, client_reference_id, "Expected", "Actual")
-        verbose sprintf(@header_pattern, "", "=========", "=========")
+        verbose sprintf(HEADER_PATTERN, client_reference_id, "Expected", "Actual")
+        verbose sprintf(HEADER_PATTERN, "", "=========", "=========")
       end
 
       def print_mismatched_proceeding_type_codes
@@ -47,74 +110,36 @@ module TestCase
         @actual[:assessment][:client_reference_id]
       end
 
-      def compare_assessment
-        compare_and_print("assessment_result", actual_overall_result[:result], expected_assessment[:assessment_result])
-      end
+      PROCEEDING_TYPE_COMPARISONS = {
+        result: ->(o, code, expected_result_hash) { { actual: o.actual_proceeding_type_result(code), expected: expected_result_hash[:result] } },
+        capital_lower_threshold: ->(o, code, expected_result_hash) { { actual: o.actual_cap_result_for(code)[:lower_threshold], expected: expected_result_hash[:capital_lower_threshold] } },
+        capital_upper_threshold: ->(o, code, expected_result_hash) { { actual: o.actual_cap_result_for(code)[:upper_threshold], expected: expected_result_hash[:capital_upper_threshold] } },
+        gross_income_upper_threshold: ->(o, code, expected_result_hash) { { actual: o.actual_gross_income_result_for(code)[:upper_threshold], expected: expected_result_hash[:gross_income_upper_threshold] } },
+        disposable_income_lower_threshold: lambda { |o, code, expected_result_hash|
+                                             { actual: o.actual_disposable_income_result_for(code)[:lower_threshold],
+                                               expected: expected_result_hash[:disposable_income_lower_threshold] }
+                                           },
+        disposable_income_upper_threshold: lambda { |o, code, expected_result_hash|
+                                             { actual: o.actual_disposable_income_result_for(code)[:upper_threshold],
+                                               expected: expected_result_hash[:disposable_income_upper_threshold] }
+                                           },
 
-      def compare_proceeding_types
-        if actual_proceeding_type_codes == expected_proceeding_type_codes
-          expected_proceeding_types.each { |code, expected_result_hash| compare_proceeding_type_detail(code, expected_result_hash) }
-        else
-          print_mismatched_proceeding_type_codes
-        end
-      end
-
-      def compare_proceeding_type_detail(code, expected_result_hash)
-        verbose "Proceeding_type #{code}", :green
-        compare_and_print("result", actual_proceeding_type_result(code), expected_result_hash[:result])
-        compare_and_print("capital lower threshold", actual_cap_result_for(code)[:lower_threshold], expected_result_hash[:capital_lower_threshold])
-        compare_and_print("capital upper threshold", actual_cap_result_for(code)[:upper_threshold], expected_result_hash[:capital_upper_threshold])
-        compare_and_print("gross income upper threshold", actual_gross_income_result_for(code)[:upper_threshold], expected_result_hash[:gross_income_upper_threshold])
-        compare_and_print("disposable income lower threshold", actual_disposable_income_result_for(code)[:lower_threshold],
-                          expected_result_hash[:disposable_income_lower_threshold])
-        compare_and_print("disposable income upper threshold", actual_disposable_income_result_for(code)[:upper_threshold],
-                          expected_result_hash[:disposable_income_upper_threshold])
-      end
+      }.freeze
 
       def compare_and_print(legend, actual, expected)
-        color = :green
-        color = :red unless actual.to_s == expected.to_s
-        color = :blue if expected.nil?
-        verbose sprintf(@header_pattern, legend, expected, actual), color
-      end
-
-      def compare_gross_income
-        puts "Gross income >>>>>>>>>>>>>>>>>>>>>>>>>".green unless silent?
-        compare_and_print("monthly other income", actual_gross_other_income, expected_gi_other_income)
-        compare_and_print("monthly state benefits", actual_gross_state_benefits, expected_gi_state_benefits)
-        compare_and_print("monthly student loan", actual_student_loan, expected_gi_student_loan)
-        compare_and_print("employment_income_gross", actual_employment_income[:gross_income], expected_employment_income_gross)
-        compare_and_print("employment_income_benefits_in_kind", actual_employment_income[:benefits_in_kind], expected_employment_income_benefits_in_kind)
-        compare_and_print("employment_income_tax",  actual_employment_income[:tax], expected_employment_income_tax)
-        compare_and_print("employment_income_nic",  actual_employment_income[:national_insurance], expected_employment_income_nic)
-        compare_and_print("fixed_employment_allowance", actual_employment_income[:fixed_employment_deduction], expected_fixed_employment_allowance)
-        compare_and_print("total gross income", actual_total_gross_income, expected_total_gross_income)
-      end
-
-      def compare_disposable_income
-        puts "Disposable income >>>>>>>>>>>>>>>>>>>>>>".green unless silent?
-        compare_and_print("childcare", actual_disposable(:child_care), expected_disposable(:childcare))
-        compare_and_print("dependant allowance", actual_dependant_allowance, expected_disposable(:dependant_allowance))
-        compare_and_print("legal_aid", actual_disposable(:legal_aid), expected_disposable(:legal_aid))
-        compare_and_print("maintenance", actual_disposable(:maintenance_out), expected_disposable(:maintenance))
-        compare_and_print("gross_housing_costs", disposable_income_result[:gross_housing_costs], expected_disposable(:gross_housing_costs))
-        compare_and_print("housing benefit", disposable_income_result[:housing_benefit], expected_disposable(:housing_benefit))
-        compare_and_print("net housing costs", disposable_income_result[:net_housing_costs], expected_disposable(:net_housing_costs))
-        compare_and_print("total outgoings and allowances", disposable_income_result[:total_outgoings_and_allowances], expected_disposable(:total_outgoings_and_allowances))
-        compare_and_print("total disposable income", disposable_income_result[:total_disposable_income], expected_disposable(:total_disposable_income))
-        compare_and_print("income contribution", disposable_income_result[:income_contribution], expected_disposable(:income_contribution))
-      end
-
-      def compare_capital
-        puts "Capital >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".green unless silent?
-        expected_capital.each do |key, value|
-          compare_and_print(key, actual_capital[key], value)
-        end
+        color = if expected.nil?
+                  :blue
+                elsif actual.to_s != expected.to_s
+                  :red
+                else
+                  :green
+                end
+        verbose sprintf(HEADER_PATTERN, legend, expected, actual), color
+        color != :red
       end
 
       def verbose(string, color = :green)
         puts string.__send__(color) unless silent?
-        @result = false if color == :red
       end
 
       def actual_result_summary

@@ -9,18 +9,14 @@ module TestCase
         @expected = expected
         @actual = actual
         @verbosity = verbosity
-        @header_pattern = "%58s  %-26s %-s"
-        @result = true
       end
 
       def call
         print_actual_remarks unless silent?
 
-        return true if @expected.blank?
+        return [] if @expected.blank?
 
         compare_remarks
-
-        @result
       end
 
       def silent?
@@ -30,17 +26,14 @@ module TestCase
       def compare_remarks
         puts "Remarks >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>".green unless silent?
 
-        @expected.each { |remark_type, remark_type_hash| compare_remark_type(remark_type, remark_type_hash) }
+        @expected.flat_map { |remark_type, remark_type_hash| compare_remark_type(remark_type, remark_type_hash) }
       end
 
       def compare_remark_type(type, hash)
-        hash.each do |issue, _ids|
+        hash.keys.map do |issue|
           actual_unsorted_remarks = @actual&.dig(type)&.dig(issue)
           actual_remarks = actual_unsorted_remarks.nil? ? nil : actual_unsorted_remarks.sort
-          next if actual_remarks == @expected[type][issue].sort
-
-          @result = false
-          print_remark_line(type, issue) unless silent?
+          { name: "remark_#{type}_#{issue}", actual: actual_remarks, expected: @expected[type][issue].sort }
         end
       end
 
