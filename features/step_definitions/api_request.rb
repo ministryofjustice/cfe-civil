@@ -157,7 +157,10 @@ When("I retrieve the final assessment") do
   self_employed_partner = @self_employment_details && @self_employment_details.key?(:partner)
   employed_partner = @employment_details && @employment_details.key?(:partner)
 
-  if @partner_employments || @partner_property || @partner_regular_transactions || @partner_capitals || self_employed_partner || employed_partner
+  if @partner_employments || @partner_property ||
+      @partner_regular_transactions || @partner_capitals ||
+      @partner_cash_transactions ||
+      self_employed_partner || employed_partner
     employments = @partner_employments || []
     additional_properties = @partner_property || []
     regular_transactions = @partner_regular_transactions || []
@@ -166,6 +169,7 @@ When("I retrieve the final assessment") do
                      additional_properties:,
                      regular_transactions:,
                      capitals: }
+    partner_data[:cash_transactions] = @partner_cash_transactions if @partner_cash_transactions
     if employments.any?
       partner_data[:employments] = employments
       partner_data[:partner] = partner_data.fetch(:partner).merge(employed: true)

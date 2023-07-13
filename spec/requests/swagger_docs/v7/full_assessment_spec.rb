@@ -109,6 +109,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
+                        cash_transactions: { "$ref" => components[:cash_transactions] },
                         outgoings: { type: :array },
                         irregular_incomes: { "$ref" => components[:irregular_income_payments] },
                         employments: { "$ref" => components[:employments] },
