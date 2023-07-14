@@ -149,6 +149,9 @@ components:
         assessed_equity:
           type: number
           minimum: 0.0
+        subject_matter_of_dispute:
+          type: boolean
+          nullable: true
     BankAccounts:
       type: array
       description: Describes the name of the bank account and the lowest balance during

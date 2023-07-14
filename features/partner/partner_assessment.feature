@@ -27,6 +27,7 @@ Feature:
       | main_home_equity_disregard |      0.0 |
       | transaction_allowance      |   4500.0 |
       | assessed_equity            |      0.0 |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "partner property" details for the partner:
       | attribute                  | value     |
       | value                      | 170000.0  |
@@ -35,6 +36,7 @@ Feature:
       | shared_with_housing_assoc  | false     |
       | assessed_equity            | 64900.0   |
       | net_value                  | 64900.0   |
+      | subject_matter_of_dispute  |   false   |
     And I should see the following overall summary:
       | attribute                    | value                 |
       | assessment_result            | contribution_required |
