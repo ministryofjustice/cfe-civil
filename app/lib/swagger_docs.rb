@@ -183,6 +183,7 @@ class SwaggerDocs
               },
               subject_matter_of_dispute: {
                 type: :boolean,
+                nullable: true,
               },
             },
           },
