@@ -115,6 +115,10 @@ Given("I add the following regular_transaction details for the partner:") do |ta
   @partner_regular_transactions = table.hashes.map { cast_values(_1) }
 end
 
+Given("I add the following regular_transaction details:") do |table|
+  @regular_transactions = table.hashes.map { cast_values(_1) }
+end
+
 Given("I add the following additional property details for the partner in the current assessment:") do |table|
   @partner_property = [cast_values(table.rows_hash)]
 end
@@ -181,6 +185,7 @@ When("I retrieve the final assessment") do
   single_shot_api_data.merge!(main_home_data) if main_home_data
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
   single_shot_api_data[:capitals] = @capitals_data if @capitals_data
+  single_shot_api_data[:regular_transactions] = @regular_transactions if @regular_transactions
 
   partner_data[:self_employment_details] = @self_employment_details[:partner] if self_employed_partner
   partner_data[:employment_details] = @employment_details[:partner] if employed_partner
