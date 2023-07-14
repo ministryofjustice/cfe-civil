@@ -18,6 +18,7 @@ module Assessors
         described_class.call(
           total_disposable_income: disposable_income_summary.total_disposable_income,
           disposable_income_summary:,
+          submission_date: assessment.submission_date,
         )
       end
 
