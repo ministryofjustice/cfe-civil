@@ -2,9 +2,9 @@
 class PersonWrapper
   attr_reader :dependants
 
-  def initialize(is_single:, person_data:)
+  def initialize(is_single:, dependants:)
     @is_single = is_single
-    @dependants = person_data.dependants
+    @dependants = dependants
   end
 
   def single?

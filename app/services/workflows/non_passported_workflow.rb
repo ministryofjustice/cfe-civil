@@ -145,9 +145,9 @@ module Workflows
       # TODO: make the Collators::DisposableIncomeCollator increment/sum to existing values so order of "collation" becomes unimportant
       def partner_disposable_income_assessment(assessment:, gross_income_subtotals:, applicant_person_data:, partner_person_data:)
         applicant = PersonWrapper.new is_single: false,
-                                      person_data: applicant_person_data
+                                      dependants: applicant_person_data.dependants
         partner = PersonWrapper.new is_single: false,
-                                    person_data: partner_person_data
+                                    dependants: partner_person_data.dependants
 
         eligible_for_childcare = Calculators::ChildcareEligibilityCalculator.call(
           applicant_incomes: [gross_income_subtotals.applicant_gross_income_subtotals, gross_income_subtotals.partner_gross_income_subtotals],
@@ -198,7 +198,7 @@ module Workflows
       end
 
       def single_disposable_income_assessment(assessment:, gross_income_subtotals:, applicant_person_data:)
-        applicant = PersonWrapper.new person_data: applicant_person_data,
+        applicant = PersonWrapper.new dependants: applicant_person_data.dependants,
                                       is_single: true
         eligible_for_childcare = Calculators::ChildcareEligibilityCalculator.call(
           applicant_incomes: [gross_income_subtotals.applicant_gross_income_subtotals],

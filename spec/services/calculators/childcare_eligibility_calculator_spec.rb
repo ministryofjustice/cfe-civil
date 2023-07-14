@@ -45,7 +45,7 @@ module Calculators
         context "with adult dependants, an employed applicant and no partner" do
           let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date - 1.year)] }
 
-          it "returns true" do
+          it "returns false" do
             expect(calculated_result).to eq false
           end
         end
@@ -71,7 +71,7 @@ module Calculators
             instance_double(PersonGrossIncomeSubtotals, is_student?: false, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, in_work?: false))
           end
 
-          it "returns true" do
+          it "returns false" do
             expect(calculated_result).to eq false
           end
         end
