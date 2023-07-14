@@ -11,7 +11,11 @@ module Calculators
 
     private
 
-      DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax, :monthly_national_insurance)
+      DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax, :monthly_national_insurance) do
+        def actively_working?
+          false
+        end
+      end
 
       def fixed_employment_allowance(submission_date)
         -Threshold.value_for(:fixed_employment_allowance, at: submission_date)
