@@ -67,6 +67,9 @@ gem "rswag-ui"
 gem "exception_notification"
 gem "govuk_notify_rails", "~> 2.2.0"
 
+# needed for diffing in re-runner tool
+gem "hashdiff"
+
 group :development, :test do
   gem "awesome_print"
   gem "bullet"
@@ -75,7 +78,6 @@ group :development, :test do
   gem "faker"
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem "byebug", platforms: %i[mri mingw x64_mingw]
-  gem "hashdiff"
   gem "pry-byebug"
   gem "rack-mini-profiler", require: false
   gem "rspec_junit_formatter"
@@ -95,8 +97,6 @@ group :development do
   gem "listen", ">= 3.0.5", "< 3.9"
   gem "pry-rescue"
   gem "pry-stack_explorer"
-  # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
-  gem "spring"
 end
 
 group :test do

@@ -352,6 +352,21 @@ on a local machine
 4) Run the rake task `rake replay`: this will read the `tmp/api_payloads.yml` file and
    replay the original API calls and payloads enabling you to re-create the conditions.
 
+## Re-running request logs through the local environment
+
+1) Set environment variables pointing to staging or production database
+   (to get the request_logs that will be rerun), as in:
+   https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4415946946/Database+access
+
+2) RAILS_ENV=remote_database SECRET_KEY_BASE=anything rake rerun:requests
+
+This currently takes around 1 hour to run with 7300 requests from staging
+The output format of the diffs is 4 fields:
+
+a) +/-/~ addition, removal, change
+b) fieldname
+c) old value (only for change and removal)
+d) new value (only for change and addition)
 
 # Deployment
 
