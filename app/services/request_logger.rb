@@ -20,14 +20,23 @@ class RequestLogger
         d[:date_of_birth] = redact_dob(now, d[:date_of_birth])
       end
 
-      response = JSON.parse(payload.fetch(:response).body)
+      begin
+        response = JSON.parse(payload.fetch(:response).body)
+        http_status = payload.fetch(:status)
+
+      rescue KeyError
+        # no response - maybe an exception occured
+        response = {"error" => "occurred"}
+        http_status = "no response"
+      end
+
       if response.key?("timestamp")
         response["timestamp"] = redact_time(response["timestamp"])
       end
 
       RequestLog.create!(
         request: event_params,
-        http_status: payload.fetch(:status),
+        http_status: http_status,
         response:,
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
