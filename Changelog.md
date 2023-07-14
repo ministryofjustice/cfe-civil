@@ -4,6 +4,10 @@ The date is when it was released/deployed to production.
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 14th July 2023
+
+* LEP-278 Feature: Return attribute "subject_matter_of_dispute" in the "properties" response
+
 ## 23rd June 2023
 
 * LEP-214 **Bug Fix** Properties missing from response if gross/disposable income test is ineligible
