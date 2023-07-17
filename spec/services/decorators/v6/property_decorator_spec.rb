@@ -21,7 +21,8 @@ module Decorators
                    outstanding_mortgage: 454_533.64,
                    percentage_owned: 100.0,
                    main_home: true,
-                   shared_with_housing_assoc: false
+                   shared_with_housing_assoc: false,
+                   subject_matter_of_dispute: false
           end
           let(:property) do
             assessed_properties = Assessors::PropertyAssessor.call(
@@ -47,6 +48,7 @@ module Decorators
               main_home_equity_disregard: 100_000,
               assessed_equity: 207_789.36,
               smod_allowance: 0,
+              subject_matter_of_dispute: false,
             }
             expect(json_hash).to eq expected_hash
           end

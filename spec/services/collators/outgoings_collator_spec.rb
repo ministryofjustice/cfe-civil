@@ -7,7 +7,6 @@ module Collators
     subject(:collator) do
       described_class.call(submission_date: assessment.submission_date,
                            person: instance_double(PersonWrapper, single?: true,
-                                                                  employed?: false,
                                                                   dependants: []),
                            gross_income_summary: assessment.applicant_gross_income_summary,
                            disposable_income_summary: assessment.applicant_disposable_income_summary,

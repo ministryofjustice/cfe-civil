@@ -89,13 +89,13 @@ module Decorators
       end
 
       let(:employment_income_subtotals) do
-        EmploymentIncomeSubtotals.new(
-          benefits_in_kind: 0.0,
-          fixed_employment_allowance: -45.0,
-          gross_employment_income: 0.0,
-          national_insurance: 0.0,
-          tax: 0.0,
-        )
+        instance_double(EmploymentIncomeSubtotals,
+                        benefits_in_kind: 0.0,
+                        fixed_employment_allowance: -45.0,
+                        net_employment_income: -45.0,
+                        gross_employment_income: 0.0,
+                        national_insurance: 0.0,
+                        tax: 0.0)
       end
 
       let(:combined_outgoings) { 400.32 }

@@ -17,7 +17,7 @@ module Creators
         Result.new(errors: e.record.errors.full_messages).freeze
       end
 
-      private
+    private
 
       def create_regular_transaction(regular_transactions:, gross_income_summary:)
         regular_transactions.each do |regular_transaction|
@@ -29,6 +29,6 @@ module Creators
           )
         end
       end
-      end
+    end
   end
 end

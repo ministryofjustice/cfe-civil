@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "contribution_required Full Assessment with remarks" do
+RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank_holiday do
   let(:client_id) { "uuid or any unique string" }
 
   before do
@@ -10,7 +10,6 @@ RSpec.describe "contribution_required Full Assessment with remarks" do
                        overwrite: true).build
 
     ENV["VERBOSE"] = "false"
-    create :bank_holiday
   end
 
   it "returns the expected payload with all remarks" do

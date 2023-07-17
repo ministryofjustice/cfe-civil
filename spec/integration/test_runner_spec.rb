@@ -13,7 +13,7 @@ Dir[Rails.root.join("lib/integration_helpers/**/*.rb")].sort.each { |f| require 
 #
 #    bin/ispec -h # show help text
 #
-RSpec.describe "IntegrationTests::TestRunner", type: :request do
+RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, type: :request do
   let(:spreadsheet_title) { "CFE Integration Test V3" }
   let(:target_worksheet) { ENV["TARGET_WORKSHEET"] }
   let(:verbosity_level) { (ENV["VERBOSE"] || "0").to_i }
@@ -26,7 +26,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
 
   before { setup_test_data }
 
-  describe "run integration_tests", :vcr do
+  describe "run integration_tests" do
     ispec_run = ENV["ISPEC_RUN"].present?
 
     if ispec_run
@@ -40,7 +40,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
 
           test_count += 1
           puts ">>> RUNNING TEST #{worksheet.description} <<<".yellow unless silent?
-          pass = run_test_case(worksheet)
+          pass = run_test_case(worksheet, verbosity_level)
           failing_tests << worksheet.description unless pass
           result_message(failing_tests, test_count) unless silent?
         end
@@ -51,8 +51,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
         next if worksheet.skippable?
 
         it "#{worksheet.description} passes" do
-          pass = run_test_case(worksheet)
-          expect(pass).to be true
+          run_test_case(worksheet, 0)
         end
       end
     end
@@ -66,7 +65,7 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
       end
     end
 
-    def run_test_case(worksheet)
+    def run_test_case(worksheet, verbosity_level)
       worksheet.parse_worksheet
       payloads_hash = worksheet.payload_objects.reject(&:blank?).map { |obj| [obj.url_method, obj.payload] }.to_h
       url_method_mapping = {
@@ -83,20 +82,9 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
       end
       single_shot_payload = v6_payloads.reduce(assessment: worksheet.assessment.attributes) { |hash, elem| hash.merge(elem) }
       v6_api_results = noisy_post("/v6/assessments", single_shot_payload, worksheet.version)
-      worksheet.compare_results(v6_api_results)
-    end
-
-    def remove_result_noise(api_results)
-      api_results.except(:timestamp, :version).merge(assessment: api_results.fetch(:assessment).except(:id))
-    end
-
-    def get_assessment(assessment_id, version)
-      puts ">>>>>>>>>>>> #{assessment_path(assessment_id)} #{__FILE__}:#{__LINE__} <<<<<<<<<<<<".yellow unless silent?
-      get assessment_path(assessment_id), headers: headers(version)
-      pp parsed_response if noisy?
-      raise "Unsuccessful response: #{parsed_response.inspect}" unless parsed_response[:success]
-
-      parsed_response
+      TestCase::V5::ResultComparer.call(v6_api_results, worksheet.expected_results.result_set, verbosity_level).each do |item|
+        expect(item.fetch(:actual)).to eq(item.fetch(:expected)), "#{item.fetch(:name)} #{item.fetch(:actual)} not equal to #{item.fetch(:expected)}"
+      end
     end
 
     def noisy_post(url, payload, version)
@@ -130,7 +118,6 @@ RSpec.describe "IntegrationTests::TestRunner", type: :request do
     end
 
     def setup_test_data
-      create :bank_holiday
       Dibber::Seeder.new(StateBenefitType, "data/state_benefit_types.yml", name_method: :label, overwrite: true).build
     end
   end

@@ -62,12 +62,14 @@ module V6
             outstanding_mortgage: 0,
             percentage_owned: 99,
             shared_with_housing_assoc: false,
+            subject_matter_of_dispute: false,
           },
           {
             value: 10_000,
             outstanding_mortgage: 40,
             percentage_owned: 80,
             shared_with_housing_assoc: true,
+            subject_matter_of_dispute: false,
           },
         ]
       end
@@ -193,6 +195,7 @@ module V6
                   outstanding_mortgage: 0.0,
                   percentage_owned: 0.0,
                   shared_with_housing_assoc: false,
+                  subject_matter_of_dispute: true,
                 },
               ],
             },
@@ -216,6 +219,7 @@ module V6
                   smod_allowance: 0,
                   main_home_equity_disregard: 0.0,
                   assessed_equity: 0.0,
+                  subject_matter_of_dispute: nil,
                 },
                 additional_properties: [
                   {
@@ -231,6 +235,7 @@ module V6
                     smod_allowance: 0,
                     main_home_equity_disregard: 0.0,
                     assessed_equity: 0.0,
+                    subject_matter_of_dispute: true,
                   },
                 ],
               },
@@ -277,6 +282,19 @@ module V6
         end
       end
 
+      context "with no applicant" do
+        let(:default_params) { { assessment: {} } }
+        let(:params) { {} }
+
+        it "returns error" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
+        it "returns error JSON" do
+          expect(parsed_response[:errors]).to include(%r{The property '#/' did not contain a required property of 'applicant'})
+        end
+      end
+
       context "with an applicant without partner opponent" do
         let(:params) do
           { applicant: { date_of_birth: "2001-02-02",
@@ -294,87 +312,158 @@ module V6
       end
 
       context "with an applicant error" do
-        let(:params) do
-          { applicant: { has_partner_opponent: false,
-                         receives_qualifying_benefit: false,
-                         employed: } }
+        context "missing date_of_birth" do
+          let(:params) do
+            { applicant: { has_partner_opponent: false,
+                           receives_qualifying_benefit: false,
+                           employed: } }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
+          end
         end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+        context "with a future date of birth" do
+          let(:params) do
+            { applicant: { has_partner_opponent: false,
+                           receives_qualifying_benefit: false,
+                           date_of_birth: "2900-01-09",
+                           employed: } }
+          end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(/Date of birth cannot be in the future/)
+          end
+
+          it "creates a log record" do
+            expect(log_record)
+              .to have_attributes(created_at: Time.zone.today,
+                                  http_status: 422,
+                                  request: {
+                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2899-06-06", "employed" => false },
+                                    "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
+                                  },
+                                  response: {
+                                    "success" => false,
+                                    "errors" => ["Date of birth cannot be in the future"],
+                                  })
+          end
         end
       end
 
-      context "with a future date of birth" do
-        let(:params) do
-          { applicant: { has_partner_opponent: false,
-                         receives_qualifying_benefit: false,
-                         date_of_birth: "2900-01-09",
-                         employed: } }
+      context "with an partner error" do
+        context "missing partner" do
+          let(:params) do
+            { partner: {} }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner' did not contain a required property of 'partner'})
+          end
         end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+        context "missing partner date_of_birth" do
+          let(:params) do
+            { partner: { partner: { employed: true } } }
+          end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(/Date of birth cannot be in the future/)
-        end
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
 
-        it "creates a log record" do
-          expect(log_record)
-            .to have_attributes(created_at: Time.zone.today,
-                                http_status: 422,
-                                request: {
-                                  "assessment" => { "submission_date" => "2022-06-06" },
-                                  "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2899-06-06", "employed" => false },
-                                  "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
-                                },
-                                response: {
-                                  "success" => false,
-                                  "errors" => ["Date of birth cannot be in the future"],
-                                })
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner/partner' did not contain a required property of 'date_of_birth'})
+          end
         end
       end
 
       context "with an dependant error" do
-        let(:params) do
-          { dependants: [
-            attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11"),
-          ] }
+        context "with a future date of birth" do
+          let(:params) do
+            { dependants: [
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11"),
+            ] }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/Date of birth cannot be in the future/)
+          end
         end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+        context "missing dependant date_of_birth" do
+          let(:params) do
+            { dependants: [
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11").except!(:date_of_birth),
+            ] }
+          end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/Date of birth cannot be in the future/)
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/dependants/0' did not contain a required property of 'date_of_birth'})
+          end
         end
       end
 
       context "with a partner dependant error" do
-        let(:params) do
-          {
-            partner: { partner: attributes_for(:applicant),
-                       dependants: [
-                         attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
-                       ] },
-          }
+        context "with a future date of birth" do
+          let(:params) do
+            {
+              partner: { partner: attributes_for(:applicant),
+                         dependants: [
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
+                         ] },
+            }
+          end
+
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors])
+              .to include(/Date of birth cannot be in the future/)
+          end
         end
 
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
+        context "with missing date of birth" do
+          let(:params) do
+            {
+              partner: { partner: attributes_for(:applicant),
+                         dependants: [
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0).except!(:date_of_birth),
+                         ] },
+            }
+          end
 
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/Date of birth cannot be in the future/)
+          it "returns error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON" do
+            expect(parsed_response[:errors]).to include(%r{The property '#/partner/dependants/0' did not contain a required property of 'date_of_birth'})
+          end
         end
       end
 
@@ -746,20 +835,39 @@ module V6
         let(:params) do
           {
             assessment: submission_date_params.merge(level_of_help: "controlled"),
-            employment_or_self_employment: [{ client_reference: "12345",
-                                              income: {
-                                                receiving_only_statutory_sick_or_maternity_pay: false,
-                                                is_employment: false,
-                                                gross: 934,
-                                                benefits_in_kind: 26,
-                                                tax: -527,
-                                                national_insurance: -34,
-                                                frequency: "monthly",
-                                              } }],
+            self_employment_details: [{ client_reference: "12345",
+                                        income: {
+                                          gross: 480,
+                                          tax: -263,
+                                          national_insurance: -34,
+                                          frequency: "monthly",
+                                        } }],
+            employment_details: [
+              { client_reference: "54321",
+                income: {
+                  receiving_only_statutory_sick_or_maternity_pay: true,
+                  gross: 220,
+                  benefits_in_kind: 20,
+                  tax: -131.50,
+                  national_insurance: -17,
+                  frequency: "monthly",
+                } },
+              {
+                income: {
+                  receiving_only_statutory_sick_or_maternity_pay: true,
+                  gross: 220,
+                  benefits_in_kind: 20,
+                  tax: -131.50,
+                  national_insurance: -17,
+                  frequency: "monthly",
+                },
+              },
+            ],
           }
         end
         let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
-        let(:self_employment_incomes) { parsed_response.dig(:assessment, :gross_income, :self_employments) }
+        let(:self_employment_incomes) { parsed_response.dig(:assessment, :gross_income, :self_employment_details) }
+        let(:employment_incomes) { parsed_response.dig(:assessment, :gross_income, :employment_details) }
 
         it "is successful" do
           expect(response).to have_http_status(:success)
@@ -767,28 +875,44 @@ module V6
 
         it "has employment income without fixed employment deduction" do
           expect(employment_income)
-            .to eq(
-              {
-                gross_income: 934.0,
-                benefits_in_kind: 26.0,
-                tax: -527.0,
-                national_insurance: -34.0,
-                fixed_employment_deduction: 0.0,
-                net_employment_income: 399.0,
-              },
-            )
+            .to eq({ gross_income: 920.0,
+                     benefits_in_kind: 40.0,
+                     fixed_employment_deduction: 0.0,
+                     tax: -526.0,
+                     national_insurance: -68.0,
+                     net_employment_income: 366.0 })
         end
 
-        it "outputs the monthly equivalents in the response" do
+        it "has self employments in the response" do
           expect(self_employment_incomes).to eq([{
             client_reference: "12345",
             monthly_income: {
-              gross: 934.0,
-              benefits_in_kind: 26.0,
-              tax: -527.0,
+              gross: 480.0,
+              tax: -263.0,
               national_insurance: -34.0,
+              benefits_in_kind: 0.0,
             },
           }])
+        end
+
+        it "has employments in the response" do
+          expect(employment_incomes).to match_array([
+            { client_reference: "54321",
+              monthly_income: {
+                gross: 220.0,
+                tax: -131.50,
+                national_insurance: -17.0,
+                benefits_in_kind: 20.0,
+              } },
+            {
+              monthly_income: {
+                gross: 220.0,
+                tax: -131.50,
+                national_insurance: -17.0,
+                benefits_in_kind: 20.0,
+              },
+            },
+          ])
         end
       end
 
@@ -979,6 +1103,7 @@ module V6
                 outstanding_mortgage: 200,
                 percentage_owned: 15,
                 shared_with_housing_assoc: true,
+                subject_matter_of_dispute: false,
               },
               additional_properties: properties_params,
             },
@@ -1496,6 +1621,7 @@ module V6
                       smod_allowance: 0,
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 0.0,
+                      subject_matter_of_dispute: false,
                     })
                 end
               end
@@ -1516,6 +1642,7 @@ module V6
                       main_home_equity_disregard: 59_800.0,
                       assessed_equity: 0.0,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     })
                 end
 
@@ -1536,6 +1663,7 @@ module V6
                           main_home_equity_disregard: 0.0,
                           assessed_equity: 960.3,
                           smod_allowance: 0.0,
+                          subject_matter_of_dispute: false,
                         },
                         {
                           value: 10_000.0,
@@ -1550,6 +1678,7 @@ module V6
                           main_home_equity_disregard: 0.0,
                           assessed_equity: 7660.0,
                           smod_allowance: 0.0,
+                          subject_matter_of_dispute: false,
                         },
                       ],
                     )
@@ -1563,12 +1692,12 @@ module V6
 
             it "has liquid" do
               expect(partner_capital.fetch(:liquid).map { |x| x.except(:description) })
-                .to eq([{ value: 28.34 }, { value: 67.23 }])
+                .to match_array([{ value: 28.34 }, { value: 67.23 }])
             end
 
             it "has non_liquid" do
               expect(partner_capital.fetch(:non_liquid).map { |x| x.except(:description) })
-                .to eq([{ value: 17.12 }, { value: 6.19 }])
+                .to match_array([{ value: 17.12 }, { value: 6.19 }])
             end
 
             it "has vehicles" do
@@ -1609,6 +1738,7 @@ module V6
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 960.3,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     },
                     {
                       value: 10_000.0,
@@ -1623,10 +1753,51 @@ module V6
                       main_home_equity_disregard: 0.0,
                       assessed_equity: 7660.0,
                       smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
                     },
                   ],
                 )
             end
+          end
+        end
+      end
+
+      context "redact response timestamp" do
+        around do |example|
+          travel_to Date.new(2022, 4, 20)
+          example.run
+          travel_back
+        end
+
+        context "with successful submission" do
+          let(:params) { {} }
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
+          end
+
+          it "returns timestamp attribute in response" do
+            expect(parsed_response).to be_key(:timestamp)
+          end
+
+          it "returns timestamp in response" do
+            expect(parsed_response[:timestamp]).to eq("2022-04-20T00:00:00.000Z")
+          end
+
+          it "redacts time in timestamp" do
+            expect(log_record.response["timestamp"]).to eq("2022-04-20")
+          end
+        end
+
+        context "with unsuccessful submission" do
+          let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
+
+          it "returns http error" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "missing timestamp attribute in response" do
+            expect(parsed_response).not_to be_key(:timestamp)
           end
         end
       end

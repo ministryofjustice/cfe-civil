@@ -11,6 +11,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
         Performs a complete assessment
       DESCRIPTION
 
+      components = SwaggerDocs::SCHEMA_COMPONENTS
+
       parameter name: :params,
                 in: :body,
                 required: true,
@@ -18,17 +20,17 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                   type: :object,
                   required: %i[assessment applicant proceeding_types],
                   properties: {
-                    assessment: { "$ref" => "#/components/schemas/Assessment" },
-                    applicant: { "$ref" => "#/components/schemas/Applicant" },
-                    proceeding_types: { "$ref" => "#/components/schemas/ProceedingTypes" },
-                    capitals: { "$ref" => "#/components/schemas/Capitals" },
-                    cash_transactions: { "$ref" => "#/components/schemas/CashTransactions" },
+                    assessment: { "$ref" => components[:assessment] },
+                    applicant: { "$ref" => components[:applicant] },
+                    proceeding_types: { "$ref" => components[:proceeding_types] },
+                    capitals: { "$ref" => components[:capitals] },
+                    cash_transactions: { "$ref" => components[:cash_transactions] },
                     dependants: {
                       type: :array,
                       description: "One or more dependants details",
-                      items: { "$ref" => "#/components/schemas/Dependant" },
+                      items: { "$ref" => components[:dependant] },
                     },
-                    employment_income: { "$ref" => "#/components/schemas/Employments" },
+                    employment_income: { "$ref" => components[:employments] },
                     irregular_incomes: {
                       type: :object,
                       description: "A set of irregular income payments",
@@ -36,43 +38,48 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       additionalProperties: false,
                       example: { payments: [{ income_type: "student_loan", frequency: "annual", amount: 123_456.78 }] },
                       properties: {
-                        payments: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
+                        payments: { "$ref" => components[:irregular_income_payments] },
                       },
                     },
-                    other_incomes: { "$ref" => "#/components/schemas/OtherIncomes" },
-                    outgoings: { "$ref" => "#/components/schemas/OutgoingsList" },
+                    other_incomes: { "$ref" => components[:other_incomes] },
+                    outgoings: { "$ref" => components[:outgoings_list] },
                     properties: {
                       type: :object,
                       required: %i[],
                       description: "A main home and additional properties",
                       properties: {
-                        main_home: { "$ref" => "#/components/schemas/Property" },
+                        main_home: { "$ref" => components[:property] },
                         additional_properties: {
                           type: :array,
                           description: "One or more additional properties owned by the applicant",
-                          items: { "$ref" => "#/components/schemas/Property" },
+                          items: { "$ref" => components[:property] },
                         },
                       },
                     },
                     regular_transactions: {
                       type: :array,
                       description: "Zero or more regular transactions",
-                      items: { "$ref" => "#/components/schemas/RegularTransaction" },
+                      items: { "$ref" => components[:regular_transaction] },
                     },
                     state_benefits: {
                       type: :array,
                       description: "One or more state benefits received by the applicant and categorized by name",
-                      items: { "$ref" => "#/components/schemas/StateBenefit" },
+                      items: { "$ref" => components[:state_benefit] },
                     },
                     vehicles: {
                       type: :array,
                       description: "One or more vehicles' details",
-                      items: { "$ref" => "#/components/schemas/Vehicle" },
+                      items: { "$ref" => components[:vehicle] },
                     },
-                    employment_or_self_employment: {
+                    employment_details: {
+                      type: :array,
+                      description: "One or more employment details",
+                      items: { "$ref" => components[:employment_details] },
+                    },
+                    self_employment_details: {
                       type: :array,
                       description: "One or more self employment details",
-                      items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                      items: { "$ref" => components[:self_employment] },
                     },
                     partner: {
                       type: :object,
@@ -98,7 +105,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                           },
                         },
-                        irregular_incomes: { "$ref" => "#/components/schemas/IrregularIncomePayments" },
+                        outgoings: { type: :array },
+                        irregular_incomes: { "$ref" => components[:irregular_income_payments] },
                         employments: {
                           type: :array,
                           required: %i[name client_id payments],
@@ -115,44 +123,49 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                                 type: :string,
                                 description: "Client supplied id to identify the employment",
                               },
-                              payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
+                              payments: { "$ref" => components[:employment_payment_list] },
                             },
                           },
                         },
-                        employment_or_self_employment: {
+                        employment_details: {
                           type: :array,
-                          description: "Partner self employment details",
-                          items: { "$ref" => "#/components/schemas/SelfEmployment" },
+                          description: "One or more employment details for partner",
+                          items: { "$ref" => components[:employment_details] },
+                        },
+                        self_employment_details: {
+                          type: :array,
+                          description: "One or more self employment details for partner",
+                          items: { "$ref" => components[:self_employment] },
                         },
                         regular_transactions: {
                           type: :array,
                           description: "Zero or more regular transactions",
-                          items: { "$ref" => "#/components/schemas/RegularTransaction" },
+                          items: { "$ref" => components[:regular_transaction] },
                         },
                         state_benefits: {
                           type: :array,
                           description: "One or more state benefits received by the applicant's partner and categorized by name",
-                          items: { "$ref" => "#/components/schemas/StateBenefit" },
+                          items: { "$ref" => components[:state_benefit] },
                         },
                         additional_properties: {
                           type: :array,
                           description: "One or more additional properties owned by the applicant's partner",
-                          items: { "$ref" => "#/components/schemas/Property" },
+                          items: { "$ref" => components[:property] },
                         },
-                        capital_items: { "$ref" => "#/components/schemas/Capitals" },
+                        capitals: { "$ref" => components[:capitals] },
                         vehicles: {
                           type: :array,
                           description: "One or more vehicles' details",
-                          items: { "$ref" => "#/components/schemas/Vehicle" },
+                          items: { "$ref" => components[:vehicle] },
                         },
                         dependants: {
                           type: :array,
                           description: "One or more dependants details",
-                          items: { "$ref" => "#/components/schemas/Dependant" },
+                          items: { "$ref" => components[:dependant] },
                         },
                       },
                     },
-                    explicit_remarks: { "$ref" => "#/components/schemas/ExplicitRemarks" },
+                    explicit_remarks: { "$ref" => components[:explicit_remarks] },
                   },
                 }
 
@@ -187,7 +200,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          proceeding_types: {
                            type: :array,
                            minItems: 1,
-                           items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
+                           items: { "$ref" => components[:proceeding_type_result] },
                          },
                        },
                      },
@@ -209,7 +222,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          proceeding_types: {
                            type: :array,
                            minItems: 1,
-                           items: { "$ref" => "#/components/schemas/ProceedingTypeResult" },
+                           items: { "$ref" => components[:proceeding_type_result] },
                          },
                        },
                      },
@@ -226,7 +239,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      },
                      disposable_income: {
                        allOf: [
-                         { "$ref": "#/components/schemas/DisposableIncome" },
+                         { "$ref": components[:disposable_income] },
                          {
                            type: :object,
                            properties: {
@@ -249,22 +262,22 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              proceeding_types: {
                                type: :array,
                                minItems: 1,
-                               items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+                               items: { "$ref": components[:proceeding_type_result] },
                              },
                            },
                          },
                        ],
                      },
-                     partner_disposable_income: { "$ref": "#/components/schemas/DisposableIncome" },
+                     partner_disposable_income: { "$ref": components[:disposable_income] },
                      capital: {
                        allOf: [
-                         { "$ref": "#/components/schemas/CapitalResult" },
+                         { "$ref": components[:capital_result] },
                          {
                            type: :object,
                            properties: {
                              proceeding_types: {
                                type: :array,
-                               items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+                               items: { "$ref": components[:proceeding_type_result] },
                              },
                              pensioner_capital_disregard: {
                                type: :number,
@@ -316,7 +329,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        ],
                      },
-                     partner_capital: { "$ref": "#/components/schemas/CapitalResult" },
+                     partner_capital: { "$ref": components[:capital_result] },
                    },
                  },
                  assessment: {
@@ -453,27 +466,27 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            properties: {
                              liquid: {
                                type: :array,
-                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
+                               items: { "$ref": components[:non_property_asset] },
                              },
                              non_liquid: {
                                type: :array,
-                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
+                               items: { "$ref": components[:non_property_asset] },
                              },
                              vehicles: {
                                type: :array,
-                               items: { "$ref": "#/components/schemas/NonPropertyAsset" },
+                               items: { "$ref": components[:non_property_asset] },
                              },
                              properties: {
                                type: :object,
                                additionalProperties: false,
                                properties: {
                                  main_home: {
-                                   "$ref" => "#/components/schemas/PropertyResult",
+                                   "$ref" => components[:property_result],
                                  },
                                  additional_properties: {
                                    type: :array,
                                    items: {
-                                     "$ref" => "#/components/schemas/PropertyResult",
+                                     "$ref" => components[:property_result],
                                    },
                                  },
                                },
@@ -506,19 +519,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
             outgoings: [
               { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
               { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },
-            ],
-            employment_or_self_employment: [
-              {
-                income: {
-                  receiving_only_statutory_sick_or_maternity_pay: false,
-                  frequency: "monthly",
-                  is_employment: true,
-                  gross: 900.0,
-                  benefits_in_kind: 100.0,
-                  tax: -700.0,
-                  national_insurance: -50.0,
-                },
-              },
             ],
             cash_transactions: {
               outgoings: [

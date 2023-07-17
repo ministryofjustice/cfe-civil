@@ -4,6 +4,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "capital contribution" => "result_summary.overall_result.capital_contribution",
     "income contribution" => "result_summary.overall_result.income_contribution",
     "disposable_income_summary" => "result_summary.disposable_income",
+    "disposable income" => "assessment.disposable_income",
     "total outgoings and allowances" => "result_summary.disposable_income.combined_total_outgoings_and_allowances",
     "partner allowance" => "result_summary.disposable_income.partner_allowance",
     "dependant allowance" => "result_summary.disposable_income.dependant_allowance",

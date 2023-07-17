@@ -1,5 +1,10 @@
 version: 2.1
 
+parameters:
+  approval_required:
+    type: boolean
+    default: true
+
 orbs:
   slack: circleci/slack@4.5.2
 
@@ -359,7 +364,7 @@ jobs:
 
 workflows:
   version: 2
-  branch:
+  deploy_branch:
     jobs:
       - lint_checks:
           filters:
@@ -415,7 +420,8 @@ workflows:
             - deploy_uat
   #          <<: *generic-slack-fail-post-step
 
-  merge_pr:
+  deploy_main_approval_required:
+    when: << pipeline.parameters.approval_required >>
     jobs:
       - lint_checks:
           filters:
@@ -498,6 +504,69 @@ workflows:
           context: cfe-civil-production
           requires:
             - deploy_production_approval
+          filters:
+            branches:
+              only:
+                - main
+  
+  deploy_main:
+    unless: << pipeline.parameters.approval_required >>
+    jobs:
+      - lint_checks:
+          filters:
+            branches:
+              only: main
+      #          <<: *generic-slack-fail-post-step
+      - unit_tests:
+          filters:
+            branches:
+              only: main
+      #          <<: *generic-slack-fail-post-step
+      - end2end_tests:
+          filters:
+            branches:
+              only: main
+          requires:
+            - build_and_push
+            - create_helm_cache
+      - integration_tests:
+          filters:
+            branches:
+              only: main
+      - create_helm_cache:
+          filters:
+            branches:
+              only: main
+      #          <<: *generic-slack-fail-post-stepa
+      - check_swagger:
+          filters:
+            branches:
+              only: main
+      #          <<: *generic-slack-fail-post-step
+      - build_and_push:
+          requires:
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
+      #          <<: *generic-slack-fail-post-step
+      - deploy_main_uat:
+          context: cfe-civil-uat
+          requires:
+            - end2end_tests
+      #          <<: *generic-slack-fail-post-step
+      - deploy_staging:
+          context: cfe-civil-staging
+          requires:
+            - end2end_tests
+          filters:
+            branches:
+              only:
+                - main
+      - deploy_production:
+          context: cfe-civil-production
+          requires:
+            - end2end_tests
           filters:
             branches:
               only:

@@ -2,11 +2,11 @@ module V6
   class AssessmentsController < ApplicationController
     before_action :validate
 
-    SelfEmployment = Data.define(:income, :client_reference)
+    EmploymentOrSelfEmploymentDetails = Data.define(:income, :client_reference)
 
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                    params: full_assessment_params)
+                                                    params: full_assessment_params, version:)
       if create.success?
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
@@ -57,7 +57,8 @@ module V6
 
     def person_data(input_params, dependants, applicant)
       PersonData.new(details: applicant.freeze,
-                     self_employments: parse_self_employments(input_params.fetch(:employment_or_self_employment, [])),
+                     employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
+                     self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
                      vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                      dependants: dependants.map(&:freeze))
     end
@@ -72,17 +73,28 @@ module V6
 
     def parse_self_employments(self_employments)
       self_employments.map do |s|
-        SelfEmployment.new client_reference: s[:client_reference],
-                           income: SelfEmploymentIncome.new(s.fetch(:income))
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
+                                              income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
+      end
+    end
+
+    def parse_employment_details(employments)
+      employments.map do |s|
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
+                                              income: EmploymentIncome.new(s.fetch(:income)).freeze
       end
     end
 
     def validate
-      validate_swagger_schema "/v6/assessments", full_assessment_params
+      validate_swagger_schema version, full_assessment_params
     end
 
     def full_assessment_params
       @full_assessment_params ||= JSON.parse(request.raw_post, symbolize_names: true, decimal_class: BigDecimal)
+    end
+
+    def version
+      "6"
     end
   end
 end

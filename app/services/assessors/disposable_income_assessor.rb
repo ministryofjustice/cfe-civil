@@ -1,14 +1,15 @@
 module Assessors
   class DisposableIncomeAssessor
     class << self
-      def call(total_disposable_income:, disposable_income_summary:)
-        new(total_disposable_income:, disposable_income_summary:).call
+      def call(total_disposable_income:, disposable_income_summary:, submission_date:)
+        new(total_disposable_income:, disposable_income_summary:, submission_date:).call
       end
     end
 
-    def initialize(total_disposable_income:, disposable_income_summary:)
+    def initialize(total_disposable_income:, disposable_income_summary:, submission_date:)
       @total_disposable_income = total_disposable_income
       @disposable_income_summary = disposable_income_summary
+      @submission_date = submission_date
     end
 
     def call
@@ -41,7 +42,7 @@ module Assessors
     end
 
     def calculate_contribution
-      Calculators::IncomeContributionCalculator.call(@total_disposable_income)
+      Calculators::IncomeContributionCalculator.call(@total_disposable_income, @submission_date)
     end
 
     def contribution_required?

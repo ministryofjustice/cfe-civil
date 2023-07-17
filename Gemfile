@@ -5,7 +5,7 @@ ruby "3.2.2"
 
 gem "active_model_serializers", "~> 0.10.13"
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem "rails", "~> 7.0.5"
+gem "rails", "~> 7.0.6"
 # Use postgresql as the database for Active Record
 # pg 1.5 introduces a deprecation warning that hasn't been fixed in Rails yet
 gem "pg", "< 1.6"
@@ -22,6 +22,7 @@ gem "puma", "~> 6.3"
 # gem 'mini_magick', '~> 4.8'
 
 gem "faraday", "~> 1.10"
+gem "faraday-http-cache"
 
 gem "sentry-rails", ">= 5.8.0"
 gem "sentry-ruby"

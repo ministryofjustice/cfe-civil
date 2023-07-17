@@ -1,11 +1,10 @@
 module Decorators
   module V6
     class GrossIncomeDecorator
-      def initialize(summary, employments, subtotals, self_employments)
+      def initialize(summary, employments, subtotals)
         @summary = summary
         @employments = employments
         @subtotals = subtotals
-        @self_employments = self_employments
       end
 
       def as_json
@@ -15,7 +14,10 @@ module Decorators
           state_benefits:,
           other_income:,
         }.tap do |result|
-          result.merge!(self_employments:) if @self_employments.any?
+          self_employments = @subtotals.employment_income_subtotals.self_employment_details
+          employments = @subtotals.employment_income_subtotals.employment_details
+          result[:self_employment_details] = employment_details(self_employments) if self_employments.any?
+          result.merge!(employment_details: employment_details(employments)) if employments.any?
         end
       end
 
@@ -23,17 +25,17 @@ module Decorators
 
       attr_reader :summary
 
-      def self_employments
-        @self_employments.map do |self_employment|
+      def employment_details(employments)
+        employments.map do |details|
           {
             monthly_income: {
-              gross: self_employment.monthly_gross_income,
-              tax: self_employment.monthly_tax,
-              national_insurance: self_employment.monthly_national_insurance,
-              benefits_in_kind: self_employment.monthly_benefits_in_kind,
+              gross: details.monthly_gross_income,
+              tax: details.monthly_tax,
+              national_insurance: details.monthly_national_insurance,
+              benefits_in_kind: details.monthly_benefits_in_kind,
             },
           }.tap do |result|
-            result.merge!(client_reference: self_employment.client_id) if self_employment.client_id
+            result.merge!(client_reference: details.client_id) if details.client_id
           end
         end
       end

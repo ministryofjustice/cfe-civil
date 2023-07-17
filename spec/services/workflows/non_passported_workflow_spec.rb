@@ -31,7 +31,7 @@ module Workflows
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
                                                          national_insurance: 150, gross: 2900, frequency: "monthly"))]
       end
-      let(:person_applicant) { PersonData.new(details: applicant, self_employments: [], vehicles: build_list(:vehicle, 1), dependants: []) }
+      let(:person_applicant) { build(:person_data, details: applicant, vehicles: build_list(:vehicle, 1)) }
       let(:partner_applicant) { person_applicant }
 
       subject(:calculation_output) do
@@ -83,8 +83,8 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: PersonData.new(details: applicant, self_employments: [], vehicles: [], dependants:),
-                             partner: partner.present? ? PersonData.new(details: partner, self_employments: [], vehicles: [], dependants: []) : nil)
+        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:),
+                             partner: partner.present? ? build(:person_data, details: partner) : nil)
         Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
@@ -104,7 +104,7 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: PersonData.new(details: build(:applicant), self_employments:, vehicles: [], dependants: []),
+                                 applicant: build(:person_data, details: build(:applicant), self_employments:),
                                  partner:).tap do
               Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
@@ -113,8 +113,8 @@ module Workflows
 
           describe "frequencies" do
             let(:self_employments) do
-              [OpenStruct.new(income: SelfEmploymentIncome.new(tax: -200, benefits_in_kind: 100,
-                                                               national_insurance: -150, gross: 900, frequency:))]
+              [OpenStruct.new(income: EmploymentIncome.new(tax: -200, benefits_in_kind: 100,
+                                                           national_insurance: -150, gross: 900, frequency:))]
             end
 
             context "monthly" do
@@ -198,16 +198,16 @@ module Workflows
           context "with 2 self employments" do
             let(:self_employments) do
               [
-                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -220, benefits_in_kind: 20, national_insurance: -20, gross: 520, frequency: "monthly")),
-                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly", is_employment: true)),
+                OpenStruct.new(income: SelfEmploymentIncome.new(tax: -220, national_insurance: -20, gross: 540, frequency: "monthly")),
+                OpenStruct.new(income: EmploymentIncome.new(tax: -420, benefits_in_kind: 20, national_insurance: -40, gross: 720, frequency: "monthly")),
               ]
             end
 
             it "returns employment figures" do
               expect(employment_income_subtotals)
                 .to have_attributes(fixed_employment_allowance: -45.0,
-                                    gross_employment_income: 1240.0,
-                                    benefits_in_kind: 40.0,
+                                    gross_employment_income: 1260.0,
+                                    benefits_in_kind: 20.0,
                                     national_insurance: -60.0,
                                     tax: -640.0,
                                     employment_income_deductions: -700.0)

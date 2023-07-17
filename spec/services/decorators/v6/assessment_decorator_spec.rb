@@ -37,7 +37,7 @@ module Decorators
       describe "#as_json" do
         subject(:decorator) do
           described_class.new(assessment: assessment.reload, calculation_output:,
-                              applicant: PersonData.new(details: build(:applicant), self_employments: [], vehicles: [], dependants: []),
+                              applicant: build(:person_data, details: build(:applicant)),
                               partner:).as_json
         end
         let(:partner) { nil }

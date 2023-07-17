@@ -29,6 +29,7 @@ Feature:
       | main_home_equity_disregard |      0.0 |
       | transaction_allowance      | 4500.0   |
       | assessed_equity            | 0.0      |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "capital summary" details:
       | attribute                           | value   |
       | total_property                      | 0.0     |

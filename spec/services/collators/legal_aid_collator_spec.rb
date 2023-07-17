@@ -1,9 +1,7 @@
 require "rails_helper"
 
 module Collators
-  RSpec.describe LegalAidCollator do
-    before { create :bank_holiday }
-
+  RSpec.describe LegalAidCollator, :calls_bank_holiday do
     let(:assessment) { create :assessment, :with_disposable_income_summary }
     let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
 

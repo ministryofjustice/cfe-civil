@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module RemarkGenerators
-  RSpec.describe Orchestrator do
+  RSpec.describe Orchestrator, :calls_bank_holiday do
     let(:assessment) { create :assessment }
     let(:state_benefits) { assessment.applicant_gross_income_summary.state_benefits }
     let(:state_benefit_payments) { state_benefits.first.state_benefit_payments }
@@ -17,7 +17,6 @@ module RemarkGenerators
       create(:disposable_income_summary, :with_everything, assessment:)
       create(:gross_income_summary, :with_everything, :with_employment, assessment:)
       create(:capital_summary, :with_eligibilities, assessment:)
-      create :bank_holiday
     end
 
     it "calls the checkers with each collection" do

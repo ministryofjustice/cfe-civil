@@ -2,16 +2,20 @@ module Calculators
   class MultipleEmploymentsCalculator
     class << self
       def call(submission_date)
-        EmploymentIncomeSubtotals.new(
-          gross_employment_income: 0.0,
-          benefits_in_kind: 0.0,
-          tax: 0.0,
-          national_insurance: 0.0,
-          fixed_employment_allowance: fixed_employment_allowance(submission_date),
+        # multiple employments ignores inputs - hence inputs are reflected here as a set of dummy zero figures
+        EmploymentIncomeCalculator::EmploymentResult.new(
+          employment: DummyEmploymentFigures.new(0, 0, 0, 0),
+          result: EmploymentIncomeCalculator::Result.new(fixed_employment_allowance: fixed_employment_allowance(submission_date)),
         )
       end
 
     private
+
+      DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax, :monthly_national_insurance) do
+        def actively_working?
+          false
+        end
+      end
 
       def fixed_employment_allowance(submission_date)
         -Threshold.value_for(:fixed_employment_allowance, at: submission_date)

@@ -20,14 +20,14 @@ module Collators
       PersonGrossIncomeSubtotals.new(
         gross_income_summary: assessment.applicant_gross_income_summary,
         regular_income_categories: [],
-        employment_income_subtotals: EmploymentIncomeSubtotals.new(
-          benefits_in_kind: 0,
-          tax:,
-          national_insurance:,
-          fixed_employment_allowance:,
-          # This 50 is to offset 600/year in student loan in the factory, so that we control total_gross_income
-          gross_employment_income: total_gross_income - 50,
-        ),
+        employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
+                                                     benefits_in_kind: 0,
+                                                     employment_income_deductions: tax + national_insurance,
+                                                     tax:,
+                                                     national_insurance:,
+                                                     fixed_employment_allowance:,
+                                                     # This 50 is to offset 600/year in student loan in the factory, so that we control total_gross_income
+                                                     gross_employment_income: total_gross_income - 50),
       )
     end
 

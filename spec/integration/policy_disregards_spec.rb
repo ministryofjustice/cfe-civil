@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
+RSpec.describe "Eligible Full Assessment with policy disregard remarks", :calls_bank_holiday do
   let(:client_id) { "uuid or any unique string" }
 
   before do
@@ -10,7 +10,6 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
                        overwrite: true).build
 
     ENV["VERBOSE"] = "false"
-    create :bank_holiday
   end
 
   it "returns the expected payload with no policy disregards remarks" do
@@ -86,10 +85,12 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
 
   def capitals_params
     {
-      bank_accounts:
+      capitals: {
+        bank_accounts:
           [{ description: "Money not in a bank account", value: 50.0 }],
-      non_liquid_capital:
-          [{ description: "Any valuable items worth more than £500", value: 700.0 }],
+        non_liquid_capital:
+            [{ description: "Any valuable items worth more than £500", value: 700.0 }],
+      },
     }
   end
 
@@ -250,6 +251,7 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
   end
 
   def irregular_income_params
+    { irregular_incomes:
     {
       payments: [
         { income_type: "student_loan",
@@ -259,7 +261,7 @@ RSpec.describe "Eligible Full Assessment with policy disregard remarks" do
           frequency: "quarterly",
           amount: 303.0 },
       ],
-    }
+    } }
   end
 
   def explicit_remarks_params

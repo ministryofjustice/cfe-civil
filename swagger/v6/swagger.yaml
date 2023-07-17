@@ -1,7 +1,7 @@
 ---
 openapi: 3.0.1
 info:
-  title: API V6
+  title: API v6
   description: |-
     # Check financial eligibility for legal aid.
 
@@ -148,6 +148,9 @@ components:
         assessed_equity:
           type: number
           minimum: 0.0
+        subject_matter_of_dispute:
+          type: boolean
+          nullable: true
     BankAccounts:
       type: array
       description: Describes the name of the bank account and the lowest balance during
@@ -226,11 +229,10 @@ components:
           client_id:
             type: string
             description: Client supplied id to identify the payment
-            example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+            example: '05459c0f-a620-4743-9f0c-b3daa93e571'
           date:
             type: string
             format: date
-            description: Date payment received
             example: '1992-07-22'
           gross:
             "$ref": "#/components/schemas/currency"
@@ -321,17 +323,16 @@ components:
                 - client_id
                 - payment_date
                 - amount
-                description: Payment detail
                 properties:
                   client_id:
                     type: string
                     description: Client identifier for outgoing payment
-                    example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                    example: '05459c0f-a620-4743-9f0c-b3daa93e57'
                   payment_date:
                     type: string
                     format: date
                     description: Date payment made
-                    example: '1992-07-22'
+                    example: '1992-07-23'
                   amount:
                     type: number
                     format: decimal
@@ -360,17 +361,16 @@ components:
                 - payment_date
                 - amount
                 - housing_cost_type
-                description: Payment detail
                 properties:
                   client_id:
                     type: string
                     description: Client identifier for outgoing payment
-                    example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                    example: '05459c0f-a620-4743-9f0c-b3daa93e5'
                   payment_date:
                     type: string
                     format: date
                     description: Date payment made
-                    example: '1992-07-22'
+                    example: '1992-07-24'
                   housing_cost_type:
                     type: string
                     enum:
@@ -394,7 +394,7 @@ components:
         date_of_birth:
           type: string
           format: date
-          example: '1992-07-22'
+          example: '1992-07-25'
           description: Applicant date of birth
         employed:
           oneOf:
@@ -515,7 +515,6 @@ components:
                 description: One or more payment details
                 items:
                   type: object
-                  description: Payment detail
                   additionalProperties: false
                   required:
                   - amount
@@ -525,13 +524,13 @@ components:
                     date:
                       type: string
                       format: date
-                      example: '1992-07-22'
+                      example: '1992-07-26'
                     amount:
                       "$ref": "#/components/schemas/positive_currency"
                     client_id:
                       type: string
                       format: uuid
-                      example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                      example: '05459c0f-a620-4743-9f0c-b3daa93e'
         outgoings:
           type: array
           items:
@@ -576,7 +575,7 @@ components:
         date_of_birth:
           type: string
           format: date
-          example: '1992-07-22'
+          example: '1992-07-27'
         in_full_time_education:
           type: boolean
           example: false
@@ -653,7 +652,6 @@ components:
             description: One or more other regular payment details
             items:
               type: object
-              description: Payment detail
               required:
               - date
               - amount
@@ -662,8 +660,7 @@ components:
                 date:
                   type: string
                   format: date
-                  description: Date payment received
-                  example: '1992-07-22'
+                  example: '1992-07-28'
                 amount:
                   "$ref": "#/components/schemas/positive_currency"
                   description: Amount of payment received
@@ -671,7 +668,7 @@ components:
                   type: string
                   format: uuid
                   description: Client identifier for payment received
-                  example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                  example: '05459c0f-a620-4743-9f0c-b3daa93e'
     ProceedingTypes:
       type: array
       minItems: 1
@@ -831,10 +828,52 @@ components:
           - frequency
           - gross
           - tax
+          - national_insurance
+          additionalProperties: false
+          properties:
+            frequency:
+              type: string
+              enum:
+              - weekly
+              - two_weekly
+              - four_weekly
+              - monthly
+              - three_monthly
+              - annually
+            gross:
+              type: number
+              format: decimal
+              minimum: 0
+              description: Gross income from this undertaking
+            tax:
+              type: number
+              format: decimal
+              maximum: 0
+              description: Tax paid (negative) on this income
+            national_insurance:
+              type: number
+              maximum: 0
+              format: decimal
+              description: NI paid (negative) on this income
+    EmploymentDetails:
+      type: object
+      required:
+      - income
+      additionalProperties: false
+      description: Details about standard employment
+      properties:
+        client_reference:
+          type: string
+          description: Optional reference, echoed in response
+        income:
+          type: object
+          required:
+          - frequency
+          - gross
+          - tax
           - benefits_in_kind
           - national_insurance
           - receiving_only_statutory_sick_or_maternity_pay
-          - is_employment
           additionalProperties: false
           properties:
             receiving_only_statutory_sick_or_maternity_pay:
@@ -848,32 +887,27 @@ components:
               - monthly
               - three_monthly
               - annually
-            is_employment:
-              type: boolean
-              description: set 'true' if this is a 'salary' type income (e.g. company
-                director salary)
             gross:
               type: number
               format: decimal
               minimum: 0
-              description: A positive number representing gross income payments
+              description: Gross income from this employment
               example: '2000.00'
             benefits_in_kind:
               type: number
               format: decimal
               minimum: 0
-              description: A positive number representing a benefit in kind payment
-              example: '100.00'
+              description: Regular benefits in kind from this employment
             tax:
               type: number
               format: decimal
-              description: A negative number representing a tax deduction
-              example: "-250.20"
+              maximum: 0
+              description: tax paid (negative) on this employment
             national_insurance:
               type: number
               format: decimal
-              description: A negative number representing a National Insurance deduction
-              example: "-150.20"
+              maximum: 0
+              description: NI paid (negative) on this employment
     StateBenefit:
       type: object
       required:
@@ -896,18 +930,16 @@ components:
             - amount
             additionalProperties: false
             type: object
-            description: Payment detail
             properties:
               client_id:
                 type: string
                 format: uuid
                 description: Client identifier for payment received
-                example: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                example: '05459c0f-a620-4743-9f0c-b3daa9'
               date:
                 type: string
                 format: date
-                description: Date payment received
-                example: '1992-07-22'
+                example: '1992-07-29'
               amount:
                 "$ref": "#/components/schemas/currency"
                 description: Amount of payment received
@@ -1005,6 +1037,43 @@ components:
           minimum: 0
           description: Amount of assessed client capital. Zero if deductions exceed
             total capital.
+        total_capital_with_smod:
+          type: number
+        disputed_non_property_disregard:
+          type: number
+        combined_disputed_capital:
+          type: number
+        combined_non_disputed_capital:
+          type: number
+        capital_contribution:
+          type: number
+          format: decimal
+        pensioner_capital_disregard:
+          type: number
+          format: decimal
+        pensioner_disregard_applied:
+          type: number
+          format: decimal
+        combined_assessed_capital:
+          type: number
+          format: decimal
+        proceeding_types:
+          type: array
+          items:
+            type: object
+            properties:
+              ccms_code:
+                type: string
+              client_involvement_type:
+                type: string
+              upper_threshold:
+                type: number
+                format: decimal
+              lower_threshold:
+                type: number
+                format: decimal
+              result:
+                type: string
     DisposableIncome:
       type: object
       properties:
@@ -1020,13 +1089,13 @@ components:
             tax:
               type: number
               format: decimal
-              description: A negative number representing a tax deduction
-              example: "-250.20"
+              maximum: 0
+              description: "(negative) monthly tax paid"
             national_insurance:
               type: number
               format: decimal
-              description: A negative number representing a National Insurance deduction
-              example: "-150.20"
+              maximum: 0
+              description: "(negative) monthly NI paid"
             fixed_employment_deduction:
               type: number
               format: decimal
@@ -1085,6 +1154,31 @@ components:
           format: decimal
           minimum: 0
           description: Duplicate of result_summary.income_contribution
+        combined_total_disposable_income:
+          type: number
+          format: decimal
+        combined_total_outgoings_and_allowances:
+          type: number
+          format: decimal
+        partner_allowance:
+          type: number
+        proceeding_types:
+          type: array
+          items:
+            type: object
+            properties:
+              ccms_code:
+                type: string
+              client_involvement_type:
+                type: string
+              upper_threshold:
+                type: number
+                format: decimal
+              lower_threshold:
+                type: number
+                format: decimal
+              result:
+                type: string
 paths:
   "/v6/assessments":
     post:
@@ -1513,7 +1607,12 @@ paths:
                   description: One or more vehicles' details
                   items:
                     "$ref": "#/components/schemas/Vehicle"
-                employment_or_self_employment:
+                employment_details:
+                  type: array
+                  description: One or more employment details
+                  items:
+                    "$ref": "#/components/schemas/EmploymentDetails"
+                self_employment_details:
                   type: array
                   description: One or more self employment details
                   items:
@@ -1592,6 +1691,8 @@ paths:
                           type: boolean
                           example: true
                           description: Applicant's partner is employed
+                    outgoings:
+                      type: array
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
@@ -1614,9 +1715,14 @@ paths:
                             description: Client supplied id to identify the employment
                           payments:
                             "$ref": "#/components/schemas/EmploymentPaymentList"
-                    employment_or_self_employment:
+                    employment_details:
                       type: array
-                      description: Partner self employment details
+                      description: One or more employment details for partner
+                      items:
+                        "$ref": "#/components/schemas/EmploymentDetails"
+                    self_employment_details:
+                      type: array
+                      description: One or more self employment details for partner
                       items:
                         "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
@@ -1636,7 +1742,7 @@ paths:
                         applicant's partner
                       items:
                         "$ref": "#/components/schemas/Property"
-                    capital_items:
+                    capitals:
                       "$ref": "#/components/schemas/Capitals"
                     vehicles:
                       type: array

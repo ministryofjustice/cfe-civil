@@ -26,6 +26,7 @@ module Decorators
           smod_allowance: @result.smod_allowance,
           main_home_equity_disregard: @result.main_home_equity_disregard,
           assessed_equity: @result.assessed_equity,
+          subject_matter_of_dispute: @record.subject_matter_of_dispute,
         }
       end
     end
