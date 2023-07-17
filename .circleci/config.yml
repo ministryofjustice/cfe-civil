@@ -352,15 +352,15 @@ jobs:
           command: |
             ./bin/clean_up_ecr
 
-  deploy_infrastructure_uat:
+  deploy_infrastructure:
     executor: cloud-platform-executor
     steps:
       - checkout
       - *authenticate_k8s
       - deploy:
-          name: Deploy UAT infrastructure (Grafana etc)
+          name: Deploy infrastructure
           command: |
-            kubectl apply --record=false -f ./infrastructure/uat/
+            kubectl -n ${K8S_NAMESPACE} apply --record=false -f ./infrastructure/${K8S_NAMESPACE}/
 
 workflows:
   version: 2
@@ -419,12 +419,6 @@ workflows:
           requires:
             - deploy_uat
   #          <<: *generic-slack-fail-post-step
-      - deploy_infrastructure_uat:
-          context: cfe-civil-uat
-          filters:
-            branches:
-              only:
-                - main
 
   deploy_main_approval_required:
     when: << pipeline.parameters.approval_required >>
@@ -447,6 +441,24 @@ workflows:
             - build_and_push
             - create_helm_cache
       - integration_tests:
+          filters:
+            branches:
+              only: main
+      - deploy_infrastructure:
+          name: deploy_infrastructure_uat
+          context: cfe-civil-uat
+          filters:
+            branches:
+              only: main
+      - deploy_infrastructure:
+          name: deploy_infrastructure_staging
+          context: cfe-civil-staging
+          filters:
+            branches:
+              only: main
+      - deploy_infrastructure:
+          name: deploy_infrastructure_production
+          context: cfe-civil-production
           filters:
             branches:
               only: main
