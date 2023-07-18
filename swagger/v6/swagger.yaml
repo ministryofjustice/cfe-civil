@@ -1691,6 +1691,8 @@ paths:
                           type: boolean
                           example: true
                           description: Applicant's partner is employed
+                    cash_transactions:
+                      "$ref": "#/components/schemas/CashTransactions"
                     outgoings:
                       type: array
                     irregular_incomes:

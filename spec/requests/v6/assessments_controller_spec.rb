@@ -10,6 +10,9 @@ module V6
       let(:log_record) { RequestLog.last }
       let(:current_date) { Date.new(2022, 6, 6) }
       let(:submission_date_params) { { submission_date: current_date.to_s } }
+      let(:month1) { current_date.beginning_of_month - 3.months }
+      let(:month2) { current_date.beginning_of_month - 2.months }
+      let(:month3) { current_date.beginning_of_month - 1.month }
       let(:default_params) do
         {
           assessment: submission_date_params,
@@ -18,6 +21,50 @@ module V6
                        receives_qualifying_benefit: false,
                        employed: },
           proceeding_types: [{ ccms_code: "DA001", client_involvement_type: "A" }],
+        }
+      end
+      let(:cash_transactions_params) do
+        {
+          income: [
+            {
+              category: "maintenance_in",
+              payments: cash_transactions(1033.44),
+            },
+            {
+              category: "friends_or_family",
+              payments: cash_transactions(250.0),
+            },
+            {
+              category: "benefits",
+              payments: cash_transactions(65.12),
+            },
+            {
+              category: "property_or_lodger",
+              payments: cash_transactions(91.87),
+            },
+            {
+              category: "pension",
+              payments: cash_transactions(34.12),
+            },
+          ],
+          outgoings: [
+            {
+              category: "maintenance_out",
+              payments: cash_transactions(256.0),
+            },
+            {
+              category: "child_care",
+              payments: cash_transactions(257.0),
+            },
+            {
+              category: "legal_aid",
+              payments: cash_transactions(44.54),
+            },
+            {
+              category: "rent_or_mortgage",
+              payments: cash_transactions(87.54),
+            },
+          ],
         }
       end
       let(:employment_income_params) do
@@ -569,57 +616,12 @@ module V6
       end
 
       context "with cash transactions" do
-        let(:month1) { current_date.beginning_of_month - 3.months }
-        let(:month2) { current_date.beginning_of_month - 2.months }
-        let(:month3) { current_date.beginning_of_month - 1.month }
         let(:params) do
           {
             # child_care won't show up unless student loan payments and dependants
             irregular_incomes: irregular_income_params,
             dependants: dependant_params,
-            cash_transactions:
-              {
-                income: [
-                  {
-                    category: "maintenance_in",
-                    payments: cash_transactions(1033.44),
-                  },
-                  {
-                    category: "friends_or_family",
-                    payments: cash_transactions(250.0),
-                  },
-                  {
-                    category: "benefits",
-                    payments: cash_transactions(65.12),
-                  },
-                  {
-                    category: "property_or_lodger",
-                    payments: cash_transactions(91.87),
-                  },
-                  {
-                    category: "pension",
-                    payments: cash_transactions(34.12),
-                  },
-                ],
-                outgoings: [
-                  {
-                    category: "maintenance_out",
-                    payments: cash_transactions(256.0),
-                  },
-                  {
-                    category: "child_care",
-                    payments: cash_transactions(257.0),
-                  },
-                  {
-                    category: "legal_aid",
-                    payments: cash_transactions(44.54),
-                  },
-                  {
-                    category: "rent_or_mortgage",
-                    payments: cash_transactions(87.54),
-                  },
-                ],
-              },
+            cash_transactions: cash_transactions_params,
           }
         end
 
@@ -690,15 +692,15 @@ module V6
               },
             )
         end
+      end
 
-        def cash_transactions(amount)
-          [month2, month3, month1].map do |p|
-            {
-              date: p.strftime("%F"),
-              amount:,
-              client_id: SecureRandom.uuid,
-            }
-          end
+      def cash_transactions(amount)
+        [month2, month3, month1].map do |p|
+          {
+            date: p.strftime("%F"),
+            amount:,
+            client_id: SecureRandom.uuid,
+          }
         end
       end
 
@@ -1117,6 +1119,7 @@ module V6
             outgoings: outgoings_params,
             partner: {
               partner: { date_of_birth: "1987-08-08", employed: true },
+              cash_transactions: cash_transactions_params,
               irregular_incomes: irregular_income_payments,
               employments: employment_income_params,
               regular_transactions: [
@@ -1188,7 +1191,7 @@ module V6
           end
 
           it "logs redacted" do
-            expect(partner_log.except(:partner, :dependants, :state_benefits))
+            expect(partner_log.except(:partner, :dependants, :state_benefits, :cash_transactions))
               .to eq(
                 {
                   outgoings: [{ name: "child_care", payments: [{ payment_date: "2022-05-15", amount: 29.12, client_id: "** REDACTED **" }] },
@@ -1270,7 +1273,7 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 90.3,
+                  income_contribution: 653.4,
                 })
             end
           end
@@ -1297,7 +1300,7 @@ module V6
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
-                  income_contribution: 90.3,
+                  income_contribution: 653.4,
                   partner_allowance: 191.41,
                 },
               )
@@ -1309,12 +1312,12 @@ module V6
                 dependant_allowance_under_16: 615.28,
                 dependant_allowance_over_16: 307.64,
                 dependant_allowance: 922.92,
-                gross_housing_costs: 117.16,
+                gross_housing_costs: 204.7,
                 housing_benefit: 0.0,
-                net_housing_costs: 117.16,
-                maintenance_allowance: 333.07,
-                total_outgoings_and_allowances: 1630.51,
-                total_disposable_income: -422.915,
+                net_housing_costs: 204.7,
+                maintenance_allowance: 589.07,
+                total_outgoings_and_allowances: 2275.59,
+                total_disposable_income: 406.555,
                 employment_income: {
                   gross_income: 846.0,
                   benefits_in_kind: 16.6,
@@ -1495,8 +1498,8 @@ module V6
               it "has cash_transactions" do
                 expect(state_benefits.excluding(:bank_transactions)).to eq(
                   {
-                    all_sources: 266.02,
-                    cash_transactions: 0.0,
+                    all_sources: 331.14,
+                    cash_transactions: 65.12,
                   },
                 )
               end
@@ -1515,17 +1518,17 @@ module V6
               expect(partner_gross_income.dig(:other_income, :monthly_equivalents)).to eq(
                 {
                   all_sources: {
-                    friends_or_family: 0.0,
-                    maintenance_in: 29.99,
-                    property_or_lodger: 0.0,
-                    pension: 0.0,
+                    friends_or_family: 250.0,
+                    maintenance_in: 1063.43,
+                    property_or_lodger: 91.87,
+                    pension: 34.12,
                   },
                   bank_transactions: { friends_or_family: 0.0,
                                        maintenance_in: 0.0,
                                        property_or_lodger: 0.0,
                                        pension: 0.0 },
                   cash_transactions: {
-                    friends_or_family: 0.0, maintenance_in: 0.0, property_or_lodger: 0.0, pension: 0.0
+                    friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12
                   },
                 },
               )
@@ -1547,10 +1550,10 @@ module V6
               {
                 monthly_equivalents: {
                   all_sources: {
-                    child_care: 82.98,
-                    rent_or_mortgage: 117.16,
-                    maintenance_out: 333.07,
-                    legal_aid: 6.62,
+                    child_care: 339.98,
+                    rent_or_mortgage: 204.7,
+                    maintenance_out: 589.07,
+                    legal_aid: 51.16,
                   },
                   bank_transactions: {
                     child_care: 9.71,
@@ -1559,13 +1562,13 @@ module V6
                     legal_aid: 6.62,
                   },
                   cash_transactions: {
-                    child_care: 0.0,
-                    rent_or_mortgage: 0.0,
-                    maintenance_out: 0.0,
-                    legal_aid: 0.0,
+                    child_care: 257.0,
+                    rent_or_mortgage: 87.54,
+                    maintenance_out: 256.0,
+                    legal_aid: 44.54,
                   },
                 },
-                childcare_allowance: 82.98,
+                childcare_allowance: 339.98,
                 deductions: { dependants_allowance: 922.92, disregarded_state_benefits: 1033.44 },
               },
             )

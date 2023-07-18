@@ -4,6 +4,10 @@ The date is when it was released/deployed to production.
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 18th July 2023
+
+LEP-83 added cash transactions to partner structure
+
 ## 14th July 2023
 
 * LEP-278 Feature: Return attribute "subject_matter_of_dispute" in the "properties" response
