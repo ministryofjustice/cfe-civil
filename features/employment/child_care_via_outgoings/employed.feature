@@ -1,5 +1,5 @@
 Feature:
-  "Child care entitlement via outgoings"
+  "Child care entitlement via outgoings(employed)"
 
   Scenario: The client is employed, child care submitted as outgoings, gross income > 0
     Given I am undertaking a certificated assessment
@@ -38,4 +38,4 @@ Feature:
     Then I should see the following "disposable income" details:
       | attribute                | value  |
       | childcare_allowance      | 0.0    |
-    
+
