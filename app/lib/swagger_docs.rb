@@ -1137,17 +1137,14 @@ class SwaggerDocs
                     client_involvement_type: {
                       type: :string,
                     },
-
                     upper_threshold: {
                       type: :number,
                       format: :decimal,
                     },
-
                     lower_threshold: {
                       type: :number,
                       format: :decimal,
                     },
-
                     result: {
                       type: :string,
                     },

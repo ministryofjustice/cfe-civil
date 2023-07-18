@@ -1,6 +1,6 @@
 require "rails_helper"
 
-module V7
+module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
@@ -68,7 +68,7 @@ module V7
       end
 
       before do
-        post v7_assessments_path, params: default_params.merge(params).to_json, headers:
+        post v6_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
       context "with top level schema error" do
@@ -180,7 +180,7 @@ module V7
                     name: "A",
                     client_id: "B",
                     additional_attribute: "additional_attribute",
-                    payments: [attributes_for(:employment_payment)],
+                    payments: [],
                   },
                 ],
               },
@@ -203,6 +203,7 @@ module V7
           end
 
           it "returns http success" do
+            expect(parsed_response[:errors]).to be_nil
             expect(response).to have_http_status(:success)
           end
         end
