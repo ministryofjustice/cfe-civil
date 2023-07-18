@@ -52,6 +52,7 @@ class PersonGrossIncomeSubtotals
   end
 
   def is_student?
+    # Student check is done via presence of irregular_incomes where income_type == student_loan (Request payload: irregular_incomes > payments[] > {income_type: student_loan})
     @gross_income_summary.student_loan_payments.any?
   end
 

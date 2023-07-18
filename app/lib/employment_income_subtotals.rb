@@ -48,10 +48,16 @@ class EmploymentIncomeSubtotals
   end
 
   def entitles_child_care_allowance?
-    self_employment_details.sum(&:monthly_gross_income).positive? || (@employment_details_results + [@employment_result]).compact.map(&:employment).any?(&:actively_working?)
+    return true if self_employment_details.sum(&:monthly_gross_income).positive?
+
+    employments.any?(&:actively_working?) && employments.any?(&:has_positive_gross_income?)
   end
 
 private
+
+  def employments
+    (@employment_details_results + [@employment_result]).compact.map(&:employment)
+  end
 
   def employment_results
     [@employment_result].compact + @employment_details_results + @self_employment_results

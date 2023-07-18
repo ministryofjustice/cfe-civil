@@ -15,6 +15,10 @@ module Calculators
         def actively_working?
           false
         end
+
+        def has_positive_gross_income?
+          false
+        end
       end
 
       def fixed_employment_allowance(submission_date)

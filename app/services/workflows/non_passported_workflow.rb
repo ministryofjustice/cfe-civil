@@ -73,6 +73,7 @@ module Workflows
       EmploymentData = Data.define(:monthly_tax, :monthly_gross_income,
                                    :client_id,
                                    :actively_working?,
+                                   :has_positive_gross_income?,
                                    :monthly_benefits_in_kind, :monthly_national_insurance)
 
       # local define for employment and monthly_values
@@ -96,6 +97,7 @@ module Workflows
                              monthly_gross_income: _1.values.fetch(:monthly_gross_income),
                              monthly_national_insurance: _1.values.fetch(:monthly_national_insurance),
                              actively_working?: _1.employment.actively_working?,
+                             has_positive_gross_income?: _1.employment.has_positive_gross_income?,
                              client_id: _1.employment.client_id,
                              monthly_benefits_in_kind: _1.values.fetch(:monthly_benefits_in_kind))
         end
@@ -112,6 +114,7 @@ module Workflows
                              monthly_gross_income:,
                              monthly_national_insurance:,
                              actively_working?: detail.income.actively_working?,
+                             has_positive_gross_income?: detail.income.has_positive_gross_income?,
                              client_id: detail.client_reference,
                              monthly_benefits_in_kind:)
         end

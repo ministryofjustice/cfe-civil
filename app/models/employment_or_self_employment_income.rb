@@ -9,4 +9,8 @@ class EmploymentOrSelfEmploymentIncome
   attribute :gross, :decimal
 
   attribute :frequency, :string
+
+  def has_positive_gross_income?
+    gross.positive?
+  end
 end
