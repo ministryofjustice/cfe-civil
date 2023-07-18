@@ -50,7 +50,7 @@ class EmploymentIncomeSubtotals
   def entitles_child_care_allowance?
     return true if self_employment_details.sum(&:monthly_gross_income).positive?
 
-    employments.any?(&:actively_working?) && employments.any?(&:has_positive_gross_income?)
+    employments.any?(&:entitles_employment_allowance?) && employments.any?(&:has_positive_gross_income?)
   end
 
 private
