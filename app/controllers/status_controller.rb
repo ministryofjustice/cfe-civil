@@ -7,7 +7,7 @@ class StatusController < ApplicationController
     render status:, json: { checks: }
   end
 
-  def ping
+  def pingping
     render json: {
       "build_date" => Rails.configuration.x.status.build_date,
       "build_tag" => Rails.configuration.x.status.build_tag,
