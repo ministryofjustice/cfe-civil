@@ -47,7 +47,7 @@ class EmploymentIncomeSubtotals
     employment_results.map(&:result).map(&:fixed_employment_allowance).min || 0.0
   end
 
-  def in_work?
+  def entitles_child_care_allowance?
     self_employment_details.sum(&:monthly_gross_income).positive? || (@employment_details_results + [@employment_result]).compact.map(&:employment).any?(&:actively_working?)
   end
 

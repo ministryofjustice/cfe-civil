@@ -16,7 +16,7 @@ module Calculators
       end
 
       def all_applicants_are_in_work_or_students?(applicant_incomes)
-        applicant_incomes.all? { _1.employment_income_subtotals.in_work? || _1.is_student? }
+        applicant_incomes.all? { _1.employment_income_subtotals.entitles_child_care_allowance? || _1.is_student? }
       end
     end
   end
