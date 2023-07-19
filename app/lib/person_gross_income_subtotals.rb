@@ -52,7 +52,11 @@ class PersonGrossIncomeSubtotals
   end
 
   def is_student?
-    # Student check is done via presence of irregular_incomes where income_type == student_loan (Request payload: irregular_incomes > payments[] > {income_type: student_loan})
+    # GUIDANCE quote:
+    # 'Where the individual or their partner is assessed as receiving a wage or
+    # salary from employment, or an income from self-employment, or studyrelated income (i.e. student loan, student grant or other income received
+    # from a person who is not their partner or relative for the purpose of
+    # supporting the individual’s course of study)'
     @gross_income_summary.student_loan_payments.any?
   end
 

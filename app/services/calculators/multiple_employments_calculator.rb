@@ -13,7 +13,7 @@ module Calculators
 
       DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax, :monthly_national_insurance) do
         def entitles_employment_allowance?
-          false
+          true
         end
 
         def has_positive_gross_income?
