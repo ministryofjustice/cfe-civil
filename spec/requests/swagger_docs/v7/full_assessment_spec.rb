@@ -28,7 +28,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     cash_transactions: { "$ref" => components[:cash_transactions] },
                     dependants: {
                       type: :array,
-                      description: "One or more dependants details",
+                      description: "Dependants of the applicant. Defined as someone who lives with the applicant and depends on the applicant for financial support. A child relative is, for example, the applicant's or their partner's child or another child relative, who lives in their household. A child dependant must be either under school leaving age, in full-time education, or undergoing training for a trade, profession or vocation. Do not include foster children. An adult dependant is any adult relative of the applicant, who lives in the same household and is financially dependant on the applicant or their partner. Each dependant should be included only once, in either 'dependants' or 'partner.dependants'",
                       items: { "$ref" => components[:dependant] },
                     },
                     employment_income: { "$ref" => components[:employments] },
@@ -146,7 +146,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         dependants: {
                           type: :array,
-                          description: "One or more dependants details",
+                          description: "Dependants of the applicant's partner. Defined as someone who lives with the applicant and depends on the applicant's partner for financial support. A child relative is, for example, the applicant's or their partner's child or another child relative, who lives in their household. A child dependant must be either under school leaving age, in full-time education, or undergoing training for a trade, profession or vocation. Do not include foster children. An adult dependant is any adult relative of the applicant's partner, who lives in the same household and is financially dependant on the applicant or their partner. Each dependant should be included only once, in either 'dependants' or 'partner.dependants'",
                           items: { "$ref" => components[:dependant] },
                         },
                       },
