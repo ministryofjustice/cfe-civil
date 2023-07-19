@@ -6,6 +6,8 @@ module Calculators
     let(:result) { described_class.call(assessment.submission_date) }
 
     it "sets all items to zero apart from allowance" do
+      expect(result.employment).to be_entitles_employment_allowance
+      expect(result.employment).not_to be_entitles_childcare_allowance
       expect(result.employment)
         .to have_attributes(
           monthly_gross_income: 0.0,
