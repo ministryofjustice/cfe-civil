@@ -16,7 +16,7 @@ module Calculators
           true
         end
 
-        def has_positive_gross_income?
+        def entitles_childcare_allowance?
           false
         end
       end

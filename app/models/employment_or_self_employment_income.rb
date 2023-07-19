@@ -10,7 +10,7 @@ class EmploymentOrSelfEmploymentIncome
 
   attribute :frequency, :string
 
-  def has_positive_gross_income?
-    gross.positive?
+  def entitles_childcare_allowance?
+    entitles_employment_allowance? && gross.positive?
   end
 end
