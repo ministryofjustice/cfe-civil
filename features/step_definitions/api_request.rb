@@ -7,6 +7,7 @@ Given("I am undertaking a certificated assessment") do
                       receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "SE003", client_involvement_type: "A" }] }
   @employments = []
+  @api_version = 6
 end
 
 Given("An applicant who receives passporting benefits") do
@@ -159,7 +160,7 @@ When("I retrieve the final assessment") do
 
   if @partner_employments || @partner_property ||
       @partner_regular_transactions || @partner_capitals ||
-      @partner_cash_transactions ||
+      @partner_cash_transactions || @partner_other_incomes ||
       self_employed_partner || employed_partner
     employments = @partner_employments || []
     additional_properties = @partner_property || []
@@ -170,6 +171,7 @@ When("I retrieve the final assessment") do
                      regular_transactions:,
                      capitals: }
     partner_data[:cash_transactions] = @partner_cash_transactions if @partner_cash_transactions
+    partner_data[:other_incomes] = @partner_other_incomes if @partner_other_incomes
     if employments.any?
       partner_data[:employments] = employments
       partner_data[:partner] = partner_data.fetch(:partner).merge(employed: true)
