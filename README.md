@@ -178,7 +178,7 @@ See [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md) for ini
 
 The `swagger` folder in the root directory has one `swagger.yaml` within a version number folder - e.g. `swagger/v4/swagger.yaml`. This file is what defines the swagger ui page displayed at `/api-docs`. This file is generated using rswag's rake task - `rake rswag:specs:swaggerize`.
 
-The `swagger.yaml` file that is generated is defined by a combination of "global" settings in `spec/swagger_helper.rb` and indivual spec files that are, by our convention, stored in `spec/requests/swagger_docs/<version>/*.spec.rb`.
+The `swagger.yaml` file that is generated is defined by a combination of "global" settings in `spec/swagger_helper.rb` and individual spec files that are, by our convention, stored in `spec/requests/swagger_docs/<version>/*.spec.rb`.
 
 You can generate a new endpoint spec file using:
 ```sh
@@ -192,10 +192,13 @@ rake rswag:specs:swaggerize
 
 ## Threshold configuration files
 
-**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
-
 Files holding details of all thresholds values used in calculating eligibility are stored in `config/thresholds`.
+
 The file `values.yml` details the start dates for each set of thresholds, and the name of the file from which they should be read.
+
+### Test threshold data
+
+**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
 
 If a file has the key `test_only` with a value of true, then that file will only be read if the
 `USE_TEST_THRESHOLD_DATA` environment variable is set to true.  This is the default for staging and UAT, and it is
