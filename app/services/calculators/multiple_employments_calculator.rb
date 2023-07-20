@@ -17,7 +17,7 @@ module Calculators
         end
 
         def entitles_childcare_allowance?
-          false
+          true
         end
       end
 
