@@ -12,8 +12,12 @@ module Calculators
     private
 
       DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax, :monthly_national_insurance) do
-        def actively_working?
-          false
+        def entitles_employment_allowance?
+          true
+        end
+
+        def entitles_childcare_allowance?
+          true
         end
       end
 

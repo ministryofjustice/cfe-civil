@@ -3,7 +3,7 @@ class SelfEmploymentIncome < EmploymentOrSelfEmploymentIncome
     0.0
   end
 
-  def actively_working?
+  def entitles_employment_allowance?
     false
   end
 end

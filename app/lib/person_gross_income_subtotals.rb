@@ -9,6 +9,8 @@ class PersonGrossIncomeSubtotals
 
   StateBenefitData = Data.define(:state_benefit_name, :monthly_value, :exclude_from_gross_income?)
 
+  attr_reader :employment_income_subtotals
+
   def initialize(
     gross_income_summary:,
     regular_income_categories:,
@@ -18,8 +20,6 @@ class PersonGrossIncomeSubtotals
     @regular_income_categories = regular_income_categories
     @employment_income_subtotals = employment_income_subtotals
   end
-
-  attr_reader :employment_income_subtotals
 
   def state_benefits
     @gross_income_summary.state_benefits.map do |sb|
@@ -52,6 +52,11 @@ class PersonGrossIncomeSubtotals
   end
 
   def is_student?
+    # GUIDANCE quote:
+    # 'Where the individual or their partner is assessed as receiving a wage or
+    # salary from employment, or an income from self-employment, or studyrelated income (i.e. student loan, student grant or other income received
+    # from a person who is not their partner or relative for the purpose of
+    # supporting the individual’s course of study)'
     @gross_income_summary.student_loan_payments.any?
   end
 

@@ -12,7 +12,7 @@ module Calculators
     private
 
       def allowance(employment, submission_date)
-        if employment.actively_working?
+        if employment.entitles_employment_allowance?
           fixed_employment_allowance submission_date
         else
           0.0

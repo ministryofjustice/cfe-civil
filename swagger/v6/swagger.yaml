@@ -401,7 +401,9 @@ components:
           - type: boolean
           - type: 'null'
           example: true
-          description: Applicant is employed
+          description: Deprecated - employment is determined by presence of gross
+            employment income
+          deprecated: true
         has_partner_opponent:
           type: boolean
           example: false
@@ -1680,7 +1682,6 @@ paths:
                       description: The partner of the applicant
                       required:
                       - date_of_birth
-                      - employed
                       properties:
                         date_of_birth:
                           type: string
@@ -1689,8 +1690,9 @@ paths:
                           description: Applicant's partner's date of birth
                         employed:
                           type: boolean
-                          example: true
-                          description: Applicant's partner is employed
+                          description: Deprecated - employment is determined by presence
+                            of gross employment income
+                          deprecated: true
                     cash_transactions:
                       "$ref": "#/components/schemas/CashTransactions"
                     outgoings:

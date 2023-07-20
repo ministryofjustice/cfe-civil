@@ -3,7 +3,11 @@ class Employment < ApplicationRecord
 
   has_many :employment_payments, dependent: :destroy
 
-  def actively_working?
+  def entitles_employment_allowance?
     !receiving_only_statutory_sick_or_maternity_pay? && employment_payments.any?
+  end
+
+  def entitles_childcare_allowance?
+    entitles_employment_allowance? && employment_payments.sum(&:gross_income).positive?
   end
 end

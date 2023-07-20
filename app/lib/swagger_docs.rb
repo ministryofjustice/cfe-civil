@@ -434,7 +434,8 @@ class SwaggerDocs
               employed: {
                 oneOf: [{ type: :boolean }, { type: :null }],
                 example: true,
-                description: "Applicant is employed",
+                description: "Deprecated - employment is determined by presence of gross employment income",
+                deprecated: true,
               },
               has_partner_opponent: { type: :boolean,
                                       example: false,

@@ -153,7 +153,7 @@ module Collators
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
             assessment.employments.map do |_e|
-              OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, actively_working?: true)
+              OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, entitles_employment_allowance?: true)
             end
           end
 
