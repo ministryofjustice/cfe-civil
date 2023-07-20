@@ -30,7 +30,7 @@ module Decorators
 
       def transactions(source)
         {
-          child_care: @summary.__send__("child_care_#{source}").to_f,
+          child_care: @disposable_income_subtotals.__send__("child_care_#{source}").to_f,
           rent_or_mortgage: @summary.__send__("rent_or_mortgage_#{source}").to_f,
           maintenance_out: @summary.__send__("maintenance_out_#{source}").to_f,
           legal_aid: @summary.__send__("legal_aid_#{source}").to_f,
@@ -38,7 +38,7 @@ module Decorators
       end
 
       def childcare_allowance
-        @summary.child_care_all_sources.to_f
+        @disposable_income_subtotals.child_care_all_sources.to_f
       end
 
       def deductions

@@ -28,11 +28,9 @@ module Collators
   private
 
     def outgoing_categories
-      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym)
+      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym) - [:child_care]
     end
 
-    # TODO: This line seems redundant as it updates the column to its existing value!
-    # `attrs[:"#{category}_bank"] = __send__("#{category}_bank")`
     def populate_attrs
       attrs = {}
       monthly_cash_transactions_total = 0
@@ -46,22 +44,18 @@ module Collators
         attrs[:"#{category}_all_sources"] = attrs[:"#{category}_bank"] + attrs[:"#{category}_cash"]
       end
 
-      Attrs.new(attrs:, monthly_cash_transactions_total:)
+      Attrs.new(attrs:, monthly_cash_transactions_total: monthly_cash_transactions_total + @outgoings.child_care.cash)
     end
 
     def monthly_cash_by_category(category)
-      if category == :child_care
-        @disposable_income_summary.child_care_cash
-      else
-        cash_transactions = @gross_income_summary.cash_transactions(:debit, category)
-        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
-      end
+      cash_transactions = @gross_income_summary.cash_transactions(:debit, category)
+      Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
     end
 
     def total_outgoings_and_allowances(monthly_cash_transactions_total)
       @disposable_income_summary.net_housing_costs +
-        @outgoings.dependant_allowance_under_16 +
-        @outgoings.dependant_allowance_over_16 +
+        @outgoings.dependant_allowance.under_16 +
+        @outgoings.dependant_allowance.over_16 +
         monthly_bank_transactions_total +
         monthly_cash_transactions_total -
         @gross_income_subtotals.employment_income_subtotals.fixed_employment_allowance -
@@ -70,7 +64,7 @@ module Collators
     end
 
     def monthly_bank_transactions_total
-      @disposable_income_summary.child_care_bank +
+      @outgoings.child_care.bank +
         @disposable_income_summary.maintenance_out_bank +
         @disposable_income_summary.legal_aid_bank
     end

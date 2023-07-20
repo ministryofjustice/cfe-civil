@@ -26,20 +26,23 @@ module Workflows
         # we can take the lower threshold from the first eligibility records as they are all the same
         lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
 
-        RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.employments,
-                                            gross_income_summary: assessment.applicant_gross_income_summary,
-                                            disposable_income_summary: assessment.applicant_disposable_income_summary,
-                                            capital_summary: assessment.applicant_capital_summary,
-                                            lower_capital_threshold:,
-                                            assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+        new_remarks = RemarkGenerators::Orchestrator.call(employments: assessment.employments,
+                                                          gross_income_summary: assessment.applicant_gross_income_summary,
+                                                          outgoings: assessment.applicant_disposable_income_summary.outgoings,
+                                                          capital_summary: assessment.applicant_capital_summary,
+                                                          lower_capital_threshold:,
+                                                          child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
+                                                          assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         if partner.present?
-          RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.partner_employments,
-                                              gross_income_summary: assessment.partner_gross_income_summary,
-                                              disposable_income_summary: assessment.partner_disposable_income_summary,
-                                              capital_summary: assessment.partner_capital_summary,
-                                              lower_capital_threshold:,
-                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+          new_remarks += RemarkGenerators::Orchestrator.call(employments: assessment.partner_employments,
+                                                             gross_income_summary: assessment.partner_gross_income_summary,
+                                                             outgoings: assessment.partner_disposable_income_summary.outgoings,
+                                                             capital_summary: assessment.partner_capital_summary,
+                                                             lower_capital_threshold:,
+                                                             child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
+                                                             assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
+        assessment.add_remarks!(new_remarks)
         Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
                                      receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output

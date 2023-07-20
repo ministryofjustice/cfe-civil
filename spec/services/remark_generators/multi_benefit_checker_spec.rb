@@ -9,7 +9,7 @@ module RemarkGenerators
       let(:assessment) { state_benefit.gross_income_summary.assessment }
       let(:collection) { [payment1, payment2, payment3] }
 
-      subject(:checker) { described_class.call(assessment, collection) }
+      subject(:checker) { described_class.call(collection) }
 
       context "no flags" do
         let(:payment1) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[0] }

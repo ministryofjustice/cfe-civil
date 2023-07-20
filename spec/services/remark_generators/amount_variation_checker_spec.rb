@@ -15,7 +15,7 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[2] }
 
         it "does not update the remarks class" do
-          expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
+          expect(described_class.call(collection:, child_care_bank: 0)).to be_nil
         end
       end
 
@@ -25,7 +25,7 @@ module RemarkGenerators
         let(:payment3) { create :state_benefit_payment, state_benefit:, amount: amount - 0.02, payment_date: dates[2] }
 
         it "adds the remark" do
-          expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+          expect(described_class.call(collection:, child_care_bank: 0))
             .to eq(RemarksData.new(type: :state_benefit_payment,
                                    issue: :amount_variation, ids: collection.map(&:client_id)))
         end
@@ -48,7 +48,7 @@ module RemarkGenerators
         end
 
         it "does not update the remarks class" do
-          expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
+          expect(described_class.call(collection:, child_care_bank: 0)).to be_nil
         end
       end
 
@@ -62,7 +62,7 @@ module RemarkGenerators
         end
 
         it "adds the remark" do
-          expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+          expect(described_class.call(collection:, child_care_bank: 0))
             .to eq(RemarksData.new(type: :outgoings_housing_cost,
                                    issue: :amount_variation, ids: collection.map(&:client_id)))
         end
@@ -78,10 +78,8 @@ module RemarkGenerators
         end
 
         context "if the childcare costs are allowed as an outgoing" do
-          before { disposable_income_summary.update!(child_care_bank: 1) }
-
           it "adds the remark" do
-            expect(described_class.call(assessment.applicant_disposable_income_summary, collection))
+            expect(described_class.call(collection:, child_care_bank: 1))
               .to eq(RemarksData.new(type: :outgoings_childcare,
                                      issue: :amount_variation, ids: collection.map(&:client_id)))
           end
@@ -89,7 +87,7 @@ module RemarkGenerators
 
         context "if the childcare costs are not allowed as an outgoing" do
           it "does not update the remarks class" do
-            expect(described_class.call(assessment.applicant_disposable_income_summary, collection)).to be_nil
+            expect(described_class.call(collection:, child_care_bank: 0)).to be_nil
           end
         end
       end

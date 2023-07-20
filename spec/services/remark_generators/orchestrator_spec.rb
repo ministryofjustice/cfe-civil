@@ -20,26 +20,27 @@ module RemarkGenerators
     end
 
     it "calls the checkers with each collection" do
-      expect(MultiBenefitChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, other_income_payments).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, childcare_outgoings).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, maintenance_outgoings).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, housing_outgoings).and_call_original
-      expect(AmountVariationChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, legal_aid_outgoings).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, state_benefit_payments).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, other_income_payments).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, childcare_outgoings).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, maintenance_outgoings).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, housing_outgoings).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, legal_aid_outgoings).and_call_original
-      expect(FrequencyChecker).to receive(:call).with(assessment.applicant_disposable_income_summary, employment_payments, :date).and_call_original
+      expect(MultiBenefitChecker).to receive(:call).with(state_benefit_payments).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: state_benefit_payments, child_care_bank: 0).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: other_income_payments, child_care_bank: 0).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: childcare_outgoings, child_care_bank: 0).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: maintenance_outgoings, child_care_bank: 0).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: housing_outgoings, child_care_bank: 0).and_call_original
+      expect(AmountVariationChecker).to receive(:call).with(collection: legal_aid_outgoings, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: state_benefit_payments, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: other_income_payments, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: childcare_outgoings, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: maintenance_outgoings, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: housing_outgoings, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: legal_aid_outgoings, child_care_bank: 0).and_call_original
+      expect(FrequencyChecker).to receive(:call).with(collection: employment_payments, child_care_bank: 0, date_attribute: :date).and_call_original
 
       expect(ResidualBalanceChecker).to receive(:call).with(assessment.applicant_capital_summary, 0, 100).and_call_original
 
-      described_class.call(assessment:, capital_summary: assessment.applicant_capital_summary,
+      described_class.call(capital_summary: assessment.applicant_capital_summary,
                            lower_capital_threshold: 100,
-                           disposable_income_summary: assessment.applicant_disposable_income_summary,
+                           child_care_bank: 0,
+                           outgoings: assessment.applicant_disposable_income_summary.outgoings,
                            employments: assessment.employments,
                            gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
     end

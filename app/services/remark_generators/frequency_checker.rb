@@ -2,8 +2,16 @@ module RemarkGenerators
   class FrequencyChecker < BaseChecker
     include Exemptable
 
-    def self.call(disposable_income_summary, collection, date_attribute = :payment_date)
-      new(disposable_income_summary, collection).call(date_attribute) unless collection.empty?
+    # for Exemptable mixin
+    attr_reader :child_care_bank
+
+    def self.call(child_care_bank:, collection:, date_attribute: :payment_date)
+      new(child_care_bank:, collection:).call(date_attribute) unless collection.empty?
+    end
+
+    def initialize(child_care_bank:, collection:)
+      super(collection)
+      @child_care_bank = child_care_bank
     end
 
     def call(date_attribute = :payment_date)
