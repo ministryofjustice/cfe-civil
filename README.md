@@ -172,23 +172,38 @@ Try this simple test, to ensure it's working:
 $ curl http://127.0.0.1:3000/healthcheck
 {"checks":{"database":true}}
 ```
-## Generation of API documentation using Rswag
+## Swagger - API schema & documentation generation
 
-See [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md) for initial setup and/or modifications.
+Rswag is used for generating Swagger API schemas and documentation. The sections below describe how these can be modified and managed, using filenames from a recent version of the main "assessments" API as examples.
 
-The `swagger` folder in the root directory has one `swagger.yaml` within a version number folder - e.g. `swagger/v4/swagger.yaml`. This file is what defines the swagger ui page displayed at `/api-docs`. This file is generated using rswag's rake task - `rake rswag:specs:swaggerize`.
+### Source files
 
-The `swagger.yaml` file that is generated is defined by a combination of "global" settings in `spec/swagger_helper.rb` and individual spec files that are, by our convention, stored in `spec/requests/swagger_docs/<version>/*.spec.rb`.
+* spec/swagger_helper.rb - config
+* app/lib/swagger_docs.rb - components which are used across multiple versions
+* spec/requests/swagger_docs/v7/full_assessment_spec.rb
 
-You can generate a new endpoint spec file using:
+### Generation
+
+The schemas are generated using rswag's rake task:
+
+```sh
+rake rswag:specs:swaggerize
+```
+
+### Generated schema
+
+The schema is used to validate requests to the API, and are displayed in the Swagger docs UI served at `/api-docs`.
+
+* swagger/v7/swagger.yaml
+
+### RSwag administration
+
+New endpoints can be created with:
 ```sh
 rails generate rspec:swagger MyController
 ```
 
-You can update an existing endpoint by modifying it's spec and then running:
-```sh
-rake rswag:specs:swaggerize
-```
+Rswag setup: [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md)
 
 ## Threshold configuration files
 
