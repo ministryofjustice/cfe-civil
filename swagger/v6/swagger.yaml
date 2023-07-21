@@ -377,7 +377,8 @@ components:
                     - rent
                     - mortgage
                     - board_and_lodging
-                    description: Housing cost type
+                    description: Housing cost type - should also be in cash_transactions.outgoings,
+                      but currently unused by both clients
                   amount:
                     type: number
                     format: decimal

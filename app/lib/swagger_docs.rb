@@ -405,7 +405,7 @@ class SwaggerDocs
                           housing_cost_type: {
                             type: :string,
                             enum: CFEConstants::VALID_OUTGOING_HOUSING_COST_TYPES,
-                            description: "Housing cost type",
+                            description: "Housing cost type - should also be in cash_transactions.outgoings, but currently unused by both clients",
                           },
                           amount: {
                             type: :number,
