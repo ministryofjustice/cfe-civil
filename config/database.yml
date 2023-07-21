@@ -5,16 +5,35 @@ default: &default
   timeout: 5000
 
 development:
-  <<: *default
-  database: cfe_civil_development
+  primary:
+    <<: *default
+    database: cfe_civil_development
 
 test:
-  <<: *default
-  database: cfe_civil_test
+  primary:
+    <<: *default
+    database: cfe_civil_test
 
 production:
-  <<: *default
-  host: <%= ENV['POSTGRES_HOST'] %>
-  username: <%= ENV['POSTGRES_USER'] %>
-  password: <%= ENV['POSTGRES_PASSWORD'] %>
-  database: <%= ENV['POSTGRES_DATABASE'] %>
+  primary:
+    <<: *default
+    host: <%= ENV['POSTGRES_HOST'] %>
+    username: <%= ENV['POSTGRES_USER'] %>
+    password: <%= ENV['POSTGRES_PASSWORD'] %>
+    database: <%= ENV['POSTGRES_DATABASE'] %>
+
+# This is a dedicated environment for reading request logs remotely
+# and playing them back through (probably development). When
+# running set SECRET_KEY_BASE=<anything>
+remote_database:
+  primary:
+    <<: *default
+    database: cfe_civil_development
+  request_log:
+    <<: *default
+    database_tasks: false
+    host: localhost
+    username: <%= ENV['POSTGRES_USER'] %>
+    password: <%= ENV['POSTGRES_PASSWORD'] %>
+    database: <%= ENV['POSTGRES_DATABASE'] %>
+    port: <%= ENV['POSTGRES_PORT'] %>
