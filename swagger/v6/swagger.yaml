@@ -418,7 +418,11 @@ components:
         has_partner_opponent:
           type: boolean
           example: false
-          description: Applicant has partner opponent (unused in calculation)
+          description: Deprecated - not used in the calculation. A partner that is
+            an opponent in the case should *not* be included in the request. Definition
+            of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1
+            Individual and partner' and LC's Controlled Guidance '4.2 Aggregation
+            of Means'
         receives_qualifying_benefit:
           type: boolean
           example: false
@@ -1868,7 +1872,10 @@ paths:
                   required:
                   - partner
                   additionalProperties: false
-                  description: Full information about an applicant's partner
+                  description: Partner of the applicant's financial and personal info.
+                    Definition of 'partner' is described in Lord Chancellor's Certificated
+                    Guidance '3.1 Individual and partner' and LC's Controlled Guidance
+                    '4.2 Aggregation of Means'
                   example:
                     partner:
                       date_of_birth: '1992-07-22'
@@ -1924,7 +1931,7 @@ paths:
                   properties:
                     partner:
                       type: object
-                      description: The partner of the applicant
+                      description: Partner's personal info
                       required:
                       - date_of_birth
                       additionalProperties: false
@@ -1933,7 +1940,7 @@ paths:
                           type: string
                           format: date
                           example: '1992-07-22'
-                          description: Applicant's partner's date of birth
+                          description: Partner's date of birth
                         employed:
                           type: boolean
                           description: Deprecated - employment is determined by presence

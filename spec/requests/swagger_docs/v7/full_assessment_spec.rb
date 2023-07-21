@@ -86,13 +86,13 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     partner: {
                       type: :object,
                       required: %i[partner],
-                      description: "Full information about an applicant's partner",
+                      description: "Partner of the applicant's financial and personal info. Definition of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1 Individual and partner' and LC's Controlled Guidance '4.2 Aggregation of Means'",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
                       additionalProperties: false,
                       properties: {
                         partner: {
                           type: :object,
-                          description: "The partner of the applicant",
+                          description: "Partner's personal info",
                           required: %i[date_of_birth],
                           additionalProperties: false,
                           properties: {
@@ -100,7 +100,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                               type: :string,
                               format: :date,
                               example: "1992-07-22",
-                              description: "Applicant's partner's date of birth",
+                              description: "Partner's date of birth",
                             },
                             employed: {
                               type: :boolean,
