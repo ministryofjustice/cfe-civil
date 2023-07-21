@@ -6,6 +6,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "disposable_income_summary" => "result_summary.disposable_income",
     "disposable income" => "assessment.disposable_income",
     "partner_disposable_income_all_sources" => "assessment.partner_disposable_income.monthly_equivalents.all_sources",
+    "partner_other_income_all_sources" => "assessment.partner_gross_income.other_income.monthly_equivalents.all_sources",
     "total outgoings and allowances" => "result_summary.disposable_income.combined_total_outgoings_and_allowances",
     "partner allowance" => "result_summary.disposable_income.partner_allowance",
     "dependant allowance" => "result_summary.disposable_income.dependant_allowance",

@@ -1054,19 +1054,16 @@ module V6
                 {
                   date: "2022-11-01",
                   amount: 250.00,
-                  client_id: "ffi-m-3",
                 },
                 {
                   date: "2022-10-01",
                   amount: 266.02,
-                  client_id: "ffi-m-2",
                 },
                 {
                   date: "2022-09-01",
                   amount: 250.00,
-                  client_id: "ffi-m-1",
                 },
-              ],
+              ].map.with_index { |p, index| p.merge(client_id: "ffi-m-#{index + 1}") },
             },
           ]
         end
@@ -1135,6 +1132,7 @@ module V6
               state_benefits: state_benefit_params,
               additional_properties: properties_params,
               outgoings: outgoings_params,
+              other_incomes: other_income_params,
               capitals: {
                 bank_accounts: bank_account_params,
                 non_liquid_capital: non_liquid_params,
@@ -1194,6 +1192,14 @@ module V6
             expect(partner_log.except(:partner, :dependants, :state_benefits, :cash_transactions))
               .to eq(
                 {
+                  other_incomes: [{ source: "maintenance_in",
+                                    payments: [{ date: "2022-11-01", amount: 1046.44, client_id: "** REDACTED **" },
+                                               { date: "2022-10-01", amount: 1046.44, client_id: "** REDACTED **" },
+                                               { date: "2022-09-01", amount: 1046.44, client_id: "** REDACTED **" }] },
+                                  { source: "friends_or_family",
+                                    payments: [{ date: "2022-11-01", amount: 250.0, client_id: "** REDACTED **" },
+                                               { date: "2022-10-01", amount: 266.02, client_id: "** REDACTED **" },
+                                               { date: "2022-09-01", amount: 250.0, client_id: "** REDACTED **" }] }],
                   outgoings: [{ name: "child_care", payments: [{ payment_date: "2022-05-15", amount: 29.12, client_id: "** REDACTED **" }] },
                               { name: "legal_aid", payments: [{ payment_date: "2022-05-15", amount: 19.87, client_id: "** REDACTED **" }] },
                               { name: "maintenance_out",
@@ -1257,7 +1263,7 @@ module V6
         describe "result summary" do
           let(:summary) { parsed_response.fetch(:result_summary) }
 
-          it "has the correct keys" do
+          it "has income and capital keys for parner and applicant" do
             expect(summary.keys).to match_array(%i[overall_result
                                                    gross_income
                                                    partner_gross_income
@@ -1273,13 +1279,14 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 653.4,
+                  income_contribution: 1564.65,
                 })
             end
           end
 
           it "has disposable income" do
             expect(summary.fetch(:disposable_income).except(:proceeding_types,
+                                                            :income_contribution,
                                                             :combined_total_outgoings_and_allowances,
                                                             :total_disposable_income, :combined_total_disposable_income,
                                                             :total_outgoings_and_allowances))
@@ -1300,7 +1307,6 @@ module V6
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
-                  income_contribution: 653.4,
                   partner_allowance: 191.41,
                 },
               )
@@ -1317,7 +1323,7 @@ module V6
                 net_housing_costs: 204.7,
                 maintenance_allowance: 589.07,
                 total_outgoings_and_allowances: 2275.59,
-                total_disposable_income: 406.555,
+                total_disposable_income: 1708.335,
                 employment_income: {
                   gross_income: 846.0,
                   benefits_in_kind: 16.6,
@@ -1371,16 +1377,26 @@ module V6
         end
 
         describe "assessment" do
-          it "has the correct keys" do
-            expect(assessment.keys).to match_array(%i[client_reference_id submission_date level_of_help applicant gross_income partner_gross_income disposable_income partner_disposable_income capital partner_capital remarks])
+          it "has keys for applicant and nested income and partner" do
+            expect(assessment.keys).to match_array(%i[client_reference_id
+                                                      submission_date
+                                                      level_of_help
+                                                      applicant
+                                                      gross_income
+                                                      partner_gross_income
+                                                      disposable_income
+                                                      partner_disposable_income
+                                                      capital
+                                                      partner_capital
+                                                      remarks])
           end
 
           describe "remarks" do
             let(:remarks) { assessment.fetch(:remarks) }
 
-            it "has other_income_payment" do
+            it "has other_income_payment remark from friends and family" do
               expect(remarks.dig(:other_income_payment, :amount_variation))
-                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1"])
+                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1", "ffi-m-3", "ffi-m-2", "ffi-m-1"])
             end
 
             it "has outgoings_housing_cost" do
@@ -1473,23 +1489,33 @@ module V6
           describe "partner_gross_income" do
             let(:partner_gross_income) { assessment.fetch(:partner_gross_income) }
 
-            it "has employment_income" do
-              expect(partner_gross_income[:employment_income].first.fetch(:payments)).to eq(
-                [
-                  { date: "2022-05-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
-                  { date: "2022-04-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
-                  { date: "2022-03-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
-                ],
-              )
+            it "has the correct keys" do
+              expect(partner_gross_income.keys).to match_array(%i[employment_income irregular_income state_benefits other_income])
             end
 
-            it "has irregular_income" do
-              expect(partner_gross_income.dig(:irregular_income, :monthly_equivalents)).to eq(
-                {
-                  student_loan: 38.065,
-                  unspecified_source: 10.92,
-                },
-              )
+            describe "employment_income" do
+              it "has the correct payments" do
+                expect(partner_gross_income[:employment_income].map { |x| x.fetch(:payments) }).to eq(
+                  [
+                    [
+                      { date: "2022-05-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
+                      { date: "2022-04-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
+                      { date: "2022-03-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, net_employment_income: 739.84 },
+                    ],
+                  ],
+                )
+              end
+            end
+
+            describe "irregular_income" do
+              it "has monthly equivalents" do
+                expect(partner_gross_income.dig(:irregular_income, :monthly_equivalents)).to eq(
+                  {
+                    student_loan: 38.065,
+                    unspecified_source: 10.92,
+                  },
+                )
+              end
             end
 
             describe "state_benefits" do
@@ -1514,24 +1540,26 @@ module V6
               end
             end
 
-            it "has other_income" do
-              expect(partner_gross_income.dig(:other_income, :monthly_equivalents)).to eq(
-                {
-                  all_sources: {
-                    friends_or_family: 250.0,
-                    maintenance_in: 1063.43,
-                    property_or_lodger: 91.87,
-                    pension: 34.12,
+            describe "other_income" do
+              it "has monthly equivalents" do
+                expect(partner_gross_income.dig(:other_income, :monthly_equivalents)).to eq(
+                  {
+                    all_sources: {
+                      friends_or_family: 505.34,
+                      maintenance_in: 2109.87,
+                      property_or_lodger: 91.87,
+                      pension: 34.12,
+                    },
+                    bank_transactions: { friends_or_family: 255.34,
+                                         maintenance_in: 1046.44,
+                                         property_or_lodger: 0.0,
+                                         pension: 0.0 },
+                    cash_transactions: {
+                      friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12
+                    },
                   },
-                  bank_transactions: { friends_or_family: 0.0,
-                                       maintenance_in: 0.0,
-                                       property_or_lodger: 0.0,
-                                       pension: 0.0 },
-                  cash_transactions: {
-                    friends_or_family: 250.0, maintenance_in: 1033.44, property_or_lodger: 91.87, pension: 34.12
-                  },
-                },
-              )
+                )
+              end
             end
           end
 

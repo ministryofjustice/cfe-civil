@@ -164,6 +164,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           description: "One or more dependants details",
                           items: { "$ref" => components[:dependant] },
                         },
+                        other_incomes: { "$ref" => components[:other_incomes] },
                       },
                     },
                     explicit_remarks: { "$ref" => components[:explicit_remarks] },

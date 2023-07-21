@@ -4,6 +4,10 @@ The date is when it was released/deployed to production - see [cfe-civil CI/CD](
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 25th July 2023
+
+LEP-84 added other incomes to partner structure
+
 ## 18th July 2023
 
 LEP-83 added cash transactions to partner structure

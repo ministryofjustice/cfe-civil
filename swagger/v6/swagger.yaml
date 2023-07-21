@@ -1758,6 +1758,8 @@ paths:
                       description: One or more dependants details
                       items:
                         "$ref": "#/components/schemas/Dependant"
+                    other_incomes:
+                      "$ref": "#/components/schemas/OtherIncomes"
                 explicit_remarks:
                   "$ref": "#/components/schemas/ExplicitRemarks"
         required: true
