@@ -1,22 +1,20 @@
 class PersonDisposableIncomeSubtotals
-  BlankDependantAllowance = Data.define(:under_16, :over_16)
-  BlankOutgoings = Data.define(:dependant_allowance, :child_care)
   class << self
     def blank
-      result = BlankDependantAllowance.new(under_16: 0, over_16: 0)
-      new(BlankOutgoings.new(dependant_allowance: result,
-                             child_care: Collators::ChildcareCollator::Result.new(bank: 0, cash: 0)),
+      new(Collators::OutgoingsCollator::Result.blank,
           0,
-          Collators::RegularOutgoingsCollator::Result.new(child_care_regular: 0))
+          Collators::RegularOutgoingsCollator::Result.blank,
+          Collators::DisposableIncomeCollator::Result.blank)
     end
   end
 
   attr_reader :partner_allowance
 
-  def initialize(outgoings, partner_allowance, regular)
+  def initialize(outgoings, partner_allowance, regular, disposable)
     @outgoings = outgoings
     @partner_allowance = partner_allowance
     @regular = regular
+    @disposable = disposable
   end
 
   def dependant_allowance_over_16
@@ -41,5 +39,17 @@ class PersonDisposableIncomeSubtotals
 
   def child_care_all_sources
     @outgoings.child_care.bank + @outgoings.child_care.cash + @regular.child_care_regular
+  end
+
+  def rent_or_mortgage_bank
+    @outgoings.rent_or_mortgage_bank
+  end
+
+  def rent_or_mortgage_cash
+    @disposable.rent_or_mortgage_cash
+  end
+
+  def rent_or_mortgage_all_sources
+    rent_or_mortgage_bank + rent_or_mortgage_cash + @regular.rent_or_mortgage_regular
   end
 end
