@@ -17,14 +17,22 @@ class SwaggerDocs
     self_employment: "#/components/schemas/SelfEmployment",
     explicit_remarks: "#/components/schemas/ExplicitRemarks",
     capital_result: "#/components/schemas/CapitalResult",
+    applicant_capital_result: "#/components/schemas/ApplicantCapitalResult",
     property_result: "#/components/schemas/PropertyResult",
     employment_payment_list: "#/components/schemas/EmploymentPaymentList",
     disposable_income: "#/components/schemas/DisposableIncome",
+    applicant_disposable_income: "#/components/schemas/ApplicantDisposableIncome",
     property: "#/components/schemas/Property",
     proceeding_type_result: "#/components/schemas/ProceedingTypeResult",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
     currency: "#/components/schemas/currency",
     positive_currency: "#/components/schemas/positive_currency",
+    applicant_result: "#/components/schemas/ApplicantResult",
+    remarks: "#/components/schemas/Remarks",
+    outgoing_result: "#/components/schemas/OutgoingResult",
+    state_benefits_result: "#/components/schemas/StateBenefitsResult",
+    other_income_result: "#/components/schemas/OtherIncomeResult",
+    disposable_income_result: "#/components/schemas/DisposableIncomeResult",
   }.freeze
 
   attr_reader :version
@@ -109,6 +117,7 @@ class SwaggerDocs
           ProceedingTypeResult: {
             type: :object,
             required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+            additionalProperties: false,
             properties: {
               ccms_code: {
                 type: :string,
@@ -922,233 +931,438 @@ class SwaggerDocs
               },
             },
           },
+          TotalLiquidCapital: {
+            type: :number,
+            description: "Total value of all liquid assets in submission",
+            format: :decimal,
+          },
+          TotalNonLiquidCapital: {
+            description: "Total value of all non-liquid assets in submission",
+            type: :number,
+            format: :decimal,
+            minimum: 0.0,
+          },
+          TotalVehicleCapital: {
+            description: "Total value of all client vehicle assets in submission",
+            type: :number,
+            format: :decimal,
+          },
+          TotalPropertyCapital: {
+            description: "Total value of all client property assets in submission",
+            type: :number,
+            format: :decimal,
+          },
+          TotalCapital: {
+            description: "Total value of all capital assets in submission",
+            type: :number,
+            format: :decimal,
+          },
+          TotalCapitalWithSmod: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Total of all capital but with subject matter of dispute deduction applied where applicable",
+          },
+          TotalMortgageAllowance: {
+            description: "Maximum mortgage allowance used in submission. Cases post-April 2020 will all be set to 999_999_999",
+            type: :number,
+            format: :decimal,
+          },
+          SmodDisregard: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Total amount of subject matter of dispute disregard applied on this submission",
+          },
+          AssessedCapital: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Amount of assessed client capital. Zero if deductions exceed total capital.",
+          },
+          DisputedNonPropertyDisregard: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Amount of subject matter of dispute deduction applied for assets other than property",
+          },
+          PensionerDisregardApplied: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Amount of pensioner capital disregard applied to this assessment",
+          },
           CapitalResult: {
             type: :object,
+            additionalProperties: false,
             properties: {
-              total_liquid: {
-                type: :number,
-                description: "Total value of all liquid assets in submission",
-                format: :decimal,
-              },
-              total_non_liquid: {
-                description: "Total value of all non-liquid assets in submission",
-                type: :number,
-                format: :decimal,
-                minimum: 0.0,
-              },
-              total_vehicle: {
-                description: "Total value of all client vehicle assets in submission",
-                type: :number,
-                format: :decimal,
-              },
-              total_property: {
-                description: "Total value of all client property assets in submission",
-                type: :number,
-                format: :decimal,
-              },
-              total_capital: {
-                description: "Total value of all capital assets in submission",
-                type: :number,
-                format: :decimal,
-              },
-              total_mortgage_allowance: {
-                description: "Maximum mortgage allowance used in submission. Cases post-April 2020 will all be set to 999_999_999",
-                type: :number,
-                format: :decimal,
-              },
-              subject_matter_of_dispute_disregard: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Total amount of subject matter of dispute disregard applied on this submission",
-              },
-              assessed_capital: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Amount of assessed client capital. Zero if deductions exceed total capital.",
-              },
-              total_capital_with_smod: {
-                type: :number,
-              },
-              disputed_non_property_disregard: {
-                type: :number,
-              },
-              combined_disputed_capital: {
-                type: :number,
-              },
-              combined_non_disputed_capital: {
-                type: :number,
-              },
-              capital_contribution: {
-                type: :number,
-                format: :decimal,
+              total_liquid: { "$ref": "#/components/schemas/TotalLiquidCapital" },
+              total_non_liquid: { "$ref": "#/components/schemas/TotalNonLiquidCapital" },
+              total_vehicle: { "$ref": "#/components/schemas/TotalVehicleCapital" },
+              total_property: { "$ref": "#/components/schemas/TotalPropertyCapital" },
+              total_capital: { "$ref": "#/components/schemas/TotalCapital" },
+              total_capital_with_smod: { "$ref": "#/components/schemas/TotalCapitalWithSmod" },
+              total_mortgage_allowance: { "$ref": "#/components/schemas/TotalMortgageAllowance" },
+              subject_matter_of_dispute_disregard: { "$ref": "#/components/schemas/SmodDisregard" },
+              assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
+              disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
+              pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
+            },
+          },
+          ApplicantCapitalResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              total_liquid: { "$ref": "#/components/schemas/TotalLiquidCapital" },
+              total_non_liquid: { "$ref": "#/components/schemas/TotalNonLiquidCapital" },
+              total_vehicle: { "$ref": "#/components/schemas/TotalVehicleCapital" },
+              total_property: { "$ref": "#/components/schemas/TotalPropertyCapital" },
+              total_capital: { "$ref": "#/components/schemas/TotalCapital" },
+              total_capital_with_smod: { "$ref": "#/components/schemas/TotalCapitalWithSmod" },
+              total_mortgage_allowance: { "$ref": "#/components/schemas/TotalMortgageAllowance" },
+              subject_matter_of_dispute_disregard: { "$ref": "#/components/schemas/SmodDisregard" },
+              assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
+              disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
+              pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
+
+              proceeding_types: {
+                type: :array,
+                minItems: 1,
+                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
               },
               pensioner_capital_disregard: {
                 type: :number,
                 format: :decimal,
+                description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
+                minimum: 0.0,
               },
-              pensioner_disregard_applied: {
+              capital_contribution: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Duplicate of results_summary capital_contribution field",
+              },
+              combined_disputed_capital: {
+                description: "Combined applicant and partner disputed capital",
+                type: :number,
+                format: :decimal,
+              },
+              combined_non_disputed_capital: {
+                description: "Combined applicant and partner non-disputed capital",
                 type: :number,
                 format: :decimal,
               },
               combined_assessed_capital: {
                 type: :number,
                 format: :decimal,
+                minimum: 0,
+                description: "Amount of assessed capital for both client and partner",
+              },
+            },
+          },
+          EmploymentIncomeResult: {
+            type: :object,
+            description: "Calculated monthly employment income",
+            additionalProperties: false,
+            properties: {
+              gross_income: { type: :number },
+              benefits_in_kind: { type: :number },
+              tax: {
+                type: :number,
+                format: :decimal,
+                maximum: 0,
+                description: "(negative) monthly tax paid",
+              },
+              national_insurance: {
+                type: :number,
+                format: :decimal,
+                maximum: 0,
+                description: "(negative) monthly NI paid",
+              },
+              fixed_employment_deduction: {
+                type: :number,
+                format: :decimal,
+                maximum: 0,
+                description: "(negative) fixed employment deduction (if applicable) otherwise zero",
+              },
+              net_employment_income: {
+                type: :number,
+                description: "Calculated monthly net income (gross + benefits_in_kind - tax - ni - deductions)",
+              },
+            },
+          },
+          GrossHousingCosts: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Calculated monthly rent/mortgage costs",
+          },
+          HousingBenefit: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Calculated monthly housing benefit received",
+          },
+          NetHousingCosts: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Calculated monthly net housing costs (gross - housing_benefit)",
+          },
+          MaintenanceAllowance: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Total of maintenance outgoings costs",
+          },
+          DependantAllowanceUnder16: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Allowance for dependants under 16",
+          },
+          DependantAllowanceOver16: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Allowance for dependants 16 and over",
+          },
+          DependantAllowance: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Sum of dependant_allowance_under_16 and dependant_allowance_over_16",
+          },
+          TotalOutgoingsAndAllowances: {
+            type: :number,
+            format: :decimal,
+            description: "Sum of outgoings and allowances",
+          },
+          TotalDisposableIncome: {
+            type: :number,
+            format: :decimal,
+            description: "Calculated monthly disposable income (gross - outgoings - allowances)",
+          },
+          IncomeContribution: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Duplicate of result_summary.income_contribution",
+          },
+          DisposableIncome: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+              gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+              housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+              net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+              maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+              dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+              dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+              dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+              total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+              total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+
+              proceeding_types: {
+                type: :array,
+                minItems: 1,
+                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+              },
+            },
+          },
+          ApplicantDisposableIncome: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+              gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+              housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+              net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+              maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+              dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+              dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+              dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+              total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+              total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+              income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
+
+              partner_allowance: {
+                type: :number,
+                format: :decimal,
+                minimum: 0,
+                description: "Fixed allowance given if applicant has a partner for means assessment purposes",
+              },
+              combined_total_outgoings_and_allowances: {
+                type: :number,
+                format: :decimal,
+                description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
+              },
+              combined_total_disposable_income: {
+                type: :number,
+                format: :decimal,
+                description: "total_disposable_income + partner total_disposable_income",
               },
               proceeding_types: {
                 type: :array,
-                items: {
-                  type: :object,
-                  properties: {
-                    ccms_code: {
-                      type: :string,
-                    },
-                    client_involvement_type: {
-                      type: :string,
-                    },
-                    upper_threshold: {
-                      type: :number,
-                      format: :decimal,
-                    },
-                    lower_threshold: {
-                      type: :number,
-                      format: :decimal,
-                    },
-                    result: {
-                      type: :string,
+                minItems: 1,
+                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
+              },
+            },
+          },
+          ApplicantResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              date_of_birth: {
+                type: :string,
+                format: :date,
+              },
+              involvement_type: { type: :string },
+              employed: { type: :boolean },
+              has_partner_opponent: { type: :boolean },
+              receives_qualifying_benefit: { type: :boolean },
+            },
+          },
+          ClientIdArray: {
+            type: :array,
+            description: "Array of client_ids affected by remark",
+            items: { type: :string },
+          },
+          AmountVariationRemark: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              amount_variation: { "$ref": "#/components/schemas/ClientIdArray" },
+              unknown_frequency: { "$ref": "#/components/schemas/ClientIdArray" },
+              multi_benefit: { "$ref": "#/components/schemas/ClientIdArray" },
+            },
+          },
+          Remarks: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              employment: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  multiple_employments: { "$ref": "#/components/schemas/ClientIdArray" },
+                },
+              },
+              employment_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              state_benefit_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              other_income_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              outgoings_housing_cost: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              outgoings_legal_aid: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              outgoings_maintenance: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              outgoings_childcare: { "$ref": "#/components/schemas/AmountVariationRemark" },
+            },
+          },
+          OutgoingResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              friends_or_family: { type: :number },
+              maintenance_in: { type: :number },
+              property_or_lodger: { type: :number },
+              pension: { type: :number },
+            },
+          },
+          StateBenefitsResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              monthly_equivalents: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[all_sources cash_transactions bank_transactions],
+                properties: {
+                  all_sources: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  cash_transactions: {
+                    type: :number,
+                    format: :decimal,
+                  },
+                  bank_transactions: {
+                    type: :array,
+                    items: {
+                      type: :object,
+                      additionalProperties: false,
+                      properties: {
+                        name: { type: :string },
+                        monthly_value: { type: :number },
+                        excluded_from_income_assessment: { type: :boolean },
+                      },
                     },
                   },
                 },
               },
             },
           },
-          DisposableIncome: {
+          OtherIncomeResult: {
             type: :object,
+            additionalProperties: false,
             properties: {
-              employment_income: {
+              monthly_equivalents: {
                 type: :object,
-                description: "Calculated monthly employment income",
                 additionalProperties: false,
                 properties: {
-                  gross_income: { type: :number },
-                  benefits_in_kind: { type: :number },
-                  tax: {
-                    type: :number,
-                    format: :decimal,
-                    maximum: 0,
-                    description: "(negative) monthly tax paid",
+                  all_sources: { "$ref": "#/components/schemas/OutgoingResult" },
+                  bank_transactions: { "$ref": "#/components/schemas/OutgoingResult" },
+                  cash_transactions: { "$ref": "#/components/schemas/OutgoingResult" },
+                },
+              },
+            },
+          },
+          DisposableIncomeResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              monthly_equivalents: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  all_sources: {
+                    type: :object,
+                    additionalProperties: false,
+                    properties: {
+                      child_care: { type: :number },
+                      rent_or_mortgage: { type: :number },
+                      maintenance_out: { type: :number },
+                      legal_aid: { type: :number },
+                    },
                   },
-                  national_insurance: {
-                    type: :number,
-                    format: :decimal,
-                    maximum: 0,
-                    description: "(negative) monthly NI paid",
+                  bank_transactions: {
+                    type: :object,
+                    additionalProperties: false,
+                    properties: {
+                      child_care: { type: :number },
+                      rent_or_mortgage: { type: :number },
+                      maintenance_out: { type: :number },
+                      legal_aid: { type: :number },
+                    },
                   },
-                  fixed_employment_deduction: {
-                    type: :number,
-                    format: :decimal,
-                    maximum: 0,
-                    description: "(negative) fixed employment deduction (if applicable) otherwise zero",
-                  },
-                  net_employment_income: {
-                    type: :number,
-                    description: "Calculated monthly net income (gross + benefits_in_kind - tax - ni - deductions)",
+                  cash_transactions: {
+                    type: :object,
+                    additionalProperties: false,
+                    properties: {
+                      child_care: { type: :number },
+                      rent_or_mortgage: { type: :number },
+                      maintenance_out: { type: :number },
+                      legal_aid: { type: :number },
+                    },
                   },
                 },
               },
-              gross_housing_costs: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Calculated monthly rent/mortgage costs",
-              },
-              housing_benefit: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Calculated monthly housing benefit received",
-              },
-              net_housing_costs: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Calculated monthly net housing costs (gross - housing_benefit)",
-              },
-              maintenance_allowance: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Total of maintenance outgoings costs",
-              },
-              dependant_allowance_under_16: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Allowance for dependants under 16",
-              },
-              dependant_allowance_over_16: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Allowance for dependants 16 and over",
-              },
-              dependant_allowance: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Sum of dependant_allowance_under_16 and dependant_allowance_over_16",
-              },
-              total_outgoings_and_allowances: {
-                type: :number,
-                format: :decimal,
-                description: "Sum of outgoings and allowances",
-              },
-              total_disposable_income: {
-                type: :number,
-                format: :decimal,
-                description: "Calculated monthly disposable income (gross - outgoings - allowances)",
-              },
-              income_contribution: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Duplicate of result_summary.income_contribution",
-              },
-              combined_total_disposable_income: {
-                type: :number,
-                format: :decimal,
-              },
-              combined_total_outgoings_and_allowances: {
-                type: :number,
-                format: :decimal,
-              },
-              partner_allowance: {
-                type: :number,
-              },
-              proceeding_types: {
-                type: :array,
-                items: {
-                  type: :object,
-                  properties: {
-                    ccms_code: {
-                      type: :string,
-                    },
-                    client_involvement_type: {
-                      type: :string,
-                    },
-                    upper_threshold: {
-                      type: :number,
-                      format: :decimal,
-                    },
-                    lower_threshold: {
-                      type: :number,
-                      format: :decimal,
-                    },
-                    result: {
-                      type: :string,
-                    },
-                  },
+              childcare_allowance: { type: :number },
+              deductions: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  dependants_allowance: { type: :number },
+                  disregarded_state_benefits: { type: :number },
                 },
               },
             },

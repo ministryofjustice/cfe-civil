@@ -2,6 +2,8 @@ require "swagger_helper"
 
 RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_doc: "v6/swagger.yaml" do
   path "/v6/assessments" do
+    let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
+
     post("create") do
       tags "Perform assessment with single call"
       consumes "application/json"
@@ -110,7 +112,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           },
                         },
                         cash_transactions: { "$ref" => components[:cash_transactions] },
-                        outgoings: { type: :array },
+                        outgoings: { "$ref" => components[:outgoings_list] },
                         irregular_incomes: { "$ref" => components[:irregular_income_payments] },
                         employments: { "$ref" => components[:employments] },
                         employment_details: {
@@ -159,14 +161,17 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
       response(200, "successful") do
         schema type: :object,
                required: %i[timestamp result_summary assessment version success],
+               additionalProperties: false,
                properties: {
                  result_summary: {
                    type: :object,
                    required: %i[overall_result gross_income disposable_income capital],
+                   additionalProperties: false,
                    properties: {
                      overall_result: {
                        type: :object,
                        required: %i[result capital_contribution income_contribution proceeding_types],
+                       additionalProperties: false,
                        properties: {
                          result: {
                            type: :string,
@@ -195,6 +200,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        type: :object,
                        description: "gross_income calculation for partner, with some combined totals where appropriate",
                        required: %i[total_gross_income combined_total_gross_income proceeding_types],
+                       additionalProperties: false,
                        properties: {
                          total_gross_income: {
                            type: :number,
@@ -216,6 +222,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      partner_gross_income: {
                        type: :object,
                        required: %i[total_gross_income],
+                       additionalProperties: false,
                        properties: {
                          total_gross_income: {
                            type: :number,
@@ -224,103 +231,15 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
-                     disposable_income: {
-                       allOf: [
-                         { "$ref": components[:disposable_income] },
-                         {
-                           type: :object,
-                           properties: {
-                             partner_allowance: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Fixed allowance given if applicant has a partner for means assessment purposes",
-                             },
-                             combined_total_outgoings_and_allowances: {
-                               type: :number,
-                               format: :decimal,
-                               description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
-                             },
-                             combined_total_disposable_income: {
-                               type: :number,
-                               format: :decimal,
-                               description: "total_disposable_income + partner total_disposable_income",
-                             },
-                             proceeding_types: {
-                               type: :array,
-                               minItems: 1,
-                               items: { "$ref": components[:proceeding_type_result] },
-                             },
-                           },
-                         },
-                       ],
-                     },
+                     disposable_income: { "$ref": components[:applicant_disposable_income] },
                      partner_disposable_income: { "$ref": components[:disposable_income] },
-                     capital: {
-                       allOf: [
-                         { "$ref": components[:capital_result] },
-                         {
-                           type: :object,
-                           properties: {
-                             proceeding_types: {
-                               type: :array,
-                               items: { "$ref": components[:proceeding_type_result] },
-                             },
-                             pensioner_capital_disregard: {
-                               type: :number,
-                               format: :decimal,
-                               description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
-                               minimum: 0.0,
-                             },
-                             pensioner_disregard_applied: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of pensioner capital disregard applied to this assessment",
-                             },
-                             total_capital_with_smod: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Total of all capital but with subject matter of dispute deduction applied where applicable",
-                             },
-                             disputed_non_property_disregard: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of subject matter of dispute deduction applied for assets other than property",
-                             },
-                             capital_contribution: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Duplicate of results_summary capital_contribution field",
-                             },
-                             combined_disputed_capital: {
-                               description: "Combined applicant and partner disputed capital",
-                               type: :number,
-                               format: :decimal,
-                             },
-                             combined_non_disputed_capital: {
-                               description: "Combined applicant and partner non-disputed capital",
-                               type: :number,
-                               format: :decimal,
-                             },
-                             combined_assessed_capital: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of assessed capital for both client and partner",
-                             },
-                           },
-                         },
-                       ],
-                     },
+                     capital: { "$ref": components[:applicant_capital_result] },
                      partner_capital: { "$ref": components[:capital_result] },
                    },
                  },
                  assessment: {
                    type: :object,
+                   additionalProperties: false,
                    properties: {
                      id: { type: :string },
                      client_reference_id: { type: :string, nullable: true, example: "ref-11-22" },
@@ -331,7 +250,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        example: Assessment.levels_of_help.keys.first,
                        description: "The level of representation required by the client",
                      },
-                     applicant: { type: :object },
+                     applicant: { "$ref": components[:applicant_result] },
                      gross_income: {
                        type: :object,
                        additionalProperties: false,
@@ -365,30 +284,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              },
                            },
                          },
-                         state_benefits: {
-                           type: :object,
-                           additionalProperties: false,
-                           properties: {
-                             monthly_equivalents: {
-                               type: :object,
-                               additionalProperties: false,
-                               properties: {
-                                 all_sources: {
-                                   type: :number,
-                                   format: :decimal,
-                                 },
-                                 cash_transactions: {
-                                   type: :number,
-                                   format: :decimal,
-                                 },
-                                 bank_transactions: {
-                                   type: :array,
-                                 },
-                               },
-                             },
-                           },
-                         },
-                         other_income: { type: :object },
+                         state_benefits: { "$ref": components[:state_benefits_result] },
+                         other_income: { "$ref": components[:other_income_result] },
                          self_employments: {
                            type: :array,
                            items: {
@@ -441,7 +338,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
-                     disposable_income: { type: :object },
+                     disposable_income: { "$ref": components[:disposable_income_result] },
                      capital: {
                        type: :object,
                        additionalProperties: false,
@@ -482,6 +379,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
+                     remarks: { "$ref" => components[:remarks] },
                    },
                  },
                  version: {
@@ -502,10 +400,115 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
           {
             assessment: { submission_date: "2022-06-06" },
             applicant: { date_of_birth: "2001-02-02", has_partner_opponent: false, receives_qualifying_benefit: false, employed: false },
+            dependants: [
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11"),
+            ],
+            employment_income: [
+              {
+                name: "Job 1",
+                client_id: "employment-id-1",
+                receiving_only_statutory_sick_or_maternity_pay: true,
+                payments: [
+                  {
+                    client_id: "employment-1-payment-1",
+                    date: "2021-10-30",
+                    gross: 1046.00,
+                    benefits_in_kind: 16.60,
+                    tax: -104.10,
+                    national_insurance: -18.66,
+                  },
+                  {
+                    client_id: "employment-1-payment-2",
+                    date: "2021-10-30",
+                    gross: 1046.00,
+                    benefits_in_kind: 16.60,
+                    tax: -104.10,
+                    national_insurance: -18.66,
+                  },
+                ],
+              },
+              {
+                name: "Job 2",
+                client_id: "employment-id-2",
+                payments: [
+                  {
+                    client_id: "employment-2-payment-1",
+                    date: "2021-10-30",
+                    gross: 1046.00,
+                    benefits_in_kind: 16.60,
+                    tax: -104.10,
+                    national_insurance: -18.66,
+                  },
+                  {
+                    client_id: "employment-2-payment-2",
+                    date: "2021-10-30",
+                    gross: 1046.00,
+                    benefits_in_kind: 16.60,
+                    tax: -104.10,
+                    national_insurance: -18.66,
+                  },
+                  {
+                    client_id: "employment-2-payment-3",
+                    date: "2021-10-30",
+                    gross: 1046.00,
+                    benefits_in_kind: 16.60,
+                    tax: -104.10,
+                    national_insurance: -18.66,
+                  },
+                ],
+              },
+            ],
             proceeding_types: [{ ccms_code: "SE013", client_involvement_type: "A" }],
+            state_benefits: [
+              {
+                name: state_benefit_type1.label,
+                payments: [
+                  { date: "2022-11-01", amount: 33.44, client_id: SecureRandom.uuid, flags: { multi_benefit: true } },
+                  { date: "2022-10-01", amount: 55.44, client_id: SecureRandom.uuid, flags: {} },
+                  { date: "2022-09-01", amount: 77.44, client_id: SecureRandom.uuid, flags: {} },
+                ],
+              },
+            ],
+            other_incomes: [
+              {
+                source: "friends_or_family",
+                payments: [
+                  { date: "2022-11-01", amount: 25.00, client_id: SecureRandom.uuid },
+                  { date: "2022-10-01", amount: 34.02, client_id: SecureRandom.uuid },
+                  { date: "2022-09-01", amount: 76.00, client_id: SecureRandom.uuid },
+                ],
+              },
+            ],
             outgoings: [
-              { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
-              { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },
+              {
+                name: "child_care",
+                payments: [
+                  { payment_date: "2022-10-15", amount: 29.12, client_id: SecureRandom.uuid },
+                  { payment_date: "2022-10-15", amount: 59.12, client_id: SecureRandom.uuid },
+                ],
+              },
+              {
+                name: "legal_aid",
+                payments: [
+                  { payment_date: "2022-10-15", amount: 19.87, client_id: SecureRandom.uuid },
+                  { payment_date: "2022-11-15", amount: 89.87, client_id: SecureRandom.uuid },
+                ],
+              },
+              {
+                name: "maintenance_out",
+                payments: [
+                  { amount: 33.07, client_id: SecureRandom.uuid, payment_date: "2022-10-15" },
+                  { amount: 53.07, client_id: SecureRandom.uuid, payment_date: "2022-11-15" },
+                  { amount: 73.07, client_id: SecureRandom.uuid, payment_date: "2022-12-15" },
+                ],
+              },
+              {
+                name: "rent_or_mortgage",
+                payments: [
+                  { payment_date: "2022-11-15", amount: 51.49, housing_cost_type: "rent", client_id: SecureRandom.uuid },
+                  { payment_date: "2022-10-15", amount: 76.49, housing_cost_type: "rent", client_id: SecureRandom.uuid },
+                ],
+              },
             ],
             cash_transactions: {
               outgoings: [
