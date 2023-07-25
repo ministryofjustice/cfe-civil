@@ -108,6 +108,7 @@ components:
           - eligible
           - ineligible
           - contribution_required
+      additionalProperties: false
     PropertyResult:
       type: object
       additionalProperties: false
@@ -568,6 +569,8 @@ components:
                     date:
                       type: string
                       format: date
+                  additionalProperties: false
+      additionalProperties: false
     Dependant:
       type: object
       required:
@@ -595,6 +598,7 @@ components:
         assets_value:
           "$ref": "#/components/schemas/currency"
           description: Dependant's total assets value
+      additionalProperties: false
     IrregularIncomePayments:
       type: array
       minItems: 0
@@ -625,6 +629,7 @@ components:
             example: monthly
           amount:
             "$ref": "#/components/schemas/currency"
+        additionalProperties: false
     OtherIncomes:
       type: array
       description: One or more other regular income payments categorized by source
@@ -672,6 +677,8 @@ components:
                   format: uuid
                   description: Client identifier for payment received
                   example: '05459c0f-a620-4743-9f0c-b3daa93e'
+              additionalProperties: false
+        additionalProperties: false
     ProceedingTypes:
       type: array
       minItems: 1
@@ -743,6 +750,7 @@ components:
             example: A
             description: A CCMS client_involvement_type. This is not used in the calculation,
               so can be set to any valid value.
+        additionalProperties: false
     Property:
       type: object
       required:
@@ -770,6 +778,7 @@ components:
         subject_matter_of_dispute:
           type: boolean
           description: Property is the subject of a dispute. Defaults to false
+      additionalProperties: false
     RegularTransaction:
       type: object
       description: regular transaction detail
@@ -955,6 +964,7 @@ components:
                 properties:
                   multi_benefit:
                     type: boolean
+                additionalProperties: false
     Vehicle:
       type: object
       required:
@@ -977,6 +987,7 @@ components:
         subject_matter_of_dispute:
           type: boolean
           description: Whether this vehicle is the subject of a dispute
+      additionalProperties: false
     ExplicitRemarks:
       type: array
       description: One or more remarks by category
@@ -999,6 +1010,7 @@ components:
             description: One or more remarks for that category
             items:
               type: string
+        additionalProperties: false
     CapitalResult:
       type: object
       properties:
@@ -1077,6 +1089,8 @@ components:
                 format: decimal
               result:
                 type: string
+            additionalProperties: false
+      additionalProperties: false
     DisposableIncome:
       type: object
       properties:
@@ -1182,6 +1196,8 @@ components:
                 format: decimal
               result:
                 type: string
+            additionalProperties: false
+      additionalProperties: false
 paths:
   "/v6/assessments":
     post:
@@ -1545,6 +1561,7 @@ paths:
               - assessment
               - applicant
               - proceeding_types
+              additionalProperties: false
               properties:
                 assessment:
                   "$ref": "#/components/schemas/Assessment"
@@ -1585,6 +1602,7 @@ paths:
                   type: object
                   required: []
                   description: A main home and additional properties
+                  additionalProperties: false
                   properties:
                     main_home:
                       "$ref": "#/components/schemas/Property"
@@ -1624,6 +1642,7 @@ paths:
                   type: object
                   required:
                   - partner
+                  additionalProperties: false
                   description: Full information about an applicant's partner
                   example:
                     partner:
@@ -1683,6 +1702,7 @@ paths:
                       description: The partner of the applicant
                       required:
                       - date_of_birth
+                      additionalProperties: false
                       properties:
                         date_of_birth:
                           type: string
@@ -1701,25 +1721,7 @@ paths:
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
-                      type: array
-                      required:
-                      - name
-                      - client_id
-                      - payments
-                      description: One or more employment income details
-                      items:
-                        type: object
-                        description: Employment income detail
-                        properties:
-                          name:
-                            type: string
-                            description: Identifying name for this employment - e.g.
-                              employer's name
-                          client_id:
-                            type: string
-                            description: Client supplied id to identify the employment
-                          payments:
-                            "$ref": "#/components/schemas/EmploymentPaymentList"
+                      "$ref": "#/components/schemas/Employments"
                     employment_details:
                       type: array
                       description: One or more employment details for partner

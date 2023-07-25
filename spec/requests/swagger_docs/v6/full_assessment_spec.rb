@@ -19,6 +19,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                 schema: {
                   type: :object,
                   required: %i[assessment applicant proceeding_types],
+                  additionalProperties: false,
                   properties: {
                     assessment: { "$ref" => components[:assessment] },
                     applicant: { "$ref" => components[:applicant] },
@@ -47,6 +48,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       type: :object,
                       required: %i[],
                       description: "A main home and additional properties",
+                      additionalProperties: false,
                       properties: {
                         main_home: { "$ref" => components[:property] },
                         additional_properties: {
@@ -84,6 +86,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     partner: {
                       type: :object,
                       required: %i[partner],
+                      additionalProperties: false,
                       description: "Full information about an applicant's partner",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
                       properties: {
@@ -91,6 +94,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           type: :object,
                           description: "The partner of the applicant",
                           required: %i[date_of_birth],
+                          additionalProperties: false,
                           properties: {
                             date_of_birth: {
                               type: :string,
@@ -108,26 +112,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         cash_transactions: { "$ref" => components[:cash_transactions] },
                         outgoings: { type: :array },
                         irregular_incomes: { "$ref" => components[:irregular_income_payments] },
-                        employments: {
-                          type: :array,
-                          required: %i[name client_id payments],
-                          description: "One or more employment income details",
-                          items: {
-                            type: :object,
-                            description: "Employment income detail",
-                            properties: {
-                              name: {
-                                type: :string,
-                                description: "Identifying name for this employment - e.g. employer's name",
-                              },
-                              client_id: {
-                                type: :string,
-                                description: "Client supplied id to identify the employment",
-                              },
-                              payments: { "$ref" => components[:employment_payment_list] },
-                            },
-                          },
-                        },
+                        employments: { "$ref" => components[:employments] },
                         employment_details: {
                           type: :array,
                           description: "One or more employment details for partner",
@@ -530,9 +515,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" }] },
                 { category: "rent_or_mortgage",
                   payments: [
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01", housing_cost_type: "rent" },
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01", housing_cost_type: "rent" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01" },
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" },
                   ] },
               ],
               income: [],

@@ -13,10 +13,11 @@ module V6
       let(:month1) { current_date.beginning_of_month - 3.months }
       let(:month2) { current_date.beginning_of_month - 2.months }
       let(:month3) { current_date.beginning_of_month - 1.month }
+      let(:dob) { "2001-02-02" }
       let(:default_params) do
         {
           assessment: submission_date_params,
-          applicant: { date_of_birth: "2001-02-02",
+          applicant: { date_of_birth: dob,
                        has_partner_opponent: false,
                        receives_qualifying_benefit: false,
                        employed: },
@@ -67,12 +68,13 @@ module V6
           ],
         }
       end
+      let(:employment_payment_dates) { %w[2022-03-30 2022-04-30 2022-05-30] }
       let(:employment_income_params) do
         [
           {
             name: "Job 1",
             client_id: SecureRandom.uuid,
-            payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
+            payments: employment_payment_dates.map do |date|
               {
                 client_id: SecureRandom.uuid,
                 gross: 846.00,
@@ -344,13 +346,9 @@ module V6
 
       context "with an applicant without partner opponent" do
         let(:params) do
-          { applicant: { date_of_birth: "2001-02-02",
+          { applicant: { date_of_birth: dob,
                          receives_qualifying_benefit: false,
                          employed: } }
-        end
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
         end
 
         it "returns false for has_partner_opponent" do
@@ -477,7 +475,7 @@ module V6
         context "with a future date of birth" do
           let(:params) do
             {
-              partner: { partner: attributes_for(:applicant),
+              partner: { partner: attributes_for(:applicant).except(:receives_qualifying_benefit, :receives_asylum_support),
                          dependants: [
                            attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
                          ] },
@@ -516,10 +514,6 @@ module V6
 
       context "with dependants" do
         let(:params) { { dependants: dependant_params } }
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
-        end
 
         it "returns a version of 6" do
           expect(parsed_response.fetch(:version)).to eq("6")
@@ -591,10 +585,6 @@ module V6
               },
             ],
           }
-        end
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
         end
 
         it "has remarks" do
@@ -714,10 +704,6 @@ module V6
           }
         end
 
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
-        end
-
         describe "capital items" do
           let(:capital_items) { assessment.fetch(:capital).fetch(:capital_items) }
 
@@ -740,10 +726,6 @@ module V6
       context "with employment income" do
         let(:employed) { true }
         let(:params) { { employment_income: employment_income_params } }
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
-        end
 
         describe "disposable_income from summary" do
           let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
@@ -812,7 +794,7 @@ module V6
             {
               name: "Job 1",
               client_id: SecureRandom.uuid,
-              payments: %w[2022-03-30 2022-04-30 2022-05-30].map do |date|
+              payments: employment_payment_dates.map do |date|
                 {
                   client_id: SecureRandom.uuid,
                   gross: -46.00,
@@ -920,10 +902,6 @@ module V6
 
       context "with employment income without payments" do
         let(:params) { { employment_income: employment_income_without_payments_params } }
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
-        end
 
         describe "employment_income" do
           let(:employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
@@ -1141,10 +1119,6 @@ module V6
               vehicles: vehicle_params,
             },
           }
-        end
-
-        it "returns http success" do
-          expect(response).to have_http_status(:success)
         end
 
         describe "redacted logs" do
@@ -1409,7 +1383,7 @@ module V6
           it "has applicant" do
             expect(assessment.fetch(:applicant)).to eq(
               {
-                date_of_birth: "2001-02-02",
+                date_of_birth: dob,
                 involvement_type: "applicant",
                 employed: false,
                 has_partner_opponent: false,
