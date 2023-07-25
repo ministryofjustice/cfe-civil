@@ -38,13 +38,17 @@ module V6
                                                             applicant:,
                                                             partner: nil)
         end
-        render json: Decorators::V6::AssessmentDecorator.new(assessment: create.assessment, calculation_output:, applicant:, partner:).as_json
+        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:).as_json
       else
         render_unprocessable(create.errors)
       end
     end
 
   private
+
+    def assessment_decorator_class
+      Decorators::V6::AssessmentDecorator
+    end
 
     def dependants(input_params, submission_date)
       dependant_params = input_params.fetch(:dependants, [])

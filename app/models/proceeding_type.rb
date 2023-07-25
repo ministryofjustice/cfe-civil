@@ -1,7 +1,9 @@
 class ProceedingType < ApplicationRecord
   belongs_to :assessment
 
-  validates :client_involvement_type, inclusion: { in: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES, message: "invalid client_involvement_type: %{value}" }
+  validates :client_involvement_type, inclusion: { in: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+                                                   message: "invalid client_involvement_type: %{value}",
+                                                   allow_nil: true }
   validate :proceeding_type_code_validations
 
   validates :ccms_code, uniqueness: { scope: :assessment_id }
