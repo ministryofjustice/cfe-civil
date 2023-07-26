@@ -34,6 +34,9 @@ module Collators
 
   private
 
+    # These 2 categories are duplicated in RegularOutgoingsCollator
+    # the goal is get rid of them when the database fields are removed and pass
+    # the data up to the next layer (as has already been done with child_child and rent_or_mortgage
     def outgoing_categories
       %i[maintenance_out legal_aid].freeze
     end
@@ -44,7 +47,6 @@ module Collators
 
       outgoing_categories.each do |category|
         monthly_cash_amount = monthly_cash_by_category(category)
-        # monthly_cash_transactions_total += monthly_cash_amount unless category == :rent_or_mortgage
         monthly_cash_transactions_total += monthly_cash_amount
 
         attrs[:"#{category}_bank"] = @disposable_income_summary.public_send("#{category}_bank")

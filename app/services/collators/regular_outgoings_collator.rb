@@ -27,6 +27,9 @@ module Collators
 
     private
 
+      # These 2 categories are duplicated in DisposableIncomeCollator
+      # the goal is get rid of them when the database fields are removed and pass
+      # the data up to the next layer (as has already been done with child_child and rent_or_mortgage
       def outgoing_categories
         %i[maintenance_out legal_aid].freeze
       end
