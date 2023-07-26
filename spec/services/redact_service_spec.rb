@@ -60,6 +60,56 @@ describe RedactService do
       end
     end
 
+    context "successful response with assessment remarks" do
+      before do
+        create(:request_log, :with_response_remarks)
+        described_class.call
+      end
+
+      it "redacts client_ids in assessment remarks" do
+        expect(request_log.response.deep_symbolize_keys[:assessment][:remarks]).to eq({
+          employment_tax: {
+            refunds: [
+              "** REDACTED **",
+            ],
+          },
+          employment_nic: {
+            refunds: [
+              "** REDACTED **",
+            ],
+          },
+          state_benefit_payment: {
+            unknown_frequency: [
+              "** REDACTED **",
+              "** REDACTED **",
+            ],
+            multi_benefit: [
+              "** REDACTED **",
+            ],
+          },
+          other_income_payment: {
+            unknown_frequency: [
+              "** REDACTED **",
+            ],
+          },
+          outgoings_housing_cost: {
+            unknown_frequency: [
+              "** REDACTED **",
+            ],
+          },
+          employment_payment: {
+            unknown_frequency: [
+              "** REDACTED **",
+              "** REDACTED **",
+            ],
+          },
+          policy_disregards: [
+            "** REDACTED **",
+          ],
+        })
+      end
+    end
+
     context "error response" do
       before do
         create(:request_log, :error)

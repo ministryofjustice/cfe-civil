@@ -25,6 +25,10 @@ class RequestLogger
         response["timestamp"] = redact_time(response["timestamp"])
       end
 
+      if response.key?("assessment") && response["assessment"].key?("remarks")
+        response["assessment"]["remarks"] = redact_remarks_client_ids(response["assessment"]["remarks"])
+      end
+
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),
@@ -32,6 +36,19 @@ class RequestLogger
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
+    end
+
+    def redact_remarks_client_ids(object)
+      object.transform_values do |value|
+        case value
+        when Hash
+          redact_remarks_client_ids(value)
+        when Array
+          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        else
+          value
+        end
+      end
     end
 
     def redact_time(timestamp)

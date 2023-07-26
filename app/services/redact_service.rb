@@ -31,6 +31,7 @@ class RedactService
 
     def redact_response_data(hash)
       hash[:timestamp] = RequestLogger.redact_time(hash[:timestamp]) if hash.key? :timestamp
+      hash[:assessment][:remarks] = RequestLogger.redact_remarks_client_ids(hash[:assessment][:remarks]) if hash.key?(:assessment) && hash[:assessment].key?(:remarks)
       hash
     end
   end
