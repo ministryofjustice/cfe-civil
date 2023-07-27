@@ -1,6 +1,11 @@
 module Collators
   class DisposableIncomeCollator
-    Attrs = Data.define(:attrs, :monthly_cash_transactions_total)
+    Attrs = Data.define(:attrs, :monthly_cash_transactions_total, :rent_or_mortgage_cash)
+    Result = Data.define(:rent_or_mortgage_cash) do
+      def self.blank
+        new(rent_or_mortgage_cash: 0)
+      end
+    end
 
     class << self
       def call(disposable_income_summary:, gross_income_summary:, partner_allowance:, gross_income_subtotals:, outgoings:)
@@ -23,12 +28,17 @@ module Collators
         total_outgoings_and_allowances: total_outgoings_and_allowances(attrs.monthly_cash_transactions_total),
         total_disposable_income: disposable_income(attrs.monthly_cash_transactions_total),
       )
+
+      Result.new(rent_or_mortgage_cash: attrs.rent_or_mortgage_cash)
     end
 
   private
 
+    # These 2 categories are duplicated in RegularOutgoingsCollator
+    # the goal is get rid of them when the database fields are removed and pass
+    # the data up to the next layer (as has already been done with child_child and rent_or_mortgage
     def outgoing_categories
-      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym) - [:child_care]
+      %i[maintenance_out legal_aid].freeze
     end
 
     def populate_attrs
@@ -37,14 +47,16 @@ module Collators
 
       outgoing_categories.each do |category|
         monthly_cash_amount = monthly_cash_by_category(category)
-        monthly_cash_transactions_total += monthly_cash_amount unless category == :rent_or_mortgage
+        monthly_cash_transactions_total += monthly_cash_amount
 
         attrs[:"#{category}_bank"] = @disposable_income_summary.public_send("#{category}_bank")
         attrs[:"#{category}_cash"] = monthly_cash_amount
         attrs[:"#{category}_all_sources"] = attrs[:"#{category}_bank"] + attrs[:"#{category}_cash"]
       end
 
-      Attrs.new(attrs:, monthly_cash_transactions_total: monthly_cash_transactions_total + @outgoings.child_care.cash)
+      Attrs.new(attrs:,
+                rent_or_mortgage_cash: monthly_cash_by_category(:rent_or_mortgage),
+                monthly_cash_transactions_total: monthly_cash_transactions_total + @outgoings.child_care.cash)
     end
 
     def monthly_cash_by_category(category)

@@ -35,7 +35,6 @@ module Collators
       create(:disposable_income_summary,
              maintenance_out_bank:,
              gross_housing_costs: gross_housing,
-             rent_or_mortgage_bank: gross_housing,
              legal_aid_bank:,
              housing_benefit:,
              net_housing_costs: net_housing,
@@ -68,7 +67,9 @@ module Collators
                              gross_income_subtotals:,
                              outgoings: OutgoingsCollator::Result.new(
                                child_care: ChildcareCollator::Result.new(bank: child_care_bank, cash: 0),
-                               dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16, over_16: dependant_allowance_over_16),
+                               dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16,
+                                                                                            over_16: dependant_allowance_over_16),
+                               rent_or_mortgage_bank: 0,
                              ))
       end
 
@@ -130,11 +131,9 @@ module Collators
           collator
           disposable_income_summary.reload
           maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
-          rent_or_mortgage_total = disposable_income_summary.rent_or_mortgage_bank + disposable_income_summary.rent_or_mortgage_cash
           legal_aid_total = disposable_income_summary.legal_aid_bank + disposable_income_summary.legal_aid_cash
 
           expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
-          expect(disposable_income_summary.rent_or_mortgage_all_sources).to eq rent_or_mortgage_total
           expect(disposable_income_summary.legal_aid_all_sources).to eq legal_aid_total
         end
       end

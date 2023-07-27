@@ -1,6 +1,12 @@
 module Collators
   class DependantsAllowanceCollator
-    Result = Data.define(:under_16, :over_16)
+    Result = Data.define(:under_16, :over_16) do
+      class << self
+        def blank
+          new(under_16: 0, over_16: 0)
+        end
+      end
+    end
 
     class << self
       def call(dependants:, submission_date:)

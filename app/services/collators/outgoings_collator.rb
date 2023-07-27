@@ -1,6 +1,12 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance, :child_care)
+    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank) do
+      def self.blank
+        new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
+            child_care: ChildcareCollator::Result.blank,
+            rent_or_mortgage_bank: 0)
+      end
+    end
 
     class << self
       def call(submission_date:, person:, gross_income_summary:, disposable_income_summary:, eligible_for_childcare:, allow_negative_net:)
@@ -22,7 +28,7 @@ module Collators
                                                              allow_negative_net:)
         disposable_income_summary.update! housing_benefit: housing_costs.housing_benefit,
                                           gross_housing_costs: housing_costs.gross_housing_costs,
-                                          rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
+                                          # rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
                                           net_housing_costs: housing_costs.net_housing_costs
 
         legal_aid_bank = Collators::LegalAidCollator.call(disposable_income_summary.legal_aid_outgoings)
@@ -30,7 +36,8 @@ module Collators
         disposable_income_summary.update!(legal_aid_bank:)
 
         Result.new(dependant_allowance:,
-                   child_care:)
+                   child_care:,
+                   rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank)
       end
     end
   end
