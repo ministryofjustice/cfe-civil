@@ -1835,15 +1835,25 @@ module V6
                   ],
                 },
               ],
+              explicit_remarks: [
+                {
+                  category: "policy_disregards",
+                  details: [
+                    "Grenfell tower fund",
+                    "Some other fund",
+                  ],
+                },
+              ],
+
             }
           end
 
           it "returns assessment.remarks client_ids in response" do
-            expect(parsed_response[:assessment][:remarks]).to eq(employment_payment: { unknown_frequency: %w[client_id_1 client_id_2] })
+            expect(parsed_response[:assessment][:remarks]).to eq(employment_payment: { unknown_frequency: %w[client_id_1 client_id_2] }, policy_disregards: ["Grenfell tower fund", "Some other fund"])
           end
 
           it "redacts assessment.remarks client_ids in RequestLog" do
-            expect(log_record.response["assessment"]["remarks"]).to eq({ "employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] } })
+            expect(log_record.response["assessment"]["remarks"]).to eq("employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] }, "policy_disregards" => ["** REDACTED **", "** REDACTED **"])
           end
         end
       end
