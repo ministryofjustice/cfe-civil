@@ -106,6 +106,7 @@ describe RedactService do
           policy_disregards: [
             "** REDACTED **",
           ],
+          some_attribute: "string",
         })
       end
     end

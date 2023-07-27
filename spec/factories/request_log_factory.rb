@@ -61,6 +61,7 @@ FactoryBot.define do
               policy_disregards: %w[
                 string
               ],
+              some_attribute: "string",
             },
           },
         }

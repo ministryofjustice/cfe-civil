@@ -1806,6 +1806,47 @@ module V6
           end
         end
       end
+
+      context "redact assessment.remarks in response " do
+        context "with successful submission" do
+          let(:params) do
+            {
+              employment_income: [
+                {
+                  name: "Job 1",
+                  client_id: "xxx",
+                  payments: [
+                    {
+                      client_id: "client_id_1",
+                      date: "2023-01-31",
+                      gross: 2024.0,
+                      benefits_in_kind: 0.0,
+                      tax: -194.2,
+                      national_insurance: -117.12,
+                    },
+                    {
+                      client_id: "client_id_2",
+                      date: "2022-12-31",
+                      gross: 1936.0,
+                      benefits_in_kind: 0.0,
+                      tax: -176.6,
+                      national_insurance: -106.56,
+                    },
+                  ],
+                },
+              ],
+            }
+          end
+
+          it "returns assessment.remarks client_ids in response" do
+            expect(parsed_response[:assessment][:remarks]).to eq(employment_payment: { unknown_frequency: %w[client_id_1 client_id_2] })
+          end
+
+          it "redacts assessment.remarks client_ids in RequestLog" do
+            expect(log_record.response["assessment"]["remarks"]).to eq({ "employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] } })
+          end
+        end
+      end
     end
   end
 end
