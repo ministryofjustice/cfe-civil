@@ -42,31 +42,6 @@ module CFEConstants
   # Remark categories
   #
   VALID_REMARK_CATEGORIES = %w[policy_disregards].freeze
-  VALID_REMARK_TYPES = %i[
-    other_income_payment
-    state_benefit_payment
-    outgoings_child_care
-    outgoings_childcare
-    outgoings_legal_aid
-    outgoings_maintenance
-    outgoings_maintenance_out
-    outgoings_housing_cost
-    outgoings_rent_or_mortgage
-    current_account_balance
-    employment_gross_income
-    employment_payment
-    employment_tax
-    employment_nic
-    employment
-  ].freeze
-  VALID_REMARK_ISSUES = %i[
-    unknown_frequency
-    amount_variation
-    residual_balance
-    multi_benefit
-    multiple_employments
-    refunds
-  ].freeze
 
   # Irregular income categories and frequencies
   #

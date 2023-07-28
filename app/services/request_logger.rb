@@ -41,7 +41,7 @@ class RequestLogger
 
     def updated_remarks(remarks)
       remarks.map { |key, value|
-        if CFEConstants::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
+        if Remarks::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
           value = redact_remarks_client_ids(value)
         end
         [key, value]
