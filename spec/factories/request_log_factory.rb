@@ -57,6 +57,13 @@ FactoryBot.define do
                   05459c0f-a620-4743-9f0c-b3daa93e571
                   40dbdy45-a6dd-4743-9f0c-b4b5b6m5n4n
                 ],
+                additional_remark_issue: {
+                  issue_1: %w[
+                    05459c0f-a620-4743-9f0c-b3daa93e571
+                    40dbdy45-a6dd-4743-9f0c-b4b5b6m5n4n
+                  ],
+                  issue_2: "05459c0f-a620-4743-9f0c",
+                },
               },
               policy_disregards: %w[
                 string

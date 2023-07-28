@@ -76,6 +76,8 @@ class RequestLogger
           redact_remarks_client_ids(value)
         when Array
           value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        else
+          CFEConstants::REDACTED_MESSAGE
         end
       end
     end
