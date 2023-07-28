@@ -27,7 +27,7 @@ class RequestLogger
 
       assessment = response["assessment"]
       if assessment && assessment["remarks"]
-        assessment["remarks"] = redact_remarks_client_ids(assessment["remarks"])
+        assessment["remarks"] = updated_remarks(assessment["remarks"])
       end
 
       RequestLog.create!(
@@ -39,15 +39,13 @@ class RequestLogger
       )
     end
 
-    def redact_remarks_client_ids(object)
-      object.transform_values do |value|
-        case value
-        when Hash
-          redact_remarks_client_ids(value)
-        when Array
-          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+    def updated_remarks(remarks)
+      remarks.map { |key, value|
+        if CFEConstants::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
+          value = redact_remarks_client_ids(value)
         end
-      end
+        [key, value]
+      }.to_h
     end
 
     def redact_time(timestamp)
@@ -66,6 +64,19 @@ class RequestLogger
         end
       else
         date_of_birth
+      end
+    end
+
+  private
+
+    def redact_remarks_client_ids(object)
+      object.transform_values do |value|
+        case value
+        when Hash
+          redact_remarks_client_ids(value)
+        when Array
+          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        end
       end
     end
   end

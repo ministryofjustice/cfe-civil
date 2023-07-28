@@ -1853,7 +1853,7 @@ module V6
           end
 
           it "redacts assessment.remarks client_ids in RequestLog" do
-            expect(log_record.response["assessment"]["remarks"]).to eq("employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] }, "policy_disregards" => ["** REDACTED **", "** REDACTED **"])
+            expect(log_record.response["assessment"]["remarks"]).to eq("employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] }, "policy_disregards" => ["Grenfell tower fund", "Some other fund"])
           end
         end
       end

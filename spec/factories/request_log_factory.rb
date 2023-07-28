@@ -36,7 +36,7 @@ FactoryBot.define do
               state_benefit_payment: {
                 unknown_frequency: %w[
                   05459c0f-a620-4743-9f0c-b3daa9
-                  E
+                  dd55h5h4-bndh-gu7452b22-bbdhdj
                 ],
                 multi_benefit: %w[
                   05459c0f-a620-4743-9f0c-b3daa9
@@ -55,7 +55,7 @@ FactoryBot.define do
               employment_payment: {
                 unknown_frequency: %w[
                   05459c0f-a620-4743-9f0c-b3daa93e571
-                  C
+                  40dbdy45-a6dd-4743-9f0c-b4b5b6m5n4n
                 ],
               },
               policy_disregards: %w[

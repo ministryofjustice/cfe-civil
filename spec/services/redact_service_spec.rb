@@ -103,8 +103,8 @@ describe RedactService do
               "** REDACTED **",
             ],
           },
-          policy_disregards: [
-            "** REDACTED **",
+          policy_disregards: %w[
+            string
           ],
         })
       end
