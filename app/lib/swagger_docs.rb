@@ -1249,6 +1249,20 @@ class SwaggerDocs
                   multiple_employments: { "$ref": "#/components/schemas/ClientIdArray" },
                 },
               },
+              employment_tax: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  refunds: { "$ref": "#/components/schemas/ClientIdArray" },
+                },
+              },
+              employment_nic: {
+                type: :object,
+                additionalProperties: false,
+                properties: {
+                  refunds: { "$ref": "#/components/schemas/ClientIdArray" },
+                },
+              },
               employment_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
               state_benefit_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
               other_income_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },

@@ -436,8 +436,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     date: "2021-10-30",
                     gross: 1046.00,
                     benefits_in_kind: 16.60,
-                    tax: -104.10,
-                    national_insurance: -18.66,
+                    tax: 14.10,
+                    national_insurance: 3.66,
                   },
                   {
                     client_id: "employment-2-payment-2",
