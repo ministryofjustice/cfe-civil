@@ -158,13 +158,16 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
       response(200, "successful") do
         schema type: :object,
                required: %i[timestamp result_summary assessment version success],
+               additionalProperties: false,
                properties: {
                  result_summary: {
                    type: :object,
+                   additionalProperties: false,
                    required: %i[overall_result gross_income disposable_income capital],
                    properties: {
                      overall_result: {
                        type: :object,
+                       additionalProperties: false,
                        required: %i[result capital_contribution income_contribution proceeding_types],
                        properties: {
                          result: {
@@ -192,6 +195,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      },
                      gross_income: {
                        type: :object,
+                       additionalProperties: false,
                        description: "gross_income calculation for partner, with some combined totals where appropriate",
                        required: %i[total_gross_income combined_total_gross_income proceeding_types],
                        properties: {
@@ -214,6 +218,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      },
                      partner_gross_income: {
                        type: :object,
+                       additionalProperties: false,
                        required: %i[total_gross_income],
                        properties: {
                          total_gross_income: {
@@ -223,103 +228,15 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
-                     disposable_income: {
-                       allOf: [
-                         { "$ref": components[:disposable_income] },
-                         {
-                           type: :object,
-                           properties: {
-                             partner_allowance: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Fixed allowance given if applicant has a partner for means assessment purposes",
-                             },
-                             combined_total_outgoings_and_allowances: {
-                               type: :number,
-                               format: :decimal,
-                               description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
-                             },
-                             combined_total_disposable_income: {
-                               type: :number,
-                               format: :decimal,
-                               description: "total_disposable_income + partner total_disposable_income",
-                             },
-                             proceeding_types: {
-                               type: :array,
-                               minItems: 1,
-                               items: { "$ref": components[:proceeding_type_result] },
-                             },
-                           },
-                         },
-                       ],
-                     },
+                     disposable_income: { "$ref": components[:applicant_disposable_income] },
                      partner_disposable_income: { "$ref": components[:disposable_income] },
-                     capital: {
-                       allOf: [
-                         { "$ref": components[:capital_result] },
-                         {
-                           type: :object,
-                           properties: {
-                             proceeding_types: {
-                               type: :array,
-                               items: { "$ref": components[:proceeding_type_result] },
-                             },
-                             pensioner_capital_disregard: {
-                               type: :number,
-                               format: :decimal,
-                               description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
-                               minimum: 0.0,
-                             },
-                             pensioner_disregard_applied: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of pensioner capital disregard applied to this assessment",
-                             },
-                             total_capital_with_smod: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Total of all capital but with subject matter of dispute deduction applied where applicable",
-                             },
-                             disputed_non_property_disregard: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of subject matter of dispute deduction applied for assets other than property",
-                             },
-                             capital_contribution: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Duplicate of results_summary capital_contribution field",
-                             },
-                             combined_disputed_capital: {
-                               description: "Combined applicant and partner disputed capital",
-                               type: :number,
-                               format: :decimal,
-                             },
-                             combined_non_disputed_capital: {
-                               description: "Combined applicant and partner non-disputed capital",
-                               type: :number,
-                               format: :decimal,
-                             },
-                             combined_assessed_capital: {
-                               type: :number,
-                               format: :decimal,
-                               minimum: 0,
-                               description: "Amount of assessed capital for both client and partner",
-                             },
-                           },
-                         },
-                       ],
-                     },
+                     capital: { "$ref": components[:applicant_capital_result] },
                      partner_capital: { "$ref": components[:capital_result] },
                    },
                  },
                  assessment: {
                    type: :object,
+                   additionalProperties: false,
                    properties: {
                      id: { type: :string },
                      client_reference_id: { type: :string, nullable: true, example: "ref-11-22" },
@@ -330,7 +247,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        example: Assessment.levels_of_help.keys.first,
                        description: "The level of representation required by the client",
                      },
-                     applicant: { type: :object },
+                     applicant: { "$ref": components[:applicant_result] },
                      gross_income: {
                        type: :object,
                        additionalProperties: false,
@@ -364,30 +281,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              },
                            },
                          },
-                         state_benefits: {
-                           type: :object,
-                           additionalProperties: false,
-                           properties: {
-                             monthly_equivalents: {
-                               type: :object,
-                               additionalProperties: false,
-                               properties: {
-                                 all_sources: {
-                                   type: :number,
-                                   format: :decimal,
-                                 },
-                                 cash_transactions: {
-                                   type: :number,
-                                   format: :decimal,
-                                 },
-                                 bank_transactions: {
-                                   type: :array,
-                                 },
-                               },
-                             },
-                           },
-                         },
-                         other_income: { type: :object },
+                         state_benefits: { "$ref": components[:state_benefits_result] },
+                         other_income: { "$ref": components[:other_income_result] },
                          self_employments: {
                            type: :array,
                            items: {
@@ -440,7 +335,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
-                     disposable_income: { type: :object },
+                     disposable_income: { "$ref": components[:disposable_income_result] },
                      capital: {
                        type: :object,
                        additionalProperties: false,
@@ -481,6 +376,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
+                     remarks: { "$ref" => components[:remarks] },
                    },
                  },
                  version: {
@@ -514,7 +410,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                              { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" }] },
                 { category: "rent_or_mortgage",
                   payments: [
-                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" }, # Investigate 'housing_cost_type' in payload. Supported in version 6 only
+                    { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-03-01" },
                     { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-04-01" },
                     { amount: 10.00, client_id: SecureRandom.uuid, date: "2022-05-01" },
                   ] },
