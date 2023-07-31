@@ -596,16 +596,6 @@ components:
           "$ref": "#/components/schemas/currency"
           description: Dependant's monthly income
           deprecated: true
-        frequency:
-          type: string
-          enum:
-          - monthly
-          - four_weekly
-          - two_weekly
-          - weekly
-          - unknown
-        amount:
-          "$ref": "#/components/schemas/currency"
         income:
           type: object
           required:
