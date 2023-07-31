@@ -124,9 +124,16 @@ module V6
       end
       let(:dependant_params) do
         [
-          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11"),
-          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2013-06-11"),
-          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2004-06-11"),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11").except(:amount, :frequency),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2013-06-11").except(:amount, :frequency),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2004-06-11").except(:amount, :frequency),
+        ]
+      end
+      let(:dependant_params_with_income) do
+        [
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2015-02-11").except(:amount, :frequency),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2013-06-11").except(:amount, :frequency),
+          attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2004-06-11").except(:amount, :frequency),
         ]
       end
       let(:bank_1) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
@@ -513,64 +520,139 @@ module V6
       end
 
       context "with dependants" do
-        let(:params) { { dependants: dependant_params } }
+        context "with monthly income" do
+          let(:params) { { dependants: dependant_params } }
 
-        it "returns a version of 6" do
-          expect(parsed_response.fetch(:version)).to eq("6")
-        end
+          it "returns a version of 6" do
+            expect(parsed_response.fetch(:version)).to eq("6")
+          end
 
-        it "has dependant_allowances" do
-          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance)).to eq(922.92)
-          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_under_16)).to eq(615.28)
-          expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
-        end
+          it "has dependant_allowances" do
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance)).to eq(922.92)
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_under_16)).to eq(615.28)
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
+          end
 
-        it "creates a log record with a user agent and imprecise DOBs" do
-          expect(log_record)
-            .to have_attributes(created_at: Time.zone.today,
-                                http_status: 200,
-                                user_agent:,
-                                request: {
-                                  "assessment" => { "submission_date" => "2022-06-06" },
-                                  "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
-                                  "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
-                                  "dependants" => [
-                                    {
-                                      "date_of_birth" => "2014-06-06",
-                                      "in_full_time_education" => true,
-                                      "relationship" => "child_relative",
-                                      "monthly_income" => 0,
-                                      "assets_value" => 0.0,
-                                    },
-                                    {
-                                      "date_of_birth" => "2013-06-06",
-                                      "in_full_time_education" => true,
-                                      "relationship" => "child_relative",
-                                      "monthly_income" => 0,
-                                      "assets_value" => 0.0,
-                                    },
-                                    { "date_of_birth" => "2004-06-06",
-                                      "in_full_time_education" => true,
-                                      "relationship" => "child_relative",
-                                      "monthly_income" => 0,
-                                      "assets_value" => 0.0 },
-                                  ],
-                                })
-          expect(log_record.response.symbolize_keys.except(:timestamp, :assessment)).to eq(
-            version: "6",
-            success: true,
-            result_summary: {
-              "overall_result" => {
-                "result" => "eligible",
-                "capital_contribution" => 0.0,
-                "income_contribution" => 0.0,
-                "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 0.0, "lower_threshold" => 0.0, "result" => "eligible" }],
+          it "creates a log record with a user agent and imprecise DOBs" do
+            expect(log_record)
+              .to have_attributes(created_at: Time.zone.today,
+                                  http_status: 200,
+                                  user_agent:,
+                                  request: {
+                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
+                                    "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
+                                    "dependants" => [
+                                      {
+                                        "date_of_birth" => "2014-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "monthly_income" => 0,
+                                        "assets_value" => 0.0,
+                                      },
+                                      {
+                                        "date_of_birth" => "2013-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "monthly_income" => 0,
+                                        "assets_value" => 0.0,
+                                      },
+                                      { "date_of_birth" => "2004-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "monthly_income" => 0,
+                                        "assets_value" => 0.0 },
+                                    ],
+                                  })
+            expect(log_record.response.symbolize_keys.except(:timestamp, :assessment)).to eq(
+              version: "6",
+              success: true,
+              result_summary: {
+                "overall_result" => {
+                  "result" => "eligible",
+                  "capital_contribution" => 0.0,
+                  "income_contribution" => 0.0,
+                  "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 0.0, "lower_threshold" => 0.0, "result" => "eligible" }],
+                },
+                "gross_income" => { "total_gross_income" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 0.0, "result" => "eligible" }], "combined_total_gross_income" => 0.0 },
+                "disposable_income" => { "dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 307.64, "dependant_allowance" => 922.92, "gross_housing_costs" => 0.0, "housing_benefit" => 0.0, "net_housing_costs" => 0.0, "maintenance_allowance" => 0.0, "total_outgoings_and_allowances" => 922.92, "total_disposable_income" => -922.92, "employment_income" => { "gross_income" => 0.0, "benefits_in_kind" => 0.0, "tax" => 0.0, "national_insurance" => 0.0, "fixed_employment_deduction" => 0.0, "net_employment_income" => 0.0 }, "income_contribution" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 315.0, "result" => "eligible" }], "combined_total_disposable_income" => -922.92, "combined_total_outgoings_and_allowances" => 922.92, "partner_allowance" => 0 },
+                "capital" => { "pensioner_disregard_applied" => 0.0, "total_liquid" => 0.0, "total_non_liquid" => 0.0, "total_vehicle" => 0.0, "total_property" => 0.0, "total_mortgage_allowance" => 999_999_999_999.0, "total_capital" => 0.0, "subject_matter_of_dispute_disregard" => 0.0, "assessed_capital" => 0.0, "total_capital_with_smod" => 0, "disputed_non_property_disregard" => 0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 3000.0, "result" => "eligible" }], "combined_disputed_capital" => 0.0, "combined_non_disputed_capital" => 0.0, "capital_contribution" => 0.0, "pensioner_capital_disregard" => 0.0, "combined_assessed_capital" => 0.0 },
               },
-              "gross_income" => { "total_gross_income" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 0.0, "result" => "eligible" }], "combined_total_gross_income" => 0.0 },
-              "disposable_income" => { "dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 307.64, "dependant_allowance" => 922.92, "gross_housing_costs" => 0.0, "housing_benefit" => 0.0, "net_housing_costs" => 0.0, "maintenance_allowance" => 0.0, "total_outgoings_and_allowances" => 922.92, "total_disposable_income" => -922.92, "employment_income" => { "gross_income" => 0.0, "benefits_in_kind" => 0.0, "tax" => 0.0, "national_insurance" => 0.0, "fixed_employment_deduction" => 0.0, "net_employment_income" => 0.0 }, "income_contribution" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 315.0, "result" => "eligible" }], "combined_total_disposable_income" => -922.92, "combined_total_outgoings_and_allowances" => 922.92, "partner_allowance" => 0 },
-              "capital" => { "pensioner_disregard_applied" => 0.0, "total_liquid" => 0.0, "total_non_liquid" => 0.0, "total_vehicle" => 0.0, "total_property" => 0.0, "total_mortgage_allowance" => 999_999_999_999.0, "total_capital" => 0.0, "subject_matter_of_dispute_disregard" => 0.0, "assessed_capital" => 0.0, "total_capital_with_smod" => 0, "disputed_non_property_disregard" => 0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 3000.0, "result" => "eligible" }], "combined_disputed_capital" => 0.0, "combined_non_disputed_capital" => 0.0, "capital_contribution" => 0.0, "pensioner_capital_disregard" => 0.0, "combined_assessed_capital" => 0.0 },
-            },
-          )
+            )
+          end
+        end
+
+        context "with income" do
+          let(:params) { { dependants: dependant_params_with_income } }
+
+          it "returns a version of 6" do
+            expect(parsed_response.fetch(:version)).to eq("6")
+          end
+
+          it "has dependant_allowances" do
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance)).to eq(922.92)
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_under_16)).to eq(615.28)
+            expect(parsed_response.dig(:result_summary, :disposable_income, :dependant_allowance_over_16)).to eq(307.64)
+          end
+
+          it "creates a log record with a user agent and imprecise DOBs" do
+            expect(log_record)
+              .to have_attributes(created_at: Time.zone.today,
+                                  http_status: 200,
+                                  user_agent:,
+                                  request: {
+                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
+                                    "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
+                                    "dependants" => [
+                                      {
+                                        "income" => {
+                                          "amount" => 0,
+                                          "frequency" => "monthly",
+                                        },
+                                        "date_of_birth" => "2014-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "assets_value" => 0.0,
+                                      },
+                                      {
+                                        "income" => {
+                                          "amount" => 0,
+                                          "frequency" => "monthly",
+                                        },
+                                        "date_of_birth" => "2013-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "assets_value" => 0.0,
+                                      },
+                                      {
+                                        "income" => {
+                                          "amount" => 0,
+                                          "frequency" => "monthly",
+                                        },
+                                        "date_of_birth" => "2004-06-06",
+                                        "in_full_time_education" => true,
+                                        "relationship" => "child_relative",
+                                        "assets_value" => 0.0,
+                                      },
+                                    ],
+                                  })
+            expect(log_record.response.symbolize_keys.except(:timestamp, :assessment)).to eq(
+              version: "6",
+              success: true,
+              result_summary: {
+                "overall_result" => {
+                  "result" => "eligible",
+                  "capital_contribution" => 0.0,
+                  "income_contribution" => 0.0,
+                  "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 0.0, "lower_threshold" => 0.0, "result" => "eligible" }],
+                },
+                "gross_income" => { "total_gross_income" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 0.0, "result" => "eligible" }], "combined_total_gross_income" => 0.0 },
+                "disposable_income" => { "dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 307.64, "dependant_allowance" => 922.92, "gross_housing_costs" => 0.0, "housing_benefit" => 0.0, "net_housing_costs" => 0.0, "maintenance_allowance" => 0.0, "total_outgoings_and_allowances" => 922.92, "total_disposable_income" => -922.92, "employment_income" => { "gross_income" => 0.0, "benefits_in_kind" => 0.0, "tax" => 0.0, "national_insurance" => 0.0, "fixed_employment_deduction" => 0.0, "net_employment_income" => 0.0 }, "income_contribution" => 0.0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 315.0, "result" => "eligible" }], "combined_total_disposable_income" => -922.92, "combined_total_outgoings_and_allowances" => 922.92, "partner_allowance" => 0 },
+                "capital" => { "pensioner_disregard_applied" => 0.0, "total_liquid" => 0.0, "total_non_liquid" => 0.0, "total_vehicle" => 0.0, "total_property" => 0.0, "total_mortgage_allowance" => 999_999_999_999.0, "total_capital" => 0.0, "subject_matter_of_dispute_disregard" => 0.0, "assessed_capital" => 0.0, "total_capital_with_smod" => 0, "disputed_non_property_disregard" => 0, "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A", "upper_threshold" => 999_999_999_999.0, "lower_threshold" => 3000.0, "result" => "eligible" }], "combined_disputed_capital" => 0.0, "combined_non_disputed_capital" => 0.0, "capital_contribution" => 0.0, "pensioner_capital_disregard" => 0.0, "combined_assessed_capital" => 0.0 },
+              },
+            )
+          end
         end
       end
 

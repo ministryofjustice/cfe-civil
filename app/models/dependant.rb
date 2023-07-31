@@ -2,12 +2,16 @@ class Dependant
   include ActiveModel::Model
   include ActiveModel::Attributes
 
+  DEFAULT_FREQUENCY = "monthly".freeze
+  PAYMENT_FREQUENCIES = %w[monthly four_weekly two_weekly weekly unknown].freeze
+
   attribute :date_of_birth, :date
   attribute :relationship, :string
   attribute :in_full_time_education, :boolean
-  attribute :monthly_income, :decimal, default: 0
   attribute :assets_value, :decimal, default: 0
   attribute :submission_date, :date
+  attribute :amount, :decimal, default: 0
+  attribute :frequency, :string
 
   validates :date_of_birth, date: {
     before: proc { Time.zone.tomorrow }, message: :not_in_the_future

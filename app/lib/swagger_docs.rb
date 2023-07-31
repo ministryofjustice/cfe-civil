@@ -586,6 +586,23 @@ class SwaggerDocs
               monthly_income: {
                 "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Dependant's monthly income",
+                deprecated: true,
+              },
+              frequency: {
+                type: :string,
+                enum: Dependant::PAYMENT_FREQUENCIES,
+              },
+              amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
+              income: {
+                type: :object,
+                required: %i[frequency amount],
+                properties: {
+                  frequency: {
+                    type: :string,
+                    enum: Dependant::PAYMENT_FREQUENCIES,
+                  },
+                  amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
+                },
               },
               assets_value: {
                 "$ref" => SCHEMA_COMPONENTS[:currency],

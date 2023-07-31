@@ -401,7 +401,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
             assessment: { submission_date: "2022-06-06" },
             applicant: { date_of_birth: "2001-02-02", has_partner_opponent: false, receives_qualifying_benefit: false, employed: false },
             dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11"),
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, amount: 0, frequency: "monthly", date_of_birth: "2015-02-11"),
             ],
             employment_income: [
               {
