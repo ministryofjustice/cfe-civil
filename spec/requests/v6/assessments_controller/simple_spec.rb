@@ -122,14 +122,14 @@ module V6
           },
         ]
       end
-      let(:dependant_params) do
+      let(:dependant_params_with_monthly_income) do
         [
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2015-02-11").except(:amount, :frequency),
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2013-06-11").except(:amount, :frequency),
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2004-06-11").except(:amount, :frequency),
         ]
       end
-      let(:dependant_params_with_income) do
+      let(:dependant_params) do
         [
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2015-02-11").except(:amount, :frequency),
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2013-06-11").except(:amount, :frequency),
@@ -447,7 +447,7 @@ module V6
         context "with a future date of birth" do
           let(:params) do
             { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11"),
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:amount, :frequency)
             ] }
           end
 
@@ -464,7 +464,7 @@ module V6
         context "missing dependant date_of_birth" do
           let(:params) do
             { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "3004-06-11").except!(:date_of_birth),
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:date_of_birth, :amount, :frequency)
             ] }
           end
 
@@ -484,7 +484,7 @@ module V6
             {
               partner: { partner: attributes_for(:applicant).except(:receives_qualifying_benefit, :receives_asylum_support),
                          dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0, date_of_birth: "2904-06-11"),
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:amount, :frequency)
                          ] },
             }
           end
@@ -504,7 +504,7 @@ module V6
             {
               partner: { partner: attributes_for(:applicant),
                          dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, monthly_income: 0).except!(:date_of_birth),
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:date_of_birth, :amount, :frequency)
                          ] },
             }
           end
@@ -521,7 +521,7 @@ module V6
 
       context "with dependants" do
         context "with monthly income" do
-          let(:params) { { dependants: dependant_params } }
+          let(:params) { { dependants: dependant_params_with_monthly_income } }
 
           it "returns a version of 6" do
             expect(parsed_response.fetch(:version)).to eq("6")
@@ -583,7 +583,7 @@ module V6
         end
 
         context "with income" do
-          let(:params) { { dependants: dependant_params_with_income } }
+          let(:params) { { dependants: dependant_params } }
 
           it "returns a version of 6" do
             expect(parsed_response.fetch(:version)).to eq("6")
@@ -692,7 +692,7 @@ module V6
           {
             # child_care won't show up unless student loan payments and dependants
             irregular_incomes: irregular_income_params,
-            dependants: dependant_params,
+            dependants: dependant_params_with_monthly_income,
             cash_transactions: cash_transactions_params,
           }
         end
@@ -1197,7 +1197,7 @@ module V6
                 bank_accounts: bank_account_params,
                 non_liquid_capital: non_liquid_params,
               },
-              dependants: dependant_params,
+              dependants: dependant_params_with_monthly_income,
               vehicles: vehicle_params,
             },
           }
