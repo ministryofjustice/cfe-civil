@@ -66,7 +66,18 @@ Given("I add the following applicant details for the current assessment:") do |t
 end
 
 Given("I add the following dependent details for the current assessment:") do |table|
-  @dependant_data = { "dependants": table.hashes.map { cast_values(_1) } }
+  data = table.hashes.map do |h|
+    amount = h["income_amount"].to_f
+    frequency = h["income_frequency"]
+    if amount && frequency
+      h = cast_values(h)
+      h["income"] = { "amount" => amount, "frequency" => frequency }
+      h.except("income_amount", "income_frequency")
+    else
+      cast_values(h)
+    end
+  end
+  @dependant_data = { "dependants": data }
 end
 
 Given("I add the following other_income details for {string} in the current assessment:") do |string, table|
