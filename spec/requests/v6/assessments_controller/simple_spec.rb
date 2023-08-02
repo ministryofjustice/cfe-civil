@@ -447,7 +447,7 @@ module V6
         context "with a future date of birth" do
           let(:params) do
             { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:amount, :frequency)
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:amount, :frequency),
             ] }
           end
 
@@ -464,7 +464,7 @@ module V6
         context "missing dependant date_of_birth" do
           let(:params) do
             { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:date_of_birth, :amount, :frequency)
+              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:date_of_birth, :amount, :frequency),
             ] }
           end
 
@@ -484,7 +484,7 @@ module V6
             {
               partner: { partner: attributes_for(:applicant).except(:receives_qualifying_benefit, :receives_asylum_support),
                          dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:amount, :frequency)
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:amount, :frequency),
                          ] },
             }
           end
@@ -504,7 +504,7 @@ module V6
             {
               partner: { partner: attributes_for(:applicant),
                          dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:date_of_birth, :amount, :frequency)
+                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:date_of_birth, :amount, :frequency),
                          ] },
             }
           end
