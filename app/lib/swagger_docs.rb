@@ -584,9 +584,20 @@ class SwaggerDocs
                 description: "Dependant's relationship to the applicant",
               },
               monthly_income: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Dependant's monthly income",
+                # legacy - some currency values are historically allowed as strings
                 deprecated: true,
+                oneOf: [
+                  {
+                    type: :number,
+                    format: :decimal,
+                    multipleOf: 0.01,
+                  },
+                  {
+                    type: :string,
+                    pattern: "^[-+]?\\d+(\\.\\d{1,2})?$",
+                  },
+                ],
               },
               income: {
                 type: :object,
