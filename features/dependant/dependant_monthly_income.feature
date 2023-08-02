@@ -1,0 +1,64 @@
+Feature:
+  "Dependents with monthly income"
+
+  Scenario: The dependant has monthly income = 0
+    Given I am undertaking a certificated assessment
+    And I am using version 6 of the API
+    And I add the following dependent details for the current assessment:
+      | date_of_birth | in_full_time_education | relationship   | monthly_income |
+      | 2015-02-11    | FALSE                  | child_relative | 0              |
+      | 2013-06-11    | FALSE                  | child_relative | 0              |
+      | 2004-06-11    | FALSE                  | child_relative | 0              |
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                         | value   |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 307.64  |
+      | dependant allowance               | 922.92  |
+
+  Scenario: The dependant has monthly income > 0 and < 338
+    Given I am undertaking a certificated assessment
+    And I am using version 6 of the API
+    And I add the following dependent details for the current assessment:
+      | date_of_birth | in_full_time_education | relationship   | monthly_income |
+      | 2015-02-11    | FALSE                  | child_relative | 100            |
+      | 2013-06-11    | FALSE                  | child_relative | 100            |
+      | 2004-06-11    | FALSE                  | child_relative | 100            |
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                         | value   |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 207.64  |
+      | dependant allowance               | 822.92  |
+
+
+  Scenario: The dependant has monthly income = 338
+    Given I am undertaking a certificated assessment
+    And I am using version 6 of the API
+    And I add the following dependent details for the current assessment:
+      | date_of_birth | in_full_time_education | relationship   | monthly_income |
+      | 2015-02-11    | FALSE                  | child_relative | 338            |
+      | 2013-06-11    | FALSE                  | child_relative | 338            |
+      | 2004-06-11    | FALSE                  | child_relative | 338            |
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                         | value   |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
+
+  Scenario: The dependant has monthly income >= 338
+    Given I am undertaking a certificated assessment
+    And I am using version 6 of the API
+    And I add the following dependent details for the current assessment:
+      | date_of_birth | in_full_time_education | relationship   | monthly_income |
+      | 2015-02-11    | FALSE                  | child_relative | 400            |
+      | 2013-06-11    | FALSE                  | child_relative | 400            |
+      | 2004-06-11    | FALSE                  | child_relative | 400            |
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                         | value   |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
+
