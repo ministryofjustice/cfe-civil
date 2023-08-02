@@ -56,6 +56,8 @@ executors:
           POSTGRES_USER: postgres
           POSTGRES_DB: ccq_test
       - image: ${ECR_ENDPOINT}:${CIRCLE_SHA1}
+        aws_auth:
+          oidc_role_arn: $ECR_ROLE_TO_ASSUME
         environment:
           - RAILS_ENV: production
           - LEGAL_FRAMEWORK_API_HOST: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
