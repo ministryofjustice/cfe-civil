@@ -610,11 +610,12 @@ components:
             frequency:
               type: string
               enum:
-              - monthly
-              - four_weekly
-              - two_weekly
               - weekly
-              - unknown
+              - two_weekly
+              - four_weekly
+              - monthly
+              - three_monthly
+              - annually
             amount:
               "$ref": "#/components/schemas/currency"
           additionalProperties: false
