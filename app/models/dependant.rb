@@ -3,7 +3,7 @@ class Dependant
   include ActiveModel::Attributes
 
   DEFAULT_FREQUENCY = "monthly".freeze
-  PAYMENT_FREQUENCIES = %w[monthly four_weekly two_weekly weekly unknown].freeze
+  PAYMENT_FREQUENCIES = %w[weekly two_weekly four_weekly monthly three_monthly annually].freeze
 
   attribute :date_of_birth, :date
   attribute :relationship, :string
