@@ -25,6 +25,11 @@ class RequestLogger
         response["timestamp"] = redact_time(response["timestamp"])
       end
 
+      assessment = response["assessment"]
+      if assessment && assessment["remarks"]
+        assessment["remarks"] = updated_remarks(assessment["remarks"])
+      end
+
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),
@@ -32,6 +37,15 @@ class RequestLogger
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
+    end
+
+    def updated_remarks(remarks)
+      remarks.map { |key, value|
+        if Remarks::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
+          value = redact_remarks_client_ids(value)
+        end
+        [key, value]
+      }.to_h
     end
 
     def redact_time(timestamp)
@@ -50,6 +64,21 @@ class RequestLogger
         end
       else
         date_of_birth
+      end
+    end
+
+  private
+
+    def redact_remarks_client_ids(object)
+      object.transform_values do |value|
+        case value
+        when Hash
+          redact_remarks_client_ids(value)
+        when Array
+          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        else
+          CFEConstants::REDACTED_MESSAGE
+        end
       end
     end
   end
