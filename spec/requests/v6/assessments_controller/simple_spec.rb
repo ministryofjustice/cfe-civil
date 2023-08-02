@@ -179,6 +179,10 @@ module V6
         ]
       end
       let(:irregular_income_params) { { payments: irregular_income_payments } }
+      let(:submission_date) { "2022-06-06" }
+      let(:date_of_birth_1) { "2014-06-06" }
+      let(:date_of_birth_2) { "2013-06-06" }
+      let(:date_of_birth_3) { "2004-06-06" }
 
       before do
         post v6_assessments_path, params: default_params.merge(params).to_json, headers:
@@ -401,7 +405,7 @@ module V6
               .to have_attributes(created_at: Time.zone.today,
                                   http_status: 422,
                                   request: {
-                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "assessment" => { "submission_date" => submission_date },
                                     "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2899-06-06", "employed" => false },
                                     "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
                                   },
@@ -539,25 +543,25 @@ module V6
                                   http_status: 200,
                                   user_agent:,
                                   request: {
-                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "assessment" => { "submission_date" => submission_date },
                                     "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
                                     "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
                                     "dependants" => [
                                       {
-                                        "date_of_birth" => "2014-06-06",
+                                        "date_of_birth" => date_of_birth_1,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "monthly_income" => 0,
                                         "assets_value" => 0.0,
                                       },
                                       {
-                                        "date_of_birth" => "2013-06-06",
+                                        "date_of_birth" => date_of_birth_2,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "monthly_income" => 0,
                                         "assets_value" => 0.0,
                                       },
-                                      { "date_of_birth" => "2004-06-06",
+                                      { "date_of_birth" => date_of_birth_3,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "monthly_income" => 0,
@@ -601,7 +605,7 @@ module V6
                                   http_status: 200,
                                   user_agent:,
                                   request: {
-                                    "assessment" => { "submission_date" => "2022-06-06" },
+                                    "assessment" => { "submission_date" => submission_date },
                                     "applicant" => { "date_of_birth" => "2000-06-06", "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "employed" => false },
                                     "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
                                     "dependants" => [
@@ -610,7 +614,7 @@ module V6
                                           "amount" => 0,
                                           "frequency" => "monthly",
                                         },
-                                        "date_of_birth" => "2014-06-06",
+                                        "date_of_birth" => date_of_birth_1,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "assets_value" => 0.0,
@@ -620,7 +624,7 @@ module V6
                                           "amount" => 0,
                                           "frequency" => "monthly",
                                         },
-                                        "date_of_birth" => "2013-06-06",
+                                        "date_of_birth" => date_of_birth_2,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "assets_value" => 0.0,
@@ -630,7 +634,7 @@ module V6
                                           "amount" => 0,
                                           "frequency" => "monthly",
                                         },
-                                        "date_of_birth" => "2004-06-06",
+                                        "date_of_birth" => date_of_birth_3,
                                         "in_full_time_education" => true,
                                         "relationship" => "child_relative",
                                         "assets_value" => 0.0,
@@ -1224,9 +1228,9 @@ module V6
           it "logs redacted dependants dob" do
             expect(partner_log.fetch(:dependants))
               .to eq(
-                [{ date_of_birth: "2014-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                 { date_of_birth: "2013-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                 { date_of_birth: "2004-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }],
+                [{ date_of_birth: date_of_birth_1, in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: date_of_birth_2, in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: date_of_birth_3, in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }],
               )
           end
 
