@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe RedactService do
-  context "when filtering log request" do
+  describe "filtering log request" do
     before do
       create(:request_log,
              request: {
@@ -52,8 +52,9 @@ describe RedactService do
     end
   end
 
-  context "when filtering log response" do
+  describe "filtering log response" do
     let(:request_log) { RequestLog.last }
+    let(:response) { request_log.response.deep_symbolize_keys }
 
     context "successful response" do
       before do
@@ -61,6 +62,12 @@ describe RedactService do
           version: "6",
           timestamp: "2023-07-07T15:32:12.757Z",
           success: true,
+          assessment: { client_reference_id: nil,
+                        submission_date: "2023-08-03",
+                        applicant: {
+                          date_of_birth: "1970-01-01",
+                        },
+                        remarks: {} },
         })
         described_class.call
       end
@@ -71,6 +78,10 @@ describe RedactService do
 
       it "redacts time in timestamp" do
         expect(request_log.response.deep_symbolize_keys[:timestamp]).to eq("2023-07-07")
+      end
+
+      it "redacts the applicant DOB" do
+        expect(response.dig(:assessment, :applicant, :date_of_birth)).to eq("1969-08-04")
       end
     end
 

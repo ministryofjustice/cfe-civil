@@ -30,10 +30,11 @@ class RequestLogger
         assessment["remarks"] = RedactService.updated_remarks(assessment["remarks"])
       end
 
+      response = JSON.parse(payload.fetch(:response).body).deep_symbolize_keys
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),
-        response:,
+        response: RedactService.redact_response(response),
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
