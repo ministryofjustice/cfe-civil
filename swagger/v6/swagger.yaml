@@ -262,8 +262,9 @@ components:
               can be positive for a refund
             example: -5.24
           net_employment_income:
-            "$ref": "#/components/schemas/currency"
             description: Deprecated field not used in calculation
+            deprecated: true
+            "$ref": "#/components/schemas/currency"
     NonPropertyAsset:
       type: object
       additionalProperties: false
@@ -423,6 +424,7 @@ components:
             of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1
             Individual and partner' and LC's Controlled Guidance '4.2 Aggregation
             of Means'
+          deprecated: true
         receives_qualifying_benefit:
           type: boolean
           example: false
