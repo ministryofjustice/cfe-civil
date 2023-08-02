@@ -60,8 +60,7 @@ module V6
       if income
         amount = income[:amount]
         frequency = income[:frequency]
-      end
-      if monthly_income
+      elsif monthly_income
         amount = monthly_income
         frequency = Dependant::DEFAULT_FREQUENCY
       end
