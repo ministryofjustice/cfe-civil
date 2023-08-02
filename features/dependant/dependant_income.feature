@@ -10,11 +10,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 0              |
       | 2004-06-11    | FALSE                  | child_relative | 0              |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 307.64  |
-      | dependant_allowance               | 922.92  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 307.64  |
+      | dependant allowance               | 922.92  |
 
   Scenario: The dependant has income with amount and frequency (amount = 0 and frequency = monthly)
     Given I am undertaking a certificated assessment
@@ -25,11 +25,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 0.0            | monthly          |
       | 2004-06-11    | FALSE                  | child_relative | 0.0             | monthly          |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 307.64  |
-      | dependant_allowance               | 922.92  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 307.64  |
+      | dependant allowance               | 922.92  |
 
   Scenario: The dependant has monthly income > 0 and < 338
     Given I am undertaking a certificated assessment
@@ -40,11 +40,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 100            |
       | 2004-06-11    | FALSE                  | child_relative | 100            |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 207.64  |
-      | dependant_allowance               | 822.92  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 207.64  |
+      | dependant allowance               | 822.92  |
 
 
   Scenario: The dependant has income with amount and frequency (amount > 0 and < 338 and frequency = monthly)
@@ -56,11 +56,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 100           | monthly          |
       | 2004-06-11    | FALSE                  | child_relative | 100           | monthly          |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 207.64  |
-      | dependant_allowance               | 822.92  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 207.64  |
+      | dependant allowance               | 822.92  |
 
   Scenario: The dependant has monthly income = 338
     Given I am undertaking a certificated assessment
@@ -71,11 +71,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 338            |
       | 2004-06-11    | FALSE                  | child_relative | 338            |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 0  |
-      | dependant_allowance               | 615.28  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
 
   Scenario: The dependant has income with amount and frequency (amount = 338 and frequency = monthly)
     Given I am undertaking a certificated assessment
@@ -86,11 +86,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 338           | monthly          |
       | 2004-06-11    | FALSE                  | child_relative | 338           | monthly          |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 0  |
-      | dependant_allowance               | 615.28  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
 
   Scenario: The dependant has monthly income >= 338
     Given I am undertaking a certificated assessment
@@ -101,11 +101,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 400            |
       | 2004-06-11    | FALSE                  | child_relative | 400            |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 0  |
-      | dependant_allowance               | 615.28  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
 
   Scenario: The dependant has income with amount and frequency (amount >= 338 and frequency = monthly)
     Given I am undertaking a certificated assessment
@@ -116,11 +116,11 @@ Feature:
       | 2013-06-11    | FALSE                  | child_relative | 400           | monthly          |
       | 2004-06-11    | FALSE                  | child_relative | 400           | monthly          |
     When I retrieve the final assessment
-    Then I should see the following "dependant allowance" details:
+    Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant_allowance_under_16      | 615.28  |
-      | dependant_allowance_over_16       | 0  |
-      | dependant_allowance               | 615.28  |
+      | dependant allowance under 16      | 615.28  |
+      | dependant allowance over 16       | 0  |
+      | dependant allowance               | 615.28  |
 
 #  Scenario: The dependant has income with amount and frequency
 #    Given I am undertaking a certificated assessment
@@ -133,6 +133,6 @@ Feature:
 #    When I retrieve the final assessment
 #    Then I should see the following "dependant allowance" details:
 #      | attribute                         | value   |
-#      | dependant_allowance_under_16      | 615.28  |
-#      | dependant_allowance_over_16       | 307.64  |
-#      | dependant_allowance               | 922.92  |
+#      | dependant allowance under 16      | 615.28  |
+#      | dependant allowance over 16       | 307.64  |
+#      | dependant allowance               | 922.92  |
