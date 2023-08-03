@@ -57,14 +57,14 @@ module V6
     def convert_monthly_income_params(params)
       income = params[:income]
       monthly_income = params[:monthly_income]
-      if income
-        amount = income[:amount]
-        frequency = income[:frequency]
-      elsif monthly_income
-        amount = monthly_income
-        frequency = Dependant::DEFAULT_FREQUENCY
+      if income.present?
+        income_amount = income[:amount]
+        income_frequency = income[:frequency]
+      elsif monthly_income.present?
+        income_amount = monthly_income
+        income_frequency = CFEConstants::MONTHLY_FREQUENCY
       end
-      params.except!(:monthly_income, :income).merge!(amount:, frequency:)
+      params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
     end
 
     def dependant_errors(dependants)

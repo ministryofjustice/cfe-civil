@@ -602,10 +602,11 @@ class SwaggerDocs
               income: {
                 type: :object,
                 required: %i[frequency amount],
+                additionalProperties: false,
                 properties: {
                   frequency: {
                     type: :string,
-                    enum: Dependant::PAYMENT_FREQUENCIES,
+                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
                   },
                   amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
                 },
