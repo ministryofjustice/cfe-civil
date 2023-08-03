@@ -226,7 +226,7 @@ jobs:
       - run:
           name: Check coverage with undercover
           command: |
-            bundle exec undercover -l coverage/lcov.info
+            bundle exec undercover -c origin/main -l coverage/lcov.info
       - store_test_results:
           path: /tmp/test-results/rspec
       - store_artifacts:
