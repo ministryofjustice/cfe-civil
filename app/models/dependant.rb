@@ -8,7 +8,7 @@ class Dependant
   attribute :assets_value, :decimal, default: 0
   attribute :submission_date, :date
   attribute :income_amount, :decimal, default: 0
-  attribute :income_frequency, :string
+  attribute :income_frequency, :string, default: CFEConstants::MONTHLY_FREQUENCY
 
   validates :date_of_birth, date: {
     before: proc { Time.zone.tomorrow }, message: :not_in_the_future

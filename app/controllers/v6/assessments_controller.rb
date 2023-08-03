@@ -60,11 +60,14 @@ module V6
       if income.present?
         income_amount = income[:amount]
         income_frequency = income[:frequency]
+        params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
       elsif monthly_income.present?
         income_amount = monthly_income
         income_frequency = CFEConstants::MONTHLY_FREQUENCY
+        params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
+      else
+        params
       end
-      params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
     end
 
     def dependant_errors(dependants)

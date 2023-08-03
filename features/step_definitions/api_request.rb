@@ -73,11 +73,11 @@ end
 
 Given("I add the following dependent details for the current assessment:") do |table|
   data = table.hashes.map do |h|
-    amount = h["income_amount"].to_f
+    amount = h["income_amount"]
     frequency = h["income_frequency"]
     if amount.present? && frequency.present?
       h = cast_values(h)
-      h["income"] = { "amount" => amount, "frequency" => frequency }
+      h["income"] = { "amount" => amount.to_f, "frequency" => frequency }
       h.except("income_amount", "income_frequency")
     else
       cast_values(h)
