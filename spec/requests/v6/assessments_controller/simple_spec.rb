@@ -578,7 +578,7 @@ module V6
         end
 
         context "with 'income' for dependants" do
-          context "monthly_income" do
+          context "monthly frequency" do
             let(:params) { { dependants: dependant_params.map { _1.merge("income" => { "amount" => 200, "frequency" => "monthly" }) } } }
 
             it "creates a log record" do
@@ -619,7 +619,7 @@ module V6
             end
           end
 
-          context "weekly_income" do
+          context "weekly frequency" do
             let(:params) { { dependants: dependant_params.map { _1.merge("income" => { "amount" => 400, "frequency" => "weekly" }) } } }
 
             it "creates a log record" do
