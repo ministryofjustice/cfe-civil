@@ -615,50 +615,57 @@ module V6
             cash_transactions: cash_transactions_params,
           }
         end
+        let(:cash_transaction_log) { log_record.request.deep_symbolize_keys.fetch(:cash_transactions) }
 
-        it "redacts the client ids in the log" do
-          expect(log_record.request.deep_symbolize_keys.except(:assessment, :applicant, :proceeding_types, :irregular_incomes, :dependants))
+        it "has 2 keys" do
+          expect(cash_transaction_log.keys).to match_array(%i[income outgoings])
+        end
+
+        it "redacts income client_ids" do
+          expect(cash_transaction_log.fetch(:income))
+            .to match_array(
+              [{ category: "maintenance_in",
+                 payments: [{ date: month2.to_s, amount: 1033.44, client_id: redacted_message },
+                            { date: month3.to_s, amount: 1033.44, client_id: redacted_message },
+                            { date: month1.to_s, amount: 1033.44, client_id: redacted_message }] },
+               { category: "friends_or_family",
+                 payments: [{ date: month2.to_s, amount: 250.0, client_id: redacted_message },
+                            { date: month3.to_s, amount: 250.0, client_id: redacted_message },
+                            { date: month1.to_s, amount: 250.0, client_id: redacted_message }] },
+               { category: "benefits",
+                 payments: [{ date: month2.to_s, amount: 65.12, client_id: redacted_message },
+                            { date: month3.to_s, amount: 65.12, client_id: redacted_message },
+                            { date: month1.to_s, amount: 65.12, client_id: redacted_message }] },
+               { category: "property_or_lodger",
+                 payments: [{ date: month2.to_s, amount: 91.87, client_id: redacted_message },
+                            { date: month3.to_s, amount: 91.87, client_id: redacted_message },
+                            { date: month1.to_s, amount: 91.87, client_id: redacted_message }] },
+               { category: "pension",
+                 payments: [{ date: month2.to_s, amount: 34.12, client_id: redacted_message },
+                            { date: month3.to_s, amount: 34.12, client_id: redacted_message },
+                            { date: month1.to_s, amount: 34.12, client_id: redacted_message }] }],
+            )
+        end
+
+        it "redacts outgoings client ids in the log" do
+          expect(cash_transaction_log.fetch(:outgoings))
             .to eq(
-              {
-                cash_transactions: {
-                  income: [{ category: "maintenance_in",
-                             payments: [{ date: "2022-04-01", amount: 1033.44, client_id: redacted_message },
-                                        { date: "2022-05-01", amount: 1033.44, client_id: redacted_message },
-                                        { date: "2022-03-01", amount: 1033.44, client_id: redacted_message }] },
-                           { category: "friends_or_family",
-                             payments: [{ date: "2022-04-01", amount: 250.0, client_id: redacted_message },
-                                        { date: "2022-05-01", amount: 250.0, client_id: redacted_message },
-                                        { date: "2022-03-01", amount: 250.0, client_id: redacted_message }] },
-                           { category: "benefits",
-                             payments: [{ date: "2022-04-01", amount: 65.12, client_id: redacted_message },
-                                        { date: "2022-05-01", amount: 65.12, client_id: redacted_message },
-                                        { date: "2022-03-01", amount: 65.12, client_id: redacted_message }] },
-                           { category: "property_or_lodger",
-                             payments: [{ date: "2022-04-01", amount: 91.87, client_id: redacted_message },
-                                        { date: "2022-05-01", amount: 91.87, client_id: redacted_message },
-                                        { date: "2022-03-01", amount: 91.87, client_id: redacted_message }] },
-                           { category: "pension",
-                             payments: [{ date: "2022-04-01", amount: 34.12, client_id: redacted_message },
-                                        { date: "2022-05-01", amount: 34.12, client_id: redacted_message },
-                                        { date: "2022-03-01", amount: 34.12, client_id: redacted_message }] }],
-                  outgoings: [{ category: "maintenance_out",
-                                payments: [{ date: "2022-04-01", amount: 256.0, client_id: redacted_message },
-                                           { date: "2022-05-01", amount: 256.0, client_id: redacted_message },
-                                           { date: "2022-03-01", amount: 256.0, client_id: redacted_message }] },
-                              { category: "child_care",
-                                payments: [{ date: "2022-04-01", amount: 257.0, client_id: redacted_message },
-                                           { date: "2022-05-01", amount: 257.0, client_id: redacted_message },
-                                           { date: "2022-03-01", amount: 257.0, client_id: redacted_message }] },
-                              { category: "legal_aid",
-                                payments: [{ date: "2022-04-01", amount: 44.54, client_id: redacted_message },
-                                           { date: "2022-05-01", amount: 44.54, client_id: redacted_message },
-                                           { date: "2022-03-01", amount: 44.54, client_id: redacted_message }] },
-                              { category: "rent_or_mortgage",
-                                payments: [{ date: "2022-04-01", amount: 87.54, client_id: redacted_message },
-                                           { date: "2022-05-01", amount: 87.54, client_id: redacted_message },
-                                           { date: "2022-03-01", amount: 87.54, client_id: redacted_message }] }],
-                },
-              },
+              [{ category: "maintenance_out",
+                 payments: [{ date: month2.to_s, amount: 256.0, client_id: redacted_message },
+                            { date: month3.to_s, amount: 256.0, client_id: redacted_message },
+                            { date: month1.to_s, amount: 256.0, client_id: redacted_message }] },
+               { category: "child_care",
+                 payments: [{ date: month2.to_s, amount: 257.0, client_id: redacted_message },
+                            { date: month3.to_s, amount: 257.0, client_id: redacted_message },
+                            { date: month1.to_s, amount: 257.0, client_id: redacted_message }] },
+               { category: "legal_aid",
+                 payments: [{ date: month2.to_s, amount: 44.54, client_id: redacted_message },
+                            { date: month3.to_s, amount: 44.54, client_id: redacted_message },
+                            { date: month1.to_s, amount: 44.54, client_id: redacted_message }] },
+               { category: "rent_or_mortgage",
+                 payments: [{ date: month2.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: month3.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: month1.to_s, amount: 87.54, client_id: redacted_message }] }],
             )
         end
 
