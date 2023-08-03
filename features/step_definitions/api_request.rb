@@ -1,5 +1,8 @@
 Given("I am undertaking a certificated assessment") do
-  StateBenefitType.create! label: "housing_benefit", name: "Housing benefit", exclude_from_gross_income: true
+  StateBenefitType.find_or_create_by! label: "housing_benefit" do |sbt|
+    sbt.name = "Housing benefit"
+    sbt.exclude_from_gross_income = true
+  end
   @assessment_data = { client_reference_id: "N/A", submission_date: "2022-05-10" }
   @applicant_data = { date_of_birth: "1979-12-20",
                       involvement_type: "applicant",
@@ -23,7 +26,10 @@ Given("A submission date of {string}") do |date|
 end
 
 Given("I am undertaking a controlled assessment") do
-  StateBenefitType.create! label: "housing_benefit", name: "Housing benefit", exclude_from_gross_income: true
+  StateBenefitType.find_or_create_by! label: "housing_benefit" do |sbt|
+    sbt.name = "Housing benefit"
+    sbt.exclude_from_gross_income = true
+  end
   @assessment_data = { client_reference_id: "N/A", submission_date: "2022-05-10", level_of_help: "controlled" }
   @applicant_data = { date_of_birth: "1989-12-20",
                       involvement_type: "applicant",
