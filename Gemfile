@@ -85,6 +85,10 @@ group :development, :test do
   gem "rswag-specs"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
+
+  # This is needed to allow IntelliJ to run cucumber scenarios individually without producing
+  # strange errors and not running the feature.
+  gem "spring"
   gem "undercover"
 end
 
