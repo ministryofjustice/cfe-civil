@@ -245,24 +245,29 @@ components:
             format: date
             example: '1992-07-22'
           gross:
-            "$ref": "#/components/schemas/currency"
+            oneOf:
+            - "$ref": "#/components/schemas/currency"
             description: Gross payment income received
             example: '101.01'
           benefits_in_kind:
-            "$ref": "#/components/schemas/positive_currency"
+            oneOf:
+            - "$ref": "#/components/schemas/positive_currency"
             description: Benefit in kind amount received
           tax:
-            "$ref": "#/components/schemas/currency"
+            oneOf:
+            - "$ref": "#/components/schemas/currency"
             description: Amount of tax paid - normally negative, but can be positive
               for a refund
             example: -10.01
           national_insurance:
-            "$ref": "#/components/schemas/currency"
+            oneOf:
+            - "$ref": "#/components/schemas/currency"
             description: Amount of national insurance paid - normally negative, but
               can be positive for a refund
             example: -5.24
           net_employment_income:
-            "$ref": "#/components/schemas/currency"
+            oneOf:
+            - "$ref": "#/components/schemas/currency"
             description: Deprecated field not used in calculation
             deprecated: true
     NonPropertyAsset:
@@ -631,7 +636,8 @@ components:
             amount:
               "$ref": "#/components/schemas/currency"
         assets_value:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Dependant's total assets value
       additionalProperties: false
     IrregularIncomePayments:
@@ -705,7 +711,8 @@ components:
                   format: date
                   example: '1992-07-28'
                 amount:
-                  "$ref": "#/components/schemas/positive_currency"
+                  oneOf:
+                  - "$ref": "#/components/schemas/positive_currency"
                   description: Amount of payment received
                 client_id:
                   type: string
@@ -795,10 +802,12 @@ components:
       - shared_with_housing_assoc
       properties:
         value:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Financial value of the property
         outstanding_mortgage:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Amount outstanding on all mortgages against this property
         percentage_owned:
           type: number
@@ -988,7 +997,8 @@ components:
                 format: date
                 example: '1992-07-29'
               amount:
-                "$ref": "#/components/schemas/currency"
+                oneOf:
+                - "$ref": "#/components/schemas/currency"
                 description: Amount of payment received
               flags:
                 type: object
@@ -1007,10 +1017,12 @@ components:
       - date_of_purchase
       properties:
         value:
-          "$ref": "#/components/schemas/positive_currency"
+          oneOf:
+          - "$ref": "#/components/schemas/positive_currency"
           description: Financial value of the vehicle
         loan_amount_outstanding:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Amount remaining, if any, of a loan used to purchase the vehicle
         date_of_purchase:
           type: string
