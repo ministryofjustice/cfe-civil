@@ -486,6 +486,7 @@ class SwaggerDocs
               },
               submission_date: {
                 type: :string,
+                format: :date,
                 description: "Date of the original submission (iso8601 format)",
                 example: "2022-05-19",
               },

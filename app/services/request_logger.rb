@@ -53,9 +53,9 @@ class RequestLogger
     end
 
     def redact_dob(submission_date, date_of_birth)
-      if submission_date.present? && date_of_birth.present?
-        now = Date.parse(submission_date)
-        dob = Date.parse date_of_birth
+      now = safe_parse_date submission_date
+      dob = safe_parse_date date_of_birth
+      if now.present? && dob.present?
         redacted = Date.new dob.year, now.month, now.day
         if redacted > dob
           Date.new(redacted.year - 1, redacted.month, redacted.day).to_s
@@ -68,6 +68,12 @@ class RequestLogger
     end
 
   private
+
+    def safe_parse_date(date)
+      Date.parse(date) if date
+    rescue ArgumentError
+      nil
+    end
 
     def redact_remarks_client_ids(object)
       object.transform_values do |value|
