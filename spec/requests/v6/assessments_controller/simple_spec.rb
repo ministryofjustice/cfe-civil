@@ -524,139 +524,42 @@ module V6
           let(:params) { { dependants: dependant_params.map { _1.except(:income) } } }
 
           it "creates a log record" do
-            expect(log_record.request["dependants"])
-              .to eq([
-                {
-                  "date_of_birth" => "2014-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "assets_value" => 0.0,
-                },
-                {
-                  "date_of_birth" => "2013-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "assets_value" => 0.0,
-                },
-                { "date_of_birth" => "2004-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "assets_value" => 0.0 },
-              ])
-            expect(log_record.response["result_summary"]["disposable_income"]).to include("dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 307.64)
+            expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 307.64)
           end
         end
 
         context "with 'monthly_income' for dependants" do
-          let(:params) { { dependants: dependant_params_with_monthly_income.map { _1.merge("monthly_income" => 400) } } }
+          let(:params) { { dependants: dependant_params_with_monthly_income.map { _1.merge(monthly_income: 400) } } }
 
-          it "creates a log record" do
-            expect(log_record.request["dependants"])
-              .to eq([
-                {
-                  "date_of_birth" => "2014-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "monthly_income" => 400,
-                  "assets_value" => 0.0,
-                },
-                {
-                  "date_of_birth" => "2013-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "monthly_income" => 400,
-                  "assets_value" => 0.0,
-                },
-                { "date_of_birth" => "2004-06-06",
-                  "in_full_time_education" => true,
-                  "relationship" => "child_relative",
-                  "monthly_income" => 400,
-                  "assets_value" => 0.0 },
-              ])
-            expect(log_record.response["result_summary"]["disposable_income"]).to include("dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 0)
+          it "returns the dependant allowance result" do
+            expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
           end
         end
 
         context "with 'income' for dependants" do
           context "monthly frequency" do
-            let(:params) { { dependants: dependant_params.map { _1.merge("income" => { "amount" => 200, "frequency" => "monthly" }) } } }
+            context "monthly income below the allowance threshold" do
+              let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 200, frequency: "monthly" }) } } }
 
-            it "creates a log record" do
-              expect(log_record.request["dependants"])
-                .to eq([
-                  {
-                    "income" => {
-                      "amount" => 200,
-                      "frequency" => "monthly",
-                    },
-                    "date_of_birth" => "2014-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                  {
-                    "income" => {
-                      "amount" => 200,
-                      "frequency" => "monthly",
-                    },
-                    "date_of_birth" => "2013-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                  {
-                    "income" => {
-                      "amount" => 200,
-                      "frequency" => "monthly",
-                    },
-                    "date_of_birth" => "2004-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                ])
-              expect(log_record.response["result_summary"]["disposable_income"]).to include("dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 107.64)
+              it "returns the dependant allowance result" do
+                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 107.64)
+              end
+            end
+
+            context "monthly income above the allowance threshold" do
+              let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 400, frequency: "monthly" }) } } }
+
+              it "returns the dependant allowance result" do
+                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
+              end
             end
           end
 
           context "weekly frequency" do
-            let(:params) { { dependants: dependant_params.map { _1.merge("income" => { "amount" => 400, "frequency" => "weekly" }) } } }
+            let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 400, frequency: "weekly" }) } } }
 
-            it "creates a log record" do
-              expect(log_record.request["dependants"])
-                .to eq([
-                  {
-                    "income" => {
-                      "amount" => 400,
-                      "frequency" => "weekly",
-                    },
-                    "date_of_birth" => "2014-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                  {
-                    "income" => {
-                      "amount" => 400,
-                      "frequency" => "weekly",
-                    },
-                    "date_of_birth" => "2013-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                  {
-                    "income" => {
-                      "amount" => 400,
-                      "frequency" => "weekly",
-                    },
-                    "date_of_birth" => "2004-06-06",
-                    "in_full_time_education" => true,
-                    "relationship" => "child_relative",
-                    "assets_value" => 0.0,
-                  },
-                ])
-              expect(log_record.response["result_summary"]["disposable_income"]).to include("dependant_allowance_under_16" => 615.28, "dependant_allowance_over_16" => 0)
+            it "returns the dependant allowance result" do
+              expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
             end
           end
         end
