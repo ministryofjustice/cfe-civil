@@ -264,6 +264,7 @@ components:
           net_employment_income:
             "$ref": "#/components/schemas/currency"
             description: Deprecated field not used in calculation
+            deprecated: true
     NonPropertyAsset:
       type: object
       additionalProperties: false
@@ -418,7 +419,10 @@ components:
         has_partner_opponent:
           type: boolean
           example: false
-          description: Applicant has partner opponent (unused in calculation)
+          description: Deprecated - not used in the calculation. A partner that is
+            an opponent in the case should *not* be included in the request. For more
+            details, see 'partner'
+          deprecated: true
         receives_qualifying_benefit:
           type: boolean
           example: false
@@ -1867,7 +1871,11 @@ paths:
                   type: object
                   required:
                   - partner
-                  description: Full information about an applicant's partner
+                  description: 'Partner of the applicant''s financial and personal
+                    info. Definition of ''partner'' that should included in the means
+                    test is described in the Lord Chancellor''s guidance - certificated:
+                    ''3.1 Individual and partner'', controlled: ''4.2 Aggregation
+                    of Means''.'
                   example:
                     partner:
                       date_of_birth: '1992-07-22'
@@ -1924,7 +1932,7 @@ paths:
                   properties:
                     partner:
                       type: object
-                      description: The partner of the applicant
+                      description: Partner's personal info
                       required:
                       - date_of_birth
                       additionalProperties: false
@@ -1933,7 +1941,7 @@ paths:
                           type: string
                           format: date
                           example: '1992-07-22'
-                          description: Applicant's partner's date of birth
+                          description: Partner's date of birth
                         employed:
                           type: boolean
                           description: Deprecated - employment is determined by presence

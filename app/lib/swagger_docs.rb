@@ -300,7 +300,9 @@ class SwaggerDocs
                 },
                 net_employment_income: {
                   "$ref" => SCHEMA_COMPONENTS[:currency],
+                  # NB when using a $ref, the 'description' and 'deprecated' don't get displayed in the swagger web page - they are only visible to clients in the raw swagger.yaml
                   description: "Deprecated field not used in calculation",
+                  deprecated: true,
                 },
               },
             },
@@ -461,7 +463,8 @@ class SwaggerDocs
               },
               has_partner_opponent: { type: :boolean,
                                       example: false,
-                                      description: "Applicant has partner opponent (unused in calculation)" },
+                                      description: "Deprecated - not used in the calculation. A partner that is an opponent in the case should *not* be included in the request. For more details, see 'partner'",
+                                      deprecated: true },
               receives_qualifying_benefit: { type: :boolean,
                                              example: false,
                                              description: "Applicant receives qualifying benefit" },

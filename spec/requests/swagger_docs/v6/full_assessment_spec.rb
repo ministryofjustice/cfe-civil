@@ -89,12 +89,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       type: :object,
                       required: %i[partner],
                       additionalProperties: false,
-                      description: "Full information about an applicant's partner",
+                      description: "Partner of the applicant's financial and personal info. Definition of 'partner' that should included in the means test is described in the Lord Chancellor's guidance - certificated: '3.1 Individual and partner', controlled: '4.2 Aggregation of Means'.",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
                       properties: {
                         partner: {
                           type: :object,
-                          description: "The partner of the applicant",
+                          description: "Partner's personal info",
                           required: %i[date_of_birth],
                           additionalProperties: false,
                           properties: {
@@ -102,7 +102,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                               type: :string,
                               format: :date,
                               example: "1992-07-22",
-                              description: "Applicant's partner's date of birth",
+                              description: "Partner's date of birth",
                             },
                             employed: {
                               type: :boolean,
