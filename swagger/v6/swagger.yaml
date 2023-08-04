@@ -3,7 +3,7 @@ openapi: 3.0.1
 info:
   title: API v6
   description: |-
-    # Check financial eligibility for legal aid.
+    # CFE-Civil - Check Financial Eligibility for Civil legal aid
 
     ## Usage:
       - Calculate eligibility by POSTing a payload to `/v6/assessments`
@@ -282,7 +282,8 @@ components:
           description: Description of asset
     Employments:
       type: array
-      description: One or more employment income details
+      description: 'Employments, with pay info supplied as payment history over 3
+        calendar months. (Compare with: ''employment_details'')'
       items:
         type: object
         additionalProperties: false
@@ -290,7 +291,8 @@ components:
         - name
         - client_id
         - payments
-        description: Employment income detail
+        description: Employment, with pay info supplied as payment history over 3
+          calendar months
         properties:
           name:
             type: string
@@ -397,7 +399,7 @@ components:
                     example: 101.01
     Applicant:
       type: object
-      description: Object describing pertinent applicant details
+      description: Applicant's personal details
       required:
       - date_of_birth
       - receives_qualifying_benefit
@@ -407,13 +409,13 @@ components:
           type: string
           format: date
           example: '1992-07-25'
-          description: Applicant date of birth
+          description: Applicant's date of birth
         employed:
           oneOf:
           - type: boolean
           - type: 'null'
           example: true
-          description: Deprecated - employment is determined by presence of gross
+          description: Deprecated - employment is now determined by presence of gross
             employment income
           deprecated: true
         has_partner_opponent:
@@ -864,7 +866,8 @@ components:
       required:
       - income
       additionalProperties: false
-      description: This should be filled out when the client or partner is self employed
+      description: Self employment, with pay info supplied in the 'how much, how often'
+        pattern
       properties:
         client_reference:
           type: string
@@ -907,7 +910,8 @@ components:
       required:
       - income
       additionalProperties: false
-      description: Details about standard employment
+      description: Employment, with pay info supplied in the 'how much, how often'
+        pattern
       properties:
         client_reference:
           type: string
@@ -1837,8 +1841,8 @@ paths:
                       "$ref": "#/components/schemas/Property"
                     additional_properties:
                       type: array
-                      description: One or more additional properties owned by the
-                        applicant
+                      description: Additional properties owned by the applicant -
+                        i.e. not including the main home
                       items:
                         "$ref": "#/components/schemas/Property"
                 regular_transactions:
@@ -1848,8 +1852,8 @@ paths:
                     "$ref": "#/components/schemas/RegularTransaction"
                 state_benefits:
                   type: array
-                  description: One or more state benefits received by the applicant
-                    and categorized by name
+                  description: Benefits paid by the state to the applicant. One item
+                    per type of benefit
                   items:
                     "$ref": "#/components/schemas/StateBenefit"
                 vehicles:
@@ -1859,12 +1863,14 @@ paths:
                     "$ref": "#/components/schemas/Vehicle"
                 employment_details:
                   type: array
-                  description: One or more employment details
+                  description: 'Employments, with pay info supplied in the ''how much,
+                    how often'' pattern. (Compare with: ''employment_income'')'
                   items:
                     "$ref": "#/components/schemas/EmploymentDetails"
                 self_employment_details:
                   type: array
-                  description: One or more self employment details
+                  description: Self employments, with pay info supplied in the 'how
+                    much, how often' pattern
                   items:
                     "$ref": "#/components/schemas/SelfEmployment"
                 partner:
@@ -1944,8 +1950,8 @@ paths:
                           description: Partner's date of birth
                         employed:
                           type: boolean
-                          description: Deprecated - employment is determined by presence
-                            of gross employment income
+                          description: Deprecated - employment is now determined by
+                            presence of gross employment income
                           deprecated: true
                     cash_transactions:
                       "$ref": "#/components/schemas/CashTransactions"
@@ -1957,12 +1963,14 @@ paths:
                       "$ref": "#/components/schemas/Employments"
                     employment_details:
                       type: array
-                      description: One or more employment details for partner
+                      description: 'Employments, with pay info supplied in the ''how
+                        much, how often'' pattern, for partner. (Compare with: ''employments'')'
                       items:
                         "$ref": "#/components/schemas/EmploymentDetails"
                     self_employment_details:
                       type: array
-                      description: One or more self employment details for partner
+                      description: Self employments, with pay info supplied in the
+                        'how much, how often' pattern, for partner
                       items:
                         "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
@@ -1978,8 +1986,8 @@ paths:
                         "$ref": "#/components/schemas/StateBenefit"
                     additional_properties:
                       type: array
-                      description: One or more additional properties owned by the
-                        applicant's partner
+                      description: Additional properties owned by the partner - i.e.
+                        excluding those already listed for the applicant
                       items:
                         "$ref": "#/components/schemas/Property"
                     capitals:
