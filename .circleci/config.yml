@@ -120,7 +120,10 @@ references:
       name: Install ruby gems
       command: |
         sudo gem update --system
-        bundle install --without development --path=vendor/bundle --jobs=4 && bundle clean
+        bundle config set --local frozen 'true'
+        bundle config set --local path 'vendor/bundle'
+        bundle config set --local without 'development'
+        bundle install --jobs=4 && bundle clean
 
   save_gems_cache: &save_gems_cache
     save_cache:
