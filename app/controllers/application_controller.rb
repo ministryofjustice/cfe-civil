@@ -20,8 +20,6 @@ class ApplicationController < ActionController::API
 
   def render_unprocessable(message)
     messages = Array.wrap(message)
-    sentry_message = messages.join(", ")
-    Sentry.capture_message(sentry_message)
     render json: { success: false, errors: messages }, status: :unprocessable_entity
   end
 
