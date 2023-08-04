@@ -96,6 +96,7 @@ end
 
 group :development do
   gem "guard"
+  gem "guard-bundler"
   gem "guard-cucumber"
   gem "guard-rspec"
   gem "guard-rubocop"
