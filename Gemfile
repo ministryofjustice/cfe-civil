@@ -70,6 +70,8 @@ gem "govuk_notify_rails", "~> 2.2.0"
 # needed for diffing in re-runner tool
 gem "hashdiff"
 
+gem "lograge"
+
 group :development, :test do
   gem "awesome_print"
   gem "bullet"

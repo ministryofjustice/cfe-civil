@@ -265,6 +265,11 @@ GEM
     listen (3.8.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
+    lograge (0.13.0)
+      actionpack (>= 4)
+      activesupport (>= 4)
+      railties (>= 4)
+      request_store (~> 1.0)
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
@@ -376,6 +381,8 @@ GEM
       declarative (< 0.1.0)
       trailblazer-option (>= 0.1.1, < 0.2.0)
       uber (< 0.2.0)
+    request_store (1.5.1)
+      rack (>= 1.4)
     retriable (3.1.2)
     rexml (3.2.6)
     roo (2.10.0)
@@ -542,6 +549,7 @@ DEPENDENCIES
   hashdiff
   json-schema (~> 3.0.0)
   listen (>= 3.0.5, < 3.9)
+  lograge
   nesty
   net-imap
   net-pop

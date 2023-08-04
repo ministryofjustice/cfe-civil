@@ -40,9 +40,12 @@ Rails.application.configure do
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
 
-  # Use the lowest log level to ensure availability of diagnostic information
-  # when problems arise.
-  config.log_level = :debug
+  # Include generic and useful information about system operation, but avoid logging too much
+  # information to avoid inadvertent exposure of personally identifiable information (PII).
+  config.log_level = :info
+
+  # enable lograge in production builds so that parameters are not logged into MOJ wide system logs
+  config.lograge.enabled = true
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
