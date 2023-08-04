@@ -373,7 +373,9 @@ on a local machine
    (to get the request_logs that will be rerun), as in:
    https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4415946946/Database+access
 
-2) RAILS_ENV=remote_database SECRET_KEY_BASE=anything rake rerun:requests
+2) Make sure the local database has had rake db:seed run on it, otherwise most requests will error
+
+3) RAILS_ENV=remote_database SECRET_KEY_BASE=anything rake rerun:requests
 
 This currently takes around 1 hour to run with 7300 requests from staging
 The output format of the diffs is 4 fields:

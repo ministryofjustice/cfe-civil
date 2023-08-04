@@ -8,7 +8,19 @@ class RedactService
       end
     end
 
+    def redact_old_client_refs
+      RequestLog.where("created_at < ?", 14.days.ago.to_date).find_each do |li|
+        li.update!(request: redact_client_ref(li.request.deep_symbolize_keys))
+      end
+    end
+
   private
+
+    def redact_client_ref(request)
+      request.tap do |req|
+        req[:assessment][:client_reference_id] = CFEConstants::REDACTED_MESSAGE
+      end
+    end
 
     def redact_data(hash)
       submission_date = hash.dig(:assessment, :submission_date)
