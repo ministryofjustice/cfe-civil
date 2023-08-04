@@ -7,7 +7,8 @@ class SwaggerDocs
     v7_proceeding_types: "#/components/schemas/v7/ProceedingTypes",
     capitals: "#/components/schemas/Capitals",
     cash_transactions: "#/components/schemas/CashTransactions",
-    dependants: "#/components/schemas/Dependants",
+    v6_dependants: "#/components/schemas/v6/Dependants",
+    v7_dependants: "#/components/schemas/v7/Dependants",
     v6_employments: "#/components/schemas/v6/Employments",
     v7_employments: "#/components/schemas/v7/Employments",
     irregular_income_payments: "#/components/schemas/IrregularIncomePayments",
@@ -40,6 +41,9 @@ class SwaggerDocs
     state_benefits_result: "#/components/schemas/StateBenefitsResult",
     other_income_result: "#/components/schemas/OtherIncomeResult",
     disposable_income_result: "#/components/schemas/DisposableIncomeResult",
+    overall_result: "#/components/schemas/OverallResult",
+    income_contribution: "#/components/schemas/IncomeContribution",
+    capital_contribution: "#/components/schemas/CapitalContribution",
   }.freeze
 
   attr_reader :version
@@ -133,6 +137,10 @@ class SwaggerDocs
               },
             ],
             example: 60.99,
+          },
+          OverallResult: {
+            type: :string,
+            enum: %w[eligible ineligible contribution_required],
           },
           PropertyResult: {
             type: :object,
@@ -461,54 +469,35 @@ class SwaggerDocs
               },
             },
           },
-          Dependants: {
-            type: :array,
-            description: "One or more dependants details",
-            items: {
-              type: :object,
-              required: %i[date_of_birth in_full_time_education relationship],
-              properties: {
-                date_of_birth: {
-                  type: :string,
-                  format: :date,
-                  example: "1992-07-27",
-                },
-                in_full_time_education: {
-                  type: :boolean,
-                  example: false,
-                  description: "Dependant is in full time education or not",
-                },
-                relationship: {
-                  type: :string,
-                  enum: %i[child_relative adult_relative],
-                  description: "Dependant's relationship to the applicant",
-                },
-                monthly_income: {
-
-                  description: "Dependant's monthly income",# legacy - some currency values are historically allowed as strings
-                deprecated: true,
+          DateOfBirth: {
+            type: :string,
+            format: :date,
+            example: "1992-07-27",
+          },
+          InFullTimeEducation: {
+            type: :boolean,
+            example: false,
+            description: "Dependant is in full time education or not",
+          },
+          RelationShip: {
+            type: :string,
+            enum: %i[child_relative adult_relative],
+            description: "Dependant's relationship to the applicant",
+          },
+          DependantIncome: {
+            type: :object,
+            required: %i[frequency amount],
+            additionalProperties: false,
+            properties: {
+              frequency: {
+                type: :string,
+                enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
+              },
+              amount: {
                 oneOf: [
                   { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
-                  { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
                 ],
                 example: 0,
-              },
-              income: {
-                type: :object,
-                required: %i[frequency amount],
-                additionalProperties: false,
-                properties: {
-                  frequency: {
-                    type: :string,
-                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
-                  },
-                  amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
-                },
-                },
-                assets_value: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                  description: "Dependant's total assets value",
-                },
               },
             },
           },
@@ -915,7 +904,7 @@ class SwaggerDocs
             type: :number,
             format: :decimal,
             minimum: 0,
-            description: "Duplicate of results_summary capital_contribution field",
+            description: "Amount of capital contribution required (only valid if result is contribution_required)",
           },
           CombinedDisputedCapital: {
             description: "Combined applicant and partner disputed capital",
@@ -1020,7 +1009,7 @@ class SwaggerDocs
             type: :number,
             format: :decimal,
             minimum: 0,
-            description: "Duplicate of result_summary.income_contribution",
+            description: "Amount of income contribution required (only valid if result is contribution_required)",
           },
           DisposableIncome: {
             type: :object,
@@ -1371,10 +1360,7 @@ class SwaggerDocs
                   },
                   upper_threshold: { type: :number },
                   lower_threshold: { type: :number },
-                  result: {
-                    type: :string,
-                    enum: %w[eligible ineligible contribution_required],
-                  },
+                  result: { "$ref": "#/components/schemas/OverallResult" },
                 },
               },
             },
@@ -1420,6 +1406,32 @@ class SwaggerDocs
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
                 proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
+              },
+            },
+            Dependants: {
+              type: :array,
+              description: "One or more dependants details",
+              items: {
+                type: :object,
+                required: %i[date_of_birth in_full_time_education relationship],
+                properties: {
+                  date_of_birth: { "$ref": "#/components/schemas/DateOfBirth" },
+                  in_full_time_education: { "$ref": "#/components/schemas/InFullTimeEducation" },
+                  relationship: { "$ref": "#/components/schemas/RelationShip" },
+                  monthly_income: {
+                    description: "Dependant's monthly income",
+                    deprecated: true,
+                    oneOf: [
+                      { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
+                      { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
+                    ],
+                  },
+                  income: { "$ref": "#/components/schemas/DependantIncome" },
+                  assets_value: {
+                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    description: "Dependant's total assets value",
+                  },
+                },
               },
             },
           },
@@ -1536,10 +1548,7 @@ class SwaggerDocs
                   },
                   upper_threshold: { type: :number },
                   lower_threshold: { type: :number },
-                  result: {
-                    type: :string,
-                    enum: %w[eligible ineligible contribution_required],
-                  },
+                  result: { "$ref": "#/components/schemas/OverallResult" },
                 },
               },
             },
@@ -1585,6 +1594,26 @@ class SwaggerDocs
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
                 proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
+              },
+            },
+            Dependants: {
+              type: :array,
+              description: "One or more dependants details",
+              items: {
+                type: :object,
+                required: %i[date_of_birth in_full_time_education relationship],
+                properties: {
+                  date_of_birth: { "$ref": "#/components/schemas/DateOfBirth" },
+                  in_full_time_education: { "$ref": "#/components/schemas/InFullTimeEducation" },
+                  relationship: { "$ref": "#/components/schemas/RelationShip" },
+                  income: { "$ref": "#/components/schemas/DependantIncome" },
+                  assets_value: {
+                    oneOf: [
+                      { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
+                    ],
+                    description: "Dependant's total assets value",
+                  },
+                },
               },
             },
           },

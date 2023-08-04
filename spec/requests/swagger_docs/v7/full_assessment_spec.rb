@@ -26,7 +26,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     proceeding_types: { "$ref" => components[:v7_proceeding_types] },
                     capitals: { "$ref" => components[:capitals] },
                     cash_transactions: { "$ref" => components[:cash_transactions] },
-                    dependants: { "$ref" => components[:dependants] },
+                    dependants: { "$ref" => components[:v7_dependants] },
                     employment_income: { "$ref" => components[:v7_employments] },
                     irregular_incomes: {
                       type: :object,
@@ -135,7 +135,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           description: "One or more vehicles' details",
                           items: { "$ref" => components[:vehicle] },
                         },
-                        dependants: { "$ref" => components[:dependants] },
+                        dependants: { "$ref" => components[:v7_dependants] },
                       },
                     },
                     explicit_remarks: { "$ref" => components[:explicit_remarks] },
@@ -157,22 +157,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        additionalProperties: false,
                        required: %i[result capital_contribution income_contribution proceeding_types],
                        properties: {
-                         result: {
-                           type: :string,
-                           enum: %w[eligible ineligible contribution_required],
-                         },
-                         income_contribution: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of income contribution required (only valid if result is contribution_required)",
-                         },
-                         capital_contribution: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of capital contribution required (only valid if result is contribution_required)",
-                         },
+                         result: { "$ref" => components[:overall_result] },
+                         income_contribution: { "$ref" => components[:income_contribution] },
+                         capital_contribution: { "$ref" => components[:capital_contribution] },
                          proceeding_types: { "$ref" => components[:v7_proceeding_type_results] },
                        },
                      },
