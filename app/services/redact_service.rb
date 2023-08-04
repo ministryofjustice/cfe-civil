@@ -9,7 +9,7 @@ class RedactService
     end
 
     def redact_old_client_refs
-      RequestLog.find_each.select { |log| log.created_at < 14.days.ago }.each do |li|
+      RequestLog.where("created_at < ?", 14.days.ago).find_each do |li|
         li.update!(request: redact_client_ref(li.request.deep_symbolize_keys))
       end
     end
