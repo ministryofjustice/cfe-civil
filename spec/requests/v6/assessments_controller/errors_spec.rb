@@ -6,11 +6,10 @@ module V6
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
       let(:employed) { false }
       let(:date_of_birth) { "1992-07-22" }
-      let(:date_of_birth_1) { "2022-02-02" }
       let(:client_id) { "347b707b-d795-47c2-8b39-ccf022eae33b" }
       let(:user_agent) { Faker::ProgrammingLanguage.name }
-      let(:current_date) { Date.new(2022, 6, 6) }
-      let(:submission_date_params) { { submission_date: current_date.to_s } }
+      let(:current_date) { Date.new(2022, 6, 6).to_s }
+      let(:submission_date_params) { { submission_date: current_date } }
       let(:default_params) do
         {
           assessment: submission_date_params,
@@ -78,6 +77,15 @@ module V6
           it "returns error JSON for '#/'" do
             expect(parsed_response[:errors]).to include(%r{The property '#/' contains additional properties})
           end
+        end
+      end
+
+      context "with an invalid submission date" do
+        let(:current_date) { "frobulate" }
+        let(:params) { {} }
+
+        it "returns an error" do
+          expect(parsed_response[:errors]).to include(%r{Date::Error: invalid date})
         end
       end
 
@@ -310,16 +318,13 @@ module V6
       end
 
       context "with an invalid other incomes" do
+        let(:payment) { { date: "2022-02-27", amount: 256, client_id: } }
         let(:params) do
           {
             other_incomes: [{
               source: "benefits",
               additional_attribute: "additional_attribute",
-              payments: [{
-                date: date_of_birth_1,
-                amount: 256,
-                client_id:,
-              }],
+              payments: [payment],
             }],
           }
         end
@@ -333,12 +338,7 @@ module V6
             {
               other_incomes: [{
                 source: "benefits",
-                payments: [{
-                  date: date_of_birth_1,
-                  amount: 256,
-                  client_id:,
-                  additional_attribute: "additional_attribute",
-                }],
+                payments: [payment.merge(additional_attribute: "additional_attribute")],
               }],
             }
           end
