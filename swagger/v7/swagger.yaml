@@ -262,9 +262,9 @@ components:
               can be positive for a refund
             example: -5.24
           net_employment_income:
+            "$ref": "#/components/schemas/currency"
             description: Deprecated field not used in calculation
             deprecated: true
-            "$ref": "#/components/schemas/currency"
     NonPropertyAsset:
       type: object
       additionalProperties: false
@@ -420,10 +420,8 @@ components:
           type: boolean
           example: false
           description: Deprecated - not used in the calculation. A partner that is
-            an opponent in the case should *not* be included in the request. Definition
-            of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1
-            Individual and partner' and LC's Controlled Guidance '4.2 Aggregation
-            of Means'
+            an opponent in the case should *not* be included in the request. For more
+            details, see 'partner'
           deprecated: true
         receives_qualifying_benefit:
           type: boolean
@@ -1873,10 +1871,11 @@ paths:
                   type: object
                   required:
                   - partner
-                  description: Partner of the applicant's financial and personal info.
-                    Definition of 'partner' is described in Lord Chancellor's Certificated
-                    Guidance '3.1 Individual and partner' and LC's Controlled Guidance
-                    '4.2 Aggregation of Means'
+                  description: 'Partner of the applicant''s financial and personal
+                    info. Definition of ''partner'' that should included in the means
+                    test is described in the Lord Chancellor''s guidance - certificated:
+                    ''3.1 Individual and partner'', controlled: ''4.2 Aggregation
+                    of Means''.'
                   example:
                     partner:
                       date_of_birth: '1992-07-22'

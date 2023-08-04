@@ -463,7 +463,7 @@ class SwaggerDocs
               },
               has_partner_opponent: { type: :boolean,
                                       example: false,
-                                      description: "Deprecated - not used in the calculation. A partner that is an opponent in the case should *not* be included in the request. Definition of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1 Individual and partner' and LC's Controlled Guidance '4.2 Aggregation of Means'",
+                                      description: "Deprecated - not used in the calculation. A partner that is an opponent in the case should *not* be included in the request. For more details, see 'partner'",
                                       deprecated: true },
               receives_qualifying_benefit: { type: :boolean,
                                              example: false,

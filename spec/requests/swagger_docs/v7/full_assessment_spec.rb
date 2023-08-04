@@ -86,7 +86,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     partner: {
                       type: :object,
                       required: %i[partner],
-                      description: "Partner of the applicant's financial and personal info. Definition of 'partner' is described in Lord Chancellor's Certificated Guidance '3.1 Individual and partner' and LC's Controlled Guidance '4.2 Aggregation of Means'",
+                      description: "Partner of the applicant's financial and personal info. Definition of 'partner' that should included in the means test is described in the Lord Chancellor's guidance - certificated: '3.1 Individual and partner', controlled: '4.2 Aggregation of Means'.",
                       example: JSON.parse(File.read(Rails.root.join("spec/fixtures/partner_financials.json"))),
                       additionalProperties: false,
                       properties: {
