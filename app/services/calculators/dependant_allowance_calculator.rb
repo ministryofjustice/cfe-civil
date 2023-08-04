@@ -38,7 +38,7 @@ module Calculators
     end
 
     def monthly_income
-      @dependant.monthly_income
+      Utilities::MonthlyAmountConverter.call(@dependant.income_frequency, @dependant.income_amount)
     end
 
     def capital_over_allowance?

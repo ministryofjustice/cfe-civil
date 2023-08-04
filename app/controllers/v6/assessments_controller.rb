@@ -48,7 +48,26 @@ module V6
 
     def dependants(input_params, submission_date)
       dependant_params = input_params.fetch(:dependants, [])
-      dependant_params.map { |p| Dependant.new(p.merge(submission_date:)) }
+      dependant_params.map do |params|
+        updated_params = convert_monthly_income_params(params)
+        Dependant.new(updated_params.merge(submission_date:))
+      end
+    end
+
+    def convert_monthly_income_params(params)
+      income = params[:income]
+      monthly_income = params[:monthly_income]
+      if income.present?
+        income_amount = income[:amount]
+        income_frequency = income[:frequency]
+        params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
+      elsif monthly_income.present?
+        income_amount = monthly_income
+        income_frequency = CFEConstants::MONTHLY_FREQUENCY
+        params.except(:monthly_income, :income).merge(income_amount:, income_frequency:)
+      else
+        params
+      end
     end
 
     def dependant_errors(dependants)

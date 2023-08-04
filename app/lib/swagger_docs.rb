@@ -26,6 +26,8 @@ class SwaggerDocs
     proceeding_type_result: "#/components/schemas/ProceedingTypeResult",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
     currency: "#/components/schemas/currency",
+    numeric_currency: "#/components/schemas/numeric_currency",
+    string_currency: "#/components/schemas/string_currency",
     positive_currency: "#/components/schemas/positive_currency",
     applicant_result: "#/components/schemas/ApplicantResult",
     remarks: "#/components/schemas/Remarks",
@@ -98,6 +100,17 @@ class SwaggerDocs
                 pattern: "^[-+]?\\d+(\\.\\d{1,2})?$",
               },
             ],
+          },
+          numeric_currency: {
+            description: "Currency as number",
+            type: :number,
+            format: :decimal,
+            multipleOf: 0.01,
+          },
+          string_currency: {
+            description: "Currency as string",
+            type: :string,
+            pattern: "^[-+]?\\d+(\\.\\d{1,2})?$",
           },
           positive_currency: {
             description: "Non-negative number (including zero) with two decimal places",
@@ -584,8 +597,25 @@ class SwaggerDocs
                 description: "Dependant's relationship to the applicant",
               },
               monthly_income: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
                 description: "Dependant's monthly income",
+                # legacy - some currency values are historically allowed as strings
+                deprecated: true,
+                oneOf: [
+                  { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
+                  { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
+                ],
+              },
+              income: {
+                type: :object,
+                required: %i[frequency amount],
+                additionalProperties: false,
+                properties: {
+                  frequency: {
+                    type: :string,
+                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
+                  },
+                  amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
+                },
               },
               assets_value: {
                 "$ref" => SCHEMA_COMPONENTS[:currency],

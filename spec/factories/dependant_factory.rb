@@ -4,7 +4,8 @@ FactoryBot.define do
     date_of_birth { Faker::Date.birthday }
     in_full_time_education { [true, false].sample }
     relationship { %w[child_relative adult_relative].sample }
-    monthly_income { 0.0 }
+    income_amount { 0.0 }
+    income_frequency { "monthly" }
     assets_value { 0.0 }
 
     trait :child_relative do
