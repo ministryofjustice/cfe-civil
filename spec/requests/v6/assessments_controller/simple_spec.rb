@@ -1799,7 +1799,7 @@ module V6
               RedactService.redact_old_client_refs
             end
 
-            context "when present" do
+            context "when assessment.client_reference_id is present" do
               let(:params) { { assessment: { client_reference_id: client_ref } } }
 
               it "redacts the client reference" do
@@ -1807,8 +1807,10 @@ module V6
               end
             end
 
-            context "when not present" do
-              it "redacts the client reference" do
+            context "when assessment.client_reference_id not present" do
+              let(:params) { { assessment: {} } }
+
+              it "doesn't redact the client reference" do
                 expect(log_record.request["assessment"]["client_reference_id"]).to eq(nil)
               end
             end
