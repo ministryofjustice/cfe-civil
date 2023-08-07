@@ -28,7 +28,7 @@ module Decorators
           client_reference_id: assessment.client_reference_id,
           submission_date: assessment.submission_date,
           level_of_help: assessment.level_of_help,
-          applicant: applicant_decorator(@applicant.details),
+          applicant: applicant_decorator_class.new(@applicant.details),
           gross_income:,
           disposable_income: DisposableIncomeDecorator.new(
             summary: assessment.applicant_disposable_income_summary,
@@ -46,8 +46,8 @@ module Decorators
         end
       end
 
-      def applicant_decorator(applicant_details)
-        ApplicantDecorator.new(applicant_details)
+      def applicant_decorator_class
+        ApplicantDecorator
       end
 
       def gross_income
