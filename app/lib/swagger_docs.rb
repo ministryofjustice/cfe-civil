@@ -280,27 +280,26 @@ class SwaggerDocs
                   example: "1992-07-22",
                 },
                 gross: {
-                  "$ref" => SCHEMA_COMPONENTS[:currency],
+                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
                   description: "Gross payment income received",
                   example: "101.01",
                 },
                 benefits_in_kind: {
-                  "$ref" => SCHEMA_COMPONENTS[:positive_currency],
+                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                   description: "Benefit in kind amount received",
                 },
                 tax: {
-                  "$ref" => SCHEMA_COMPONENTS[:currency],
+                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                   description: "Amount of tax paid - normally negative, but can be positive for a refund",
                   example: -10.01,
                 },
                 national_insurance: {
-                  "$ref" => SCHEMA_COMPONENTS[:currency],
+                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                   description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
                   example: -5.24,
                 },
                 net_employment_income: {
-                  "$ref" => SCHEMA_COMPONENTS[:currency],
-                  # NB when using a $ref, the 'description' and 'deprecated' don't get displayed in the swagger web page - they are only visible to clients in the raw swagger.yaml
+                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                   description: "Deprecated field not used in calculation",
                   deprecated: true,
                 },
@@ -622,7 +621,7 @@ class SwaggerDocs
                 },
               },
               assets_value: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
+                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                 description: "Dependant's total assets value",
               },
             },
@@ -680,7 +679,7 @@ class SwaggerDocs
                         example: "1992-07-28",
                       },
                       amount: {
-                        "$ref" => SCHEMA_COMPONENTS[:positive_currency],
+                        oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                         description: "Amount of payment received",
                       },
                       client_id: {
@@ -723,11 +722,11 @@ class SwaggerDocs
             required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
             properties: {
               value: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
+                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                 description: "Financial value of the property",
               },
               outstanding_mortgage: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
+                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                 description: "Amount outstanding on all mortgages against this property",
               },
               percentage_owned: {
@@ -896,7 +895,7 @@ class SwaggerDocs
                       example: "1992-07-29",
                     },
                     amount: {
-                      "$ref" => SCHEMA_COMPONENTS[:currency],
+                      oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                       description: "Amount of payment received",
                     },
                     flags: {
@@ -919,11 +918,11 @@ class SwaggerDocs
             required: %i[value date_of_purchase],
             properties: {
               value: {
-                "$ref" => SCHEMA_COMPONENTS[:positive_currency],
+                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                 description: "Financial value of the vehicle",
               },
               loan_amount_outstanding: {
-                "$ref" => SCHEMA_COMPONENTS[:currency],
+                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                 description: "Amount remaining, if any, of a loan used to purchase the vehicle",
               },
               date_of_purchase: {
