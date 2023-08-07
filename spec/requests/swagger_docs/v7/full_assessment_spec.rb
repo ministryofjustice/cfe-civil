@@ -53,7 +53,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         main_home: { "$ref" => components[:property] },
                         additional_properties: {
                           type: :array,
-                          description: "One or more additional properties owned by the applicant",
+                          description: "Additional properties owned by the applicant - i.e. not including the main home",
                           items: { "$ref" => components[:property] },
                         },
                       },
@@ -75,7 +75,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     },
                     employment_details: {
                       type: :array,
-                      description: "One or more employment details",
+                      description: "Employments, with pay info supplied in the 'how much, how often' pattern",
                       items: { "$ref" => components[:employment_details] },
                     },
                     self_employment_details: {
@@ -104,7 +104,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                             },
                             employed: {
                               type: :boolean,
-                              description: "Deprecated - employment is determined by presence of gross employment income",
+                              description: "Deprecated - employment is now determined by presence of gross employment income",
                               deprecated: true,
                             },
                           },
@@ -115,12 +115,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         employments: { "$ref" => components[:employments] },
                         employment_details: {
                           type: :array,
-                          description: "One or more employment details for partner",
+                          description: "Employments, with pay info supplied in the 'how much, how often' pattern, for partner",
                           items: { "$ref" => components[:employment_details] },
                         },
                         self_employment_details: {
                           type: :array,
-                          description: "One or more self employment details for partner",
+                          description: "Self employments, with pay info supplied in the 'how much, how often' pattern, for partner",
                           items: { "$ref" => components[:self_employment] },
                         },
                         regular_transactions: {
@@ -135,7 +135,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                         },
                         additional_properties: {
                           type: :array,
-                          description: "One or more additional properties owned by the applicant's partner",
+                          description: "Additional properties owned by the partner - i.e. excluding those already listed for the applicant",
                           items: { "$ref" => components[:property] },
                         },
                         capitals: { "$ref" => components[:capitals] },

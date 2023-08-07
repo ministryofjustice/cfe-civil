@@ -45,7 +45,7 @@ class SwaggerDocs
 
   def api_description
     <<~DESCRIPTION.chomp
-      # Check financial eligibility for legal aid.
+      # CFE-Civil - Check Financial Eligibility for Civil legal aid
 
       ## Usage:
         - Calculate eligibility by POSTing a payload to `/#{@version}/assessments`
@@ -326,12 +326,12 @@ class SwaggerDocs
           },
           Employments: {
             type: :array,
-            description: "One or more employment income details",
+            description: "Employments, with pay info supplied as payment history over 3 calendar months. (Compare with: 'employment_details')",
             items: {
               type: :object,
               additionalProperties: false,
               required: %i[name client_id payments],
-              description: "Employment income detail",
+              description: "Employment, with pay info supplied as payment history over 3 calendar months",
               properties: {
                 name: {
                   type: :string,
@@ -447,18 +447,18 @@ class SwaggerDocs
           },
           Applicant: {
             type: :object,
-            description: "Object describing pertinent applicant details",
+            description: "Applicant's personal details",
             required: %i[date_of_birth receives_qualifying_benefit],
             additionalProperties: false,
             properties: {
               date_of_birth: { type: :string,
                                format: :date,
                                example: "1992-07-25",
-                               description: "Applicant date of birth" },
+                               description: "Applicant's date of birth" },
               employed: {
                 oneOf: [{ type: :boolean }, { type: :null }],
                 example: true,
-                description: "Deprecated - employment is determined by presence of gross employment income",
+                description: "Deprecated - employment is now determined by presence of gross employment income",
                 deprecated: true,
               },
               has_partner_opponent: { type: :boolean,
@@ -779,7 +779,7 @@ class SwaggerDocs
             type: :object,
             required: %i[income],
             additionalProperties: false,
-            description: "This should be filled out when the client or partner is self employed",
+            description: "Self employment, with pay info supplied in the 'how much, how often' pattern",
             properties: {
               client_reference: {
                 type: :string,
@@ -820,7 +820,7 @@ class SwaggerDocs
             type: :object,
             required: %i[income],
             additionalProperties: false,
-            description: "Details about standard employment",
+            description: "Employment, with pay info supplied in the 'how much, how often' pattern",
             properties: {
               client_reference: {
                 type: :string,
