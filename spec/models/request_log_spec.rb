@@ -4,7 +4,7 @@ RSpec.describe RequestLog do
   context "scopes" do
     describe ".with_client_reference" do
       before do
-        create(:request_log)
+        create(:request_log, request: { assessment: { client_reference_id: nil } })
         create(:request_log, request: { assessment: { client_reference_id: "client_reference_id" } })
         create(:request_log, request: { applicant: {} })
       end
