@@ -15,6 +15,7 @@ module V6
       let(:month3) { current_date.beginning_of_month - 1.month }
       let(:dob) { "2001-02-02" }
       let(:redacted_message) { CFEConstants::REDACTED_MESSAGE }
+      let(:client_ref) { "3000-01-01" }
       let(:default_params) do
         {
           assessment: submission_date_params,
@@ -1792,16 +1793,31 @@ module V6
             expect(log_record.response["timestamp"]).to eq("2022-04-20")
           end
 
-          it "redacts the client reference" do
-            RequestLog.update_all(created_at: 3.weeks.ago)
-            RedactService.redact_old_client_refs
+          context "client_reference_id" do
+            before do
+              RequestLog.update_all(created_at: 3.weeks.ago)
+              RedactService.redact_old_client_refs
+            end
 
-            expect(log_record.request["assessment"]["client_reference_id"]).to eq(redacted_message)
+            context "when assessment.client_reference_id is present" do
+              let(:params) { { assessment: { client_reference_id: client_ref } } }
+
+              it "redacts the client reference" do
+                expect(log_record.request["assessment"]["client_reference_id"]).to eq(redacted_message)
+              end
+            end
+
+            context "when assessment.client_reference_id not present" do
+              let(:params) { { assessment: {} } }
+
+              it "doesn't redact the client reference" do
+                expect(log_record.request["assessment"]["client_reference_id"]).to eq(nil)
+              end
+            end
           end
         end
 
         context "with unsuccessful submission" do
-          let(:client_ref) { "3000-01-01" }
           let(:params) { { assessment: { client_reference_id: client_ref } } }
 
           it "returns http error" do
