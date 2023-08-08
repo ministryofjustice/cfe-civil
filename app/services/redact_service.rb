@@ -14,7 +14,41 @@ class RedactService
       end
     end
 
+    def redact_time(timestamp)
+      Date.parse(timestamp).strftime("%Y-%m-%d")
+    end
+
+    def redact_dob(submission_date, date_of_birth)
+      now = safe_parse_date submission_date
+      dob = safe_parse_date date_of_birth
+      if now.present? && dob.present?
+        redacted = Date.new dob.year, now.month, now.day
+        if redacted > dob
+          Date.new(redacted.year - 1, redacted.month, redacted.day).to_s
+        else
+          redacted.to_s
+        end
+      else
+        date_of_birth
+      end
+    end
+
+    def updated_remarks(remarks)
+      remarks.map { |key, value|
+        if Remarks::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
+          value = redact_remarks_client_ids(value)
+        end
+        [key, value]
+      }.to_h
+    end
+
   private
+
+    def safe_parse_date(date)
+      Date.parse(date) if date
+    rescue ArgumentError
+      nil
+    end
 
     def redact_client_ref(request)
       request.tap do |req|
@@ -32,7 +66,7 @@ class RedactService
         if key == :client_id
           hash[key] = CFEConstants::REDACTED_MESSAGE
         elsif key == :date_of_birth
-          hash[key] = RequestLogger.redact_dob(submission_date, hash[key])
+          hash[key] = redact_dob(submission_date, hash[key])
         elsif value.is_a?(Hash)
           filter_payload(submission_date, value)
         elsif value.is_a?(Array)
@@ -42,10 +76,23 @@ class RedactService
     end
 
     def redact_response_data(hash)
-      hash[:timestamp] = RequestLogger.redact_time(hash[:timestamp]) if hash.key? :timestamp
+      hash[:timestamp] = redact_time(hash[:timestamp]) if hash.key? :timestamp
       assessment = hash[:assessment]
-      assessment[:remarks] = RequestLogger.updated_remarks(assessment[:remarks]) if assessment&.key? :remarks
+      assessment[:remarks] = updated_remarks(assessment[:remarks]) if assessment&.key? :remarks
       hash
+    end
+
+    def redact_remarks_client_ids(object)
+      object.transform_values do |value|
+        case value
+        when Hash
+          redact_remarks_client_ids(value)
+        when Array
+          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        else
+          CFEConstants::REDACTED_MESSAGE
+        end
+      end
     end
   end
 end
