@@ -13,14 +13,16 @@ class RequestRerunner
       end
 
       ActiveRecord::Base.connected_to(role: :reading, prevent_writes: true) do
-        count = RequestLog.count
+        kosher_logs = RequestLog.where(http_status: 200).where.not(user_agent: USER_AGENT)
+        count = kosher_logs.count
         start = Time.zone.now
-        RequestLog.find_in_batches(batch_size: BATCH_SIZE).each_with_index do |batch, index|
+        kosher_logs.find_in_batches(batch_size: BATCH_SIZE).each_with_index do |batch, index|
           elapsed = Time.zone.now - start
-          Rails.logger.info("#{index * BATCH_SIZE}/#{count} requests (#{(elapsed * 1000 / (index * BATCH_SIZE)).to_i} msec/req)") if index.positive?
+          completed_count = index * BATCH_SIZE
+          Rails.logger.info("#{completed_count}/#{count} requests (#{(elapsed * 1000 / completed_count).to_i} msec/req)") if index.positive?
 
           # filter out a couple of broken requests that returned success by checking for a sane request size
-          batch.reject { |x| x.user_agent == USER_AGENT || x.http_status != 200 || x.request.keys.size < 7 }.each do |v6_request|
+          batch.reject { |x| x.request.keys.size < 7 }.each do |v6_request|
             original = standardize_response v6_request.response
             date = original.dig(:assessment, :submission_date)
 
@@ -39,6 +41,12 @@ class RequestRerunner
         end
       end
 
+      delete_request_logs
+    end
+
+  private
+
+    def delete_request_logs
       ActiveRecord::Base.connected_to(role: :writing) do
         RequestLog.find_in_batches(batch_size: BATCH_SIZE).each do |batch|
           RequestLog.transaction do
@@ -47,8 +55,6 @@ class RequestRerunner
         end
       end
     end
-
-  private
 
     # This appears to be a bugfig - main_home.main_home should always be true, so it's not a valid diff
     # Also returning the involvement type appears to be a bugfix too
@@ -80,7 +86,7 @@ class RequestRerunner
       end
       # need to ignore DOB as it's not redacted properly (yet) - LEP-281
       # remarks still have client_ids in them - not redacted properly
-      x.merge(assessment: assessment.except(:id, :remarks).merge(applicant: applicant.except(:date_of_birth)))
+      x.merge(assessment: assessment.except(:id, :remarks, :client_reference_id).merge(applicant: applicant.except(:date_of_birth)))
     end
   end
 end
