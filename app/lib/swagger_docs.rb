@@ -1290,26 +1290,27 @@ class SwaggerDocs
                     example: "1992-07-22",
                   },
                   gross: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
                     description: "Gross payment income received",
-                    example: "101.01",
+                    example: 101.01,
                   },
                   benefits_in_kind: {
-                    "$ref" => SCHEMA_COMPONENTS[:positive_currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                     description: "Benefit in kind amount received",
+                    example: 10.50,
                   },
                   tax: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of tax paid - normally negative, but can be positive for a refund",
                     example: -10.01,
                   },
                   national_insurance: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
                     example: -5.24,
                   },
                   net_employment_income: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Deprecated field not used in calculation",
                     deprecated: true,
                   },
@@ -1420,6 +1421,7 @@ class SwaggerDocs
                   relationship: { "$ref": "#/components/schemas/RelationShip" },
                   monthly_income: {
                     description: "Dependant's monthly income",
+                    # legacy - some currency values are historically allowed as strings
                     deprecated: true,
                     oneOf: [
                       { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
@@ -1428,7 +1430,7 @@ class SwaggerDocs
                   },
                   income: { "$ref": "#/components/schemas/DependantIncome" },
                   assets_value: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Dependant's total assets value",
                   },
                 },
@@ -1490,27 +1492,30 @@ class SwaggerDocs
                   client_id: {
                     type: :string,
                     description: "Client supplied id to identify the payment",
+                    example: "05459c0f-a620-4743-9f0c-b3daa93e571",
                   },
                   date: {
                     type: :string,
                     format: :date,
+                    example: "1992-07-22",
                   },
                   gross: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
                     description: "Gross payment income received",
-                    example: "101.01",
+                    example: 101.01,
                   },
                   benefits_in_kind: {
-                    "$ref" => SCHEMA_COMPONENTS[:positive_currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                     description: "Benefit in kind amount received",
+                    example: 10.50,
                   },
                   tax: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of tax paid - normally negative, but can be positive for a refund",
                     example: -10.01,
                   },
                   national_insurance: {
-                    "$ref" => SCHEMA_COMPONENTS[:currency],
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
                     example: -5.24,
                   },
@@ -1609,9 +1614,10 @@ class SwaggerDocs
                   income: { "$ref": "#/components/schemas/DependantIncome" },
                   assets_value: {
                     oneOf: [
-                      { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
+                      oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:numeric_currency] }], # "oneOf" hack
+                      description: "Dependant's total assets value",
                     ],
-                    description: "Dependant's total assets value",
+                    example: 0,
                   },
                 },
               },
