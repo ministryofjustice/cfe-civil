@@ -6,7 +6,7 @@ parameters:
     default: true
 
 orbs:
-  slack: circleci/slack@4.5.2
+  slack: circleci/slack@4.12.5
   aws-cli: circleci/aws-cli@4.0.0 # use v4 of this orb
   aws-ecr: circleci/aws-ecr@8.2.1 # this orb doesn't support OIDC v2, so we use aws-cli to authenticate
 
@@ -91,6 +91,15 @@ commands:
           region: $ECR_REGION # this will use the env var
           repo: $ECR_REPOSITORY # this will use the env var
 
+  # The intent here is to slack notify *only* for main/production failures which the team tend not to spot
+  notify_slack_on_failure:
+    steps:
+      - slack/notify:
+          channel: laa-eligibility-platform-alerts-prod
+          event: fail
+          branch_pattern: main
+          template: basic_fail_1
+
 references:
   authenticate_k8s: &authenticate_k8s
     run:
@@ -161,6 +170,7 @@ jobs:
       - run:
           name: Run Rubocop
           command:  bundle exec rubocop
+      - notify_slack_on_failure
 
   create_helm_cache:
     executor: cloud-platform-executor
@@ -174,6 +184,7 @@ jobs:
             helm repo add bitnami https://charts.bitnami.com/bitnami
             helm dependency build
       - *save_helm_cache
+      - notify_slack_on_failure
 
   end2end_tests:
     executor: ccq-executor
@@ -198,6 +209,7 @@ jobs:
           working_directory: ~/project/ccq
           command: |
             COVERAGE=false bundle exec rspec -t end2end --format documentation spec/**/*_spec.rb
+      - notify_slack_on_failure
 
   unit_tests:
     executor: test-executor
@@ -234,6 +246,7 @@ jobs:
           path: /tmp/test-results/rspec
       - store_artifacts:
           path: ./coverage
+      - notify_slack_on_failure
 
   integration_tests:
     executor: test-executor
@@ -250,6 +263,7 @@ jobs:
             bundle exec cucumber --format html --out report.html --format pretty
       - store_artifacts:
           path: ./report.html
+      - notify_slack_on_failure
 
   check_swagger:
     executor: test-executor
@@ -264,6 +278,7 @@ jobs:
           name: Check for unapplied swagger documentation specs
           command: |
             bundle exec rails check_swaggerization
+      - notify_slack_on_failure
 
   # The ECR.tf file in cloud-platform uses 'dev' for UAT tags
   # These tags ensure that ephemeral images get deleted after 30
@@ -279,12 +294,14 @@ jobs:
     steps:
       - build_and_push:
           docker_tag: staging
+      - notify_slack_on_failure
 
   build_and_push_production:
     executor: aws-ecr/default
     steps:
       - build_and_push:
           docker_tag: latest
+      - notify_slack_on_failure
 
   deploy_uat: &deploy_uat
     executor: cloud-platform-executor
@@ -298,6 +315,7 @@ jobs:
           name: Helm deployment to UAT
           command: |
             ./bin/uat_deploy
+      - notify_slack_on_failure
 
   deploy_main_uat:
     <<: *deploy_uat
@@ -319,6 +337,7 @@ jobs:
                           --values ./deploy/helm/values/staging.yaml \
                           --set image.repository="$ECR_ENDPOINT" \
                           --set image.tag="${CIRCLE_SHA1}"
+      - notify_slack_on_failure
 
   deploy_production:
     executor: cloud-platform-executor
@@ -337,6 +356,7 @@ jobs:
                             --values ./deploy/helm/values/production.yaml \
                             --set image.repository="$ECR_ENDPOINT" \
                             --set image.tag="${CIRCLE_SHA1}" \
+      - notify_slack_on_failure
 
   delete_dependabot_deployment:
     executor: cloud-platform-executor
@@ -358,6 +378,7 @@ jobs:
           name: Deploy infrastructure
           command: |
             kubectl -n ${K8S_NAMESPACE} apply --record=false -f ./infrastructure/${K8S_NAMESPACE}/
+      - notify_slack_on_failure
 
 workflows:
   version: 2
@@ -367,12 +388,10 @@ workflows:
           filters:
             branches:
               ignore: main
-      #          <<: *generic-slack-fail-post-step
       - unit_tests:
           filters:
             branches:
               ignore: main
-      #          <<: *generic-slack-fail-post-step
       - create_helm_cache:
           filters:
             branches:
@@ -388,18 +407,15 @@ workflows:
           filters:
             branches:
               ignore: main
-      #          <<: *generic-slack-fail-post-step
       - check_swagger:
           filters:
             branches:
               ignore: main
-      #          <<: *generic-slack-fail-post-step
       - build_and_push_uat:
           context: cfe-civil-uat
           filters:
             branches:
               ignore: main
-      #          <<: *generic-slack-fail-post-step
       - deploy_uat:
           context: cfe-civil-uat
           requires:
@@ -416,7 +432,6 @@ workflows:
                 - /dependabot.*/
           requires:
             - deploy_uat
-  #          <<: *generic-slack-fail-post-step
 
   deploy_main_approval_required:
     when: << pipeline.parameters.approval_required >>
@@ -425,12 +440,10 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - unit_tests:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - build_and_push_staging:
           context: cfe-civil-staging
           filters:
@@ -469,12 +482,10 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-stepa
       - check_swagger:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - build_and_push_production:
           requires:
             - lint_checks
@@ -484,7 +495,6 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
@@ -492,7 +502,6 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - deploy_staging:
           context: cfe-civil-staging
           requires:
@@ -525,12 +534,10 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - unit_tests:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - build_and_push_staging:
           context: cfe-civil-staging
           filters:
@@ -551,12 +558,10 @@ workflows:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-stepa
       - check_swagger:
           filters:
             branches:
               only: main
-      #          <<: *generic-slack-fail-post-step
       - build_and_push_production:
           requires:
             - lint_checks
@@ -564,12 +569,10 @@ workflows:
             - unit_tests
             - integration_tests
             - deploy_staging
-      #          <<: *generic-slack-fail-post-step
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
             - end2end_tests
-      #          <<: *generic-slack-fail-post-step
       - deploy_staging:
           context: cfe-civil-staging
           requires:
