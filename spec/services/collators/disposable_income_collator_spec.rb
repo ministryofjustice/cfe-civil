@@ -70,6 +70,11 @@ module Collators
                                dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16,
                                                                                             over_16: dependant_allowance_over_16),
                                rent_or_mortgage_bank: 0,
+                               housing_costs: Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
+                                                                                   gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                                   person: instance_double(PersonWrapper, single?: true, dependants: []),
+                                                                                   submission_date: assessment.submission_date,
+                                                                                   allow_negative_net: false),
                              ))
       end
 

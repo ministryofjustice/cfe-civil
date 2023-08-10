@@ -109,7 +109,10 @@ module Decorators
                                                             partner_allowance: 191.41,
                                                             dependant_allowance_under_16: 28.34,
                                                             dependant_allowance_over_16: 98.12,
-                                                            dependant_allowance: 220.21)).as_json
+                                                            dependant_allowance: 220.21,
+                                                            gross_housing_costs: 990.42,
+                                                            housing_benefit: 440.21,
+                                                            net_housing_costs: 550.21)).as_json
       end
 
       before do

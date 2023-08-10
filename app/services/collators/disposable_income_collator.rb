@@ -65,7 +65,7 @@ module Collators
     end
 
     def total_outgoings_and_allowances(monthly_cash_transactions_total)
-      @disposable_income_summary.net_housing_costs +
+      @outgoings.housing_costs.net_housing_costs +
         @outgoings.dependant_allowance.under_16 +
         @outgoings.dependant_allowance.over_16 +
         monthly_bank_transactions_total +

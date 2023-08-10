@@ -1,10 +1,11 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank) do
+    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank, :housing_costs) do
       def self.blank
         new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
             child_care: ChildcareCollator::Result.blank,
-            rent_or_mortgage_bank: 0)
+            rent_or_mortgage_bank: 0,
+            housing_costs: HousingCostsCollator::Result.blank)
       end
     end
 
@@ -26,10 +27,10 @@ module Collators
                                                              person:,
                                                              submission_date:,
                                                              allow_negative_net:)
-        disposable_income_summary.update! housing_benefit: housing_costs.housing_benefit,
-                                          gross_housing_costs: housing_costs.gross_housing_costs,
-                                          # rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
-                                          net_housing_costs: housing_costs.net_housing_costs
+        # disposable_income_summary.update! housing_benefit: housing_costs.housing_benefit,
+        #                                   gross_housing_costs: housing_costs.gross_housing_costs,
+        #                                   # rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
+        #                                   net_housing_costs: housing_costs.net_housing_costs
 
         legal_aid_bank = Collators::LegalAidCollator.call(disposable_income_summary.legal_aid_outgoings)
         # TODO: return this instead of persisting it
@@ -37,7 +38,8 @@ module Collators
 
         Result.new(dependant_allowance:,
                    child_care:,
-                   rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank)
+                   rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
+                   housing_costs:)
       end
     end
   end
