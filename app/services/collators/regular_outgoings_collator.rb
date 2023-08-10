@@ -11,10 +11,10 @@
 #
 module Collators
   class RegularOutgoingsCollator
-    Attrs = Data.define(:attrs, :child_care_regular, :rent_or_mortgage_regular)
-    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular) do
+    Attrs = Data.define(:attrs, :child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular)
+    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular) do
       def self.blank
-        new(child_care_regular: 0, rent_or_mortgage_regular: 0)
+        new(child_care_regular: 0, rent_or_mortgage_regular: 0, legal_aid_regular: 0)
       end
     end
 
@@ -22,30 +22,25 @@ module Collators
       def call(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
         attrs = disposable_income_attributes(disposable_income_summary:, eligible_for_childcare:, gross_income_summary:)
         disposable_income_summary.update!(attrs.attrs)
-        Result.new(child_care_regular: attrs.child_care_regular, rent_or_mortgage_regular: attrs.rent_or_mortgage_regular)
+        Result.new(child_care_regular: attrs.child_care_regular,
+                   rent_or_mortgage_regular: attrs.rent_or_mortgage_regular,
+                   legal_aid_regular: attrs.legal_aid_regular)
       end
 
     private
 
-      # These 2 categories are duplicated in DisposableIncomeCollator
-      # the goal is get rid of them when the database fields are removed and pass
-      # the data up to the next layer (as has already been done with child_child and rent_or_mortgage
-      def outgoing_categories
-        %i[maintenance_out legal_aid].freeze
-      end
-
       def disposable_income_attributes(disposable_income_summary:, eligible_for_childcare:, gross_income_summary:)
-        attrs = initialize_attributes disposable_income_summary
+        attrs = {
+          maintenance_out_all_sources: disposable_income_summary.maintenance_out_all_sources,
+          total_outgoings_and_allowances: disposable_income_summary.total_outgoings_and_allowances,
+          total_disposable_income: disposable_income_summary.total_disposable_income,
+        }
 
-        outgoing_categories.each do |category|
-          category_all_sources = "#{category}_all_sources".to_sym
-          category_monthly_amount = regular_amount_for(gross_income_summary, category)
+        maintenance_out_monthly_amount = regular_amount_for(gross_income_summary, :maintenance_out)
+        attrs[:maintenance_out_all_sources] += maintenance_out_monthly_amount
 
-          attrs[category_all_sources] += category_monthly_amount
-
-          attrs[:total_outgoings_and_allowances] += category_monthly_amount
-          attrs[:total_disposable_income] -= category_monthly_amount
-        end
+        attrs[:total_outgoings_and_allowances] += maintenance_out_monthly_amount
+        attrs[:total_disposable_income] -= maintenance_out_monthly_amount
 
         if eligible_for_childcare # see *§ above
           childcare_monthly_amount = regular_amount_for(gross_income_summary, :child_care)
@@ -58,22 +53,17 @@ module Collators
         # see ** above - already added to totals
         rent_or_mortgage_monthly_amount = regular_amount_for(gross_income_summary, :rent_or_mortgage)
 
+        legal_aid_monthly_amount = regular_amount_for(gross_income_summary, :legal_aid)
+        attrs[:total_outgoings_and_allowances] += legal_aid_monthly_amount
+        attrs[:total_disposable_income] -= legal_aid_monthly_amount
+
         Attrs.new(attrs:, child_care_regular: childcare_monthly_amount,
-                  rent_or_mortgage_regular: rent_or_mortgage_monthly_amount)
+                  rent_or_mortgage_regular: rent_or_mortgage_monthly_amount,
+                  legal_aid_regular: legal_aid_monthly_amount)
       end
 
       def regular_amount_for(gross_income_summary, category)
         Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary:, operation: :debit, category:)
-      end
-
-      def initialize_attributes(disposable_income_summary)
-        attrs = outgoing_categories.each_with_object({}) { |category, dict|
-          dict["#{category}_all_sources"] = disposable_income_summary.send("#{category}_all_sources")
-        }.symbolize_keys
-
-        attrs[:total_outgoings_and_allowances] = disposable_income_summary.total_outgoings_and_allowances
-        attrs[:total_disposable_income] = disposable_income_summary.total_disposable_income
-        attrs
       end
     end
   end

@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :disposable_income_summary do
     assessment
     maintenance_out_bank { 0.0 }
-    legal_aid_bank { 0.0 }
     total_outgoings_and_allowances { 0.0 }
     total_disposable_income { 0.0 }
 

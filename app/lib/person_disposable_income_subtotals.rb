@@ -53,6 +53,18 @@ class PersonDisposableIncomeSubtotals
     rent_or_mortgage_bank + rent_or_mortgage_cash + @regular.rent_or_mortgage_regular
   end
 
+  def legal_aid_bank
+    @outgoings.legal_aid_bank
+  end
+
+  def legal_aid_cash
+    @disposable.legal_aid_cash
+  end
+
+  def legal_aid_all_sources
+    legal_aid_bank + legal_aid_cash + @regular.legal_aid_regular
+  end
+
   def housing_benefit
     @outgoings.housing_costs.housing_benefit
   end

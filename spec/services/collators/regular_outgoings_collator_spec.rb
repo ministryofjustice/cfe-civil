@@ -23,11 +23,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
 
     context "without monthly regular transactions" do
       it "does increments #<cagtegory>_all_sources data" do
-        collator
+        expect(collator).to have_attributes(legal_aid_regular: 0.0)
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 0.0,
-          legal_aid_all_sources: 0.0,
         )
       end
 
@@ -52,11 +51,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       it "increments #<cagtegory>_all_sources data" do
-        collator
+        expect(collator).to have_attributes(legal_aid_regular: 222.22)
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 111.11,
-          legal_aid_all_sources: 222.22,
         )
       end
 
@@ -81,11 +79,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       it "increments #<cagtegory>_all_sources data" do
-        collator
+        expect(collator).to have_attributes(legal_aid_regular: 240.74)
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 120.37,
-          legal_aid_all_sources: 240.74,
         )
       end
 
@@ -110,11 +107,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       it "increments #<cagtegory>_all_sources data" do
-        collator
+        expect(collator).to have_attributes(legal_aid_regular: 481.48)
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 240.74,
-          legal_aid_all_sources: 481.48,
         )
       end
 
@@ -139,11 +135,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       it "increments #<cagtegory>_all_sources data" do
-        collator
+        expect(collator).to have_attributes(legal_aid_regular: 962.95)
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 481.48,
-          legal_aid_all_sources: 962.95,
         )
       end
 
@@ -167,11 +162,13 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
 
       it "increments #rent_or_mortgage_all_sources data" do
-        expect(collator.rent_or_mortgage_regular).to eq(222.22)
+        expect(collator).to have_attributes(
+          rent_or_mortgage_regular: 222.22,
+          legal_aid_regular: 0.00,
+        )
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 0.0,
-          legal_aid_all_sources: 0.00,
         )
       end
 
@@ -235,7 +232,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         disposable_income_summary.reload
         expect(disposable_income_summary).to have_attributes(
           maintenance_out_all_sources: 333.33,
-          legal_aid_all_sources: 0.0,
         )
       end
 
@@ -280,11 +276,10 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         end
 
         it "increments #<category>_all_sources data to existing values" do
-          collator
+          expect(collator).to have_attributes(legal_aid_regular: 2_000.00)
           disposable_income_summary.reload
           expect(disposable_income_summary).to have_attributes(
             maintenance_out_all_sources: 1_333.33,
-            legal_aid_all_sources: 2_000.00,
           )
         end
 
