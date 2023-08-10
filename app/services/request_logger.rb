@@ -55,6 +55,7 @@ class RequestLogger
     def redact_dob(submission_date, date_of_birth)
       now = safe_parse_date submission_date
       dob = safe_parse_date date_of_birth
+      # don't redact if we're on the person's birthday as there is nothing to do
       if now.present? && dob.present? && (now.month != dob.month || now.day != dob.day)
         redacted = Date.new(dob.year, now.month, now.day)
         if redacted > dob
