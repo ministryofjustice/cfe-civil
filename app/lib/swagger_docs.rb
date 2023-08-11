@@ -100,6 +100,7 @@ class SwaggerDocs
                 pattern: "^[-+]?\\d+(\\.\\d{1,2})?$",
               },
             ],
+            example: 70.25,
           },
           numeric_currency: {
             description: "Currency as number",
@@ -126,6 +127,7 @@ class SwaggerDocs
                 pattern: "^[+]?\\d+(\\.\\d{1,2})?$",
               },
             ],
+            example: 60.99,
           },
           ProceedingTypeResult: {
             type: :object,
@@ -282,11 +284,12 @@ class SwaggerDocs
                 gross: {
                   oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
                   description: "Gross payment income received",
-                  example: "101.01",
+                  example: 101.01,
                 },
                 benefits_in_kind: {
                   oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
                   description: "Benefit in kind amount received",
+                  example: 10.50,
                 },
                 tax: {
                   oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
@@ -607,6 +610,7 @@ class SwaggerDocs
                   { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
                   { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
                 ],
+                example: 0,
               },
               income: {
                 type: :object,
