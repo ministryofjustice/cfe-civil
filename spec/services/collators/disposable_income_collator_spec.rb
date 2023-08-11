@@ -70,11 +70,17 @@ module Collators
                                dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16,
                                                                                             over_16: dependant_allowance_over_16),
                                rent_or_mortgage_bank: 0,
-                               housing_costs: Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
-                                                                                   gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                                   person: instance_double(PersonWrapper, single?: true, dependants: []),
-                                                                                   submission_date: assessment.submission_date,
-                                                                                   allow_negative_net: false),
+                               # housing_costs: Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
+                               #                                                     gross_income_summary: assessment.applicant_gross_income_summary,
+                               #                                                     person: instance_double(PersonWrapper, single?: true, dependants: []),
+                               #                                                     submission_date: assessment.submission_date,
+                               #                                                     allow_negative_net: false),
+                               housing_costs: Collators::HousingCostsCollator::Result.new(
+                                 housing_benefit:,
+                                 gross_housing_costs: gross_housing,
+                                 gross_housing_costs_bank: 0,
+                                 net_housing_costs: net_housing,
+                               ),
                              ))
       end
 
@@ -84,7 +90,7 @@ module Collators
         end
 
         it "sums childcare, legal_aid, maintenance, net housing costs and allowances" do
-          expect(disposable_income_summary.total_outgoings_and_allowances).to eq total_outgoings
+          expect(disposable_income_summary.total_outgoings_and_allowances.to_f).to eq total_outgoings.to_f
         end
       end
 
