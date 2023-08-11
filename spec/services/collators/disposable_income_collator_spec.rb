@@ -34,10 +34,10 @@ module Collators
     let(:disposable_income_summary) do
       create(:disposable_income_summary,
              maintenance_out_bank:,
-             gross_housing_costs: gross_housing,
+             # gross_housing_costs: gross_housing,
              legal_aid_bank:,
-             housing_benefit:,
-             net_housing_costs: net_housing,
+             # housing_benefit:,
+             # net_housing_costs: net_housing,
              total_outgoings_and_allowances: 0.0,
              total_disposable_income: 0.0).tap do |summary|
         create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
