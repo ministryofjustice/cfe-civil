@@ -23,6 +23,7 @@ components:
         multipleOf: 0.01
       - type: string
         pattern: "^[-+]?\\d+(\\.\\d{1,2})?$"
+      example: 70.25
     numeric_currency:
       description: Currency as number
       type: number
@@ -41,6 +42,7 @@ components:
         multipleOf: 0.01
       - type: string
         pattern: "^[+]?\\d+(\\.\\d{1,2})?$"
+      example: 60.99
     ProceedingTypeResult:
       type: object
       required:
@@ -248,11 +250,12 @@ components:
             oneOf:
             - "$ref": "#/components/schemas/currency"
             description: Gross payment income received
-            example: '101.01'
+            example: 101.01
           benefits_in_kind:
             oneOf:
             - "$ref": "#/components/schemas/positive_currency"
             description: Benefit in kind amount received
+            example: 10.5
           tax:
             oneOf:
             - "$ref": "#/components/schemas/currency"
@@ -619,6 +622,7 @@ components:
           oneOf:
           - "$ref": "#/components/schemas/numeric_currency"
           - "$ref": "#/components/schemas/string_currency"
+          example: 0
         income:
           type: object
           required:
