@@ -11,9 +11,6 @@ module Decorators
       let(:summary) do
         create :disposable_income_summary,
                assessment:,
-               # gross_housing_costs: 990.42,
-               # housing_benefit: 440.21,
-               # net_housing_costs: 550.21,
                maintenance_out_all_sources: 330.21,
                total_outgoings_and_allowances: 660.21,
                total_disposable_income: 732.55,
