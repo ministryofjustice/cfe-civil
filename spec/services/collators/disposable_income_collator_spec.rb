@@ -32,9 +32,7 @@ module Collators
     end
 
     let(:disposable_income_summary) do
-      create(:disposable_income_summary,
-             total_outgoings_and_allowances: 0.0,
-             total_disposable_income: 0.0).tap do |summary|
+      create(:disposable_income_summary).tap do |summary|
         create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
       end
     end
@@ -78,43 +76,6 @@ module Collators
                                  net_housing_costs: net_housing,
                                ),
                              ))
-      end
-
-      context "total_monthly_outgoings" do
-        before do
-          collator
-        end
-
-        it "sums childcare, legal_aid, maintenance, net housing costs and allowances" do
-          expect(disposable_income_summary.total_outgoings_and_allowances.to_f).to eq total_outgoings.to_f
-        end
-      end
-
-      context "total disposable income" do
-        let(:total_gross_income) { total_outgoings + 1_500 }
-
-        before do
-          collator
-        end
-
-        it "is populated with result of gross income minus total outgoings and allowances" do
-          result = total_gross_income - disposable_income_summary.total_outgoings_and_allowances
-          expect(disposable_income_summary.total_disposable_income).to eq result
-        end
-      end
-
-      context "when total disposable income is negative" do
-        let(:total_gross_income) { total_outgoings - 1_500 }
-
-        before do
-          collator
-        end
-
-        it "returns the correct negative amount" do
-          result = total_gross_income - disposable_income_summary.total_outgoings_and_allowances
-          expect(disposable_income_summary.total_disposable_income).to eq result
-          expect(disposable_income_summary.total_disposable_income).to be_negative
-        end
       end
 
       context "lower threshold" do

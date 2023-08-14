@@ -20,11 +20,13 @@ module Decorators
           gross_income: GrossIncomeResultDecorator.new(assessment.applicant_gross_income_summary,
                                                        @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
                                                        @calculation_output.gross_income_subtotals.combined_monthly_gross_income.to_f),
-          disposable_income: DisposableIncomeResultDecorator.new(
+          disposable_income: ApplicantDisposableIncomeResultDecorator.new(
             assessment.applicant_disposable_income_summary,
             assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
+            combined_total_disposable_income: @calculation_output.combined_total_disposable_income,
+            combined_total_outgoings_and_allowances: @calculation_output.combined_total_outgoings_and_allowances,
             income_contribution: @calculation_output.income_contribution,
           ),
           capital: ApplicantCapitalResultDecorator.new(
@@ -55,7 +57,6 @@ module Decorators
           assessment.partner_gross_income_summary,
           @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals,
           disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
-          income_contribution: @calculation_output.income_contribution,
         )
       end
 

@@ -1,5 +1,6 @@
 class CalculationOutput
-  delegate :income_contribution, :applicant_disposable_income_subtotals, :partner_disposable_income_subtotals, to: :@disposable_income_subtotals
+  delegate :income_contribution, :applicant_disposable_income_subtotals, :partner_disposable_income_subtotals,
+           :combined_total_disposable_income, :combined_total_outgoings_and_allowances, to: :@disposable_income_subtotals
 
   def initialize(capital_subtotals:, gross_income_subtotals: GrossIncomeSubtotals.blank,
                  disposable_income_subtotals: DisposableIncomeSubtotals.blank)
