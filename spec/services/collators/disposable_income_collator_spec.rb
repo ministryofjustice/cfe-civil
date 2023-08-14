@@ -34,7 +34,6 @@ module Collators
     let(:disposable_income_summary) do
       create(:disposable_income_summary,
              maintenance_out_bank:,
-             legal_aid_bank:,
              total_outgoings_and_allowances: 0.0,
              total_disposable_income: 0.0).tap do |summary|
         create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
@@ -43,7 +42,7 @@ module Collators
 
     let(:total_outgoings) do
       disposable_income_summary.maintenance_out_cash +
-        disposable_income_summary.legal_aid_cash +
+        legal_aid_cash +
         child_care_bank +
         maintenance_out_bank +
         legal_aid_bank +
@@ -53,6 +52,9 @@ module Collators
         fixed_employment_allowance +
         partner_allowance
     end
+
+    # this comes from create :gross_income_summary, :with_all_records and is a random amount each time
+    let(:legal_aid_cash) { Calculators::MonthlyCashTransactionAmountCalculator.call(assessment.applicant_gross_income_summary.cash_transactions(:debit, :legal_aid)) }
 
     before { create :gross_income_summary, :with_all_records, assessment: }
 
@@ -67,6 +69,7 @@ module Collators
                                dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16,
                                                                                             over_16: dependant_allowance_over_16),
                                rent_or_mortgage_bank: 0,
+                               legal_aid_bank:,
                                housing_costs: Collators::HousingCostsCollator::Result.new(
                                  housing_benefit:,
                                  gross_housing_costs: gross_housing,
@@ -134,10 +137,8 @@ module Collators
           collator
           disposable_income_summary.reload
           maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
-          legal_aid_total = disposable_income_summary.legal_aid_bank + disposable_income_summary.legal_aid_cash
 
           expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
-          expect(disposable_income_summary.legal_aid_all_sources).to eq legal_aid_total
         end
       end
     end

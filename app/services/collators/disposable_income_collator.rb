@@ -1,9 +1,9 @@
 module Collators
   class DisposableIncomeCollator
-    Attrs = Data.define(:attrs, :monthly_cash_transactions_total, :rent_or_mortgage_cash)
-    Result = Data.define(:rent_or_mortgage_cash) do
+    Attrs = Data.define(:attrs, :monthly_cash_transactions_total, :rent_or_mortgage_cash, :legal_aid_cash)
+    Result = Data.define(:rent_or_mortgage_cash, :legal_aid_cash) do
       def self.blank
-        new(rent_or_mortgage_cash: 0)
+        new(rent_or_mortgage_cash: 0, legal_aid_cash: 0)
       end
     end
 
@@ -29,34 +29,26 @@ module Collators
         total_disposable_income: disposable_income(attrs.monthly_cash_transactions_total),
       )
 
-      Result.new(rent_or_mortgage_cash: attrs.rent_or_mortgage_cash)
+      Result.new(rent_or_mortgage_cash: attrs.rent_or_mortgage_cash, legal_aid_cash: attrs.legal_aid_cash)
     end
 
   private
 
-    # These 2 categories are duplicated in RegularOutgoingsCollator
-    # the goal is get rid of them when the database fields are removed and pass
-    # the data up to the next layer (as has already been done with child_child and rent_or_mortgage
-    def outgoing_categories
-      %i[maintenance_out legal_aid].freeze
-    end
-
     def populate_attrs
-      attrs = {}
-      monthly_cash_transactions_total = 0
+      maintenance_out_cash_amount = monthly_cash_by_category(:maintenance_out)
 
-      outgoing_categories.each do |category|
-        monthly_cash_amount = monthly_cash_by_category(category)
-        monthly_cash_transactions_total += monthly_cash_amount
+      attrs = {
+        maintenance_out_bank: @disposable_income_summary.maintenance_out_bank,
+        maintenance_out_cash: maintenance_out_cash_amount,
+        maintenance_out_all_sources: @disposable_income_summary.maintenance_out_bank + maintenance_out_cash_amount,
+      }
 
-        attrs[:"#{category}_bank"] = @disposable_income_summary.public_send("#{category}_bank")
-        attrs[:"#{category}_cash"] = monthly_cash_amount
-        attrs[:"#{category}_all_sources"] = attrs[:"#{category}_bank"] + attrs[:"#{category}_cash"]
-      end
+      legal_aid_cash_amount = monthly_cash_by_category(:legal_aid)
 
       Attrs.new(attrs:,
+                legal_aid_cash: legal_aid_cash_amount,
                 rent_or_mortgage_cash: monthly_cash_by_category(:rent_or_mortgage),
-                monthly_cash_transactions_total: monthly_cash_transactions_total + @outgoings.child_care.cash)
+                monthly_cash_transactions_total: maintenance_out_cash_amount + @outgoings.child_care.cash + legal_aid_cash_amount)
     end
 
     def monthly_cash_by_category(category)
@@ -78,7 +70,7 @@ module Collators
     def monthly_bank_transactions_total
       @outgoings.child_care.bank +
         @disposable_income_summary.maintenance_out_bank +
-        @disposable_income_summary.legal_aid_bank
+        @outgoings.legal_aid_bank
     end
 
     def disposable_income(monthly_cash_transactions_total)
