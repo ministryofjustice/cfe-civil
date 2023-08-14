@@ -402,15 +402,14 @@ module V6
             expect(log_record)
               .to have_attributes(created_at: Time.zone.today,
                                   http_status: 422,
-                                  request: {
-                                    "assessment" => { "submission_date" => "2022-06-06" },
-                                    "applicant" => { "has_partner_opponent" => false, "receives_qualifying_benefit" => false, "date_of_birth" => "2899-06-06", "employed" => false },
-                                    "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
-                                  },
                                   response: {
                                     "success" => false,
                                     "errors" => ["Date of birth cannot be in the future"],
                                   })
+            expect(log_record.request.except("applicant")).to eq({
+              "assessment" => { "submission_date" => "2022-06-06" },
+              "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
+            })
           end
         end
       end
@@ -1135,16 +1134,16 @@ module V6
           it "logs redacted partner dob" do
             expect(partner_log.fetch(:partner))
               .to eq(
-                { date_of_birth: "1987-06-06", employed: true },
+                { date_of_birth: "1987-06-07", employed: true },
               )
           end
 
           it "logs redacted dependants dob" do
             expect(partner_log.fetch(:dependants))
               .to eq(
-                [{ date_of_birth: "2014-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                 { date_of_birth: "2013-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
-                 { date_of_birth: "2004-06-06", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }],
+                [{ date_of_birth: "2014-06-07", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: "2013-06-07", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 },
+                 { date_of_birth: "2004-06-07", in_full_time_education: true, relationship: "child_relative", monthly_income: 0, assets_value: 0.0 }],
               )
           end
 

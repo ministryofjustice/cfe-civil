@@ -9,8 +9,15 @@ describe RedactService do
                  submission_date: "2023-05-08",
                },
                applicant: {
+                 # 53 years old
                  date_of_birth: "1970-01-01",
                },
+               dependants: [
+                 # 19 years old
+                 { date_of_birth: "2003-09-08" },
+                 # exactly 16
+                 { date_of_birth: "2007-05-08" },
+               ],
                something: 27,
                details: %w[string],
                something_else: {
@@ -25,14 +32,21 @@ describe RedactService do
     it "redacts client ids and dates of birth" do
       expect(request_log.request.deep_symbolize_keys)
         .to eq({
+          details: %w[string],
+          applicant: {
+            # still 53 years old
+            date_of_birth: "1969-05-09",
+          },
+          something: 27,
           assessment: {
             submission_date: "2023-05-08",
           },
-          applicant: {
-            date_of_birth: "1969-05-08",
-          },
-          something: 27,
-          details: %w[string],
+          dependants: [
+            # still 19 years old
+            { date_of_birth: "2003-05-09" },
+            # unchanged
+            { date_of_birth: "2007-05-08" },
+          ],
           something_else: { payments: [{ client_id: "** REDACTED **" }] },
         })
     end
