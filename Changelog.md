@@ -6,11 +6,15 @@ Includes changes that are material to the client - refactors are ignored.
 
 ## 25th July 2023
 
-LEP-84 added other incomes to partner structure
+* LEP-84 Feature: Added "other_incomes" to partner input structure
+
+## 21st July 2023
+
+* LEP-190 **Bug Fix** Child care expenses are included now if they have employment income, rather than on basis of "employed" boolean field. And deprecated "employed" boolean field.
 
 ## 18th July 2023
 
-LEP-83 added cash transactions to partner structure
+* LEP-83 Feature: Added "cash_transactions" to partner input structure
 
 ## 14th July 2023
 
