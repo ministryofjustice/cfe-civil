@@ -62,4 +62,6 @@ Rails.application.configure do
   config.x.google_sheets.client_id = ENV["GOOGLE_SHEETS_CLIENT_ID"]
 
   config.x.legal_framework_api_host = "https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk"
+  # config.log_level = :debug
+  # config.logger = Logger.new($stdout)
 end

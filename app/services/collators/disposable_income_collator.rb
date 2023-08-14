@@ -1,6 +1,6 @@
 module Collators
   class DisposableIncomeCollator
-    Attrs = Data.define(:attrs, :monthly_cash_transactions_total, :rent_or_mortgage_cash, :legal_aid_cash)
+    Attrs = Data.define(:monthly_cash_transactions_total, :rent_or_mortgage_cash, :legal_aid_cash)
     Result = Data.define(:rent_or_mortgage_cash, :legal_aid_cash) do
       def self.blank
         new(rent_or_mortgage_cash: 0, legal_aid_cash: 0)
@@ -23,7 +23,6 @@ module Collators
 
     def call
       attrs = populate_attrs
-      @disposable_income_summary.update!(attrs.attrs)
       @disposable_income_summary.update!(
         total_outgoings_and_allowances: total_outgoings_and_allowances(attrs.monthly_cash_transactions_total),
         total_disposable_income: disposable_income(attrs.monthly_cash_transactions_total),
@@ -35,20 +34,11 @@ module Collators
   private
 
     def populate_attrs
-      maintenance_out_cash_amount = monthly_cash_by_category(:maintenance_out)
-
-      attrs = {
-        maintenance_out_bank: @disposable_income_summary.maintenance_out_bank,
-        maintenance_out_cash: maintenance_out_cash_amount,
-        maintenance_out_all_sources: @disposable_income_summary.maintenance_out_bank + maintenance_out_cash_amount,
-      }
-
       legal_aid_cash_amount = monthly_cash_by_category(:legal_aid)
 
-      Attrs.new(attrs:,
-                legal_aid_cash: legal_aid_cash_amount,
+      Attrs.new(legal_aid_cash: legal_aid_cash_amount,
                 rent_or_mortgage_cash: monthly_cash_by_category(:rent_or_mortgage),
-                monthly_cash_transactions_total: maintenance_out_cash_amount + @outgoings.child_care.cash + legal_aid_cash_amount)
+                monthly_cash_transactions_total: @outgoings.maintenance_out.cash + @outgoings.child_care.cash + legal_aid_cash_amount)
     end
 
     def monthly_cash_by_category(category)
@@ -69,7 +59,7 @@ module Collators
 
     def monthly_bank_transactions_total
       @outgoings.child_care.bank +
-        @disposable_income_summary.maintenance_out_bank +
+        @outgoings.maintenance_out.bank +
         @outgoings.legal_aid_bank
     end
 

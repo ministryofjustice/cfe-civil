@@ -76,4 +76,16 @@ class PersonDisposableIncomeSubtotals
   def net_housing_costs
     @outgoings.housing_costs.net_housing_costs
   end
+
+  def maintenance_out_bank
+    @outgoings.maintenance_out.bank
+  end
+
+  def maintenance_out_cash
+    @outgoings.maintenance_out.cash
+  end
+
+  def maintenance_out_all_sources
+    maintenance_out_bank + maintenance_out_cash
+  end
 end

@@ -5,6 +5,7 @@ module Collators
     let(:assessment) { disposable_income_summary.assessment }
     let(:child_care_bank) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:maintenance_out_bank) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
+    let(:maintenance_out_cash) { 0.0 }
     let(:gross_housing) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:legal_aid_bank) { Faker::Number.decimal(l_digits: 3, r_digits: 2).to_d(Float::DIG) }
     let(:housing_benefit) { Faker::Number.between(from: 1.25, to: gross_housing / 2).round(2) }
@@ -41,7 +42,7 @@ module Collators
     end
 
     let(:total_outgoings) do
-      disposable_income_summary.maintenance_out_cash +
+      maintenance_out_cash +
         legal_aid_cash +
         child_care_bank +
         maintenance_out_bank +
@@ -66,6 +67,7 @@ module Collators
                              gross_income_subtotals:,
                              outgoings: OutgoingsCollator::Result.new(
                                child_care: ChildcareCollator::Result.new(bank: child_care_bank, cash: 0),
+                               maintenance_out: MaintenanceCollator::Result.new(bank: maintenance_out_bank, cash: maintenance_out_cash),
                                dependant_allowance: DependantsAllowanceCollator::Result.new(under_16: dependant_allowance_under_16,
                                                                                             over_16: dependant_allowance_over_16),
                                rent_or_mortgage_bank: 0,
@@ -129,16 +131,6 @@ module Collators
             collator
             expect(disposable_income_summary.eligibilities.first.upper_threshold).to eq 999_999_999_999.0
           end
-        end
-      end
-
-      context "all transactions" do
-        it "updates with totals for all categories based on bank and cash transactions" do
-          collator
-          disposable_income_summary.reload
-          maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
-
-          expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
         end
       end
     end

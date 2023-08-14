@@ -1,12 +1,13 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank, :housing_costs, :legal_aid_bank) do
+    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank, :housing_costs, :legal_aid_bank, :maintenance_out) do
       def self.blank
         new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
             child_care: ChildcareCollator::Result.blank,
             rent_or_mortgage_bank: 0,
             legal_aid_bank: 0,
-            housing_costs: HousingCostsCollator::Result.blank)
+            housing_costs: HousingCostsCollator::Result.blank,
+            maintenance_out: MaintenanceCollator::Result.blank)
       end
     end
 
@@ -19,9 +20,11 @@ module Collators
         dependant_allowance = Collators::DependantsAllowanceCollator.call(dependants: person.dependants,
                                                                           submission_date:)
 
-        maintenance_out_bank = Collators::MaintenanceCollator.call(disposable_income_summary.maintenance_outgoings)
+        maintenance_out = Collators::MaintenanceCollator.call(maintenance_outgoings: disposable_income_summary.maintenance_outgoings,
+                                                              cash_transactions: gross_income_summary.cash_transactions(:debit, :maintenance_out))
+        # maintenance_out_bank = Collators::MaintenanceCollator.call(disposable_income_summary.maintenance_outgoings)
         # TODO: return this value instead of persisting it
-        disposable_income_summary.update!(maintenance_out_bank:)
+        # disposable_income_summary.update!(maintenance_out_bank:)
 
         housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
                                                              gross_income_summary:,
@@ -35,7 +38,8 @@ module Collators
                    child_care:,
                    rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
                    housing_costs:,
-                   legal_aid_bank:)
+                   legal_aid_bank:,
+                   maintenance_out:)
       end
     end
   end

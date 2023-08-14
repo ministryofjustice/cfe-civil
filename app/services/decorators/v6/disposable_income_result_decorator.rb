@@ -27,7 +27,7 @@ module Decorators
           gross_housing_costs: @disposable_income_subtotals.gross_housing_costs.to_f,
           housing_benefit: @disposable_income_subtotals.housing_benefit.to_f,
           net_housing_costs: @disposable_income_subtotals.net_housing_costs.to_f,
-          maintenance_allowance: @summary.maintenance_out_all_sources.to_f,
+          maintenance_allowance: @disposable_income_subtotals.maintenance_out_all_sources.to_f,
           total_outgoings_and_allowances: @summary.total_outgoings_and_allowances.to_f,
           total_disposable_income: @summary.total_disposable_income.to_f,
           employment_income:,
