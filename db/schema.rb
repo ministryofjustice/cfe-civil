@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_11_075349) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_13_082709) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -155,7 +155,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_11_075349) do
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
-    t.string "client_involvement_type", null: false
+    t.string "client_involvement_type"
     t.decimal "gross_income_upper_threshold"
     t.decimal "disposable_income_upper_threshold"
     t.decimal "capital_upper_threshold"

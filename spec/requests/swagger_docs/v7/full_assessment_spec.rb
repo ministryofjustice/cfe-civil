@@ -22,16 +22,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                   additionalProperties: false,
                   properties: {
                     assessment: { "$ref" => components[:assessment] },
-                    applicant: { "$ref" => components[:applicant] },
-                    proceeding_types: { "$ref" => components[:proceeding_types] },
+                    applicant: { "$ref" => components[:v7_applicant] },
+                    proceeding_types: { "$ref" => components[:v7_proceeding_types] },
                     capitals: { "$ref" => components[:capitals] },
                     cash_transactions: { "$ref" => components[:cash_transactions] },
-                    dependants: {
-                      type: :array,
-                      description: "One or more dependants details",
-                      items: { "$ref" => components[:dependant] },
-                    },
-                    employment_income: { "$ref" => components[:employments] },
+                    dependants: { "$ref" => components[:v7_dependants] },
+                    employment_income: { "$ref" => components[:v7_employments] },
                     irregular_incomes: {
                       type: :object,
                       description: "A set of irregular income payments",
@@ -102,17 +98,12 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                               example: "1992-07-22",
                               description: "Partner's date of birth",
                             },
-                            employed: {
-                              type: :boolean,
-                              description: "Deprecated - employment is now determined by presence of gross employment income",
-                              deprecated: true,
-                            },
                           },
                         },
                         cash_transactions: { "$ref" => components[:cash_transactions] },
                         outgoings: { type: :array },
                         irregular_incomes: { "$ref" => components[:irregular_income_payments] },
-                        employments: { "$ref" => components[:employments] },
+                        employments: { "$ref" => components[:v7_employments] },
                         employment_details: {
                           type: :array,
                           description: "Employments, with pay info supplied in the 'how much, how often' pattern, for partner",
@@ -144,11 +135,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                           description: "One or more vehicles' details",
                           items: { "$ref" => components[:vehicle] },
                         },
-                        dependants: {
-                          type: :array,
-                          description: "One or more dependants details",
-                          items: { "$ref" => components[:dependant] },
-                        },
+                        dependants: { "$ref" => components[:v7_dependants] },
                       },
                     },
                     explicit_remarks: { "$ref" => components[:explicit_remarks] },
@@ -170,27 +157,10 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        additionalProperties: false,
                        required: %i[result capital_contribution income_contribution proceeding_types],
                        properties: {
-                         result: {
-                           type: :string,
-                           enum: %w[eligible ineligible contribution_required],
-                         },
-                         income_contribution: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of income contribution required (only valid if result is contribution_required)",
-                         },
-                         capital_contribution: {
-                           type: :number,
-                           format: :decimal,
-                           minimum: 0,
-                           description: "Amount of capital contribution required (only valid if result is contribution_required)",
-                         },
-                         proceeding_types: {
-                           type: :array,
-                           minItems: 1,
-                           items: { "$ref" => components[:proceeding_type_result] },
-                         },
+                         result: { "$ref" => components[:overall_result] },
+                         income_contribution: { "$ref" => components[:income_contribution] },
+                         capital_contribution: { "$ref" => components[:capital_contribution] },
+                         proceeding_types: { "$ref" => components[:v7_proceeding_type_results] },
                        },
                      },
                      gross_income: {
@@ -209,11 +179,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                            format: :decimal,
                            description: "Calculated monthly total gross income for applicant and partner",
                          },
-                         proceeding_types: {
-                           type: :array,
-                           minItems: 1,
-                           items: { "$ref" => components[:proceeding_type_result] },
-                         },
+                         proceeding_types: { "$ref" => components[:v7_proceeding_type_results] },
                        },
                      },
                      partner_gross_income: {
@@ -228,9 +194,9 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                          },
                        },
                      },
-                     disposable_income: { "$ref": components[:applicant_disposable_income] },
+                     disposable_income: { "$ref": components[:v7_applicant_disposable_income] },
                      partner_disposable_income: { "$ref": components[:disposable_income] },
-                     capital: { "$ref": components[:applicant_capital_result] },
+                     capital: { "$ref": components[:v7_applicant_capital_result] },
                      partner_capital: { "$ref": components[:capital_result] },
                    },
                  },
@@ -396,8 +362,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
         let(:params) do
           {
             assessment: { submission_date: "2022-06-06" },
-            applicant: { date_of_birth: "2001-02-02", has_partner_opponent: false, receives_qualifying_benefit: false, employed: false },
-            proceeding_types: [{ ccms_code: "SE013", client_involvement_type: "A" }],
+            applicant: { date_of_birth: "2001-02-02", receives_qualifying_benefit: false },
+            proceeding_types: [{ ccms_code: "SE013" }],
             outgoings: [
               { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
               { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },

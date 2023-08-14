@@ -1,12 +1,16 @@
 class SwaggerDocs
   SCHEMA_COMPONENTS = {
     assessment: "#/components/schemas/Assessment",
-    applicant: "#/components/schemas/Applicant",
-    proceeding_types: "#/components/schemas/ProceedingTypes",
+    v6_applicant: "#/components/schemas/v6/Applicant",
+    v7_applicant: "#/components/schemas/v7/Applicant",
+    v6_proceeding_types: "#/components/schemas/v6/ProceedingTypes",
+    v7_proceeding_types: "#/components/schemas/v7/ProceedingTypes",
     capitals: "#/components/schemas/Capitals",
     cash_transactions: "#/components/schemas/CashTransactions",
-    dependant: "#/components/schemas/Dependant",
-    employments: "#/components/schemas/Employments",
+    v6_dependants: "#/components/schemas/v6/Dependants",
+    v7_dependants: "#/components/schemas/v7/Dependants",
+    v6_employments: "#/components/schemas/v6/Employments",
+    v7_employments: "#/components/schemas/v7/Employments",
     irregular_income_payments: "#/components/schemas/IrregularIncomePayments",
     other_incomes: "#/components/schemas/OtherIncomes",
     outgoings_list: "#/components/schemas/OutgoingsList",
@@ -17,13 +21,15 @@ class SwaggerDocs
     self_employment: "#/components/schemas/SelfEmployment",
     explicit_remarks: "#/components/schemas/ExplicitRemarks",
     capital_result: "#/components/schemas/CapitalResult",
-    applicant_capital_result: "#/components/schemas/ApplicantCapitalResult",
+    v6_applicant_capital_result: "#/components/schemas/v6/ApplicantCapitalResult",
+    v7_applicant_capital_result: "#/components/schemas/v7/ApplicantCapitalResult",
     property_result: "#/components/schemas/PropertyResult",
-    employment_payment_list: "#/components/schemas/EmploymentPaymentList",
     disposable_income: "#/components/schemas/DisposableIncome",
-    applicant_disposable_income: "#/components/schemas/ApplicantDisposableIncome",
+    v6_applicant_disposable_income: "#/components/schemas/v6/ApplicantDisposableIncome",
+    v7_applicant_disposable_income: "#/components/schemas/v7/ApplicantDisposableIncome",
     property: "#/components/schemas/Property",
-    proceeding_type_result: "#/components/schemas/ProceedingTypeResult",
+    v6_proceeding_type_results: "#/components/schemas/v6/ProceedingTypeResults",
+    v7_proceeding_type_results: "#/components/schemas/v7/ProceedingTypeResults",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
     currency: "#/components/schemas/currency",
     numeric_currency: "#/components/schemas/numeric_currency",
@@ -35,6 +41,9 @@ class SwaggerDocs
     state_benefits_result: "#/components/schemas/StateBenefitsResult",
     other_income_result: "#/components/schemas/OtherIncomeResult",
     disposable_income_result: "#/components/schemas/DisposableIncomeResult",
+    overall_result: "#/components/schemas/OverallResult",
+    income_contribution: "#/components/schemas/IncomeContribution",
+    capital_contribution: "#/components/schemas/CapitalContribution",
   }.freeze
 
   attr_reader :version
@@ -87,7 +96,7 @@ class SwaggerDocs
       components: {
         schemas: {
           currency: {
-            description: "A negative or positive number (including zero) with two decimal places",
+            # description: "A negative or positive number (including zero) with two decimal places",
             # legacy - some currency values are historically allowed as strings
             oneOf: [
               {
@@ -114,7 +123,7 @@ class SwaggerDocs
             pattern: "^[-+]?\\d+(\\.\\d{1,2})?$",
           },
           positive_currency: {
-            description: "Non-negative number (including zero) with two decimal places",
+            # description: "Non-negative number (including zero) with two decimal places",
             oneOf: [
               {
                 type: :number,
@@ -129,29 +138,9 @@ class SwaggerDocs
             ],
             example: 60.99,
           },
-          ProceedingTypeResult: {
-            type: :object,
-            required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
-            additionalProperties: false,
-            properties: {
-              ccms_code: {
-                type: :string,
-                enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                description: "The code expected by CCMS",
-              },
-              client_involvement_type: {
-                type: :string,
-                enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
-                example: "A",
-                description: "The client_involvement_type expected by CCMS",
-              },
-              upper_threshold: { type: :number },
-              lower_threshold: { type: :number },
-              result: {
-                type: :string,
-                enum: %w[eligible ineligible contribution_required],
-              },
-            },
+          OverallResult: {
+            type: :string,
+            enum: %w[eligible ineligible contribution_required],
           },
           PropertyResult: {
             type: :object,
@@ -263,52 +252,6 @@ class SwaggerDocs
               },
             },
           },
-          EmploymentPaymentList: {
-            type: :array,
-            description: "0 or more employment payment details",
-            items: {
-              type: :object,
-              additionalProperties: false,
-              required: %i[client_id date gross benefits_in_kind tax national_insurance],
-              properties: {
-                client_id: {
-                  type: :string,
-                  description: "Client supplied id to identify the payment",
-                  example: "05459c0f-a620-4743-9f0c-b3daa93e571",
-                },
-                date: {
-                  type: :string,
-                  format: :date,
-                  example: "1992-07-22",
-                },
-                gross: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
-                  description: "Gross payment income received",
-                  example: 101.01,
-                },
-                benefits_in_kind: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
-                  description: "Benefit in kind amount received",
-                  example: 10.50,
-                },
-                tax: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                  description: "Amount of tax paid - normally negative, but can be positive for a refund",
-                  example: -10.01,
-                },
-                national_insurance: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                  description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
-                  example: -5.24,
-                },
-                net_employment_income: {
-                  oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                  description: "Deprecated field not used in calculation",
-                  deprecated: true,
-                },
-              },
-            },
-          },
           NonPropertyAsset: {
             type: :object,
             additionalProperties: false,
@@ -323,31 +266,6 @@ class SwaggerDocs
               description: {
                 type: :string,
                 description: "Description of asset",
-              },
-            },
-          },
-          Employments: {
-            type: :array,
-            description: "Employments, with pay info supplied as payment history over 3 calendar months. (Compare with: 'employment_details')",
-            items: {
-              type: :object,
-              additionalProperties: false,
-              required: %i[name client_id payments],
-              description: "Employment, with pay info supplied as payment history over 3 calendar months",
-              properties: {
-                name: {
-                  type: :string,
-                  description: "Identifying name for this employment - e.g. employer's name",
-                },
-                client_id: {
-                  type: :string,
-                  description: "Client supplied id to identify the employment",
-                },
-                receiving_only_statutory_sick_or_maternity_pay: {
-                  type: :boolean,
-                  description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
-                },
-                payments: { "$ref" => "#/components/schemas/EmploymentPaymentList" },
               },
             },
           },
@@ -445,38 +363,6 @@ class SwaggerDocs
                   },
                 },
               ],
-            },
-          },
-          Applicant: {
-            type: :object,
-            description: "Applicant's personal details",
-            required: %i[date_of_birth receives_qualifying_benefit],
-            additionalProperties: false,
-            properties: {
-              date_of_birth: { type: :string,
-                               format: :date,
-                               example: "1992-07-25",
-                               description: "Applicant's date of birth" },
-              employed: {
-                oneOf: [{ type: :boolean }, { type: :null }],
-                example: true,
-                description: "Deprecated - employment is now determined by presence of gross employment income",
-                deprecated: true,
-              },
-              has_partner_opponent: { type: :boolean,
-                                      example: false,
-                                      description: "Deprecated - not used in the calculation. A partner that is an opponent in the case should *not* be included in the request. For more details, see 'partner'",
-                                      deprecated: true },
-              receives_qualifying_benefit: { type: :boolean,
-                                             example: false,
-                                             description: "Applicant receives qualifying benefit" },
-              receives_asylum_support: { type: :boolean,
-                                         example: false,
-                                         description: "Applicant receives section 4 or section 95 Asylum Support" },
-              involvement_type: {
-                type: :string,
-                "enum": %w[applicant],
-              },
             },
           },
           Assessment: {
@@ -583,50 +469,35 @@ class SwaggerDocs
               },
             },
           },
-          Dependant: {
+          DateOfBirth: {
+            type: :string,
+            format: :date,
+            example: "1992-07-27",
+          },
+          InFullTimeEducation: {
+            type: :boolean,
+            example: false,
+            description: "Dependant is in full time education or not",
+          },
+          RelationShip: {
+            type: :string,
+            enum: %i[child_relative adult_relative],
+            description: "Dependant's relationship to the applicant",
+          },
+          DependantIncome: {
             type: :object,
-            required: %i[date_of_birth in_full_time_education relationship],
+            required: %i[frequency amount],
+            additionalProperties: false,
             properties: {
-              date_of_birth: {
+              frequency: {
                 type: :string,
-                format: :date,
-                example: "1992-07-27",
+                enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
               },
-              in_full_time_education: {
-                type: :boolean,
-                example: false,
-                description: "Dependant is in full time education or not",
-              },
-              relationship: {
-                type: :string,
-                enum: %i[child_relative adult_relative],
-                description: "Dependant's relationship to the applicant",
-              },
-              monthly_income: {
-                description: "Dependant's monthly income",
-                # legacy - some currency values are historically allowed as strings
-                deprecated: true,
+              amount: {
                 oneOf: [
                   { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
-                  { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
                 ],
                 example: 0,
-              },
-              income: {
-                type: :object,
-                required: %i[frequency amount],
-                additionalProperties: false,
-                properties: {
-                  frequency: {
-                    type: :string,
-                    enum: EmploymentOrSelfEmploymentIncome::PAYMENT_FREQUENCIES,
-                  },
-                  amount: { "$ref" => SCHEMA_COMPONENTS[:currency] },
-                },
-              },
-              assets_value: {
-                oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                description: "Dependant's total assets value",
               },
             },
           },
@@ -694,29 +565,6 @@ class SwaggerDocs
                       },
                     },
                   },
-                },
-              },
-            },
-          },
-          ProceedingTypes: {
-            type: :array,
-            minItems: 1,
-            description: "One or more proceeding_type details",
-            items: {
-              type: :object,
-              required: %i[ccms_code client_involvement_type],
-              properties: {
-                ccms_code: {
-                  type: :string,
-                  enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                  example: "DA001",
-                  description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
-                },
-                client_involvement_type: {
-                  type: :string,
-                  enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
-                  example: "A",
-                  description: "A CCMS client_involvement_type. This is not used in the calculation, so can be set to any valid value.",
                 },
               },
             },
@@ -1046,56 +894,33 @@ class SwaggerDocs
               pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
             },
           },
-          ApplicantCapitalResult: {
-            type: :object,
-            additionalProperties: false,
-            properties: {
-              total_liquid: { "$ref": "#/components/schemas/TotalLiquidCapital" },
-              total_non_liquid: { "$ref": "#/components/schemas/TotalNonLiquidCapital" },
-              total_vehicle: { "$ref": "#/components/schemas/TotalVehicleCapital" },
-              total_property: { "$ref": "#/components/schemas/TotalPropertyCapital" },
-              total_capital: { "$ref": "#/components/schemas/TotalCapital" },
-              total_capital_with_smod: { "$ref": "#/components/schemas/TotalCapitalWithSmod" },
-              total_mortgage_allowance: { "$ref": "#/components/schemas/TotalMortgageAllowance" },
-              subject_matter_of_dispute_disregard: { "$ref": "#/components/schemas/SmodDisregard" },
-              assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
-              disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
-              pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
-
-              proceeding_types: {
-                type: :array,
-                minItems: 1,
-                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
-              },
-              pensioner_capital_disregard: {
-                type: :number,
-                format: :decimal,
-                description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
-                minimum: 0.0,
-              },
-              capital_contribution: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Duplicate of results_summary capital_contribution field",
-              },
-              combined_disputed_capital: {
-                description: "Combined applicant and partner disputed capital",
-                type: :number,
-                format: :decimal,
-              },
-              combined_non_disputed_capital: {
-                description: "Combined applicant and partner non-disputed capital",
-                type: :number,
-                format: :decimal,
-              },
-              combined_assessed_capital: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Amount of assessed capital for both client and partner",
-              },
-            },
+          PensionerCapitalDisregard: {
+            type: :number,
+            format: :decimal,
+            description: "Cap on pensioner capital disregard for this assessment (based on disposable_income)",
+            minimum: 0.0,
+          },
+          CapitalContribution: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Amount of capital contribution required (only valid if result is contribution_required)",
+          },
+          CombinedDisputedCapital: {
+            description: "Combined applicant and partner disputed capital",
+            type: :number,
+            format: :decimal,
+          },
+          CombinedNonDisputedCapital: {
+            description: "Combined applicant and partner non-disputed capital",
+            type: :number,
+            format: :decimal,
+          },
+          CombinedAssessedCapital: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Amount of assessed capital for both client and partner",
           },
           EmploymentIncomeResult: {
             type: :object,
@@ -1184,7 +1009,7 @@ class SwaggerDocs
             type: :number,
             format: :decimal,
             minimum: 0,
-            description: "Duplicate of result_summary.income_contribution",
+            description: "Amount of income contribution required (only valid if result is contribution_required)",
           },
           DisposableIncome: {
             type: :object,
@@ -1200,52 +1025,23 @@ class SwaggerDocs
               dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
               total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
               total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
-
-              proceeding_types: {
-                type: :array,
-                minItems: 1,
-                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
-              },
             },
           },
-          ApplicantDisposableIncome: {
-            type: :object,
-            additionalProperties: false,
-            properties: {
-              employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-              gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
-              housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-              net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
-              maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
-              dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
-              dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
-              dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
-              total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
-              total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
-              income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
-
-              partner_allowance: {
-                type: :number,
-                format: :decimal,
-                minimum: 0,
-                description: "Fixed allowance given if applicant has a partner for means assessment purposes",
-              },
-              combined_total_outgoings_and_allowances: {
-                type: :number,
-                format: :decimal,
-                description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
-              },
-              combined_total_disposable_income: {
-                type: :number,
-                format: :decimal,
-                description: "total_disposable_income + partner total_disposable_income",
-              },
-              proceeding_types: {
-                type: :array,
-                minItems: 1,
-                items: { "$ref": "#/components/schemas/ProceedingTypeResult" },
-              },
-            },
+          PartnerAllowance: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Fixed allowance given if applicant has a partner for means assessment purposes",
+          },
+          CombinedOutgoingsAndAllowances: {
+            type: :number,
+            format: :decimal,
+            description: "total_outgoings_and_allowances + partner total_outgoings_and_allowances",
+          },
+          CombinedDisposableIncome: {
+            type: :number,
+            format: :decimal,
+            description: "total_disposable_income + partner total_disposable_income",
           },
           ApplicantResult: {
             type: :object,
@@ -1414,6 +1210,415 @@ class SwaggerDocs
                 properties: {
                   dependants_allowance: { type: :number },
                   disregarded_state_benefits: { type: :number },
+                },
+              },
+            },
+          },
+          v6: {
+            Applicant: {
+              type: :object,
+              description: "Object describing pertinent applicant details",
+              required: %i[date_of_birth receives_qualifying_benefit],
+              additionalProperties: false,
+              properties: {
+                date_of_birth: { type: :string,
+                                 format: :date,
+                                 example: "1992-07-25",
+                                 description: "Applicant date of birth" },
+                employed: {
+                  oneOf: [{ type: :boolean }, { type: :null }],
+                  example: true,
+                  description: "Deprecated - employment is determined by presence of gross employment income",
+                  deprecated: true,
+                },
+                has_partner_opponent: { type: :boolean,
+                                        example: false,
+                                        description: "Applicant has partner opponent (unused in calculation)" },
+                receives_qualifying_benefit: { type: :boolean,
+                                               example: false,
+                                               description: "Applicant receives qualifying benefit" },
+                receives_asylum_support: { type: :boolean,
+                                           example: false,
+                                           description: "Applicant receives section 4 or section 95 Asylum Support" },
+                involvement_type: {
+                  type: :string,
+                  "enum": %w[applicant],
+                },
+              },
+            },
+            Employments: {
+              type: :array,
+              description: "One or more employment income details",
+              items: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[name client_id payments],
+                description: "Employment income detail",
+                properties: {
+                  name: {
+                    type: :string,
+                    description: "Identifying name for this employment - e.g. employer's name",
+                  },
+                  client_id: {
+                    type: :string,
+                    description: "Client supplied id to identify the employment",
+                  },
+                  receiving_only_statutory_sick_or_maternity_pay: {
+                    type: :boolean,
+                    description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
+                  },
+                  payments: { "$ref" => "#/components/schemas/v6/EmploymentPaymentList" },
+                },
+              },
+            },
+            EmploymentPaymentList: {
+              type: :array,
+              description: "0 or more employment payment details",
+              items: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[client_id date gross benefits_in_kind tax national_insurance],
+                properties: {
+                  client_id: {
+                    type: :string,
+                    description: "Client supplied id to identify the payment",
+                    example: "05459c0f-a620-4743-9f0c-b3daa93e571",
+                  },
+                  date: {
+                    type: :string,
+                    format: :date,
+                    example: "1992-07-22",
+                  },
+                  gross: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
+                    description: "Gross payment income received",
+                    example: 101.01,
+                  },
+                  benefits_in_kind: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
+                    description: "Benefit in kind amount received",
+                    example: 10.50,
+                  },
+                  tax: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of tax paid - normally negative, but can be positive for a refund",
+                    example: -10.01,
+                  },
+                  national_insurance: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
+                    example: -5.24,
+                  },
+                  net_employment_income: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Deprecated field not used in calculation",
+                    deprecated: true,
+                  },
+                },
+              },
+            },
+            ProceedingTypes: {
+              type: :array,
+              minItems: 1,
+              description: "One or more proceeding_type details",
+              items: {
+                type: :object,
+                required: %i[ccms_code],
+                properties: {
+                  ccms_code: {
+                    type: :string,
+                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                    example: "DA001",
+                    description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
+                  },
+                  client_involvement_type: {
+                    type: :string,
+                    enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+                    example: "A",
+                    description: "A CCMS client_involvement_type. This is not used in the calculation, so can be set to any valid value.",
+                    deprecated: true,
+                  },
+                },
+              },
+            },
+            ProceedingTypeResults: {
+              type: :array,
+              minItems: 1,
+              items: {
+                type: :object,
+                required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+                properties: {
+                  ccms_code: {
+                    type: :string,
+                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                    description: "The code expected by CCMS",
+                  },
+                  client_involvement_type: {
+                    type: :string,
+                    enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+                    example: "A",
+                    description: "The client_involvement_type expected by CCMS",
+                  },
+                  upper_threshold: { type: :number },
+                  lower_threshold: { type: :number },
+                  result: { "$ref": "#/components/schemas/OverallResult" },
+                },
+              },
+            },
+            ApplicantCapitalResult: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                total_liquid: { "$ref": "#/components/schemas/TotalLiquidCapital" },
+                total_non_liquid: { "$ref": "#/components/schemas/TotalNonLiquidCapital" },
+                total_vehicle: { "$ref": "#/components/schemas/TotalVehicleCapital" },
+                total_property: { "$ref": "#/components/schemas/TotalPropertyCapital" },
+                total_capital: { "$ref": "#/components/schemas/TotalCapital" },
+                total_capital_with_smod: { "$ref": "#/components/schemas/TotalCapitalWithSmod" },
+                total_mortgage_allowance: { "$ref": "#/components/schemas/TotalMortgageAllowance" },
+                subject_matter_of_dispute_disregard: { "$ref": "#/components/schemas/SmodDisregard" },
+                assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
+                disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
+                pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
+                proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
+                pensioner_capital_disregard: { "$ref": "#/components/schemas/PensionerCapitalDisregard" },
+                capital_contribution: { "$ref": "#/components/schemas/CapitalContribution" },
+                combined_disputed_capital: { "$ref": "#/components/schemas/CombinedDisputedCapital" },
+                combined_non_disputed_capital: { "$ref": "#/components/schemas/CombinedNonDisputedCapital" },
+                combined_assessed_capital: { "$ref": "#/components/schemas/CombinedAssessedCapital" },
+              },
+            },
+            ApplicantDisposableIncome: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+                gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+                housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+                net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+                maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+                dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+                dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+                dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+                total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+                total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+                income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
+                partner_allowance: { "$ref": "#/components/schemas/PartnerAllowance" },
+                combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
+                combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
+                proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
+              },
+            },
+            Dependants: {
+              type: :array,
+              description: "One or more dependants details",
+              items: {
+                type: :object,
+                required: %i[date_of_birth in_full_time_education relationship],
+                properties: {
+                  date_of_birth: { "$ref": "#/components/schemas/DateOfBirth" },
+                  in_full_time_education: { "$ref": "#/components/schemas/InFullTimeEducation" },
+                  relationship: { "$ref": "#/components/schemas/RelationShip" },
+                  monthly_income: {
+                    description: "Dependant's monthly income",
+                    # legacy - some currency values are historically allowed as strings
+                    deprecated: true,
+                    oneOf: [
+                      { "$ref" => SCHEMA_COMPONENTS[:numeric_currency] },
+                      { "$ref" => SCHEMA_COMPONENTS[:string_currency] },
+                    ],
+                  },
+                  income: { "$ref": "#/components/schemas/DependantIncome" },
+                  assets_value: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Dependant's total assets value",
+                  },
+                },
+              },
+            },
+          },
+          v7: {
+            Applicant: {
+              type: :object,
+              description: "Object describing pertinent applicant details",
+              required: %i[date_of_birth receives_qualifying_benefit],
+              additionalProperties: false,
+              properties: {
+                date_of_birth: { type: :string,
+                                 format: :date,
+                                 example: "1992-07-25",
+                                 description: "Applicant date of birth" },
+                receives_qualifying_benefit: { type: :boolean,
+                                               example: false,
+                                               description: "Applicant receives qualifying benefit" },
+                receives_asylum_support: { type: :boolean,
+                                           example: false,
+                                           description: "Applicant receives section 4 or section 95 Asylum Support" },
+              },
+            },
+            Employments: {
+              type: :array,
+              description: "One or more employment income details",
+              items: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[name client_id payments],
+                description: "Employment income detail",
+                properties: {
+                  name: {
+                    type: :string,
+                    description: "Identifying name for this employment - e.g. employer's name",
+                  },
+                  client_id: {
+                    type: :string,
+                    description: "Client supplied id to identify the employment",
+                  },
+                  receiving_only_statutory_sick_or_maternity_pay: {
+                    type: :boolean,
+                    description: "Client is in receipt only of Statutory Sick Pay (SSP) or Statutory Maternity Pay (SMP)",
+                  },
+                  payments: { "$ref" => "#/components/schemas/v7/EmploymentPaymentList" },
+                },
+              },
+            },
+            EmploymentPaymentList: {
+              type: :array,
+              description: "0 or more employment payment details",
+              items: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[client_id date gross benefits_in_kind tax national_insurance],
+                properties: {
+                  client_id: {
+                    type: :string,
+                    description: "Client supplied id to identify the payment",
+                    example: "05459c0f-a620-4743-9f0c-b3daa93e571",
+                  },
+                  date: {
+                    type: :string,
+                    format: :date,
+                    example: "1992-07-22",
+                  },
+                  gross: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack - without it the Swagger web page doesn't display the description and other properties at this level
+                    description: "Gross payment income received",
+                    example: 101.01,
+                  },
+                  benefits_in_kind: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:positive_currency] }], # "oneOf" hack
+                    description: "Benefit in kind amount received",
+                    example: 10.50,
+                  },
+                  tax: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of tax paid - normally negative, but can be positive for a refund",
+                    example: -10.01,
+                  },
+                  national_insurance: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
+                    example: -5.24,
+                  },
+                },
+              },
+            },
+            ProceedingTypes: {
+              type: :array,
+              minItems: 1,
+              description: "One or more proceeding_type details",
+              items: {
+                type: :object,
+                required: %i[ccms_code],
+                properties: {
+                  ccms_code: {
+                    type: :string,
+                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                    example: "DA001",
+                    description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
+                  },
+                },
+              },
+            },
+            ProceedingTypeResults: {
+              type: :array,
+              minItems: 1,
+              items: {
+                type: :object,
+                required: %i[ccms_code upper_threshold lower_threshold result],
+                properties: {
+                  ccms_code: {
+                    type: :string,
+                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                    description: "The code expected by CCMS",
+                  },
+                  upper_threshold: { type: :number },
+                  lower_threshold: { type: :number },
+                  result: { "$ref": "#/components/schemas/OverallResult" },
+                },
+              },
+            },
+            ApplicantCapitalResult: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                total_liquid: { "$ref": "#/components/schemas/TotalLiquidCapital" },
+                total_non_liquid: { "$ref": "#/components/schemas/TotalNonLiquidCapital" },
+                total_vehicle: { "$ref": "#/components/schemas/TotalVehicleCapital" },
+                total_property: { "$ref": "#/components/schemas/TotalPropertyCapital" },
+                total_capital: { "$ref": "#/components/schemas/TotalCapital" },
+                total_capital_with_smod: { "$ref": "#/components/schemas/TotalCapitalWithSmod" },
+                total_mortgage_allowance: { "$ref": "#/components/schemas/TotalMortgageAllowance" },
+                subject_matter_of_dispute_disregard: { "$ref": "#/components/schemas/SmodDisregard" },
+                assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
+                disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
+                pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
+                proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
+                pensioner_capital_disregard: { "$ref": "#/components/schemas/PensionerCapitalDisregard" },
+                capital_contribution: { "$ref": "#/components/schemas/CapitalContribution" },
+                combined_disputed_capital: { "$ref": "#/components/schemas/CombinedDisputedCapital" },
+                combined_non_disputed_capital: { "$ref": "#/components/schemas/CombinedNonDisputedCapital" },
+                combined_assessed_capital: { "$ref": "#/components/schemas/CombinedAssessedCapital" },
+              },
+            },
+            ApplicantDisposableIncome: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+                gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+                housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+                net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+                maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+                dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+                dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+                dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+                total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+                total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+                income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
+                partner_allowance: { "$ref": "#/components/schemas/PartnerAllowance" },
+                combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
+                combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
+                proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
+              },
+            },
+            Dependants: {
+              type: :array,
+              description: "One or more dependants details",
+              items: {
+                type: :object,
+                required: %i[date_of_birth in_full_time_education relationship],
+                properties: {
+                  date_of_birth: { "$ref": "#/components/schemas/DateOfBirth" },
+                  in_full_time_education: { "$ref": "#/components/schemas/InFullTimeEducation" },
+                  relationship: { "$ref": "#/components/schemas/RelationShip" },
+                  income: { "$ref": "#/components/schemas/DependantIncome" },
+                  assets_value: {
+                    oneOf: [
+                      oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:numeric_currency] }], # "oneOf" hack
+                      description: "Dependant's total assets value",
+                    ],
+                    example: 0,
+                  },
                 },
               },
             },
