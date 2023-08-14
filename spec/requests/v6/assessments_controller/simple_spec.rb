@@ -1305,7 +1305,6 @@ module V6
                   fixed_employment_deduction: -45.0,
                   net_employment_income: 694.84,
                 },
-                income_contribution: 0.0,
               },
             )
           end

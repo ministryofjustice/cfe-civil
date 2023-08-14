@@ -13,7 +13,6 @@ module Decorators
                assessment:,
                total_outgoings_and_allowances: 660.21,
                total_disposable_income: 732.55,
-               income_contribution: 75,
                combined_total_disposable_income: 900.0,
                combined_total_outgoings_and_allowances: 400.32
       end
@@ -101,6 +100,7 @@ module Decorators
       subject(:decorator) do
         described_class
           .new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
+               income_contribution: 75,
                disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
                                                             partner_allowance: 191.41,
                                                             dependant_allowance_under_16: 28.34,

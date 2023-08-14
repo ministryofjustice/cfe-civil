@@ -34,8 +34,7 @@ module Assessors
 
         it "does not call the income contribution calculator" do
           expect(Calculators::IncomeContributionCalculator).not_to receive(:call)
-          assessor
-          expect(disposable_income_summary.income_contribution).to eq 0.0
+          expect(assessor).to eq 0.0
         end
       end
 
@@ -51,8 +50,7 @@ module Assessors
 
         it "does call the income contribution calculator and updates the contribution with the result" do
           expect(Calculators::IncomeContributionCalculator).not_to receive(:call)
-          assessor
-          expect(disposable_income_summary.income_contribution).to eq 0.0
+          expect(assessor).to eq 0.0
         end
       end
 
@@ -69,8 +67,7 @@ module Assessors
         end
 
         it "updates the contribution with the result from the Calculators::IncomeContributionCalculator" do
-          assessor
-          expect(disposable_income_summary.income_contribution).to eq 125.94
+          expect(assessor).to eq 125.94
         end
       end
 
@@ -86,8 +83,7 @@ module Assessors
 
         it "does call the income contribution calculator" do
           expect(Calculators::IncomeContributionCalculator).to receive(:call).and_call_original
-          assessor
-          expect(disposable_income_summary.income_contribution).to eq 203.75
+          expect(assessor).to eq 203.75
         end
       end
 
@@ -103,8 +99,7 @@ module Assessors
 
         it "does not call the income contribution calculator" do
           expect(Calculators::IncomeContributionCalculator).not_to receive(:call)
-          assessor
-          expect(disposable_income_summary.income_contribution).to eq 0.0
+          expect(assessor).to eq 0.0
         end
       end
     end
