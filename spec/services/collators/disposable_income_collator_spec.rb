@@ -132,16 +132,6 @@ module Collators
           end
         end
       end
-
-      # context "all transactions" do
-      #   it "updates with totals for all categories based on bank and cash transactions" do
-      #     collator
-      #     disposable_income_summary.reload
-      #     maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
-      #
-      #     expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
-      #   end
-      # end
     end
   end
 end

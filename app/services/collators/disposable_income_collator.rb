@@ -61,9 +61,11 @@ module Collators
     end
 
     def monthly_bank_transactions_total
-      @outgoings.child_care.bank +
-        @outgoings.maintenance_out_bank +
-        @outgoings.legal_aid_bank
+      [
+        @outgoings.child_care.bank,
+        @outgoings.maintenance_out_bank,
+        @outgoings.legal_aid_bank,
+      ].sum
     end
 
     def disposable_income(monthly_cash_transactions_total)
