@@ -34,7 +34,29 @@ class RedactService
       end
     end
 
+    def updated_remarks(remarks)
+      remarks.map { |key, value|
+        if Remarks::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
+          value = redact_remarks_client_ids(value)
+        end
+        [key, value]
+      }.to_h
+    end
+
   private
+
+    def redact_remarks_client_ids(object)
+      object.transform_values do |value|
+        case value
+        when Hash
+          redact_remarks_client_ids(value)
+        when Array
+          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+        else
+          CFEConstants::REDACTED_MESSAGE
+        end
+      end
+    end
 
     def safe_parse_date(date)
       Date.parse(date) if date
@@ -70,7 +92,7 @@ class RedactService
     def redact_response_data(hash)
       hash[:timestamp] = redact_time(hash[:timestamp]) if hash.key? :timestamp
       assessment = hash[:assessment]
-      assessment[:remarks] = RequestLogger.updated_remarks(assessment[:remarks]) if assessment&.key? :remarks
+      assessment[:remarks] = updated_remarks(assessment[:remarks]) if assessment&.key? :remarks
       hash
     end
   end
