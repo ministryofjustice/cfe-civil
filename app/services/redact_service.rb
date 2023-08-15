@@ -14,7 +14,33 @@ class RedactService
       end
     end
 
+    def redact_time(timestamp)
+      Date.parse(timestamp).strftime("%Y-%m-%d")
+    end
+
+    def redact_dob(submission_date, date_of_birth)
+      now = safe_parse_date submission_date
+      dob = safe_parse_date date_of_birth
+      # don't redact if we're on the person's birthday as there is nothing to do
+      if now.present? && dob.present? && (now.month != dob.month || now.day != dob.day)
+        redacted = Date.new(dob.year, now.month, now.day)
+        if redacted > dob
+          (redacted - 1.year + 1.day).to_s
+        else
+          (redacted + 1.day).to_s
+        end
+      else
+        date_of_birth
+      end
+    end
+
   private
+
+    def safe_parse_date(date)
+      Date.parse(date) if date
+    rescue ArgumentError
+      nil
+    end
 
     def redact_client_ref(request)
       request.tap do |req|
@@ -32,7 +58,7 @@ class RedactService
         if key == :client_id
           hash[key] = CFEConstants::REDACTED_MESSAGE
         elsif key == :date_of_birth
-          hash[key] = RequestLogger.redact_dob(submission_date, hash[key])
+          hash[key] = redact_dob(submission_date, hash[key])
         elsif value.is_a?(Hash)
           filter_payload(submission_date, value)
         elsif value.is_a?(Array)
@@ -42,7 +68,7 @@ class RedactService
     end
 
     def redact_response_data(hash)
-      hash[:timestamp] = RequestLogger.redact_time(hash[:timestamp]) if hash.key? :timestamp
+      hash[:timestamp] = redact_time(hash[:timestamp]) if hash.key? :timestamp
       assessment = hash[:assessment]
       assessment[:remarks] = RequestLogger.updated_remarks(assessment[:remarks]) if assessment&.key? :remarks
       hash

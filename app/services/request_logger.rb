@@ -5,24 +5,24 @@ class RequestLogger
       now = event_params.dig(:assessment, :submission_date)
 
       applicant_params = event_params[:applicant]
-      applicant_params[:date_of_birth] = redact_dob(now, applicant_params[:date_of_birth]) if applicant_params
+      applicant_params[:date_of_birth] = RedactService.redact_dob(now, applicant_params[:date_of_birth]) if applicant_params
 
       partner_params = event_params[:partner]
       if partner_params
         partner = partner_params[:partner]
-        partner[:date_of_birth] = redact_dob(now, partner[:date_of_birth]) if partner
+        partner[:date_of_birth] = RedactService.redact_dob(now, partner[:date_of_birth]) if partner
         partner_params.fetch(:dependants, []).each do |d|
-          d[:date_of_birth] = redact_dob(now, d[:date_of_birth])
+          d[:date_of_birth] = RedactService.redact_dob(now, d[:date_of_birth])
         end
       end
 
       event_params.fetch(:dependants, []).each do |d|
-        d[:date_of_birth] = redact_dob(now, d[:date_of_birth])
+        d[:date_of_birth] = RedactService.redact_dob(now, d[:date_of_birth])
       end
 
       response = JSON.parse(payload.fetch(:response).body)
       if response.key?("timestamp")
-        response["timestamp"] = redact_time(response["timestamp"])
+        response["timestamp"] = RedactService.redact_time(response["timestamp"])
       end
 
       assessment = response["assessment"]
@@ -48,33 +48,7 @@ class RequestLogger
       }.to_h
     end
 
-    def redact_time(timestamp)
-      Date.parse(timestamp).strftime("%Y-%m-%d")
-    end
-
-    def redact_dob(submission_date, date_of_birth)
-      now = safe_parse_date submission_date
-      dob = safe_parse_date date_of_birth
-      # don't redact if we're on the person's birthday as there is nothing to do
-      if now.present? && dob.present? && (now.month != dob.month || now.day != dob.day)
-        redacted = Date.new(dob.year, now.month, now.day)
-        if redacted > dob
-          (redacted - 1.year + 1.day).to_s
-        else
-          (redacted + 1.day).to_s
-        end
-      else
-        date_of_birth
-      end
-    end
-
   private
-
-    def safe_parse_date(date)
-      Date.parse(date) if date
-    rescue ArgumentError
-      nil
-    end
 
     def redact_remarks_client_ids(object)
       object.transform_values do |value|
