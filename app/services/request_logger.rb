@@ -27,7 +27,7 @@ class RequestLogger
 
       assessment = response["assessment"]
       if assessment && assessment["remarks"]
-        assessment["remarks"] = updated_remarks(assessment["remarks"])
+        assessment["remarks"] = RedactService.updated_remarks(assessment["remarks"])
       end
 
       RequestLog.create!(
@@ -37,30 +37,6 @@ class RequestLogger
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )
-    end
-
-    def updated_remarks(remarks)
-      remarks.map { |key, value|
-        if Remarks::VALID_REMARK_TYPES.any?(key.to_sym) && (value.is_a? Hash)
-          value = redact_remarks_client_ids(value)
-        end
-        [key, value]
-      }.to_h
-    end
-
-  private
-
-    def redact_remarks_client_ids(object)
-      object.transform_values do |value|
-        case value
-        when Hash
-          redact_remarks_client_ids(value)
-        when Array
-          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
-        else
-          CFEConstants::REDACTED_MESSAGE
-        end
-      end
     end
   end
 end
