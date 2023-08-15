@@ -1,11 +1,12 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank, :housing_costs, :legal_aid_bank) do
+    Result = Data.define(:dependant_allowance, :child_care, :rent_or_mortgage_bank, :housing_costs, :legal_aid_bank, :maintenance_out_bank) do
       def self.blank
         new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
             child_care: ChildcareCollator::Result.blank,
             rent_or_mortgage_bank: 0,
             legal_aid_bank: 0,
+            maintenance_out_bank: 0,
             housing_costs: HousingCostsCollator::Result.blank)
       end
     end
@@ -35,7 +36,8 @@ module Collators
                    child_care:,
                    rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
                    housing_costs:,
-                   legal_aid_bank:)
+                   legal_aid_bank:,
+                   maintenance_out_bank:)
       end
     end
   end
