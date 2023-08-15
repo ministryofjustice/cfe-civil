@@ -32,13 +32,11 @@ module Collators
 
       def disposable_income_attributes(disposable_income_summary:, eligible_for_childcare:, gross_income_summary:)
         attrs = {
-          maintenance_out_all_sources: disposable_income_summary.maintenance_out_all_sources,
           total_outgoings_and_allowances: disposable_income_summary.total_outgoings_and_allowances,
           total_disposable_income: disposable_income_summary.total_disposable_income,
         }
 
         maintenance_out_monthly_amount = regular_amount_for(gross_income_summary, :maintenance_out)
-        attrs[:maintenance_out_all_sources] += maintenance_out_monthly_amount
 
         attrs[:total_outgoings_and_allowances] += maintenance_out_monthly_amount
         attrs[:total_disposable_income] -= maintenance_out_monthly_amount

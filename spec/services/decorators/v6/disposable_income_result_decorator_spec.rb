@@ -11,7 +11,6 @@ module Decorators
       let(:summary) do
         create :disposable_income_summary,
                assessment:,
-               maintenance_out_all_sources: 330.21,
                total_outgoings_and_allowances: 660.21,
                total_disposable_income: 732.55,
                income_contribution: 75,
@@ -109,7 +108,8 @@ module Decorators
                                                             dependant_allowance: 220.21,
                                                             gross_housing_costs: 990.42,
                                                             housing_benefit: 440.21,
-                                                            net_housing_costs: 550.21)).as_json
+                                                            net_housing_costs: 550.21,
+                                                            maintenance_out_all_sources: 330.21)).as_json
       end
 
       before do

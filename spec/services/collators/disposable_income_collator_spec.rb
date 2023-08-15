@@ -33,7 +33,6 @@ module Collators
 
     let(:disposable_income_summary) do
       create(:disposable_income_summary,
-             maintenance_out_bank:,
              total_outgoings_and_allowances: 0.0,
              total_disposable_income: 0.0).tap do |summary|
         create :disposable_income_eligibility, disposable_income_summary: summary, proceeding_type_code: "DA001"
@@ -134,15 +133,15 @@ module Collators
         end
       end
 
-      context "all transactions" do
-        it "updates with totals for all categories based on bank and cash transactions" do
-          collator
-          disposable_income_summary.reload
-          maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
-
-          expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
-        end
-      end
+      # context "all transactions" do
+      #   it "updates with totals for all categories based on bank and cash transactions" do
+      #     collator
+      #     disposable_income_summary.reload
+      #     maintenance_out_total = disposable_income_summary.maintenance_out_bank + disposable_income_summary.maintenance_out_cash
+      #
+      #     expect(disposable_income_summary.maintenance_out_all_sources).to eq maintenance_out_total
+      #   end
+      # end
     end
   end
 end

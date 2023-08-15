@@ -21,8 +21,6 @@ module Collators
                                                                           submission_date:)
 
         maintenance_out_bank = Collators::MaintenanceCollator.call(disposable_income_summary.maintenance_outgoings)
-        # TODO: return this value instead of persisting it
-        disposable_income_summary.update!(maintenance_out_bank:)
 
         housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
                                                              gross_income_summary:,
