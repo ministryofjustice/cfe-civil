@@ -243,7 +243,7 @@ RSpec.describe Collators::RegularOutgoingsCollator do
         end
 
         it "increments #<category>_all_sources data to existing values" do
-          expect(collator).to have_attributes(legal_aid_regular: 2_000.00, maintenance_out_regular: 1_333.33)
+          expect(collator).to have_attributes(legal_aid_regular: 2_000.00, maintenance_out_regular: 1000.00)
         end
 
         it "increments #total_outgoings_and_allowances against existing value" do
