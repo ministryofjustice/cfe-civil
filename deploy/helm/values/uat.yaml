@@ -49,4 +49,4 @@ threshold:
   useTestData: 'true'
 
 legalFrameworkApi:
-  host: http://legal-framework-api.legal-framework-api-uat.svc.cluster.local
+  host: http://legal-framework-api.legal-framework-api-staging.svc.cluster.local
