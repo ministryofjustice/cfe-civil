@@ -1,9 +1,9 @@
 module Collators
   class DisposableIncomeCollator
-    Attrs = Data.define(:attrs, :monthly_cash_transactions_total, :rent_or_mortgage_cash, :legal_aid_cash)
-    Result = Data.define(:rent_or_mortgage_cash, :legal_aid_cash) do
+    Attrs = Data.define(:monthly_cash_transactions_total, :rent_or_mortgage_cash, :legal_aid_cash, :maintenance_out_cash)
+    Result = Data.define(:rent_or_mortgage_cash, :legal_aid_cash, :maintenance_out_cash) do
       def self.blank
-        new(rent_or_mortgage_cash: 0, legal_aid_cash: 0)
+        new(rent_or_mortgage_cash: 0, legal_aid_cash: 0, maintenance_out_cash: 0)
       end
     end
 
@@ -23,13 +23,12 @@ module Collators
 
     def call
       attrs = populate_attrs
-      @disposable_income_summary.update!(attrs.attrs)
       @disposable_income_summary.update!(
         total_outgoings_and_allowances: total_outgoings_and_allowances(attrs.monthly_cash_transactions_total),
         total_disposable_income: disposable_income(attrs.monthly_cash_transactions_total),
       )
 
-      Result.new(rent_or_mortgage_cash: attrs.rent_or_mortgage_cash, legal_aid_cash: attrs.legal_aid_cash)
+      Result.new(rent_or_mortgage_cash: attrs.rent_or_mortgage_cash, legal_aid_cash: attrs.legal_aid_cash, maintenance_out_cash: attrs.maintenance_out_cash)
     end
 
   private
@@ -37,16 +36,10 @@ module Collators
     def populate_attrs
       maintenance_out_cash_amount = monthly_cash_by_category(:maintenance_out)
 
-      attrs = {
-        maintenance_out_bank: @disposable_income_summary.maintenance_out_bank,
-        maintenance_out_cash: maintenance_out_cash_amount,
-        maintenance_out_all_sources: @disposable_income_summary.maintenance_out_bank + maintenance_out_cash_amount,
-      }
-
       legal_aid_cash_amount = monthly_cash_by_category(:legal_aid)
 
-      Attrs.new(attrs:,
-                legal_aid_cash: legal_aid_cash_amount,
+      Attrs.new(legal_aid_cash: legal_aid_cash_amount,
+                maintenance_out_cash: maintenance_out_cash_amount,
                 rent_or_mortgage_cash: monthly_cash_by_category(:rent_or_mortgage),
                 monthly_cash_transactions_total: maintenance_out_cash_amount + @outgoings.child_care.cash + legal_aid_cash_amount)
     end
@@ -68,9 +61,11 @@ module Collators
     end
 
     def monthly_bank_transactions_total
-      @outgoings.child_care.bank +
-        @disposable_income_summary.maintenance_out_bank +
-        @outgoings.legal_aid_bank
+      [
+        @outgoings.child_care.bank,
+        @outgoings.maintenance_out_bank,
+        @outgoings.legal_aid_bank,
+      ].sum
     end
 
     def disposable_income(monthly_cash_transactions_total)

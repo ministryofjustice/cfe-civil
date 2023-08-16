@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_13_082709) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_15_143445) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -67,9 +67,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_13_082709) do
     t.decimal "upper_threshold", default: "0.0", null: false
     t.string "assessment_result", default: "pending", null: false
     t.decimal "income_contribution", default: "0.0"
-    t.decimal "maintenance_out_all_sources", default: "0.0"
-    t.decimal "maintenance_out_bank", default: "0.0"
-    t.decimal "maintenance_out_cash", default: "0.0"
     t.string "type", default: "ApplicantDisposableIncomeSummary"
     t.decimal "combined_total_disposable_income"
     t.decimal "combined_total_outgoings_and_allowances"

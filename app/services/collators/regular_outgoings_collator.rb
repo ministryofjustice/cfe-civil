@@ -11,10 +11,10 @@
 #
 module Collators
   class RegularOutgoingsCollator
-    Attrs = Data.define(:attrs, :child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular)
-    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular) do
+    Attrs = Data.define(:attrs, :child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular, :maintenance_out_regular)
+    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular, :maintenance_out_regular) do
       def self.blank
-        new(child_care_regular: 0, rent_or_mortgage_regular: 0, legal_aid_regular: 0)
+        new(child_care_regular: 0, rent_or_mortgage_regular: 0, legal_aid_regular: 0, maintenance_out_regular: 0)
       end
     end
 
@@ -24,20 +24,19 @@ module Collators
         disposable_income_summary.update!(attrs.attrs)
         Result.new(child_care_regular: attrs.child_care_regular,
                    rent_or_mortgage_regular: attrs.rent_or_mortgage_regular,
-                   legal_aid_regular: attrs.legal_aid_regular)
+                   legal_aid_regular: attrs.legal_aid_regular,
+                   maintenance_out_regular: attrs.maintenance_out_regular)
       end
 
     private
 
       def disposable_income_attributes(disposable_income_summary:, eligible_for_childcare:, gross_income_summary:)
         attrs = {
-          maintenance_out_all_sources: disposable_income_summary.maintenance_out_all_sources,
           total_outgoings_and_allowances: disposable_income_summary.total_outgoings_and_allowances,
           total_disposable_income: disposable_income_summary.total_disposable_income,
         }
 
         maintenance_out_monthly_amount = regular_amount_for(gross_income_summary, :maintenance_out)
-        attrs[:maintenance_out_all_sources] += maintenance_out_monthly_amount
 
         attrs[:total_outgoings_and_allowances] += maintenance_out_monthly_amount
         attrs[:total_disposable_income] -= maintenance_out_monthly_amount
@@ -59,7 +58,8 @@ module Collators
 
         Attrs.new(attrs:, child_care_regular: childcare_monthly_amount,
                   rent_or_mortgage_regular: rent_or_mortgage_monthly_amount,
-                  legal_aid_regular: legal_aid_monthly_amount)
+                  legal_aid_regular: legal_aid_monthly_amount,
+                  maintenance_out_regular: maintenance_out_monthly_amount)
       end
 
       def regular_amount_for(gross_income_summary, category)
