@@ -13,10 +13,9 @@ module Assessors
     end
 
     def call
-      ActiveRecord::Base.transaction do
-        update_eligibility_records
-        @disposable_income_summary.update!(income_contribution:)
-      end
+      update_eligibility_records
+      # @disposable_income_summary.update!(income_contribution:)
+      income_contribution
     end
 
   private

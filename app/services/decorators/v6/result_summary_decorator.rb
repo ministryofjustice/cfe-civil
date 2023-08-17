@@ -14,7 +14,7 @@ module Decorators
           overall_result: {
             result: @assessment.assessment_result,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
-            income_contribution: assessment.applicant_disposable_income_summary.income_contribution.to_f,
+            income_contribution: @calculation_output.income_contribution.to_f,
             proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
           },
           gross_income: GrossIncomeResultDecorator.new(assessment.applicant_gross_income_summary,
@@ -25,6 +25,7 @@ module Decorators
             assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
+            income_contribution: @calculation_output.income_contribution,
           ),
           capital: ApplicantCapitalResultDecorator.new(
             summary: assessment.applicant_capital_summary,
@@ -54,6 +55,7 @@ module Decorators
           assessment.partner_gross_income_summary,
           @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals,
           disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
+          income_contribution: @calculation_output.income_contribution,
         )
       end
 

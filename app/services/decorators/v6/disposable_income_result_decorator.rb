@@ -1,16 +1,18 @@
 module Decorators
   module V6
     class DisposableIncomeResultDecorator
-      def initialize(summary, gross_income_summary, employment_income_subtotals, disposable_income_subtotals:)
+      def initialize(summary, gross_income_summary, employment_income_subtotals, disposable_income_subtotals:, income_contribution:)
         @summary = summary
         @gross_income_summary = gross_income_summary
         @employment_income_subtotals = employment_income_subtotals
         @disposable_income_subtotals = disposable_income_subtotals
+        @income_contribution = income_contribution
       end
 
       def as_json
         if @summary.is_a?(ApplicantDisposableIncomeSummary)
           basic_attributes.merge(proceeding_types:,
+                                 income_contribution: @income_contribution.to_f,
                                  combined_total_disposable_income:,
                                  combined_total_outgoings_and_allowances:,
                                  partner_allowance:)
@@ -31,7 +33,6 @@ module Decorators
           total_outgoings_and_allowances: @summary.total_outgoings_and_allowances.to_f,
           total_disposable_income: @summary.total_disposable_income.to_f,
           employment_income:,
-          income_contribution: @summary.income_contribution.to_f,
         }
       end
 

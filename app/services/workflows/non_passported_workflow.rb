@@ -1,6 +1,9 @@
 module Workflows
   class NonPassportedWorkflow
     class << self
+      DisposableResult = Data.define(:applicant_disposable_income_subtotals,
+                                     :partner_disposable_income_subtotals)
+
       def call(assessment:, applicant:, partner:)
         applicant_self_employments = convert_employment_details(applicant.self_employments)
         applicant_employment_details = convert_employment_details(applicant.employment_details)
@@ -36,19 +39,24 @@ module Workflows
                                                          partner_properties: assessment.partner_capital_summary&.properties || [])
         return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_gross_income_summary.ineligible?
 
-        disposable_income_subtotals = if partner.present?
-                                        partner_disposable_income_assessment(assessment:,
-                                                                             gross_income_subtotals:,
-                                                                             applicant_person_data: applicant,
-                                                                             partner_person_data: partner)
-                                      else
-                                        single_disposable_income_assessment(assessment:, gross_income_subtotals:,
-                                                                            applicant_person_data: applicant)
-                                      end
-        Assessors::DisposableIncomeAssessor.call(
+        disposable_result = if partner.present?
+                              partner_disposable_income_assessment(assessment:,
+                                                                   gross_income_subtotals:,
+                                                                   applicant_person_data: applicant,
+                                                                   partner_person_data: partner)
+                            else
+                              single_disposable_income_assessment(assessment:, gross_income_subtotals:,
+                                                                  applicant_person_data: applicant)
+                            end
+        income_contribution = Assessors::DisposableIncomeAssessor.call(
           disposable_income_summary: assessment.applicant_disposable_income_summary,
           total_disposable_income: assessment.applicant_disposable_income_summary.combined_total_disposable_income,
           submission_date: assessment.submission_date,
+        )
+        disposable_income_subtotals = DisposableIncomeSubtotals.new(
+          applicant_disposable_income_subtotals: disposable_result.applicant_disposable_income_subtotals,
+          partner_disposable_income_subtotals: disposable_result.partner_disposable_income_subtotals,
+          income_contribution:,
         )
 
         return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_disposable_income_summary.ineligible?
@@ -195,7 +203,7 @@ module Workflows
           combined_total_outgoings_and_allowances: assessment.applicant_disposable_income_summary.total_outgoings_and_allowances +
                                                      assessment.partner_disposable_income_summary.total_outgoings_and_allowances,
         )
-        DisposableIncomeSubtotals.new(
+        DisposableResult.new(
           applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(applicant_outgoings,
                                                                                      partner_allowance(assessment.submission_date),
                                                                                      applicant_regular,
@@ -231,7 +239,7 @@ module Workflows
                                                            eligible_for_childcare:)
         assessment.applicant_disposable_income_summary.update!(combined_total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income,
                                                                combined_total_outgoings_and_allowances: assessment.applicant_disposable_income_summary.total_outgoings_and_allowances)
-        DisposableIncomeSubtotals.new(
+        DisposableResult.new(
           applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(outgoings, 0, regular, disposable),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
         )
