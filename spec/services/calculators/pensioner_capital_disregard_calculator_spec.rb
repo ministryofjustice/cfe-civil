@@ -10,10 +10,10 @@ module Calculators
       described_class.new(submission_date: assessment.submission_date,
                           date_of_birth: applicant.date_of_birth,
                           receives_qualifying_benefit: applicant.receives_qualifying_benefit,
-                          total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income)
+                          total_disposable_income: disposable_income)
     end
     let(:assessment) { create :assessment, applicant_disposable_income_summary: disposable_income_summary }
-    let(:disposable_income_summary) { create :disposable_income_summary, total_disposable_income: disposable_income }
+    let(:disposable_income_summary) { create :disposable_income_summary }
     let(:disposable_income) { 0 }
 
     describe "#value" do

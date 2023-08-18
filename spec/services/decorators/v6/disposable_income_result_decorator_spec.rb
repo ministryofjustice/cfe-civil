@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Decorators
   module V6
-    RSpec.describe DisposableIncomeResultDecorator, :vcr do
+    RSpec.describe ApplicantDisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do
         create :assessment, :with_gross_income_summary, proceedings: proceeding_hash,
@@ -10,11 +10,7 @@ module Decorators
       end
       let(:summary) do
         create :disposable_income_summary,
-               assessment:,
-               total_outgoings_and_allowances: 660.21,
-               total_disposable_income: 732.55,
-               combined_total_disposable_income: 900.0,
-               combined_total_outgoings_and_allowances: 400.32
+               assessment:
       end
       let(:codes) { pt_results.keys }
       let(:pt_results) do
@@ -107,9 +103,13 @@ module Decorators
                                                             dependant_allowance_over_16: 98.12,
                                                             dependant_allowance: 220.21,
                                                             gross_housing_costs: 990.42,
+                                                            total_outgoings_and_allowances: 660.21,
+                                                            total_disposable_income: 732.55,
                                                             housing_benefit: 440.21,
                                                             net_housing_costs: 550.21,
-                                                            maintenance_out_all_sources: 330.21)).as_json
+                                                            maintenance_out_all_sources: 330.21),
+               combined_total_disposable_income: 900.0,
+               combined_total_outgoings_and_allowances: 400.32).as_json
       end
 
       before do

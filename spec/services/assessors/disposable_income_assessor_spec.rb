@@ -4,7 +4,7 @@ module Assessors
   RSpec.describe DisposableIncomeAssessor do
     describe ".call" do
       let(:assessment) { disposable_income_summary.assessment }
-      let(:disposable_income_summary) { create :disposable_income_summary, total_disposable_income: }
+      let(:disposable_income_summary) { create :disposable_income_summary }
 
       before do
         create :disposable_income_eligibility,
@@ -16,7 +16,7 @@ module Assessors
 
       subject(:assessor) do
         described_class.call(
-          total_disposable_income: disposable_income_summary.total_disposable_income,
+          total_disposable_income:,
           disposable_income_summary:,
           submission_date: assessment.submission_date,
         )
