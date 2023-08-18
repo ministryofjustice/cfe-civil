@@ -20,20 +20,11 @@ class RequestLogger
         d[:date_of_birth] = RedactService.redact_dob(now, d[:date_of_birth])
       end
 
-      response = JSON.parse(payload.fetch(:response).body)
-      if response.key?("timestamp")
-        response["timestamp"] = RedactService.redact_time(response["timestamp"])
-      end
-
-      assessment = response["assessment"]
-      if assessment && assessment["remarks"]
-        assessment["remarks"] = RedactService.updated_remarks(assessment["remarks"])
-      end
-
+      response = JSON.parse(payload.fetch(:response).body).deep_symbolize_keys
       RequestLog.create!(
         request: event_params,
         http_status: payload.fetch(:status),
-        response:,
+        response: RedactService.redact_response(response),
         duration:,
         user_agent: payload.fetch(:headers).fetch("HTTP_USER_AGENT", "unknown"),
       )

@@ -7,7 +7,12 @@ FactoryBot.define do
         version: "6",
         timestamp: Time.zone.now,
         success: true,
-        assessment: { client_reference_id: nil, submission_date: "2023-05-08" },
+        assessment: { client_reference_id: nil,
+                      submission_date: "2023-08-03",
+                      applicant: {
+                        date_of_birth: "1970-01-01",
+                      },
+                      remarks: {} },
       }
     end
     duration { 0.235087185 }
