@@ -43,8 +43,8 @@ module Workflows
                                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
         assessment.add_remarks!(new_remarks)
-        Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
-                                     receives_asylum_support: applicant.details.receives_asylum_support)
+        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
+                                         receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output
       end
 

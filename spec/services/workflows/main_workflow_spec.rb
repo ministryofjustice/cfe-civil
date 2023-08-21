@@ -25,7 +25,7 @@ module Workflows
 
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
+        expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
         described_class.call(assessment:,
                              applicant: build(:person_data, details: applicant),
                              partner: nil)
@@ -37,7 +37,7 @@ module Workflows
         it "does not call a workflow" do
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
-          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
+          expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
           described_class.call(assessment:,
                                applicant: build(:person_data, details: applicant),
                                partner: nil)
@@ -56,16 +56,16 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Assessors::MainAssessor).to receive(:call)
+          allow(Summarizers::MainSummarizer).to receive(:call)
           allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [],
                                                            date_of_birth: applicant.date_of_birth,
                                                            receives_qualifying_benefit: true).and_return(calculation_output)
           workflow_call
         end
 
-        it "calls MainAssessor" do
+        it "calls MainSummarizer" do
           allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: true)
+          expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: true)
           workflow_call
         end
       end
@@ -86,7 +86,7 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Assessors::MainAssessor).to receive(:call)
+          allow(Summarizers::MainSummarizer).to receive(:call)
           expect(PassportedWorkflow).to receive(:partner).with(assessment:, vehicles: [], partner_vehicles: [],
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
@@ -106,14 +106,14 @@ module Workflows
       end
 
       it "calls NonPassportedWorkflow" do
-        allow(Assessors::MainAssessor).to receive(:call)
+        allow(Summarizers::MainSummarizer).to receive(:call)
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
         workflow_call
       end
 
-      it "calls MainAssessor" do
+      it "calls MainSummarizer" do
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
+        expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
         workflow_call
       end
     end
@@ -143,7 +143,7 @@ module Workflows
 
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
+          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -160,7 +160,7 @@ module Workflows
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
+          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
