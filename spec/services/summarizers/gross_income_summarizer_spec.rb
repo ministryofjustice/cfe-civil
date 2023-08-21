@@ -1,12 +1,12 @@
 require "rails_helper"
 
-module Assessors
-  RSpec.describe GrossIncomeAssessor do
+module Summarizers
+  RSpec.describe GrossIncomeSummarizer do
     let(:assessment) { create :assessment, :with_gross_income_summary }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
     describe ".call" do
-      subject(:assessor) do
+      subject(:summarizer) do
         described_class.call(eligibilities: gross_income_summary.eligibilities,
                              total_gross_income:)
       end
@@ -17,7 +17,7 @@ module Assessors
 
           it "is eligible" do
             create :gross_income_eligibility, gross_income_summary:, upper_threshold: 2_567
-            assessor
+            summarizer
             expect(gross_income_summary.summarized_assessment_result).to eq :eligible
           end
         end
@@ -27,7 +27,7 @@ module Assessors
 
           it "is not eligible" do
             create :gross_income_eligibility, gross_income_summary:, upper_threshold: 2_567
-            assessor
+            summarizer
             expect(gross_income_summary.summarized_assessment_result).to eq :ineligible
           end
         end
@@ -37,7 +37,7 @@ module Assessors
 
           it "is not eligible" do
             create :gross_income_eligibility, gross_income_summary:, upper_threshold: 2_567
-            assessor
+            summarizer
             expect(gross_income_summary.summarized_assessment_result).to eq :ineligible
           end
         end

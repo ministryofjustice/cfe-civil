@@ -161,7 +161,7 @@ module Workflows
           self_employments:,
           partner_self_employments:,
         ).tap do |gross_income_subtotals|
-          Assessors::GrossIncomeAssessor.call(
+          Summarizers::GrossIncomeSummarizer.call(
             eligibilities: assessment.applicant_gross_income_summary.eligibilities,
             total_gross_income: gross_income_subtotals.combined_monthly_gross_income,
           )
