@@ -1,5 +1,5 @@
-module Assessors
-  class CapitalAssessor
+module Summarizers
+  class CapitalSummarizer
     class << self
       def call(capital_summary, assessed_capital)
         capital_summary.eligibilities.each { |elig| elig.update_assessment_result! assessed_capital }

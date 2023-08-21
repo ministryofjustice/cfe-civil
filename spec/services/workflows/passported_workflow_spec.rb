@@ -31,10 +31,10 @@ module Workflows
         expect(result.capital_subtotals.combined_assessed_capital).to eq capital_data.assessed_capital
       end
 
-      it "calls CapitalAssessor and updates capital summary record with result" do
+      it "calls CapitalSummarizer and updates capital summary record with result" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)
         expect(Collators::CapitalCollator).to receive(:call)
-        expect(Assessors::CapitalAssessor).to receive(:call).and_call_original
+        expect(Summarizers::CapitalSummarizer).to receive(:call).and_call_original
         workflow_call
         expect(applicant_capital_summary.summarized_assessment_result).to eq :eligible
       end
