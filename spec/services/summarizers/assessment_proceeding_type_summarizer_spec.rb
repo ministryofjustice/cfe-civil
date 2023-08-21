@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Assessors
-  RSpec.describe AssessmentProceedingTypeAssessor do
+module Summarizers
+  RSpec.describe AssessmentProceedingTypeSummarizer do
     let(:assessment) do
       create :assessment,
              :with_capital_summary,
@@ -215,7 +215,7 @@ module Assessors
         begin
           described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:)
         rescue StandardError => e
-          raise "Unexpected exception: #{e.class}" unless e.is_a?(Assessors::AssessmentProceedingTypeAssessor::AssessmentError)
+          raise "Unexpected exception: #{e.class}" unless e.is_a?(Summarizers::AssessmentProceedingTypeSummarizer::AssessmentError)
 
           return e.message
         end
