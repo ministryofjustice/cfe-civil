@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Assessors
-  RSpec.describe DisposableIncomeAssessor do
+module Summarizers
+  RSpec.describe DisposableIncomeSummarizer do
     describe ".call" do
       let(:assessment) { disposable_income_summary.assessment }
       let(:disposable_income_summary) { create :disposable_income_summary }

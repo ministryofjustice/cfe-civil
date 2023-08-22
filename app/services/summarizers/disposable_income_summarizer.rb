@@ -1,5 +1,5 @@
-module Assessors
-  class DisposableIncomeAssessor
+module Summarizers
+  class DisposableIncomeSummarizer
     class << self
       def call(total_disposable_income:, disposable_income_summary:, submission_date:)
         new(total_disposable_income:, disposable_income_summary:, submission_date:).call

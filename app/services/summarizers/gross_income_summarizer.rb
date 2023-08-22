@@ -1,5 +1,5 @@
-module Assessors
-  class GrossIncomeAssessor
+module Summarizers
+  class GrossIncomeSummarizer
     class << self
       def call(eligibilities:, total_gross_income:)
         eligibilities.each { |e| e.update_assessment_result! total_gross_income }

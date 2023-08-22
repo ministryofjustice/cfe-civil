@@ -37,7 +37,7 @@ module Workflows
       subject(:calculation_output) do
         assessment.reload
         described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant).tap do
-          Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
+          Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         end
       end
 
@@ -85,7 +85,7 @@ module Workflows
         assessment.reload
         described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:),
                              partner: partner.present? ? build(:person_data, details: partner) : nil)
-        Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
+        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
 
@@ -106,7 +106,7 @@ module Workflows
             described_class.call(assessment:,
                                  applicant: build(:person_data, details: build(:applicant), self_employments:),
                                  partner:).tap do
-              Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
+              Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
           end
           let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }

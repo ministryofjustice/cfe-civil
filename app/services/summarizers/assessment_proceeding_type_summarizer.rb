@@ -1,5 +1,5 @@
-module Assessors
-  class AssessmentProceedingTypeAssessor
+module Summarizers
+  class AssessmentProceedingTypeSummarizer
     # this class examines the assessment results on capital, gross_income and
     # disposable income _eligibility records for the specified proceeding type code
     # and updates the corresponding assessment_eligibility records with an overall

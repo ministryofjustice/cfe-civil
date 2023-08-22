@@ -58,7 +58,7 @@ module Workflows
                               single_disposable_income_assessment(assessment:, gross_income_subtotals:,
                                                                   applicant_person_data: applicant)
                             end
-        income_contribution = Assessors::DisposableIncomeAssessor.call(
+        income_contribution = Summarizers::DisposableIncomeSummarizer.call(
           disposable_income_summary: assessment.applicant_disposable_income_summary,
           total_disposable_income: disposable_result.combined_total_disposable_income,
           submission_date: assessment.submission_date,
@@ -161,7 +161,7 @@ module Workflows
           self_employments:,
           partner_self_employments:,
         ).tap do |gross_income_subtotals|
-          Assessors::GrossIncomeAssessor.call(
+          Summarizers::GrossIncomeSummarizer.call(
             eligibilities: assessment.applicant_gross_income_summary.eligibilities,
             total_gross_income: gross_income_subtotals.combined_monthly_gross_income,
           )

@@ -8,7 +8,7 @@ class CapitalCollatorAndAssessor
                                                       level_of_help: assessment.level_of_help,
                                                       pensioner_capital_disregard:, vehicles:)
       combined_assessed_capital = applicant_subtotals.assessed_capital
-      capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
+      capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
@@ -27,7 +27,7 @@ class CapitalCollatorAndAssessor
                                                   pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                   vehicles: partner_vehicles)
       combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
-      capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
+      capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
