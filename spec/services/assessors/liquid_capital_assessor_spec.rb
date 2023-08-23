@@ -21,8 +21,8 @@ module Assessors
       let(:liquid_capital_input) do
         [
           build(:liquid_capital_item, value: 256.77),
-        build(:liquid_capital_item, value: -150.33),
-        build(:liquid_capital_item, value: 67.50)
+          build(:liquid_capital_item, value: -150.33),
+          build(:liquid_capital_item, value: 67.50),
         ]
       end
 
@@ -42,7 +42,7 @@ module Assessors
     end
 
     context "no values supplied" do
-      let(:liquid_capital_input) {  [] }
+      let(:liquid_capital_input) { [] }
 
       it "returns 0" do
         expect(liquid_capital_items).to eq 0.0

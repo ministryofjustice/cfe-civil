@@ -75,20 +75,14 @@ module Workflows
 
         capital_subtotals = if partner.present?
                               CapitalCollatorAndAssessor.partner assessment:,
-                                                                 vehicles: applicant.vehicles,
-                                                                 liquid_capital_items: applicant.liquid_capital_items,
-                                                                 non_liquid_capital_items: applicant.non_liquid_capital_items,
-                                                                 partner_liquid_capital_items: partner.liquid_capital_items,
-                                                                 partner_non_liquid_capital_items: partner.non_liquid_capital_items,
-                                                                 partner_vehicles: partner.vehicles,
+                                                                 capitals_data: applicant.capitals_data,
+                                                                 partner_capitals_data: partner.capitals_data,
                                                                  date_of_birth: applicant.details.date_of_birth,
                                                                  partner_date_of_birth: partner.details.date_of_birth,
                                                                  receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                                  total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             else
-                              CapitalCollatorAndAssessor.call assessment:, vehicles: applicant.vehicles,
-                                                              liquid_capital_items: applicant.liquid_capital_items,
-                                                              non_liquid_capital_items: applicant.non_liquid_capital_items,
+                              CapitalCollatorAndAssessor.call assessment:, capitals_data: applicant.capitals_data,
                                                               date_of_birth: applicant.details.date_of_birth,
                                                               receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income

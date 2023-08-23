@@ -10,7 +10,7 @@ class CapitalSubtotals
     end
 
     def unassessed_vehicles(person)
-      (person&.vehicles || []).map do |vehicle|
+      (person&.capitals_data&.vehicles || []).map do |vehicle|
         Assessors::VehicleAssessor::VehicleData.new(vehicle:, result: Assessors::VehicleAssessor::Result.new(assessed_value: 0, included_in_assessment: false))
       end
     end

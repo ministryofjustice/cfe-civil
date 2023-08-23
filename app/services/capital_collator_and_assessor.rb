@@ -1,15 +1,13 @@
 class CapitalCollatorAndAssessor
   class << self
-    def call(assessment:, vehicles:, date_of_birth:, receives_qualifying_benefit:, total_disposable_income:, liquid_capital_items:, non_liquid_capital_items:)
+    def call(assessment:, capitals_data:, date_of_birth:, receives_qualifying_benefit:, total_disposable_income:)
       pensioner_capital_disregard = pensioner_capital_disregard(submission_date: assessment.submission_date, date_of_birth:,
                                                                 receives_qualifying_benefit:,
                                                                 total_disposable_income:)
       applicant_subtotals = collate_applicant_capital(submission_date: assessment.submission_date,
                                                       capital_summary: assessment.applicant_capital_summary,
                                                       level_of_help: assessment.level_of_help,
-                                                      pensioner_capital_disregard:, vehicles:,
-                                                      liquid_capital_items:,
-                                                      non_liquid_capital_items:)
+                                                      pensioner_capital_disregard:, capitals_data:)
       combined_assessed_capital = applicant_subtotals.assessed_capital
       capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
@@ -20,24 +18,17 @@ class CapitalCollatorAndAssessor
       )
     end
 
-    def partner(assessment:, vehicles:, partner_vehicles:, date_of_birth:, partner_date_of_birth:,
-                receives_qualifying_benefit:, total_disposable_income:, liquid_capital_items:,
-                non_liquid_capital_items:,
-                partner_liquid_capital_items:,
-                partner_non_liquid_capital_items:)
+    def partner(assessment:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:,
+                receives_qualifying_benefit:, total_disposable_income:)
       pensioner_capital_disregard = partner_pensioner_capital_disregard(submission_date: assessment.submission_date, date_of_birth:, partner_date_of_birth:,
                                                                         receives_qualifying_benefit:, total_disposable_income:)
       applicant_subtotals = collate_applicant_capital(submission_date: assessment.submission_date, capital_summary: assessment.applicant_capital_summary,
                                                       level_of_help: assessment.level_of_help, pensioner_capital_disregard:,
-                                                      vehicles:,
-                                                      liquid_capital_items:,
-                                                      non_liquid_capital_items:)
+                                                      capitals_data:)
       partner_subtotals = collate_partner_capital(submission_date: assessment.submission_date, capital_summary: assessment.partner_capital_summary,
                                                   level_of_help: assessment.level_of_help,
                                                   pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
-                                                  vehicles: partner_vehicles,
-                                                  liquid_capital_items: partner_liquid_capital_items,
-                                                  non_liquid_capital_items: partner_non_liquid_capital_items)
+                                                  capitals_data: partner_capitals_data)
       combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
       capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
       CapitalSubtotals.new(
@@ -50,12 +41,9 @@ class CapitalCollatorAndAssessor
 
   private
 
-    def collate_applicant_capital(submission_date:, capital_summary:, level_of_help:, pensioner_capital_disregard:, vehicles:,
-                                  liquid_capital_items:, non_liquid_capital_items:)
+    def collate_applicant_capital(submission_date:, capital_summary:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
       Collators::CapitalCollator.call(
-        liquid_capital_items:,
-        non_liquid_capital_items:,
-        vehicles:,
+        capitals_data:,
         submission_date:,
         capital_summary:,
         maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(submission_date),
@@ -64,12 +52,9 @@ class CapitalCollatorAndAssessor
       )
     end
 
-    def collate_partner_capital(submission_date:, capital_summary:, level_of_help:, pensioner_capital_disregard:, vehicles:, liquid_capital_items:,
-                                non_liquid_capital_items:)
+    def collate_partner_capital(submission_date:, capital_summary:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
       Collators::CapitalCollator.call(
-        vehicles:,
-        liquid_capital_items:,
-        non_liquid_capital_items:,
+        capitals_data:,
         submission_date:,
         capital_summary:,
         pensioner_capital_disregard:,
