@@ -94,15 +94,6 @@ module Creators
         )
       },
       lambda { |assessment, params|
-        capital_params = params[:capitals]
-        return if capital_params.blank?
-
-        CapitalsCreator.call(
-          capital_params:,
-          capital_summary: assessment.partner_capital_summary,
-        )
-      },
-      lambda { |assessment, params|
         outgoings_params = params[:outgoings]
         return if outgoings_params.blank?
 

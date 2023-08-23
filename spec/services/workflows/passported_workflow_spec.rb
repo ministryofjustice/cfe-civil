@@ -18,7 +18,8 @@ module Workflows
 
     describe ".call" do
       subject(:workflow_call) do
-        described_class.call(assessment:, vehicles: [],
+        described_class.call(assessment:,
+                             capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: []),
                              date_of_birth: applicant.date_of_birth,
                              receives_qualifying_benefit: applicant.receives_qualifying_benefit)
       end

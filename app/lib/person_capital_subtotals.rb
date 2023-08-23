@@ -113,6 +113,14 @@ class PersonCapitalSubtotals
     maximum_subject_matter_of_dispute_disregard - disputed_property_disregard
   end
 
+  def liquid_capital_items
+    @liquid_capital_items.map(&:capital_item)
+  end
+
+  def non_liquid_capital_items
+    @non_liquid_capital_items.map(&:capital_item)
+  end
+
 private
 
   def disputed_liquid_items

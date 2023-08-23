@@ -1,1 +1,1 @@
-PersonData = Data.define(:details, :self_employments, :vehicles, :dependants, :employment_details)
+PersonData = Data.define(:details, :self_employments, :capitals_data, :dependants, :employment_details)

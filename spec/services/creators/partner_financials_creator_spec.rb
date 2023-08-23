@@ -191,59 +191,6 @@ module Creators
           expect(assessment.partner_capital_summary.properties.count).to eq 1
         end
       end
-
-      context "with valid capitals" do
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            capitals: {
-              bank_accounts: [
-                {
-                  description: "A",
-                  value: 100.1,
-                  subject_matter_of_dispute: false,
-                },
-              ],
-              non_liquid_capital: [],
-            },
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-
-        it "creates capital objects" do
-          creator
-          expect(assessment.partner_capital_summary.liquid_capital_items.count).to eq 1
-        end
-      end
-
-      context "with valid vehicles" do
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            vehicles: [
-              {
-                value: 5000,
-                in_regular_use: true,
-                date_of_purchase: 1.year.ago.to_date.to_s,
-                loan_amount_outstanding: 0,
-              },
-            ],
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-      end
     end
   end
 end

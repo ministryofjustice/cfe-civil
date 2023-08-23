@@ -31,7 +31,10 @@ module Workflows
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
                                                          national_insurance: 150, gross: 2900, frequency: "monthly"))]
       end
-      let(:person_applicant) { build(:person_data, details: applicant, vehicles: build_list(:vehicle, 1)) }
+      let(:person_applicant) do
+        build(:person_data, details: applicant,
+                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1)))
+      end
       let(:partner_applicant) { person_applicant }
 
       subject(:calculation_output) do

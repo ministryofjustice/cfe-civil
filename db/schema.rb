@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_16_091942) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_22_150822) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -26,15 +26,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_16_091942) do
     t.string "version"
     t.integer "level_of_help", default: 0, null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
-  end
-
-  create_table "capital_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "capital_summary_id"
-    t.string "type", null: false
-    t.string "description", null: false
-    t.decimal "value", default: "0.0", null: false
-    t.boolean "subject_matter_of_dispute"
-    t.index ["capital_summary_id"], name: "index_capital_items_on_capital_summary_id"
   end
 
   create_table "capital_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -208,7 +199,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_16_091942) do
     t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
 
-  add_foreign_key "capital_items", "capital_summaries"
   add_foreign_key "capital_summaries", "assessments"
   add_foreign_key "cash_transaction_categories", "gross_income_summaries"
   add_foreign_key "cash_transactions", "cash_transaction_categories"

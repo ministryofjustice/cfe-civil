@@ -75,14 +75,14 @@ module Workflows
 
         capital_subtotals = if partner.present?
                               CapitalCollatorAndAssessor.partner assessment:,
-                                                                 vehicles: applicant.vehicles,
-                                                                 partner_vehicles: partner.vehicles,
+                                                                 capitals_data: applicant.capitals_data,
+                                                                 partner_capitals_data: partner.capitals_data,
                                                                  date_of_birth: applicant.details.date_of_birth,
                                                                  partner_date_of_birth: partner.details.date_of_birth,
                                                                  receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                                  total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             else
-                              CapitalCollatorAndAssessor.call assessment:, vehicles: applicant.vehicles,
+                              CapitalCollatorAndAssessor.call assessment:, capitals_data: applicant.capitals_data,
                                                               date_of_birth: applicant.details.date_of_birth,
                                                               receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
