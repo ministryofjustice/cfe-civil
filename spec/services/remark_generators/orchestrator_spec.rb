@@ -12,6 +12,7 @@ module RemarkGenerators
     let(:housing_outgoings) { assessment.applicant_disposable_income_summary.housing_cost_outgoings }
     let(:legal_aid_outgoings) { assessment.applicant_disposable_income_summary.legal_aid_outgoings }
     let(:employment_payments) { assessment.employments.first.employment_payments }
+    let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
 
     before do
       create(:disposable_income_summary, :with_everything, assessment:)
@@ -35,9 +36,9 @@ module RemarkGenerators
       expect(FrequencyChecker).to receive(:call).with(collection: legal_aid_outgoings, child_care_bank: 0).and_call_original
       expect(FrequencyChecker).to receive(:call).with(collection: employment_payments, child_care_bank: 0, date_attribute: :date).and_call_original
 
-      expect(ResidualBalanceChecker).to receive(:call).with(assessment.applicant_capital_summary, 0, 100).and_call_original
+      expect(ResidualBalanceChecker).to receive(:call).with(liquid_capital_items, 0, 100).and_call_original
 
-      described_class.call(capital_summary: assessment.applicant_capital_summary,
+      described_class.call(liquid_capital_items:,
                            lower_capital_threshold: 100,
                            child_care_bank: 0,
                            outgoings: assessment.applicant_disposable_income_summary.outgoings,

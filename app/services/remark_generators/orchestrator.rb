@@ -1,7 +1,8 @@
 module RemarkGenerators
   class Orchestrator
     class << self
-      def call(employments:, outgoings:, child_care_bank:, gross_income_summary:, capital_summary:, assessed_capital:, lower_capital_threshold:)
+      def call(employments:, outgoings:, child_care_bank:, gross_income_summary:,
+               assessed_capital:, lower_capital_threshold:, liquid_capital_items:)
         check_amount_variations(state_benefits: gross_income_summary.state_benefits,
                                 other_income_sources: gross_income_summary.other_income_sources,
                                 outgoings:,
@@ -11,7 +12,7 @@ module RemarkGenerators
                             state_benefits: gross_income_summary.state_benefits,
                             child_care_bank:,
                             outgoings:) +
-          check_residual_balances(capital_summary, assessed_capital, lower_capital_threshold) +
+          check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold) +
           check_flags(gross_income_summary.state_benefits)
       end
 
@@ -42,8 +43,8 @@ module RemarkGenerators
           employments.map { |job| FrequencyChecker.call(collection: job.employment_payments, date_attribute: :date, child_care_bank:) }.compact
       end
 
-      def check_residual_balances(capital_summary, assessed_capital, lower_capital_threshold)
-        [ResidualBalanceChecker.call(capital_summary, assessed_capital, lower_capital_threshold)].compact
+      def check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold)
+        [ResidualBalanceChecker.call(liquid_capital_items, assessed_capital, lower_capital_threshold)].compact
       end
 
       def check_flags(state_benefits)

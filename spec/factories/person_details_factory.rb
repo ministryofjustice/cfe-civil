@@ -5,5 +5,7 @@ FactoryBot.define do
     self_employments { [] }
     vehicles { [] }
     dependants { [] }
+    non_liquid_capital_items { [] }
+    liquid_capital_items { [] }
   end
 end

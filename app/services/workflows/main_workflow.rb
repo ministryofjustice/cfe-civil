@@ -12,11 +12,17 @@ module Workflows
                                if partner.present?
                                  PassportedWorkflow.partner(assessment:, vehicles: applicant.vehicles,
                                                             partner_vehicles: partner.vehicles,
+                                                            partner_liquid_capital_items: partner.liquid_capital_items,
+                                                            partner_non_liquid_capital_items: partner.non_liquid_capital_items,
+                                                            liquid_capital_items: applicant.liquid_capital_items,
+                                                            non_liquid_capital_items: applicant.non_liquid_capital_items,
                                                             date_of_birth: applicant.details.date_of_birth,
                                                             partner_date_of_birth: partner.details.date_of_birth,
                                                             receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
                                else
                                  PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles,
+                                                         liquid_capital_items: applicant.liquid_capital_items,
+                                                         non_liquid_capital_items: applicant.non_liquid_capital_items,
                                                          date_of_birth: applicant.details.date_of_birth,
                                                          receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
                                end
@@ -29,7 +35,7 @@ module Workflows
         new_remarks = RemarkGenerators::Orchestrator.call(employments: assessment.employments,
                                                           gross_income_summary: assessment.applicant_gross_income_summary,
                                                           outgoings: assessment.applicant_disposable_income_summary.outgoings,
-                                                          capital_summary: assessment.applicant_capital_summary,
+                                                          liquid_capital_items: applicant.liquid_capital_items,
                                                           lower_capital_threshold:,
                                                           child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                           assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
@@ -37,7 +43,7 @@ module Workflows
           new_remarks += RemarkGenerators::Orchestrator.call(employments: assessment.partner_employments,
                                                              gross_income_summary: assessment.partner_gross_income_summary,
                                                              outgoings: assessment.partner_disposable_income_summary.outgoings,
-                                                             capital_summary: assessment.partner_capital_summary,
+                                                             liquid_capital_items: partner.liquid_capital_items,
                                                              lower_capital_threshold:,
                                                              child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
                                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)

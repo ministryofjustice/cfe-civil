@@ -1,2 +1,0 @@
-class LiquidCapitalItem < CapitalItem
-end

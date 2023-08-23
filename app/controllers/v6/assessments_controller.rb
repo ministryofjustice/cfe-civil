@@ -79,11 +79,22 @@ module V6
     end
 
     def person_data(input_params, dependants, applicant)
+      capitals = input_params.fetch(:capitals, {})
       PersonData.new(details: applicant.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
                      vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
+                     liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
+                     non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])),
                      dependants: dependants.map(&:freeze))
+    end
+
+    def parse_capitals(capital_params)
+      capital_params.map do |attrs|
+        x = attrs.slice(:value, :description, :subject_matter_of_dispute)
+        y = { subject_matter_of_dispute: false }.merge(x)
+        CapitalItem.new(**y)
+      end
     end
 
     def parse_vehicles(vehicles)

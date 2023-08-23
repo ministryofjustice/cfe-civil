@@ -59,6 +59,8 @@ module Workflows
           allow(Summarizers::MainSummarizer).to receive(:call)
           allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [],
                                                            date_of_birth: applicant.date_of_birth,
+                                                           liquid_capital_items: [],
+                                                           non_liquid_capital_items: [],
                                                            receives_qualifying_benefit: true).and_return(calculation_output)
           workflow_call
         end
@@ -90,6 +92,10 @@ module Workflows
           expect(PassportedWorkflow).to receive(:partner).with(assessment:, vehicles: [], partner_vehicles: [],
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
+                                                               liquid_capital_items: [],
+                                                               non_liquid_capital_items: [],
+                                                               partner_liquid_capital_items: [],
+                                                               partner_non_liquid_capital_items: [],
                                                                receives_qualifying_benefit: true).and_call_original
           workflow_call
         end
@@ -147,9 +153,9 @@ module Workflows
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
+                                                                       liquid_capital_items: [],
                                                                        outgoings: assessment.applicant_disposable_income_summary.outgoings,
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       capital_summary: assessment.applicant_capital_summary,
                                                                        assessed_capital: 0).and_call_original
 
           workflow_call
@@ -164,9 +170,9 @@ module Workflows
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
+                                                                       liquid_capital_items: [],
                                                                        outgoings: assessment.applicant_disposable_income_summary.outgoings,
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       capital_summary: assessment.applicant_capital_summary,
                                                                        assessed_capital: 0).and_call_original
 
           workflow_call
