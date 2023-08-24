@@ -93,7 +93,7 @@ module V6
     def parse_capitals(capital_params)
       capital_params.map do |attrs|
         x = attrs.slice(:value, :description, :subject_matter_of_dispute)
-        # y = { subject_matter_of_dispute: false }.merge(x)
+        # convert value to a decimal just in case its a string
         y = { subject_matter_of_dispute: false }.merge(x.merge(value: x.fetch(:value).to_d))
         CapitalItem.new(**y)
       end
