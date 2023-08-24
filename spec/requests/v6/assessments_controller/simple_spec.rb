@@ -693,6 +693,43 @@ module V6
         end
       end
 
+      context "with capital values as strings" do
+        let(:capital_items) { assessment.fetch(:capital).fetch(:capital_items) }
+
+        let(:params) do
+          {
+            capitals: {
+              bank_accounts: [
+                {
+                  description: bank_1,
+                  value: "28.34",
+                },
+              ],
+              non_liquid_capital: [
+                {
+                  description: asset_1,
+                  value: 17.12,
+                },
+              ],
+            },
+          }
+        end
+
+        it "has liquid" do
+          expect(capital_items.fetch(:liquid))
+            .to match_array(
+              [{ description: bank_1, value: 28.34 }],
+            )
+        end
+
+        it "has non_liquid" do
+          expect(capital_items.fetch(:non_liquid))
+            .to match_array(
+              [{ description: "R.J.Ewing Trust", value: 17.12 }],
+            )
+        end
+      end
+
       context "with capitals" do
         let(:params) do
           {
