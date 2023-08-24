@@ -85,15 +85,6 @@ module Creators
         )
       },
       lambda { |assessment, params|
-        additional_property_params = params[:additional_properties]
-        return if additional_property_params.blank?
-
-        PartnerPropertiesCreator.call(
-          capital_summary: assessment.partner_capital_summary,
-          properties_params: additional_property_params,
-        )
-      },
-      lambda { |assessment, params|
         outgoings_params = params[:outgoings]
         return if outgoings_params.blank?
 

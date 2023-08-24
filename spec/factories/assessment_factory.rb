@@ -94,13 +94,13 @@ FactoryBot.define do
       after(:create) do |assessment|
         create(:gross_income_summary, :with_everything, assessment:)
         create(:disposable_income_summary, :with_everything, assessment:)
-        create :capital_summary, :with_everything, assessment:
+        create :capital_summary, assessment:
       end
     end
 
     trait :passported do
       after(:create) do |assessment|
-        create :capital_summary, :with_everything, :with_eligibilities, assessment:
+        create :capital_summary, :with_eligibilities, assessment:
       end
     end
 

@@ -80,7 +80,10 @@ module V6
 
     def person_data(input_params, dependants, applicant)
       capitals = input_params.fetch(:capitals, {})
+      properties = input_params.fetch(:properties, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
+                                       main_home: parse_main_home(properties.fetch(:main_home, {})),
+                                       additional_properties: parse_additional_properties(properties.fetch(:additional_properties, [])),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
       PersonData.new(details: applicant.freeze,
@@ -96,6 +99,20 @@ module V6
         # convert value to a decimal just in case its a string
         y = { subject_matter_of_dispute: false }.merge(x.merge(value: x.fetch(:value).to_d))
         CapitalItem.new(**y)
+      end
+    end
+
+    def parse_main_home(property_params)
+      x = property_params.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
+      y = { value: 0.0, outstanding_mortgage: 0.0, percentage_owned: 0.0, shared_with_housing_assoc: false, subject_matter_of_dispute: nil, main_home: true }.merge(x)
+      Property.new(**y)
+    end
+
+    def parse_additional_properties(property_params)
+      property_params.map do |attrs|
+        x = attrs.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
+        y = { value: 0.0, outstanding_mortgage: 0.0, percentage_owned: 0.0, shared_with_housing_assoc: false, subject_matter_of_dispute: nil, main_home: false }.merge(x)
+        Property.new(**y)
       end
     end
 

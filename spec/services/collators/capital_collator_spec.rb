@@ -13,12 +13,13 @@ module Collators
     let(:vehicles) { [] }
     let(:liquid_capital_items) { [] }
     let(:non_liquid_capital_items) { [] }
+    let(:main_home) { {} }
+    let(:additional_properties) { [] }
 
     describe "#call" do
       subject(:collator) do
         described_class.call submission_date: assessment.submission_date,
-                             capital_summary: assessment.applicant_capital_summary,
-                             capitals_data: CapitalsData.new(vehicles:, liquid_capital_items:, non_liquid_capital_items:),
+                             capitals_data: CapitalsData.new(vehicles:, liquid_capital_items:, non_liquid_capital_items:, main_home:, additional_properties:),
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
                              level_of_help:
@@ -37,8 +38,11 @@ module Collators
       end
 
       context "property_assessment" do
-        before do
-          create :property, :main_home, capital_summary: assessment.applicant_capital_summary
+        # before do
+        #   create :property, :main_home, capital_summary: assessment.applicant_capital_summary
+        # end
+        let(:main_home) do
+          build(:property, main_home: true)
         end
 
         it "instantiates and calls the Property Assessment service" do
@@ -69,15 +73,25 @@ module Collators
           ]
         end
 
-        before do
-          capital_summary
-            .properties
-            .build([
-              attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
-                                        value: 280_000, outstanding_mortgage: 50_000),
-              attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
-            ])
+        let(:main_home) do
+          build(:property, main_home: true, subject_matter_of_dispute: true, value: 280_000, outstanding_mortgage: 50_000)
         end
+
+        let(:additional_properties) do
+          [
+            build(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
+          ]
+        end
+
+        # before do
+        #   capital_summary
+        #     .properties
+        #     .build([
+        #       attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
+        #                                 value: 280_000, outstanding_mortgage: 50_000),
+        #       attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
+        #     ])
+        # end
 
         it "produces total non disputed and total disputed (minus SMOD) assets" do
           # disputed property value is 280k - 50k mortgage - 60k SMOD - 100k main home allowance = 70k (hopefully)
@@ -128,12 +142,16 @@ module Collators
           ]
         end
 
-        before do
-          capital_summary
-            .properties
-            .build([
-              attributes_for(:property, :main_home),
-            ])
+        # before do
+        #   capital_summary
+        #     .properties
+        #     .build([
+        #       attributes_for(:property, :main_home),
+        #     ])
+        # end
+
+        let(:main_home) do
+          build(:property, main_home: true)
         end
 
         it "summarizes the results it gets from the subservices" do

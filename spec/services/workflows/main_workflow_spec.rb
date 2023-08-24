@@ -59,7 +59,7 @@ module Workflows
           allow(Summarizers::MainSummarizer).to receive(:call)
           allow(PassportedWorkflow).to receive(:call).with(assessment:,
                                                            capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                           non_liquid_capital_items: []),
+                                                                                           non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
                                                            receives_qualifying_benefit: true).and_return(calculation_output)
           workflow_call
@@ -91,9 +91,9 @@ module Workflows
           allow(Summarizers::MainSummarizer).to receive(:call)
           expect(PassportedWorkflow).to receive(:partner).with(assessment:,
                                                                capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                               non_liquid_capital_items: []),
+                                                                                               non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                                       non_liquid_capital_items: []),
+                                                                                                       non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
                                                                receives_qualifying_benefit: true).and_call_original

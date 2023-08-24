@@ -185,11 +185,6 @@ module Creators
         it "returns a success status flag" do
           expect(creator.success?).to be true
         end
-
-        it "creates a property object" do
-          creator
-          expect(assessment.partner_capital_summary.properties.count).to eq 1
-        end
       end
     end
   end

@@ -71,12 +71,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:properties]
-            Creators::PropertiesCreator.call(capital_summary: assessment.applicant_capital_summary,
-                                             properties_params: { properties: params[:properties] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:partner]
             Creators::PartnerFinancialsCreator.call(assessment:,
                                                     partner_financials_params: params[:partner])

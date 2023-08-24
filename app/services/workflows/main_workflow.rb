@@ -6,8 +6,8 @@ module Workflows
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(applicant:,
                                                         partner:,
-                                                        applicant_properties: assessment.applicant_capital_summary.properties,
-                                                        partner_properties: assessment.partner_capital_summary&.properties || [])
+                                                        applicant_properties: applicant.capitals_data.properties || [],
+                                                        partner_properties: partner&.capitals_data&.properties || [])
                              elsif applicant.details.receives_qualifying_benefit?
                                if partner.present?
                                  PassportedWorkflow.partner(assessment:, capitals_data: applicant.capitals_data,
