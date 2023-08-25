@@ -30,9 +30,7 @@ module Decorators
               end,
             ),
           ),
-          capital_subtotals: CapitalSubtotals.unassessed(applicant: instance_double(PersonData,
-                                                                                    capitals_data: instance_double(CapitalsData, vehicles: [])),
-                                                         partner: nil, applicant_properties: [], partner_properties: []),
+          capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []), partner_capitals: nil),
         )
       end
 
