@@ -11,6 +11,9 @@ module Workflows
     let(:partner) { nil }
     let(:applicant) { build(:applicant, employed:, dependants:) }
 
+    let(:main_home) { nil }
+    let(:additional_properties) { [] }
+
     before do
       assessment.proceeding_type_codes.each do |ptc|
         create :gross_income_eligibility, gross_income_summary: assessment.applicant_gross_income_summary, upper_threshold: gross_income_upper_threshold, proceeding_type_code: ptc
@@ -89,8 +92,8 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:),
-                             partner: partner.present? ? build(:person_data, details: partner) : nil)
+        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
+                             partner: partner.present? ? build(:person_data, details: partner, capitals_data: build(:capitals_data, main_home:, additional_properties:)) : nil)
         Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
@@ -110,7 +113,7 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: build(:person_data, details: build(:applicant), self_employments:),
+                                 applicant: build(:person_data, details: build(:applicant), self_employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                  partner:).tap do
               Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
