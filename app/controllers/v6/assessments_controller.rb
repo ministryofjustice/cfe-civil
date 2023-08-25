@@ -18,8 +18,7 @@ module V6
                                 applicant_dependants,
                                 applicant_model,
                                 full_assessment_params.fetch(:properties, {})[:main_home],
-                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []),
-                                )
+                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []))
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?

@@ -59,7 +59,7 @@ module Workflows
       end
 
       def blank_calculation_result(applicant_capitals:, partner_capitals:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals: applicant_capitals, partner_capitals: partner_capitals))
+        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:))
       end
     end
   end
