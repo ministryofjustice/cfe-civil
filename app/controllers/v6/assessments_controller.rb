@@ -16,7 +16,10 @@ module V6
 
         applicant = person_data(full_assessment_params,
                                 applicant_dependants,
-                                applicant_model)
+                                applicant_model,
+                                full_assessment_params.fetch(:properties, {})[:main_home],
+                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []),
+                                )
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?
@@ -28,7 +31,9 @@ module V6
 
           partner = person_data(partner_params,
                                 partner_dependants,
-                                partner_model)
+                                partner_model,
+                                nil,
+                                partner_params.fetch(:additional_properties, []))
 
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
@@ -78,12 +83,13 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties)
       capitals = input_params.fetch(:capitals, {})
-      properties = input_params.fetch(:properties, {})
+      # properties = input_params.fetch(:properties, {})
+      # main_home = properties[:main_home]
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
-                                       main_home: parse_main_home(properties.fetch(:main_home, {})),
-                                       additional_properties: parse_additional_properties(properties.fetch(:additional_properties, [])),
+                                       main_home: main_home.present? ? parse_main_home(main_home) : nil,
+                                       additional_properties: parse_additional_properties(additional_properties),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
       PersonData.new(details: applicant.freeze,

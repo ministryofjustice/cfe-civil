@@ -7,7 +7,7 @@ module Assessors
     let(:additional_properties) { [] }
 
     describe "#call" do
-      let(:properties_data) do
+      let(:properties_result) do
         described_class.call(submission_date: assessment.submission_date,
                              main_home:,
                              additional_properties:,
@@ -21,7 +21,7 @@ module Assessors
         # end
 
         let(:result) do
-          properties_data.detect { |p| p.property.main_home }.result
+          properties_result.detect { |p| p.property.main_home }.result
         end
 
         context "100% owned" do
@@ -226,14 +226,14 @@ module Assessors
                 outstanding_mortgage: 35_000,
                 percentage_owned: 100.0
         end
-        # let(:additional_properties) do
-        #   properties_data.reject { |p| p.property.main_home }.map(&:result)
-        # end
+        let(:additional_properties_result) do
+          properties_result.reject { |p| p.property.main_home }.map(&:result)
+        end
         let(:additional_properties) { [ap1, ap2] }
 
-        let(:main_home_result) { properties_data.detect { |p| p.property.main_home }.result }
-        let(:ap1_result) { properties_data.detect { |p| p.property.value == 350_000 }.result }
-        let(:ap2_result) { properties_data.detect { |p| p.property.value == 270_000 }.result }
+        let(:main_home_result) { properties_result.detect { |p| p.property.main_home }.result }
+        let(:ap1_result) { properties_result.detect { |p| p.property.value == 350_000 }.result }
+        let(:ap2_result) { properties_result.detect { |p| p.property.value == 270_000 }.result }
 
         let(:ap1) do
           build :property,
@@ -260,8 +260,8 @@ module Assessors
         # end
 
         context "main dwelling wholly owned and additional properties wholly owned" do
-          pending "deducts a maximum of £100k mortgage over all properties" do
-            expect(additional_properties.map(&:to_h).each_with_object(Hash.new(0)) { |ap, h| ap.each { |k, v| h[k] += v } })
+          it "deducts a maximum of £100k mortgage over all properties" do
+            expect(additional_properties_result.map(&:to_h).each_with_object(Hash.new(0)) { |ap, h| ap.each { |k, v| h[k] += v } })
               .to eq({ transaction_allowance: 18_600.0,
                        net_value: 536_400.0,
                        smod_allowance: 0,
@@ -322,7 +322,7 @@ module Assessors
                 outstanding_mortgage: 55_000,
                 percentage_owned: 100.0
         end
-        let(:additional_property) { properties_data.map(&:result).first }
+        let(:additional_property) { properties_result.map(&:result).first }
 
         # before do
         #   ap1.save!
