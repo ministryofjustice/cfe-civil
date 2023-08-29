@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_22_150822) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_29_105118) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -143,17 +143,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_150822) do
     t.index ["assessment_id"], name: "index_proceeding_types_on_assessment_id"
   end
 
-  create_table "properties", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.decimal "value"
-    t.decimal "outstanding_mortgage"
-    t.decimal "percentage_owned"
-    t.boolean "main_home"
-    t.boolean "shared_with_housing_assoc"
-    t.uuid "capital_summary_id"
-    t.boolean "subject_matter_of_dispute"
-    t.index ["capital_summary_id"], name: "index_properties_on_capital_summary_id"
-  end
-
   create_table "regular_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "gross_income_summary_id", null: false
     t.string "category"
@@ -211,7 +200,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_22_150822) do
   add_foreign_key "other_income_sources", "gross_income_summaries"
   add_foreign_key "outgoings", "disposable_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
-  add_foreign_key "properties", "capital_summaries"
   add_foreign_key "regular_transactions", "gross_income_summaries"
   add_foreign_key "state_benefit_payments", "state_benefits"
   add_foreign_key "state_benefits", "gross_income_summaries"
