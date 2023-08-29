@@ -7,15 +7,15 @@ module V6
       let(:employed) { false }
       let(:user_agent) { Faker::ProgrammingLanguage.name }
       let(:current_date) { Date.new(2022, 6, 6) }
-      let(:submission_date_params) { { submission_date: current_date.to_s } }
-      let(:dob) { "1985-08-25" }
+      let(:submission_date) { current_date.to_s }
+      let(:dob) { "2001-02-02" }
       let(:client_reference_id) { "3000-01-01" }
       let(:default_params) do
         {
           "capitals": {
             "bank_accounts": [
               {
-                "value": "14.68",
+                "value": "29.78",
                 "description": "Current accounts",
               },
             ],
@@ -31,14 +31,14 @@ module V6
           ],
           "applicant": {
             "employed": nil,
-            "date_of_birth": "1981-08-25",
+            "date_of_birth": dob,
             "involvement_type": "applicant",
             "has_partner_opponent": false,
             "receives_qualifying_benefit": true,
           },
           "assessment": {
             "level_of_help": "certificated",
-            "submission_date": "2023-08-24",
+            "submission_date": submission_date,
             "client_reference_id": client_reference_id,
           },
           "properties": {
@@ -111,6 +111,44 @@ module V6
                 ],
                 "non_liquid_capital": [],
               },
+            }
+          end
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context "with vehicles[].value as string" do
+          let(:params) do
+            {
+              "vehicles": [
+                {
+                  "value": "750.0",
+                  "in_regular_use": true,
+                  "date_of_purchase": "2021-08-24",
+                  "loan_amount_outstanding": 0.0,
+                },
+              ],
+            }
+          end
+
+          it "returns http success" do
+            expect(response).to have_http_status(:success)
+          end
+        end
+
+        context "with vehicles[].value as decimal" do
+          let(:params) do
+            {
+              "vehicles": [
+                {
+                  "value": 750.0,
+                  "in_regular_use": true,
+                  "date_of_purchase": "2021-08-24",
+                  "loan_amount_outstanding": 0.0,
+                },
+              ],
             }
           end
 
