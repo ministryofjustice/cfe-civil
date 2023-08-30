@@ -1,7 +1,7 @@
 require "rails_helper"
 
-##### Purpose of this spec is to test the real submission by the "Civil Apply" covering as many fields filled in as possible #####
-##### employment_details, self_employment_details #####
+# Purpose of this spec is to test the real submission by the "Civil Apply" covering as many fields filled in as possible
+# Civil apply never send data for employment_details, self_employment_details and partner
 
 module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
