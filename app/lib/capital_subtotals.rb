@@ -2,7 +2,7 @@ class CapitalSubtotals
   class << self
     def unassessed(applicant_capitals:, partner_capitals:)
       new(
-        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant_capitals&.vehicles), properties: unassessed_properties(applicant_capitals&.properties)),
+        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant_capitals.vehicles), properties: unassessed_properties(applicant_capitals.properties)),
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(partner_capitals&.vehicles), properties: unassessed_properties(partner_capitals&.properties)),
         capital_contribution: 0,
         combined_assessed_capital: 0,
