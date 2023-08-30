@@ -102,8 +102,7 @@ module V6
     def parse_vehicles(vehicles)
       vehicles.map do |v|
         x = v.merge(date_of_purchase: Date.parse(v.fetch(:date_of_purchase)),
-                    subject_matter_of_dispute: v.fetch(:subject_matter_of_dispute, false),
-                    value: v.fetch(:value).to_d)
+                    subject_matter_of_dispute: v.fetch(:subject_matter_of_dispute, false))
         Vehicle.new(**x)
       end
     end
