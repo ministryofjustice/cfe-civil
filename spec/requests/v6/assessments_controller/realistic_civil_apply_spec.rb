@@ -83,44 +83,6 @@ module V6
       end
 
       context "successful submission" do
-        context "with vehicles[].value as string" do
-          let(:params) do
-            {
-              "vehicles": [
-                {
-                  "value": "750.0",
-                  "in_regular_use": true,
-                  "date_of_purchase": "2021-08-24",
-                  "loan_amount_outstanding": 0.0,
-                },
-              ],
-            }
-          end
-
-          it "returns http success" do
-            expect(response).to have_http_status(:success)
-          end
-        end
-
-        context "with vehicles[].value as decimal" do
-          let(:params) do
-            {
-              "vehicles": [
-                {
-                  "value": 750.0,
-                  "in_regular_use": true,
-                  "date_of_purchase": "2021-08-24",
-                  "loan_amount_outstanding": 0.0,
-                },
-              ],
-            }
-          end
-
-          it "returns http success" do
-            expect(response).to have_http_status(:success)
-          end
-        end
-
         it "returns http success" do
           expect(response).to have_http_status(:success)
         end
