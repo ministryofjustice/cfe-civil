@@ -1,45 +1,47 @@
 require "rails_helper"
 
+##### Purpose of this spec is to test the real submission by the "Civil Apply" covering as many fields filled in as possible #####
+
 module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
-      let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
-      let(:employed) { false }
-      let(:user_agent) { Faker::ProgrammingLanguage.name }
-      let(:current_date) { Date.new(2022, 6, 6) }
-      let(:submission_date) { current_date.to_s }
-      let(:dob) { "2001-02-02" }
-      let(:client_reference_id) { "3000-01-01" }
+      let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': "CivilApply/1.0 production" } }
       let(:default_params) do
         {
           "capitals": {
             "bank_accounts": [
               {
-                "value": "29.78",
+                "value": "520.8",
                 "description": "Current accounts",
               },
             ],
-            "non_liquid_capital": [],
+            "non_liquid_capital": [
+              {
+                "value": "1000.0",
+                "description": "Any valuable items worth more than £500",
+              },
+            ],
           },
           "vehicles": [
             {
-              "value": 750.0,
+              "value": 4977.7,
               "in_regular_use": true,
-              "date_of_purchase": "2021-08-24",
-              "loan_amount_outstanding": 0.0,
+              "date_of_purchase": "2019-08-15",
+              "loan_amount_outstanding": 3234.02,
+              "subject_matter_of_dispute": false,
             },
           ],
           "applicant": {
-            "employed": nil,
-            "date_of_birth": dob,
+            "employed": true,
+            "date_of_birth": "1982-08-16",
             "involvement_type": "applicant",
             "has_partner_opponent": false,
             "receives_qualifying_benefit": true,
           },
           "assessment": {
             "level_of_help": "certificated",
-            "submission_date": submission_date,
-            "client_reference_id": client_reference_id,
+            "submission_date": "2023-08-15",
+            "client_reference_id": "3000-01-01",
           },
           "properties": {
             "main_home": {
@@ -59,7 +61,9 @@ module V6
           },
           "explicit_remarks": [
             {
-              "details": [],
+              "details": %w[
+                criminal_injuries_compensation_scheme
+              ],
               "category": "policy_disregards",
             },
           ],
@@ -79,46 +83,6 @@ module V6
       end
 
       context "successful submission" do
-        context "with capitals.bank_accounts[].value as string" do
-          let(:params) do
-            {
-              "capitals": {
-                "bank_accounts": [
-                  {
-                    "value": "14.68",
-                    "description": "Current accounts",
-                  },
-                ],
-                "non_liquid_capital": [],
-              },
-            }
-          end
-
-          it "returns http success" do
-            expect(response).to have_http_status(:success)
-          end
-        end
-
-        context "with capitals.bank_accounts[].value as decimal" do
-          let(:params) do
-            {
-              "capitals": {
-                "bank_accounts": [
-                  {
-                    "value": 14.68,
-                    "description": "Current accounts",
-                  },
-                ],
-                "non_liquid_capital": [],
-              },
-            }
-          end
-
-          it "returns http success" do
-            expect(response).to have_http_status(:success)
-          end
-        end
-
         context "with vehicles[].value as string" do
           let(:params) do
             {
