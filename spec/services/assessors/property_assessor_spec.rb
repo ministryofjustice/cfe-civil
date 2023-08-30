@@ -16,10 +16,6 @@ module Assessors
       end
 
       context "main_home_only" do
-        # before do
-        #   main_home.save!
-        # end
-
         let(:result) do
           properties_result.detect { |p| p.property.main_home }.result
         end
@@ -255,10 +251,6 @@ module Assessors
                 main_home: false
         end
 
-        # before do
-        #   [main_home, ap1, ap2]#.each(&:save!)
-        # end
-
         context "main dwelling wholly owned and additional properties wholly owned" do
           it "deducts a maximum of £100k mortgage over all properties" do
             expect(additional_properties_result.map(&:to_h).each_with_object(Hash.new(0)) { |ap, h| ap.each { |k, v| h[k] += v } })
@@ -323,10 +315,6 @@ module Assessors
                 percentage_owned: 100.0
         end
         let(:additional_property) { properties_result.map(&:result).first }
-
-        # before do
-        #   ap1.save!
-        # end
 
         let(:additional_properties) { [ap1] }
         let(:main_home) { nil }

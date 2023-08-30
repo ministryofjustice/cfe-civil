@@ -38,9 +38,6 @@ module Collators
       end
 
       context "property_assessment" do
-        # before do
-        #   create :property, :main_home, capital_summary: assessment.applicant_capital_summary
-        # end
         let(:main_home) do
           build(:property, main_home: true)
         end
@@ -82,16 +79,6 @@ module Collators
             build(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
           ]
         end
-
-        # before do
-        #   capital_summary
-        #     .properties
-        #     .build([
-        #       attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
-        #                                 value: 280_000, outstanding_mortgage: 50_000),
-        #       attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
-        #     ])
-        # end
 
         it "produces total non disputed and total disputed (minus SMOD) assets" do
           # disputed property value is 280k - 50k mortgage - 60k SMOD - 100k main home allowance = 70k (hopefully)
@@ -141,14 +128,6 @@ module Collators
             build(:vehicle, value: 2_500, in_regular_use: false),
           ]
         end
-
-        # before do
-        #   capital_summary
-        #     .properties
-        #     .build([
-        #       attributes_for(:property, :main_home),
-        #     ])
-        # end
 
         let(:main_home) do
           build(:property, main_home: true)
