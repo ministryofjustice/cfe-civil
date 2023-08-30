@@ -164,7 +164,6 @@ module V6
               ],
             },
           ],
-
           "properties": {
             "main_home": {
               "value": 720_000.0,
@@ -196,17 +195,17 @@ module V6
           #       {
           #         "date": "2023-05-16",
           #         "amount": 159.6,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #       {
           #         "date": "2023-06-13",
           #         "amount": 159.6,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #       {
           #         "date": "2023-07-11",
           #         "amount": 159.6,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #     ],
           #   },
@@ -216,17 +215,17 @@ module V6
           #       {
           #         "date": "2023-05-26",
           #         "amount": 691.0,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #       {
           #         "date": "2023-06-26",
           #         "amount": 691.0,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #       {
           #         "date": "2023-07-24",
           #         "amount": 691.0,
-          #         "client_id": "** REDACTED **",
+          #         "client_id": "3000-01-01",
           #       },
           #     ],
           #   },
