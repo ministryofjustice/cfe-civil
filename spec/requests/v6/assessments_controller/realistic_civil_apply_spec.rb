@@ -6,8 +6,13 @@ require "rails_helper"
 module V6
   RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
     describe "POST /create" do
+      before do
+        create :state_benefit_type, label: "personal_independent_payments"
+        post v6_assessments_path, params: params.to_json, headers:
+      end
+
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': "CivilApply/1.0 production" } }
-      let(:default_params) do
+      let(:params) do
         {
           "assessment": {
             "level_of_help": "certificated",
@@ -188,48 +193,28 @@ module V6
               "operation": "credit",
             },
           ],
-          # "state_benefits": [
-          #   {
-          #     "name": "hmrc_child_benefit",
-          #     "payments": [
-          #       {
-          #         "date": "2023-05-16",
-          #         "amount": 159.6,
-          #         "client_id": "3000-01-01",
-          #       },
-          #       {
-          #         "date": "2023-06-13",
-          #         "amount": 159.6,
-          #         "client_id": "3000-01-01",
-          #       },
-          #       {
-          #         "date": "2023-07-11",
-          #         "amount": 159.6,
-          #         "client_id": "3000-01-01",
-          #       },
-          #     ],
-          #   },
-          #   {
-          #     "name": "personal_independent_payments",
-          #     "payments": [
-          #       {
-          #         "date": "2023-05-26",
-          #         "amount": 691.0,
-          #         "client_id": "3000-01-01",
-          #       },
-          #       {
-          #         "date": "2023-06-26",
-          #         "amount": 691.0,
-          #         "client_id": "3000-01-01",
-          #       },
-          #       {
-          #         "date": "2023-07-24",
-          #         "amount": 691.0,
-          #         "client_id": "3000-01-01",
-          #       },
-          #     ],
-          #   },
-          # ],
+          "state_benefits": [
+            {
+              "name": "personal_independent_payments",
+              "payments": [
+                {
+                  "date": "2023-05-26",
+                  "amount": 691.0,
+                  "client_id": "3000-01-01",
+                },
+                {
+                  "date": "2023-06-26",
+                  "amount": 691.0,
+                  "client_id": "3000-01-01",
+                },
+                {
+                  "date": "2023-07-24",
+                  "amount": 691.0,
+                  "client_id": "3000-01-01",
+                },
+              ],
+            },
+          ],
           "vehicles": [
             {
               "value": 3500.0,
@@ -247,12 +232,6 @@ module V6
             },
           ],
         }
-      end
-
-      let(:params) { {} }
-
-      before do
-        post v6_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
       context "successful submission" do
