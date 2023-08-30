@@ -111,40 +111,13 @@ module V6
                   "tax": -159.6,
                   "date": "2023-02-20",
                   "gross": 1868.25,
-                  "client_id": "** REDACTED **",
+                  "client_id": "3000-01-01",
                   "benefits_in_kind": 0.0,
                   "national_insurance": -98.43,
                   "net_employment_income": 1610.22,
                 },
-                {
-                  "tax": -198.8,
-                  "date": "2023-01-20",
-                  "gross": 2064.03,
-                  "client_id": "** REDACTED **",
-                  "benefits_in_kind": 0.0,
-                  "national_insurance": -121.92,
-                  "net_employment_income": 1743.31,
-                },
-                {
-                  "tax": -187.8,
-                  "date": "2022-12-20",
-                  "gross": 2008.58,
-                  "client_id": "** REDACTED **",
-                  "benefits_in_kind": 0.0,
-                  "national_insurance": -115.27,
-                  "net_employment_income": 1705.51,
-                },
-                {
-                  "tax": -240.0,
-                  "date": "2022-11-20",
-                  "gross": 2270.37,
-                  "client_id": "** REDACTED **",
-                  "benefits_in_kind": 0.0,
-                  "national_insurance": -146.68,
-                  "net_employment_income": 1883.69,
-                },
               ],
-              "client_id": "** REDACTED **",
+              "client_id": "3000-01-01",
             },
           ],
           "irregular_incomes": {
@@ -163,17 +136,7 @@ module V6
                 {
                   "date": "2023-04-26",
                   "amount": 167.0,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-05-26",
-                  "amount": 167.0,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-06-26",
-                  "amount": 167.0,
-                  "client_id": "** REDACTED **",
+                  "client_id": "3000-01-01",
                 },
               ],
             },
@@ -184,62 +147,8 @@ module V6
               "payments": [
                 {
                   "amount": 563.08,
-                  "client_id": "** REDACTED **",
+                  "client_id": "3000-01-01",
                   "payment_date": "2023-05-02",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 120.0,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-05-02",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 113.84,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-05-15",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 265.34,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-05-16",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 120.0,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-06-01",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 563.08,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-06-01",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 71.4,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-06-27",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 120.0,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-07-03",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 66.38,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-07-03",
-                  "housing_cost_type": "mortgage",
-                },
-                {
-                  "amount": 563.08,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-07-03",
                   "housing_cost_type": "mortgage",
                 },
               ],
@@ -249,18 +158,8 @@ module V6
               "payments": [
                 {
                   "amount": 30.0,
-                  "client_id": "** REDACTED **",
+                  "client_id": "3000-01-01",
                   "payment_date": "2023-05-15",
-                },
-                {
-                  "amount": 30.0,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-06-12",
-                },
-                {
-                  "amount": 35.0,
-                  "client_id": "** REDACTED **",
-                  "payment_date": "2023-06-27",
                 },
               ],
             },
@@ -290,48 +189,48 @@ module V6
               "operation": "credit",
             },
           ],
-          "state_benefits": [
-            {
-              "name": "hmrc_child_benefit",
-              "payments": [
-                {
-                  "date": "2023-05-16",
-                  "amount": 159.6,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-06-13",
-                  "amount": 159.6,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-07-11",
-                  "amount": 159.6,
-                  "client_id": "** REDACTED **",
-                },
-              ],
-            },
-            {
-              "name": "personal_independent_payments",
-              "payments": [
-                {
-                  "date": "2023-05-26",
-                  "amount": 691.0,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-06-26",
-                  "amount": 691.0,
-                  "client_id": "** REDACTED **",
-                },
-                {
-                  "date": "2023-07-24",
-                  "amount": 691.0,
-                  "client_id": "** REDACTED **",
-                },
-              ],
-            },
-          ],
+          # "state_benefits": [
+          #   {
+          #     "name": "hmrc_child_benefit",
+          #     "payments": [
+          #       {
+          #         "date": "2023-05-16",
+          #         "amount": 159.6,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #       {
+          #         "date": "2023-06-13",
+          #         "amount": 159.6,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #       {
+          #         "date": "2023-07-11",
+          #         "amount": 159.6,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #     ],
+          #   },
+          #   {
+          #     "name": "personal_independent_payments",
+          #     "payments": [
+          #       {
+          #         "date": "2023-05-26",
+          #         "amount": 691.0,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #       {
+          #         "date": "2023-06-26",
+          #         "amount": 691.0,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #       {
+          #         "date": "2023-07-24",
+          #         "amount": 691.0,
+          #         "client_id": "** REDACTED **",
+          #       },
+          #     ],
+          #   },
+          # ],
           "vehicles": [
             {
               "value": 3500.0,
