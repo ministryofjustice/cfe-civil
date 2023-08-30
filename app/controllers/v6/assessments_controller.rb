@@ -84,8 +84,6 @@ module V6
 
     def person_data(input_params, dependants, applicant, main_home, additional_properties)
       capitals = input_params.fetch(:capitals, {})
-      # properties = input_params.fetch(:properties, {})
-      # main_home = properties[:main_home]
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                                        main_home: main_home.present? ? parse_main_home(main_home) : nil,
                                        additional_properties: parse_additional_properties(additional_properties),
