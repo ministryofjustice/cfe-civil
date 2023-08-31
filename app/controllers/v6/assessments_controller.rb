@@ -107,14 +107,14 @@ module V6
 
     def parse_main_home(property_params)
       x = property_params.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
-      y = { value: 0.0, outstanding_mortgage: 0.0, percentage_owned: 0.0, shared_with_housing_assoc: false, subject_matter_of_dispute: nil, main_home: true }.merge(x)
+      y = { subject_matter_of_dispute: nil, main_home: true }.merge(x)
       Property.new(**y)
     end
 
     def parse_additional_properties(property_params)
       property_params.map do |attrs|
         x = attrs.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
-        y = { value: 0.0, outstanding_mortgage: 0.0, percentage_owned: 0.0, shared_with_housing_assoc: false, subject_matter_of_dispute: nil, main_home: false }.merge(x)
+        y = { subject_matter_of_dispute: nil, main_home: false }.merge(x)
         Property.new(**y)
       end
     end
