@@ -30,7 +30,7 @@ module Assessors
           remaining_mortgage_allowance -= allowable_outstanding_mortgage
 
           transaction_allowance_cap = property_transaction_allowance_cap(property, level_of_help, submission_date)
-          equity = property.value - allowable_outstanding_mortgage
+          equity = property.value.to_d - allowable_outstanding_mortgage
           transaction_allowance = Utilities::NumberUtilities.negative_to_zero [equity, transaction_allowance_cap].min
           net_value = equity - transaction_allowance
           net_equity = calculate_net_equity(property, net_value)
@@ -50,7 +50,7 @@ module Assessors
             net_equity:,
             main_home_equity_disregard: equity_disregard.applied,
             smod_allowance: smod_disregard.applied,
-            assessed_equity: equity_disregard.result.round(2),
+            assessed_equity: equity_disregard.result,
           ).freeze
 
           PropertyData.new(property:, result:)
