@@ -17,7 +17,7 @@ module V6
           "assessment": {
             "level_of_help": "certificated",
             "submission_date": "2023-08-15",
-            "client_reference_id": "3000-01-01",
+            "client_reference_id": "M-Y9A-EB8",
           },
           "applicant": {
             "employed": true,
@@ -54,17 +54,17 @@ module V6
                   {
                     "date": "2023-04-01",
                     "amount": 250.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                   {
                     "date": "2023-05-01",
                     "amount": 250.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                   {
                     "date": "2023-06-01",
                     "amount": 250.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                 ],
               },
@@ -76,17 +76,17 @@ module V6
                   {
                     "date": "2023-04-01",
                     "amount": 200.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                   {
                     "date": "2023-05-01",
                     "amount": 200.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                   {
                     "date": "2023-06-01",
                     "amount": 160.0,
-                    "client_id": "3000-01-01",
+                    "client_id": "M-Y9A-EB8",
                   },
                 ],
               },
@@ -116,13 +116,13 @@ module V6
                   "tax": -159.6,
                   "date": "2023-02-20",
                   "gross": 1868.25,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                   "benefits_in_kind": 0.0,
                   "national_insurance": -98.43,
                   "net_employment_income": 1610.22,
                 },
               ],
-              "client_id": "3000-01-01",
+              "client_id": "M-Y9A-EB8",
             },
           ],
           "irregular_incomes": {
@@ -141,7 +141,7 @@ module V6
                 {
                   "date": "2023-04-26",
                   "amount": 167.0,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                 },
               ],
             },
@@ -152,7 +152,7 @@ module V6
               "payments": [
                 {
                   "amount": 563.08,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                   "payment_date": "2023-05-02",
                   "housing_cost_type": "mortgage",
                 },
@@ -163,7 +163,7 @@ module V6
               "payments": [
                 {
                   "amount": 30.0,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                   "payment_date": "2023-05-15",
                 },
               ],
@@ -200,17 +200,17 @@ module V6
                 {
                   "date": "2023-05-26",
                   "amount": 691.0,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                 },
                 {
                   "date": "2023-06-26",
                   "amount": 691.0,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                 },
                 {
                   "date": "2023-07-24",
                   "amount": 691.0,
-                  "client_id": "3000-01-01",
+                  "client_id": "M-Y9A-EB8",
                 },
               ],
             },
