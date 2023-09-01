@@ -52,13 +52,13 @@ module Decorators
 
       def gross_income
         GrossIncomeDecorator.new(assessment.applicant_gross_income_summary,
-                                 assessment.employments,
+                                 @applicant.employments,
                                  @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals)
       end
 
       def partner_gross_income
         GrossIncomeDecorator.new(assessment.partner_gross_income_summary,
-                                 assessment.partner_employments,
+                                 @partner.employments,
                                  @calculation_output.gross_income_subtotals.partner_gross_income_subtotals)
       end
 

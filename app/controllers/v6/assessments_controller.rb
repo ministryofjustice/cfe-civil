@@ -92,6 +92,7 @@ module V6
       PersonData.new(details: applicant.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
+                     employments: parse_employment_income(input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])),
                      capitals_data:,
                      dependants: dependants.map(&:freeze))
     end
@@ -129,8 +130,7 @@ module V6
 
     def parse_self_employments(self_employments)
       self_employments.map do |s|
-        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
-                                              income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference], income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
       end
     end
 
@@ -138,6 +138,27 @@ module V6
       employments.map do |s|
         EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
                                               income: EmploymentIncome.new(s.fetch(:income)).freeze
+      end
+    end
+
+    def parse_employment_income(employments_incomes)
+      employments_incomes.map do |s|
+        employment_payments = s[:payments].map do |payment|
+          EmploymentPayment.new(
+            date: payment[:date],
+            gross_income: payment[:gross],
+            benefits_in_kind: payment[:benefits_in_kind],
+            tax: payment[:tax],
+            national_insurance: payment[:national_insurance],
+            client_id: payment[:client_id],
+          )
+        end
+        Employment.new(
+          name: s[:name],
+          client_id: s[:client_id],
+          receiving_only_statutory_sick_or_maternity_pay: s[:receiving_only_statutory_sick_or_maternity_pay],
+          employment_payments:,
+        )
       end
     end
 

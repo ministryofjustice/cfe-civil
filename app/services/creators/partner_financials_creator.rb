@@ -55,17 +55,6 @@ module Creators
         )
       },
       lambda { |assessment, params|
-        employment_params = params[:employments]
-
-        return if employment_params.blank?
-
-        employments_params = { employment_income: employment_params }
-        EmploymentsCreator.call(
-          employments_params:,
-          employment_collection: assessment.partner_employments,
-        )
-      },
-      lambda { |assessment, params|
         regular_transaction_params = params[:regular_transactions]
 
         return if regular_transaction_params.blank?
