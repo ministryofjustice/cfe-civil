@@ -22,10 +22,10 @@ module Assessors
     Disregard = Data.define(:result, :applied)
 
     class << self
-      def call(submission_date:, properties:, level_of_help:, smod_cap:)
+      def call(submission_date:, main_home:, level_of_help:, smod_cap:, additional_properties:)
         remaining_mortgage_allowance ||= Threshold.value_for(:property_maximum_mortgage_allowance, at: submission_date)
 
-        (properties.select(&:main_home) + properties.reject(&:main_home)).map do |property|
+        ([main_home.presence].compact + additional_properties).map do |property|
           allowable_outstanding_mortgage = calculate_outstanding_mortgage(property, remaining_mortgage_allowance)
           remaining_mortgage_allowance -= allowable_outstanding_mortgage
 

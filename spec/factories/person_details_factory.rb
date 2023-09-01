@@ -13,5 +13,7 @@ FactoryBot.define do
     vehicles { [] }
     non_liquid_capital_items { [] }
     liquid_capital_items { [] }
+    main_home { {} }
+    additional_properties { [] }
   end
 end

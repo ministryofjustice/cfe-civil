@@ -11,6 +11,12 @@ module Workflows
     let(:partner) { nil }
     let(:applicant) { build(:applicant, employed:, dependants:) }
 
+    let(:main_home) { nil }
+    let(:additional_properties) { [] }
+
+    let(:partner_main_home) { nil }
+    let(:partner_additional_properties) { [] }
+
     before do
       assessment.proceeding_type_codes.each do |ptc|
         create :gross_income_eligibility, gross_income_summary: assessment.applicant_gross_income_summary, upper_threshold: gross_income_upper_threshold, proceeding_type_code: ptc
@@ -31,9 +37,12 @@ module Workflows
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
                                                          national_insurance: 150, gross: 2900, frequency: "monthly"))]
       end
+
+      let(:main_home) { nil }
+      let(:additional_properties) { [] }
       let(:person_applicant) do
         build(:person_data, details: applicant,
-                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1)))
+                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
       end
       let(:partner_applicant) { person_applicant }
 
@@ -86,8 +95,8 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:),
-                             partner: partner.present? ? build(:person_data, details: partner) : nil)
+        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
+                             partner: partner.present? ? build(:person_data, details: partner, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
         Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
@@ -107,7 +116,7 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.call(assessment:,
-                                 applicant: build(:person_data, details: build(:applicant), self_employments:),
+                                 applicant: build(:person_data, details: build(:applicant), self_employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                  partner:).tap do
               Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
             end
@@ -222,9 +231,8 @@ module Workflows
           let(:self_employments) { [] }
           let(:applicant) { build :applicant, :under_pensionable_age }
 
-          before do
-            create(:property, :additional_property, capital_summary: assessment.applicant_capital_summary,
-                                                    value: property_value, outstanding_mortgage: 0, percentage_owned: 100)
+          let(:additional_properties) do
+            [build(:property, :additional_property, value: property_value, outstanding_mortgage: 0, percentage_owned: 100)]
           end
 
           context "with 8k capital" do
@@ -264,9 +272,8 @@ module Workflows
         context "with capital" do
           let(:dependants) { [] }
 
-          before do
-            create(:property, :additional_property, capital_summary: assessment.applicant_capital_summary,
-                                                    value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)
+          let(:additional_properties) do
+            [build(:property, :additional_property, value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)]
           end
 
           context "without partner" do
@@ -295,14 +302,14 @@ module Workflows
           context "when both pensioners" do
             let(:applicant) { build :applicant, :over_pensionable_age }
             let(:partner) { build :applicant, :over_pensionable_age }
+            let(:partner_additional_properties) do
+              [build(:property, :additional_property, value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)]
+            end
 
             before do
-              pcs = create(:partner_capital_summary, assessment:)
+              create(:partner_capital_summary, assessment:)
               create(:partner_gross_income_summary, assessment:)
               create(:partner_disposable_income_summary, assessment:)
-
-              create(:property, :additional_property, capital_summary: pcs,
-                                                      value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)
             end
 
             it "doesnt double-count" do

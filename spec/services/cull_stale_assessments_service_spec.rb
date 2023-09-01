@@ -40,9 +40,9 @@ RSpec.describe CullStaleAssessmentsService do
 
   def create_assessment_and_associated_records
     create(:assessment).tap do |ass|
-      create :capital_summary, :with_everything, :with_eligibilities, assessment: ass
-      create :partner_capital_summary, :with_everything, assessment: ass
-      create :partner_capital_summary, :with_everything, assessment: ass
+      create :capital_summary, :with_eligibilities, assessment: ass
+      create :partner_capital_summary, assessment: ass
+      create :partner_capital_summary, assessment: ass
       create :gross_income_summary,
              :with_all_records,
              :with_employment,
@@ -74,7 +74,6 @@ RSpec.describe CullStaleAssessmentsService do
       OtherIncomeSource,
       Outgoings::BaseOutgoing,
       ProceedingType,
-      Property,
       RegularTransaction,
       StateBenefitPayment,
       StateBenefit,

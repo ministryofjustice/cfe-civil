@@ -1,6 +1,6 @@
 FactoryBot.define do
-  factory :property do
-    capital_summary
+  factory :property, class: "Property" do
+    initialize_with { new(**attributes) }
 
     value { Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f }
     outstanding_mortgage { Faker::Number.decimal(l_digits: 4, r_digits: 2).to_f }

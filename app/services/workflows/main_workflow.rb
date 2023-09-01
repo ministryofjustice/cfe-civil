@@ -4,10 +4,8 @@ module Workflows
       def call(assessment:, applicant:, partner:)
         populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
-                               blank_calculation_result(applicant:,
-                                                        partner:,
-                                                        applicant_properties: assessment.applicant_capital_summary.properties,
-                                                        partner_properties: assessment.partner_capital_summary&.properties || [])
+                               blank_calculation_result(applicant_capitals: applicant.capitals_data,
+                                                        partner_capitals: partner&.capitals_data)
                              elsif applicant.details.receives_qualifying_benefit?
                                if partner.present?
                                  PassportedWorkflow.partner(assessment:, capitals_data: applicant.capitals_data,
@@ -60,8 +58,8 @@ module Workflows
           applicant.receives_asylum_support
       end
 
-      def blank_calculation_result(applicant:, partner:, applicant_properties:, partner_properties:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:, applicant_properties:, partner_properties:))
+      def blank_calculation_result(applicant_capitals:, partner_capitals:)
+        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:))
       end
     end
   end

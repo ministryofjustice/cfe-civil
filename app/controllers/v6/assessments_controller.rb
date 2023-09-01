@@ -16,7 +16,9 @@ module V6
 
         applicant = person_data(full_assessment_params,
                                 applicant_dependants,
-                                applicant_model)
+                                applicant_model,
+                                full_assessment_params.fetch(:properties, {})[:main_home],
+                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []))
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?
@@ -28,7 +30,9 @@ module V6
 
           partner = person_data(partner_params,
                                 partner_dependants,
-                                partner_model)
+                                partner_model,
+                                nil,
+                                partner_params.fetch(:additional_properties, []))
 
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
@@ -78,9 +82,11 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties)
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
+                                       main_home: main_home.present? ? parse_main_home(main_home) : nil,
+                                       additional_properties: parse_additional_properties(additional_properties),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
       PersonData.new(details: applicant.freeze,
@@ -96,6 +102,20 @@ module V6
         # convert value to a decimal just in case its a string
         y = { subject_matter_of_dispute: false }.merge(x.merge(value: x.fetch(:value).to_d))
         CapitalItem.new(**y)
+      end
+    end
+
+    def parse_main_home(property_params)
+      x = property_params.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
+      y = { main_home: true }.merge(x)
+      Property.new(**y)
+    end
+
+    def parse_additional_properties(property_params)
+      property_params.map do |attrs|
+        x = attrs.slice(:value, :outstanding_mortgage, :percentage_owned, :shared_with_housing_assoc, :subject_matter_of_dispute)
+        y = { main_home: false }.merge(x)
+        Property.new(**y)
       end
     end
 

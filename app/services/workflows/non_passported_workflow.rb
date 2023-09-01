@@ -44,9 +44,7 @@ module Workflows
                                                                    self_employments: applicant_employment_details,
                                                                    partner_self_employments: [])
                                  end
-        unassessed_capital = CapitalSubtotals.unassessed(applicant:, partner:,
-                                                         applicant_properties: assessment.applicant_capital_summary.properties,
-                                                         partner_properties: assessment.partner_capital_summary&.properties || [])
+        unassessed_capital = CapitalSubtotals.unassessed(applicant_capitals: applicant.capitals_data, partner_capitals: partner&.capitals_data)
         return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_result = if partner.present?
