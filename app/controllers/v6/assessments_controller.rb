@@ -18,7 +18,8 @@ module V6
                                 applicant_dependants,
                                 applicant_model,
                                 full_assessment_params.fetch(:properties, {})[:main_home],
-                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []))
+                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []),
+                                create.assessment.submission_date)
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?
@@ -32,7 +33,8 @@ module V6
                                 partner_dependants,
                                 partner_model,
                                 nil,
-                                partner_params.fetch(:additional_properties, []))
+                                partner_params.fetch(:additional_properties, []),
+                                create.assessment.submission_date)
 
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
@@ -82,17 +84,19 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant, main_home, additional_properties)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties, submission_date)
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                                        main_home: main_home.present? ? parse_main_home(main_home) : nil,
                                        additional_properties: parse_additional_properties(additional_properties),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
+
+      employments = input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])
       PersonData.new(details: applicant.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
-                     employments: parse_employment_income(input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])),
+                     employments: parse_employment_income(employments, submission_date),
                      capitals_data:,
                      dependants: dependants.map(&:freeze))
     end
@@ -141,7 +145,7 @@ module V6
       end
     end
 
-    def parse_employment_income(employments_incomes)
+    def parse_employment_income(employments_incomes, submission_date)
       employments_incomes.map do |s|
         employment_payments = s[:payments].map do |payment|
           EmploymentPayment.new(
@@ -158,6 +162,7 @@ module V6
           client_id: s[:client_id],
           receiving_only_statutory_sick_or_maternity_pay: s[:receiving_only_statutory_sick_or_maternity_pay],
           employment_payments:,
+          submission_date:,
         )
       end
     end
