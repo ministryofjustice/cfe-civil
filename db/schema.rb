@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_08_29_105118) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_04_170037) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -64,26 +64,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_29_105118) do
     t.decimal "upper_threshold"
     t.string "assessment_result", default: "pending", null: false
     t.index ["parent_id", "type", "proceeding_type_code"], name: "eligibilities_unique_type_ptc", unique: true
-  end
-
-  create_table "employment_payments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "employment_id"
-    t.date "date", null: false
-    t.decimal "gross_income", default: "0.0", null: false
-    t.decimal "benefits_in_kind", default: "0.0", null: false
-    t.decimal "tax", default: "0.0", null: false
-    t.decimal "national_insurance", default: "0.0", null: false
-    t.string "client_id", null: false
-    t.index ["employment_id"], name: "index_employment_payments_on_employment_id"
-  end
-
-  create_table "employments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.string "name"
-    t.string "client_id", null: false
-    t.string "type", default: "ApplicantEmployment"
-    t.boolean "receiving_only_statutory_sick_or_maternity_pay", default: false
-    t.index ["assessment_id"], name: "index_employments_on_assessment_id"
   end
 
   create_table "explicit_remarks", force: :cascade do |t|
@@ -192,8 +172,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_08_29_105118) do
   add_foreign_key "cash_transaction_categories", "gross_income_summaries"
   add_foreign_key "cash_transactions", "cash_transaction_categories"
   add_foreign_key "disposable_income_summaries", "assessments"
-  add_foreign_key "employment_payments", "employments"
-  add_foreign_key "employments", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "irregular_income_payments", "gross_income_summaries"
   add_foreign_key "other_income_payments", "other_income_sources"
