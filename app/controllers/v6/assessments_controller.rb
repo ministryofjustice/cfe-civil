@@ -145,9 +145,9 @@ module V6
       end
     end
 
-    def parse_employment_income(employments_incomes, submission_date)
-      employments_incomes.map do |s|
-        employment_payments = s[:payments].map do |payment|
+    def parse_employment_income(employments, submission_date)
+      employments.map do |employment|
+        employment_payments = employment[:payments].map do |payment|
           EmploymentPayment.new(
             date: payment[:date],
             gross_income: payment[:gross],
@@ -158,9 +158,9 @@ module V6
           )
         end
         Employment.new(
-          name: s[:name],
-          client_id: s[:client_id],
-          receiving_only_statutory_sick_or_maternity_pay: s[:receiving_only_statutory_sick_or_maternity_pay],
+          name: employment[:name],
+          client_id: employment[:client_id],
+          receiving_only_statutory_sick_or_maternity_pay: employment[:receiving_only_statutory_sick_or_maternity_pay],
           employment_payments:,
           submission_date:,
         )
