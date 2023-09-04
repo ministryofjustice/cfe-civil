@@ -1,5 +1,5 @@
 Employment = Data.define(:name, :client_id, :receiving_only_statutory_sick_or_maternity_pay, :employment_payments, :type, :submission_date) do
-  def initialize(name:, client_id:, receiving_only_statutory_sick_or_maternity_pay:, employment_payments:, type: "ApplicantEmployment", submission_date:)
+  def initialize(name:, client_id:, receiving_only_statutory_sick_or_maternity_pay:, employment_payments:, submission_date:, type: "ApplicantEmployment")
     super(name:, client_id:, receiving_only_statutory_sick_or_maternity_pay:, employment_payments:, type:, submission_date:)
   end
 

@@ -100,10 +100,10 @@ module Creators
           expect(creator.success?).to be true
         end
 
-        it "creates an employment object" do
-          creator
-          expect(assessment.partner_employments.count).to eq 1
-        end
+        # it "creates an employment object" do
+        #   creator
+        #   expect(assessment.partner_employments.count).to eq 1
+        # end
       end
 
       context "with valid regular transactions" do

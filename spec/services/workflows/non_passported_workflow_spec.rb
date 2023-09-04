@@ -10,6 +10,8 @@ module Workflows
     end
     let(:partner) { nil }
     let(:applicant) { build(:applicant, employed:, dependants:) }
+    let(:employments) { [] }
+    let(:partner_employments) { [] }
 
     let(:main_home) { nil }
     let(:additional_properties) { [] }
@@ -30,6 +32,7 @@ module Workflows
 
     context "vehicle collection output", :calls_bank_holiday do
       let(:disposable_income_upper_threshold) { 5000 }
+      let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 4000) }
       let(:applicant) { build :applicant }
       let(:proceeding_types) { %w[SE003] }
       let(:level_of_help) { "certificated" }
@@ -58,7 +61,6 @@ module Workflows
         create(:partner_gross_income_summary, assessment:)
         create(:partner_disposable_income_summary, assessment:)
 
-        create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: 4000)
         assessment.proceeding_type_codes.each do |ptc|
           create(:assessment_eligibility, assessment:, proceeding_type_code: ptc)
         end
@@ -95,8 +97,8 @@ module Workflows
 
       subject(:assessment_result) do
         assessment.reload
-        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
-                             partner: partner.present? ? build(:person_data, details: partner, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
+        described_class.call(assessment:, applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
+                             partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
         Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
         assessment.assessment_result
       end
@@ -333,10 +335,7 @@ module Workflows
 
             context "when employed" do
               let(:employed) { true }
-
-              before do
-                create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
-              end
+              let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
 
               it "is eligible" do
                 expect(assessment_result).to eq("eligible")
@@ -354,10 +353,7 @@ module Workflows
 
               context "with partner employment" do
                 let(:partner) { build :applicant, employed: true }
-
-                before do
-                  create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
-                end
+                let(:partner_employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
 
                 it "is eligible" do
                   expect(assessment_result).to eq("eligible")
@@ -381,10 +377,9 @@ module Workflows
           context "with housing costs" do
             let(:employed) { true }
             let(:dependants) { [] }
+            let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 3_000) }
 
             before do
-              create(:employment, :with_monthly_payments, assessment:,
-                                                          gross_monthly_income: 3_000)
               create(:housing_cost, amount: 1000,
                                     gross_income_summary: assessment.applicant_gross_income_summary)
             end
@@ -421,12 +416,12 @@ module Workflows
 
               context "with an employed partner" do
                 let(:partner) { build(:applicant, employed: true) }
+                let(:partner_employments) { build_list(:partner_employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
 
                 before do
                   create(:partner_capital_summary, assessment:)
                   create(:partner_gross_income_summary, assessment:)
                   create(:partner_disposable_income_summary, assessment:)
-                  create(:partner_employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
                 end
 
                 it "is eligible due to partner allowance" do
@@ -437,10 +432,7 @@ module Workflows
 
             context "when employed" do
               let(:employed) { true }
-
-              before do
-                create(:employment, :with_monthly_payments, assessment:, gross_monthly_income: salary / 12.0)
-              end
+              let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
 
               it "is not eligible due to income" do
                 expect(assessment_result).to eq("contribution_required")

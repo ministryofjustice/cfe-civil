@@ -68,7 +68,7 @@ module Decorators
         end
 
         context "with partner" do
-          let(:partner) { build(:applicant) }
+          let(:partner) { build(:person_data, details: build(:applicant)) }
 
           before do
             create(:partner_capital_summary, assessment:)

@@ -65,8 +65,6 @@ RSpec.describe CullStaleAssessmentsService do
       CashTransaction,
       DisposableIncomeSummary,
       Eligibility::Base,
-      EmploymentPayment,
-      Employment,
       ExplicitRemark,
       GrossIncomeSummary,
       IrregularIncomePayment,

@@ -37,8 +37,8 @@ module Decorators
         )
       end
 
-      let(:employment1) { assessment.employments.order(:name).first }
-      let(:employment2) { assessment.employments.order(:name).last }
+      let(:employment1) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
+      let(:employment2) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
       let(:universal_credit) { create :state_benefit_type, :universal_credit }
       let(:child_benefit) { create :state_benefit_type, :child_benefit }
 
@@ -162,7 +162,7 @@ module Decorators
 
         subject(:decorator) do
           described_class.new(assessment.applicant_gross_income_summary,
-                              assessment.employments, subtotals).as_json
+                              [employment1, employment2], subtotals).as_json
         end
 
         it "returns the expected structure" do
