@@ -1,8 +1,7 @@
 module Workflows
   class MainWorkflow
     class << self
-      def call(assessment:, applicant:, partner:)
-        populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
+      def call(assessment:, applicant:, partner:, proceeding_type_code:)
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(applicant_capitals: applicant.capitals_data,
                                                         partner_capitals: partner&.capitals_data)
@@ -41,17 +40,12 @@ module Workflows
                                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
         assessment.add_remarks!(new_remarks)
-        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
-                                         receives_asylum_support: applicant.details.receives_asylum_support)
+        # Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
+        #                                  receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output
       end
 
     private
-
-      def populate_eligibility_records(assessment:, dependants:, partner_dependants:)
-        Utilities::ProceedingTypeThresholdPopulator.call(assessment)
-        Creators::EligibilitiesCreator.call(assessment:, client_dependants: dependants, partner_dependants:)
-      end
 
       def no_means_assessment_needed?(proceeding_types, applicant)
         proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } &&

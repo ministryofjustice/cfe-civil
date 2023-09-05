@@ -38,9 +38,13 @@ module V6
                                                             applicant:,
                                                             partner:)
         else
-          calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                            applicant:,
-                                                            partner: nil)
+          # calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
+          #                                                   applicant:,
+          #                                                   partner: nil)
+          Summarizers::MainSummarizer.call(assessment: create.assessment,
+                                           applicant: applicant,
+                                           partner: nil)
+
         end
         render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:).as_json
       else
