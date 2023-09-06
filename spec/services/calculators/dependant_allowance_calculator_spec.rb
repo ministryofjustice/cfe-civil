@@ -28,8 +28,8 @@ module Calculators
           context "with income" do
             let(:dependant) { build :dependant, :under15, income_amount: 25.00, submission_date: }
 
-            it "returns the child under 15 allowance and does not subtract the income" do
-              expect(calculator).to eq 111.11
+            it "returns the child under 15 allowance and subtract the income" do
+              expect(calculator).to eq 86.11
             end
           end
 

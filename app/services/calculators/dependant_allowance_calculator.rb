@@ -46,7 +46,7 @@ module Calculators
     end
 
     def child_under_15_allowance
-      Threshold.value_for(:dependant_allowances, at: submission_date)[:child_under_15]
+      positive_or_zero(child_under_15_allowance_threshold - monthly_income)
     end
 
     def child_aged_15_allowance
@@ -63,6 +63,10 @@ module Calculators
 
     def adult_dependant_allowance_capital_threshold
       Threshold.value_for(:dependant_allowances, at: submission_date)[:adult_capital_threshold]
+    end
+
+    def child_under_15_allowance_threshold
+      Threshold.value_for(:dependant_allowances, at: submission_date)[:child_under_15]
     end
   end
 end

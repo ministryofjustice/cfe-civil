@@ -533,7 +533,7 @@ module V6
           let(:params) { { dependants: dependant_params_with_monthly_income.map { _1.merge(monthly_income: 400) } } }
 
           it "returns the dependant allowance result" do
-            expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
+            expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 0, dependant_allowance_over_16: 0)
           end
         end
 
@@ -543,7 +543,7 @@ module V6
               let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 200, frequency: "monthly" }) } } }
 
               it "returns the dependant allowance result" do
-                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 107.64)
+                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 215.28, dependant_allowance_over_16: 107.64)
               end
             end
 
@@ -551,7 +551,7 @@ module V6
               let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 400, frequency: "monthly" }) } } }
 
               it "returns the dependant allowance result" do
-                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
+                expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 0, dependant_allowance_over_16: 0)
               end
             end
           end
@@ -560,7 +560,7 @@ module V6
             let(:params) { { dependants: dependant_params.map { _1.merge(income: { amount: 400, frequency: "weekly" }) } } }
 
             it "returns the dependant allowance result" do
-              expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 0)
+              expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 0, dependant_allowance_over_16: 0)
             end
           end
         end
