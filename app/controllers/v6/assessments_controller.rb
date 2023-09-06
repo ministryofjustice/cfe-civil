@@ -149,7 +149,7 @@ module V6
       employments.map do |employment|
         employment_payments = employment[:payments].map do |payment|
           EmploymentPayment.new(
-            date: payment[:date],
+            date: Date.parse(payment[:date]),
             gross_income: payment[:gross],
             benefits_in_kind: payment[:benefits_in_kind],
             tax: payment[:tax],
