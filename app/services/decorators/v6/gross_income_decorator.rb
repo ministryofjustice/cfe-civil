@@ -55,17 +55,6 @@ module Decorators
         end
       end
 
-      def employment_income(employment)
-        {
-          name: employment.name,
-          payments: employment_payments(employment),
-        }
-      end
-
-      def employment_payments(employment)
-        employment.employment_payments.order(date: :desc).map { |payment| employment_payment(payment) }
-      end
-
       def employment_payment(payment)
         {
           date: payment.date.strftime("%Y-%m-%d"),
