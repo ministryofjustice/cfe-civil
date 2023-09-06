@@ -781,6 +781,76 @@ module V6
           end
         end
 
+        context "with negative tax and NICs" do
+          let(:employment_income_params) do
+            [
+              {
+                name: "Job 1",
+                client_id: SecureRandom.uuid,
+                payments: employment_payment_dates.map do |date|
+                  {
+                    client_id: SecureRandom.uuid,
+                    gross: 846.00,
+                    benefits_in_kind: 16.60,
+                    tax: 48.22,
+                    national_insurance: 12.73,
+                    date:,
+                  }
+                end,
+              },
+            ]
+          end
+
+          let(:disposable_employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
+          let(:gross_employment_income_payments) { assessment.dig(:gross_income, :employment_income).map { |x| x.fetch(:payments) }.first }
+
+          it "keeps the correct income values in disposable" do
+            expect(disposable_employment_income)
+              .to eq(
+                {
+                  gross_income: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 48.22,
+                  national_insurance: 12.73,
+                  fixed_employment_deduction: -45.0,
+                  net_employment_income: 878.55,
+                },
+              )
+          end
+
+          it "zeroes the tax and NICs in gross income" do
+            expect(gross_employment_income_payments)
+              .to match_array(
+                [
+                  {
+                    date: "2022-05-30",
+                    gross: 846.0,
+                    benefits_in_kind: 16.6,
+                    tax: 0.0,
+                    national_insurance: 0.0,
+                    net_employment_income: 862.6,
+                  },
+                  {
+                    date: "2022-04-30",
+                    gross: 846.0,
+                    benefits_in_kind: 16.6,
+                    tax: 0.0,
+                    national_insurance: 0.0,
+                    net_employment_income: 862.6,
+                  },
+                  {
+                    date: "2022-03-30",
+                    gross: 846.0,
+                    benefits_in_kind: 16.6,
+                    tax: 0.0,
+                    national_insurance: 0.0,
+                    net_employment_income: 862.6,
+                  },
+                ],
+              )
+          end
+        end
+
         describe "assessment" do
           describe "gross income" do
             let(:gross_income) { assessment.fetch(:gross_income) }
