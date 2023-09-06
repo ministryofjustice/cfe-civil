@@ -94,10 +94,13 @@ module Workflows
                                    :client_id,
                                    :entitles_employment_allowance?,
                                    :entitles_childcare_allowance?,
-                                   :monthly_benefits_in_kind, :monthly_national_insurance)
+                                   :monthly_benefits_in_kind,
+                                   :monthly_national_insurance,
+                                   :employment_name,
+                                   :employment_payments)
 
       # local define for employment and monthly_values
-      EmploymentResult = Data.define(:employment, :values)
+      EmploymentResult = Data.define(:employment, :values, :payments)
 
       def convert_employment_payments(assessment, employments, submission_date)
         remarks = assessment.remarks
@@ -108,7 +111,7 @@ module Workflows
           remarks_and_values.remarks.each do |remark|
             remarks.add(remark.type, remark.issue, remark.ids)
           end
-          EmploymentResult.new employment: _1, values: remarks_and_values.values
+          EmploymentResult.new employment: _1, values: remarks_and_values.values, payments: remarks_and_values.payments
         end
         assessment.update!(remarks:)
 
@@ -119,7 +122,9 @@ module Workflows
                              entitles_employment_allowance?: _1.employment.entitles_employment_allowance?,
                              entitles_childcare_allowance?: _1.employment.entitles_childcare_allowance?,
                              client_id: _1.employment.client_id,
-                             monthly_benefits_in_kind: _1.values.fetch(:monthly_benefits_in_kind))
+                             monthly_benefits_in_kind: _1.values.fetch(:monthly_benefits_in_kind),
+                             employment_name: _1.employment.name,
+                             employment_payments: _1.payments)
         end
       end
 
@@ -136,7 +141,9 @@ module Workflows
                              entitles_employment_allowance?: detail.income.entitles_employment_allowance?,
                              entitles_childcare_allowance?: detail.income.entitles_childcare_allowance?,
                              client_id: detail.client_reference,
-                             monthly_benefits_in_kind:)
+                             monthly_benefits_in_kind:,
+                             employment_name: nil,
+                             employment_payments: [])
         end
       end
 

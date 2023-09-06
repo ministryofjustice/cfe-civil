@@ -19,7 +19,7 @@ module Collators
                               Calculators::EmploymentIncomeCalculator.call(submission_date:,
                                                                            employment: employments.first)
                             else
-                              Calculators::MultipleEmploymentsCalculator.call(submission_date)
+                              Calculators::MultipleEmploymentsCalculator.call(submission_date:, employments:)
                             end
         self_employment_results = self_employments.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
         employment_details_results = employment_details.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }

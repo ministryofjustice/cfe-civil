@@ -14,8 +14,8 @@ module Decorators
           state_benefits:,
           other_income:,
         }.tap do |result|
-          self_employments = @subtotals.employment_income_subtotals.self_employment_details
-          employments = @subtotals.employment_income_subtotals.employment_details
+          self_employments = employment_income_subtotals.self_employment_details
+          employments = employment_income_subtotals.employment_details
           result[:self_employment_details] = employment_details(self_employments) if self_employments.any?
           result.merge!(employment_details: employment_details(employments)) if employments.any?
         end
@@ -24,6 +24,21 @@ module Decorators
     private
 
       attr_reader :summary
+
+      def employment_incomes
+        # @employments.order(:name).map { |employment| employment_income(employment) }
+        data = employment_income_subtotals.employment_names.zip(employment_income_subtotals.employments_payments).map do |job_name, payments|
+          {
+            name: job_name,
+            payments: payments.sort_by(&:date).reverse.map { |p| employment_payment(p) },
+          }
+        end
+        data.sort_by { |x| x.fetch(:name) }
+      end
+
+      def employment_income_subtotals
+        @subtotals.employment_income_subtotals
+      end
 
       def employment_details(employments)
         employments.map do |details|
@@ -38,10 +53,6 @@ module Decorators
             result.merge!(client_reference: details.client_id) if details.client_id
           end
         end
-      end
-
-      def employment_incomes
-        @employments.order(:name).map { |employment| employment_income(employment) }
       end
 
       def employment_income(employment)

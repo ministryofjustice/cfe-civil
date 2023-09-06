@@ -3,7 +3,12 @@ require "rails_helper"
 module Decorators
   module V6
     RSpec.describe GrossIncomeDecorator do
-      let(:assessment) { create :assessment }
+      before do
+        create :assessment
+        create_list(:employment, 2, :with_monthly_payments, assessment:)
+      end
+
+      let(:assessment) { Assessment.last }
 
       let(:summary) do
         create :gross_income_summary,
@@ -15,7 +20,11 @@ module Decorators
       let(:subtotals) do
         PersonGrossIncomeSubtotals.new(
           gross_income_summary: summary,
-          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+          employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
+                                                       employment_names: [employment1.name, employment2.name],
+                                                       employments_payments: [employment1.employment_payments, employment2.employment_payments],
+                                                       self_employment_details: [],
+                                                       employment_details: []),
           regular_income_categories: [
             GrossIncomeCategorySubtotals.new(category: :benefits, bank: 1322.6, cash: 0, regular: 0),
             GrossIncomeCategorySubtotals.new(category: :maintenance_in, bank: 200, cash: 150, regular: 0),
@@ -26,8 +35,8 @@ module Decorators
         )
       end
 
-      let!(:employment1) { create :employment, :with_monthly_payments, assessment: }
-      let!(:employment2) { create :employment, :with_monthly_payments, assessment: }
+      let(:employment1) { assessment.employments.order(:name).first }
+      let(:employment2) { assessment.employments.order(:name).last }
       let(:universal_credit) { create :state_benefit_type, :universal_credit }
       let(:child_benefit) { create :state_benefit_type, :child_benefit }
 

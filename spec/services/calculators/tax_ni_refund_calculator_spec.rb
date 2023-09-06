@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Calculators::TaxNiRefundCalculator do
-  subject(:calculator) { described_class.call(employment_payments: employment.employment_payments) }
-
+  let(:calculator) { described_class.call(employment_payments: employment.employment_payments) }
   let(:employment) { create :employment, employment_payments: payments }
   let(:payments) do
     %w[2021-09-30 2021-10-29 2021-11-30].map.with_index do |date_string, i|
@@ -15,14 +14,18 @@ RSpec.describe Calculators::TaxNiRefundCalculator do
     end
   end
 
+  let(:remarks) { calculator.map(&:remarks).reduce(&:+) }
+
+  subject(:payment_results) { calculator.map(&:payment) }
+
   context "when there are no refunds" do
     let(:ni_amounts) { [-10, -20, -30] }
     let(:tax_amounts) { [-50, -60, -70] }
 
     it "does not change the tax or ni amount value" do
-      expect(calculator).to eq([])
-      expect(employment.employment_payments.map(&:tax)).to match_array(tax_amounts)
-      expect(employment.employment_payments.map(&:national_insurance)).to match_array(ni_amounts)
+      expect(remarks).to eq([])
+      expect(payment_results.map(&:tax)).to match_array(tax_amounts)
+      expect(payment_results.map(&:national_insurance)).to match_array(ni_amounts)
     end
   end
 
@@ -32,9 +35,9 @@ RSpec.describe Calculators::TaxNiRefundCalculator do
 
     it "changes the tax amount value, but not the NI" do
       refund_payment = employment.employment_payments.detect { |pmt| pmt.tax > 0 }
-      expect(calculator).to eq([RemarksData.new(type: :employment_tax, issue: :refunds, ids: [refund_payment.client_id])])
-      expect(employment.reload.employment_payments.map(&:tax)).to match_array([0, -60, -70])
-      expect(employment.employment_payments.map(&:national_insurance)).to match_array(ni_amounts)
+      expect(remarks).to eq([RemarksData.new(type: :employment_tax, issue: :refunds, ids: [refund_payment.client_id])])
+      expect(payment_results.map(&:tax)).to match_array([0, -60, -70])
+      expect(payment_results.map(&:national_insurance)).to match_array(ni_amounts)
     end
   end
 
@@ -44,9 +47,9 @@ RSpec.describe Calculators::TaxNiRefundCalculator do
 
     it "changes the ni amount value, but not the tax amount value" do
       refund_payment = employment.employment_payments.detect { |pmt| pmt.national_insurance > 0 }
-      expect(calculator).to eq([RemarksData.new(type: :employment_nic, issue: :refunds, ids: [refund_payment.client_id])])
-      expect(employment.reload.employment_payments.map(&:national_insurance)).to match_array([0, -20, -30])
-      expect(employment.employment_payments.map(&:tax)).to match_array(tax_amounts)
+      expect(remarks).to eq([RemarksData.new(type: :employment_nic, issue: :refunds, ids: [refund_payment.client_id])])
+      expect(payment_results.map(&:national_insurance)).to match_array([0, -20, -30])
+      expect(payment_results.map(&:tax)).to match_array(tax_amounts)
     end
   end
 
@@ -57,7 +60,7 @@ RSpec.describe Calculators::TaxNiRefundCalculator do
     it "changes the tax and NI amount values" do
       refund_tax_payment = employment.employment_payments.detect { |pmt| pmt.tax > 0 }
       refund_ni_payment = employment.employment_payments.detect { |pmt| pmt.national_insurance > 0 }
-      expect(calculator).to match_array([
+      expect(remarks).to match_array([
         RemarksData.new(type: :employment_tax, issue: :refunds, ids: [refund_tax_payment.client_id]),
         RemarksData.new(type: :employment_nic, issue: :refunds, ids: [refund_ni_payment.client_id]),
       ])
