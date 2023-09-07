@@ -1,6 +1,6 @@
 class RemoveCapitalItemsTable < ActiveRecord::Migration[7.0]
   def change
-    drop_table :capital_items, id: :uuid do
+    drop_table :capital_items, id: :uuid do |t|
       t.uuid "capital_summary_id"
       t.string "type", null: false
       t.string "description", null: false
