@@ -16,4 +16,8 @@ class Applicant
   def receives_qualifying_benefit?
     receives_qualifying_benefit
   end
+
+  def receives_asylum_support?
+    receives_asylum_support
+  end
 end

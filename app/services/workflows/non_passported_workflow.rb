@@ -262,6 +262,10 @@ module Workflows
       def partner_allowance(submission_date)
         Threshold.value_for(:partner_allowance, at: submission_date)
       end
+
+      def main_summarizer(assessment:, applicant:)
+        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support)
+      end
     end
   end
 end
