@@ -5,18 +5,23 @@ module Workflows
         populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(applicant_capitals: applicant.capitals_data,
-                                                        partner_capitals: partner&.capitals_data)
+                                                        partner_capitals: partner&.capitals_data,
+                                                        assessment:,
+                                                        receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                                        receives_asylum_support: applicant.details.receives_asylum_support)
                              elsif applicant.details.receives_qualifying_benefit?
                                if partner.present?
                                  PassportedWorkflow.partner(assessment:, capitals_data: applicant.capitals_data,
                                                             partner_capitals_data: partner.capitals_data,
                                                             date_of_birth: applicant.details.date_of_birth,
                                                             partner_date_of_birth: partner.details.date_of_birth,
-                                                            receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                                                            receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                                            receives_asylum_support: applicant.details.receives_asylum_support)
                                else
                                  PassportedWorkflow.call(assessment:, capitals_data: applicant.capitals_data,
                                                          date_of_birth: applicant.details.date_of_birth,
-                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                                         receives_asylum_support: applicant.details.receives_asylum_support)
                                end
                              else
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
@@ -41,8 +46,8 @@ module Workflows
                                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
         assessment.add_remarks!(new_remarks)
-        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
-                                         receives_asylum_support: applicant.details.receives_asylum_support)
+        # Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
+        #                                  receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output
       end
 
@@ -58,8 +63,9 @@ module Workflows
           applicant.receives_asylum_support
       end
 
-      def blank_calculation_result(applicant_capitals:, partner_capitals:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:))
+      def blank_calculation_result(applicant_capitals:, partner_capitals:, assessment:, receives_qualifying_benefit:, receives_asylum_support:)
+        main_summarizer = Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit:, receives_asylum_support:)
+        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:), assessment_result: main_summarizer.assessment_result)
       end
     end
   end

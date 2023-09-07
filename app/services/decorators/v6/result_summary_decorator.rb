@@ -12,7 +12,7 @@ module Decorators
       def as_json
         details = {
           overall_result: {
-            result: @assessment.assessment_result,
+            result: @calculation_output.assessment_result,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
             income_contribution: @calculation_output.income_contribution.to_f,
             proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
