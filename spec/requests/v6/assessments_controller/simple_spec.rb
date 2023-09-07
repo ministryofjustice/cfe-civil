@@ -782,72 +782,179 @@ module V6
         end
 
         context "with negative tax and NICs" do
-          let(:employment_income_params) do
-            [
-              {
-                name: "Job 1",
-                client_id: SecureRandom.uuid,
-                payments: employment_payment_dates.map do |date|
+          let(:disposable_employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
+          let(:gross_employment_income_payments) { assessment.dig(:gross_income, :employment_income).map { |x| x.fetch(:payments) } }
+
+          context "with one job" do
+            let(:employment_income_params) do
+              [
+                {
+                  name: "Job 1",
+                  client_id: SecureRandom.uuid,
+                  payments: employment_payment_dates.map do |date|
+                    {
+                      client_id: SecureRandom.uuid,
+                      gross: 846.00,
+                      benefits_in_kind: 16.60,
+                      tax: 48.22,
+                      national_insurance: 12.73,
+                      date:,
+                    }
+                  end,
+                },
+              ]
+            end
+
+            it "keeps the correct income values in disposable" do
+              expect(disposable_employment_income)
+                .to eq(
                   {
-                    client_id: SecureRandom.uuid,
-                    gross: 846.00,
-                    benefits_in_kind: 16.60,
+                    gross_income: 846.0,
+                    benefits_in_kind: 16.6,
                     tax: 48.22,
                     national_insurance: 12.73,
-                    date:,
-                  }
-                end,
-              },
-            ]
+                    fixed_employment_deduction: -45.0,
+                    net_employment_income: 878.55,
+                  },
+                )
+            end
+
+            it "zeroes the tax and NICs in gross income" do
+              expect(gross_employment_income_payments.first)
+                .to match_array(
+                  [
+                    {
+                      date: "2022-05-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                    {
+                      date: "2022-04-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                    {
+                      date: "2022-03-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                  ],
+                )
+            end
           end
 
-          let(:disposable_employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
-          let(:gross_employment_income_payments) { assessment.dig(:gross_income, :employment_income).map { |x| x.fetch(:payments) }.first }
-
-          it "keeps the correct income values in disposable" do
-            expect(disposable_employment_income)
-              .to eq(
+          context "with multiple jobs" do
+            let(:employment_income_params) do
+              [
                 {
-                  gross_income: 846.0,
-                  benefits_in_kind: 16.6,
-                  tax: 48.22,
-                  national_insurance: 12.73,
-                  fixed_employment_deduction: -45.0,
-                  net_employment_income: 878.55,
+                  name: "Job 1",
+                  client_id: SecureRandom.uuid,
+                  payments: employment_payment_dates.map do |date|
+                    {
+                      client_id: SecureRandom.uuid,
+                      gross: 846.00,
+                      benefits_in_kind: 16.60,
+                      tax: 48.22,
+                      national_insurance: 12.73,
+                      date:,
+                    }
+                  end,
                 },
-              )
-          end
+                {
+                  name: "Job 2",
+                  client_id: SecureRandom.uuid,
+                  payments: employment_payment_dates.map do |date|
+                    {
+                      client_id: SecureRandom.uuid,
+                      gross: 746.00,
+                      benefits_in_kind: 6.60,
+                      tax: 38.22,
+                      national_insurance: 22.73,
+                      date:,
+                    }
+                  end,
+                },
+              ]
+            end
 
-          it "zeroes the tax and NICs in gross income" do
-            expect(gross_employment_income_payments)
-              .to match_array(
-                [
+            it "keeps the correct income values in disposable" do
+              expect(disposable_employment_income)
+                .to eq(
                   {
-                    date: "2022-05-30",
-                    gross: 846.0,
-                    benefits_in_kind: 16.6,
+                    gross_income: 0.0,
+                    benefits_in_kind: 0.0,
                     tax: 0.0,
                     national_insurance: 0.0,
-                    net_employment_income: 862.6,
+                    fixed_employment_deduction: -45.0,
+                    net_employment_income: -45.0,
                   },
-                  {
-                    date: "2022-04-30",
-                    gross: 846.0,
-                    benefits_in_kind: 16.6,
-                    tax: 0.0,
-                    national_insurance: 0.0,
-                    net_employment_income: 862.6,
-                  },
-                  {
-                    date: "2022-03-30",
-                    gross: 846.0,
-                    benefits_in_kind: 16.6,
-                    tax: 0.0,
-                    national_insurance: 0.0,
-                    net_employment_income: 862.6,
-                  },
-                ],
-              )
+                )
+            end
+
+            it "zeroes the tax and NICs in gross income" do
+              expect(gross_employment_income_payments.flatten)
+                .to match_array(
+                  [
+                    {
+                      date: "2022-05-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                    {
+                      date: "2022-04-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                    {
+                      date: "2022-03-30",
+                      gross: 846.0,
+                      benefits_in_kind: 16.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 862.6,
+                    },
+                    {
+                      date: "2022-05-30",
+                      gross: 746.0,
+                      benefits_in_kind: 6.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 752.6,
+                    },
+                    {
+                      date: "2022-04-30",
+                      gross: 746.0,
+                      benefits_in_kind: 6.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 752.6,
+                    },
+                    {
+                      date: "2022-03-30",
+                      gross: 746.0,
+                      benefits_in_kind: 6.6,
+                      tax: 0.0,
+                      national_insurance: 0.0,
+                      net_employment_income: 752.6,
+                    },
+                  ],
+                )
+            end
           end
         end
 
