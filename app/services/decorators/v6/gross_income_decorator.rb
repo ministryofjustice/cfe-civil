@@ -26,14 +26,12 @@ module Decorators
       attr_reader :summary
 
       def employment_incomes
-        # @employments.order(:name).map { |employment| employment_income(employment) }
-        data = employment_income_subtotals.employment_names.zip(employment_income_subtotals.employments_payments).map do |job_name, payments|
+        employment_income_subtotals.payment_based_employments.sort_by(&:employment_name).map do |job|
           {
-            name: job_name,
-            payments: payments.sort_by(&:date).reverse.map { |p| employment_payment(p) },
+            name: job.employment_name,
+            payments: job.employment_payments.sort_by(&:date).reverse.map { |p| employment_payment(p) },
           }
         end
-        data.sort_by { |x| x.fetch(:name) }
       end
 
       def employment_income_subtotals

@@ -53,12 +53,8 @@ class EmploymentIncomeSubtotals
     employments_excluding_self_employments.any?(&:entitles_childcare_allowance?)
   end
 
-  def employment_names
-    [@employment_result].compact.flat_map(&:employments).map(&:employment_name)
-  end
-
-  def employments_payments
-    [@employment_result].compact.flat_map(&:employments).map(&:employment_payments)
+  def payment_based_employments
+    [@employment_result].compact.flat_map(&:employments)
   end
 
 private

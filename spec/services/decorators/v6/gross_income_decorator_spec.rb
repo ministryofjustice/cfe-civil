@@ -21,8 +21,10 @@ module Decorators
         PersonGrossIncomeSubtotals.new(
           gross_income_summary: summary,
           employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
-                                                       employment_names: [employment1.name, employment2.name],
-                                                       employments_payments: [employment1.employment_payments, employment2.employment_payments],
+                                                       payment_based_employments: [
+                                                         OpenStruct.new(employment_name: employment1.name, employment_payments: employment1.employment_payments),
+                                                         OpenStruct.new(employment_name: employment2.name, employment_payments: employment2.employment_payments),
+                                                       ],
                                                        self_employment_details: [],
                                                        employment_details: []),
           regular_income_categories: [
