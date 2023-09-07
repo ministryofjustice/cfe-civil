@@ -28,8 +28,8 @@ module Calculators
           context "with income" do
             let(:dependant) { build :dependant, :under15, income_amount: 25.00, submission_date: }
 
-            it "returns the child under 15 allowance and does not subtract the income" do
-              expect(calculator).to eq 111.11
+            it "returns the child under 15 allowance and subtract the income" do
+              expect(calculator).to eq 86.11
             end
           end
 
@@ -170,25 +170,25 @@ module Calculators
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_under_15_allowance)).to eq 296.65
+            expect(calculator.send(:thresholds)[:child_under_15]).to eq 296.65
           end
         end
 
         describe "child_aged_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_aged_15_allowance)).to eq 296.65
+            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 296.65
           end
         end
 
         describe "child_16_and_over_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_16_and_over_allowance)).to eq 296.65
+            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 296.65
           end
         end
 
         describe "adult_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:adult_allowance)).to eq 296.65
+            expect(calculator.send(:thresholds)[:adult]).to eq 296.65
           end
         end
       end
@@ -200,25 +200,25 @@ module Calculators
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_under_15_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_under_15]).to eq 298.08
           end
         end
 
         describe "child_aged_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_aged_15_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 298.08
           end
         end
 
         describe "child_16_and_over_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_16_and_over_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 298.08
           end
         end
 
         describe "adult_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:adult_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:adult]).to eq 298.08
           end
         end
       end
@@ -238,25 +238,25 @@ module Calculators
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_under_15_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_under_15]).to eq 298.08
           end
         end
 
         describe "child_aged_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_aged_15_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 298.08
           end
         end
 
         describe "child_16_and_over_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_16_and_over_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 298.08
           end
         end
 
         describe "adult_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:adult_allowance)).to eq 298.08
+            expect(calculator.send(:thresholds)[:adult]).to eq 298.08
           end
         end
       end
@@ -268,25 +268,25 @@ module Calculators
 
         describe "child_under_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_under_15_allowance)).to eq 307.64
+            expect(calculator.send(:thresholds)[:child_under_15]).to eq 307.64
           end
         end
 
         describe "child_aged_15_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_aged_15_allowance)).to eq 307.64
+            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 307.64
           end
         end
 
         describe "child_16_and_over_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:child_16_and_over_allowance)).to eq 307.64
+            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 307.64
           end
         end
 
         describe "adult_allowance" do
           it "returns the threshold value" do
-            expect(calculator.send(:adult_allowance)).to eq 307.64
+            expect(calculator.send(:thresholds)[:adult]).to eq 307.64
           end
         end
       end
