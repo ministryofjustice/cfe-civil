@@ -1,16 +1,17 @@
 module Calculators
   class EmploymentMonthlyValueCalculator
-    Result = Data.define(:values, :remarks)
+    Result = Data.define(:values, :remarks, :payments)
     class << self
       def call(employment, submission_date, monthly_equivalent_payments)
-        remarks_data = Calculators::TaxNiRefundCalculator.call(employment_payments: employment.employment_payments)
+        payments_and_remarks = Calculators::TaxNiRefundCalculator.call(employment_payments: employment.employment_payments)
+        remarks_data = payments_and_remarks.map(&:remarks).reduce([], &:+)
         values = if employment_income_variation_below_threshold?(monthly_equivalent_payments, submission_date)
                    calculate_monthly_values(monthly_equivalent_payments, calculation: :most_recent)
                  else
                    remarks_data << RemarksData.new(type: :employment_gross_income, issue: :amount_variation, ids: employment.employment_payments.map(&:client_id))
                    calculate_monthly_values(monthly_equivalent_payments, calculation: :blunt_average)
                  end
-        Result.new(values:, remarks: remarks_data)
+        Result.new(values:, remarks: remarks_data, payments: payments_and_remarks.map(&:payment))
       end
 
       def employment_income_variation_below_threshold?(payments, submission_date)
