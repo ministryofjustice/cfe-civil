@@ -45,7 +45,7 @@ module Workflows
                                                                    partner_self_employments: [])
                                  end
         unassessed_capital = CapitalSubtotals.unassessed(applicant_capitals: applicant.capitals_data, partner_capitals: partner&.capitals_data)
-        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital, assessment_result: main_summarizer(assessment:, applicant:).assessment_result) if assessment.applicant_gross_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support) if assessment.applicant_gross_income_summary.ineligible?
 
         disposable_result = if partner.present?
                               partner_disposable_income_assessment(assessment:,
@@ -69,7 +69,7 @@ module Workflows
           combined_total_outgoings_and_allowances: disposable_result.combined_total_outgoings_and_allowances,
         )
 
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital, assessment_result: main_summarizer(assessment:, applicant:).assessment_result) if assessment.applicant_disposable_income_summary.ineligible?
+        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support) if assessment.applicant_disposable_income_summary.ineligible?
 
         capital_subtotals = if partner.present?
                               CapitalCollatorAndAssessor.partner assessment:,
@@ -85,7 +85,7 @@ module Workflows
                                                               receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             end
-        CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, assessment_result: main_summarizer(assessment:, applicant:).assessment_result)
+        CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support)
       end
 
     private
@@ -261,10 +261,6 @@ module Workflows
 
       def partner_allowance(submission_date)
         Threshold.value_for(:partner_allowance, at: submission_date)
-      end
-
-      def main_summarizer(assessment:, applicant:)
-        Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support)
       end
     end
   end

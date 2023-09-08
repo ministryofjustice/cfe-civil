@@ -46,8 +46,6 @@ module Workflows
                                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
         assessment.add_remarks!(new_remarks)
-        # Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
-        #                                  receives_asylum_support: applicant.details.receives_asylum_support)
         calculation_output
       end
 
@@ -64,8 +62,7 @@ module Workflows
       end
 
       def blank_calculation_result(applicant_capitals:, partner_capitals:, assessment:, receives_qualifying_benefit:, receives_asylum_support:)
-        main_summarizer = Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit:, receives_asylum_support:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:), assessment_result: main_summarizer.assessment_result)
+        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:), assessment:, receives_qualifying_benefit:, receives_asylum_support:)
       end
     end
   end
