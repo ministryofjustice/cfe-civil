@@ -11,4 +11,3 @@ class EmploymentPayment
   attribute :tax, :decimal, default: 0.0
   attribute :national_insurance, :decimal, default: 0.0
 end
-
