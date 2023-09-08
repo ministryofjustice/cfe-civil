@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Calculators::TaxNiRefundCalculator do
-  subject(:calculator) { described_class.call(employment_payments: employment.employment_payments) }
+  let(:calculator) { described_class.call(employment_payments: employment.employment_payments) }
 
   let(:submission_date) { Date.new(2022, 6, 6) }
   let(:employment) { build :employment, employment_payments: payments, submission_date: }
