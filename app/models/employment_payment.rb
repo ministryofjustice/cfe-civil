@@ -9,5 +9,6 @@ class EmploymentPayment
   attribute :gross_income, :decimal, default: 0.0
   attribute :benefits_in_kind, :decimal, default: 0.0
   attribute :tax, :decimal, default: 0.0
-  attribute :national_insurance, :decimal, default: 0.0åå
+  attribute :national_insurance, :decimal, default: 0.0
 end
+
