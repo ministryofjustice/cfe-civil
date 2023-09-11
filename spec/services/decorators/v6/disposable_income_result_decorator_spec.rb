@@ -94,35 +94,25 @@ module Decorators
       let(:income_contribution) { 75 }
 
       subject(:decorator) do
-        described_class
-          .new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
-               income_contribution: 75,
-               disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
-                                                            partner_allowance: 191.41,
-                                                            dependant_allowance_under_16: 28.34,
-                                                            dependant_allowance_over_16: 98.12,
-                                                            dependant_allowance: 220.21,
-                                                            gross_housing_costs: 990.42,
-                                                            total_outgoings_and_allowances: 660.21,
-                                                            total_disposable_income: 732.55,
-                                                            housing_benefit: 440.21,
-                                                            net_housing_costs: 550.21,
-                                                            maintenance_out_all_sources: 330.21),
-               combined_total_disposable_income: 900.0,
-               combined_total_outgoings_and_allowances: 400.32).as_json
-      end
-
-      before do
-        pt_results.each do |ptc, details|
-          lower_threshold, upper_threshold, result = details
-
-          create :disposable_income_eligibility,
-                 disposable_income_summary: summary,
-                 proceeding_type_code: ptc,
-                 upper_threshold:,
-                 lower_threshold:,
-                 assessment_result: result
-        end
+        described_class.new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
+                            income_contribution: 75,
+                            disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
+                                                                         partner_allowance: 191.41,
+                                                                         dependant_allowance_under_16: 28.34,
+                                                                         dependant_allowance_over_16: 98.12,
+                                                                         dependant_allowance: 220.21,
+                                                                         gross_housing_costs: 990.42,
+                                                                         total_outgoings_and_allowances: 660.21,
+                                                                         total_disposable_income: 732.55,
+                                                                         housing_benefit: 440.21,
+                                                                         net_housing_costs: 550.21,
+                                                                         maintenance_out_all_sources: 330.21),
+                            combined_total_disposable_income: 900.0,
+                            eligibilities: Creators::DisposableIncomeEligibilityCreator.call(submission_date: assessment.submission_date,
+                                                                                             level_of_help: assessment.level_of_help,
+                                                                                             total_disposable_income: 900.0,
+                                                                                             proceeding_types: assessment.proceeding_types),
+                            combined_total_outgoings_and_allowances: 400.32).as_json
       end
 
       describe "#as_json" do

@@ -15,9 +15,9 @@ module Decorators
             result: @calculation_output.assessment_result,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
             income_contribution: @calculation_output.income_contribution.to_f,
-            proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
+            proceeding_types: ProceedingTypesResultDecorator.new(@calculation_output.eligibilities).as_json,
           },
-          gross_income: ApplicantGrossIncomeResultDecorator.new(summary: assessment.applicant_gross_income_summary,
+          gross_income: ApplicantGrossIncomeResultDecorator.new(eligibilities: @calculation_output.gross_income_subtotals.eligibilities,
                                                                 person_gross_income_subtotals: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
                                                                 combined_monthly_gross_income: @calculation_output.gross_income_subtotals.combined_monthly_gross_income),
           disposable_income: ApplicantDisposableIncomeResultDecorator.new(
@@ -28,6 +28,7 @@ module Decorators
             combined_total_disposable_income: @calculation_output.combined_total_disposable_income,
             combined_total_outgoings_and_allowances: @calculation_output.combined_total_outgoings_and_allowances,
             income_contribution: @calculation_output.income_contribution,
+            eligibilities: @calculation_output.disposable_income_eligibilities,
           ),
           capital: ApplicantCapitalResultDecorator.new(
             summary: assessment.applicant_capital_summary,
@@ -35,6 +36,7 @@ module Decorators
             partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
             combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f,
+            eligibilities: @calculation_output.capital_subtotals.eligibilities,
           ),
         }
         result = if @partner_present

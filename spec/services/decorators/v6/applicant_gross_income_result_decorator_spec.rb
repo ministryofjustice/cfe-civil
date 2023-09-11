@@ -4,11 +4,17 @@ module Decorators
   module V6
     RSpec.describe ApplicantGrossIncomeResultDecorator do
       let(:unlimited) { 999_999_999_999.0 }
+      let(:eligibility_records) do
+        ptc_results.map do |ptc, thresh_and_result|
+          threshold, result = thresh_and_result
+          Eligibility::GrossIncome.new upper_threshold: threshold, assessment_result: result, proceeding_type: ptc
+        end
+      end
       let(:ptc_results) do
         {
-          DA002: [unlimited, "eligible"],
-          DA003: [unlimited, "eligible"],
-          SE013: [8_000, "ineligible"],
+          build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A") => [unlimited, "eligible"],
+          build(:proceeding_type, ccms_code: "DA003", client_involvement_type: "A") => [unlimited, "eligible"],
+          build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "A") => [8_000, "ineligible"],
         }
       end
       let(:ptcs) { ptc_results.keys }
@@ -49,18 +55,11 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(summary:,
+        described_class.new(eligibilities: eligibility_records,
                             person_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
                                                                                           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
                                                                                           regular_income_categories: []),
                             combined_monthly_gross_income: 0).as_json
-      end
-
-      before do
-        ptc_results.each do |ptc, thresh_and_result|
-          threshold, result = thresh_and_result
-          create :gross_income_eligibility, gross_income_summary: summary, upper_threshold: threshold, assessment_result: result, proceeding_type_code: ptc
-        end
       end
 
       it "generates the expected hash" do

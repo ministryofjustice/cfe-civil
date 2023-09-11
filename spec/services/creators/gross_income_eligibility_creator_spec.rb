@@ -11,28 +11,23 @@ module Creators
     end
 
     subject(:creator) do
-      described_class.call(assessment.applicant_gross_income_summary,
-                           dependants,
-                           assessment.proceeding_types,
-                           assessment.submission_date)
+      described_class.call(dependants:,
+                           proceeding_types: assessment.proceeding_types,
+                           submission_date: assessment.submission_date, total_gross_income: 0)
     end
 
     context "version 6" do
       let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
-      let(:eligibilities) { assessment.applicant_gross_income_summary.eligibilities }
       let(:proceeding_types) { assessment.proceeding_types }
       let(:dependants) { [] }
 
       it "creates a capital eligibility record for each proceeding type" do
-        creator
-        expect(eligibilities.size).to eq 2
-        expect(eligibilities.map(&:proceeding_type_code)).to match_array(proceeding_types.map(&:ccms_code))
+        expect(creator.map(&:proceeding_type)).to match_array(proceeding_types)
       end
 
       it "creates eligibility record with correct waived thresholds" do
-        creator
         pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
-        elig = eligibilities.find_by!(proceeding_type_code: "DA002")
+        elig = creator.detect { _1.proceeding_type.ccms_code == "DA002" }
         expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
         expect(elig.lower_threshold).to be_nil
       end
@@ -41,9 +36,8 @@ module Creators
         let(:dependants) { [] }
 
         it "creates eligibility record with correct un-waived thresholds" do
-          creator
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = eligibilities.find_by!(proceeding_type_code: "SE013")
+          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
           expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
           expect(elig.lower_threshold).to be_nil
         end
@@ -56,9 +50,8 @@ module Creators
         end
 
         it "creates eligibility record with no dependant uplift on threshold" do
-          creator
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = eligibilities.find_by!(proceeding_type_code: "SE013")
+          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
           expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
           expect(elig.lower_threshold).to be_nil
         end
@@ -69,11 +62,9 @@ module Creators
         let(:dependants) { build_list :dependant, 6, :child_relative, submission_date: assessment.submission_date }
 
         it "creates a record with the uplifted threshold" do
-          creator
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = eligibilities.find_by!(proceeding_type_code: "SE013")
+          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
           expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold + expected_uplift
-          expect(elig.assessment_result).to eq "pending"
         end
       end
     end

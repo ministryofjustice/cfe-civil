@@ -1,5 +1,11 @@
 module Eligibility
-  class Assessment < Base
-    belongs_to :assessment, inverse_of: :eligibilities, foreign_key: :parent_id, class_name: "::Assessment"
+  Assessment = Data.define :proceeding_type, :assessment_result do
+    def upper_threshold
+      nil
+    end
+
+    def lower_threshold
+      nil
+    end
   end
 end

@@ -2,11 +2,11 @@ require "rails_helper"
 
 module Workflows
   RSpec.describe PassportedWorkflow do
-    let(:assessment) do
+    let!(:assessment) do
       create :assessment,
              :with_disposable_income_summary,
-             :with_gross_income_summary_and_eligibilities,
-             :with_capital_summary_and_eligibilities,
+             :with_gross_income_summary,
+             :with_capital_summary,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
     end
     let(:applicant) { build :applicant, :with_qualifying_benefits }
@@ -18,9 +18,11 @@ module Workflows
 
     describe ".call" do
       subject(:workflow_call) do
-        described_class.call(assessment:,
+        described_class.call(proceeding_types: assessment.reload.proceeding_types,
                              capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: [], main_home: nil, additional_properties: []),
                              date_of_birth: applicant.date_of_birth,
+                             submission_date: assessment.submission_date,
+                             level_of_help: assessment.level_of_help,
                              receives_qualifying_benefit: applicant.receives_qualifying_benefit,
                              receives_asylum_support: applicant.receives_asylum_support)
       end
@@ -28,17 +30,13 @@ module Workflows
       it "calls Capital collator and return some data" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)
         expect(Collators::CapitalCollator).to receive(:call)
-        result = workflow_call
-        expect(result.capital_subtotals.applicant_capital_subtotals).to eq capital_data
-        expect(result.capital_subtotals.combined_assessed_capital).to eq capital_data.assessed_capital
+        expect(workflow_call.capital_subtotals.applicant_capital_subtotals).to eq capital_data
+        expect(workflow_call.capital_subtotals.combined_assessed_capital).to eq capital_data.assessed_capital
       end
 
       it "calls CapitalSummarizer and updates capital summary record with result" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)
-        expect(Collators::CapitalCollator).to receive(:call)
-        expect(Summarizers::CapitalSummarizer).to receive(:call).and_call_original
-        workflow_call
-        expect(applicant_capital_summary.summarized_assessment_result).to eq :eligible
+        expect(workflow_call.capital_subtotals.summarized_assessment_result).to eq :eligible
       end
     end
   end

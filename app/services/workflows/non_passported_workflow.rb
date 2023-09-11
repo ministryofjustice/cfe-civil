@@ -32,20 +32,37 @@ module Workflows
                                                                                self_employments: partner_self_employments,
                                                                                employment_details: partner_employment_details)
 
-                                   collate_and_assess_gross_income(assessment:,
-                                                                   applicant_gross_income_subtotals: applicant_gross_income,
+                                   collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income,
                                                                    partner_gross_income_subtotals: partner_gross_income,
                                                                    self_employments: applicant_employment_details,
-                                                                   partner_self_employments: partner_employment_details)
+                                                                   partner_self_employments: partner_employment_details,
+                                                                   proceeding_types: assessment.proceeding_types,
+                                                                   submission_date: assessment.submission_date,
+                                                                   dependants: applicant.dependants + (partner.dependants || []))
                                  else
-                                   collate_and_assess_gross_income(assessment:,
-                                                                   applicant_gross_income_subtotals: applicant_gross_income,
+                                   collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income,
                                                                    partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
                                                                    self_employments: applicant_employment_details,
-                                                                   partner_self_employments: [])
+                                                                   partner_self_employments: [],
+                                                                   proceeding_types: assessment.proceeding_types,
+                                                                   submission_date: assessment.submission_date,
+                                                                   dependants: applicant.dependants)
                                  end
-        unassessed_capital = CapitalSubtotals.unassessed(applicant_capitals: applicant.capitals_data, partner_capitals: partner&.capitals_data)
-        return CalculationOutput.new(gross_income_subtotals:, capital_subtotals: unassessed_capital, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support) if assessment.applicant_gross_income_summary.ineligible?
+        unassessed_capital = Capital::Unassessed.new(applicant_capitals: applicant.capitals_data,
+                                                     partner_capitals: partner&.capitals_data,
+                                                     proceeding_types: assessment.proceeding_types,
+                                                     submission_date: assessment.submission_date,
+                                                     level_of_help: assessment.level_of_help)
+        if gross_income_subtotals.ineligible?
+          return CalculationOutput.new(gross_income_subtotals:,
+                                       proceeding_types: assessment.proceeding_types,
+                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                       receives_asylum_support: applicant.details.receives_asylum_support,
+                                       disposable_income_subtotals: DisposableIncome::Unassessed.new(proceeding_types: assessment.proceeding_types,
+                                                                                                     level_of_help: assessment.level_of_help,
+                                                                                                     submission_date: assessment.submission_date),
+                                       capital_subtotals: unassessed_capital)
+        end
 
         disposable_result = if partner.present?
                               partner_disposable_income_assessment(assessment:,
@@ -56,23 +73,29 @@ module Workflows
                               single_disposable_income_assessment(assessment:, gross_income_subtotals:,
                                                                   applicant_person_data: applicant)
                             end
-        income_contribution = Summarizers::DisposableIncomeSummarizer.call(
-          disposable_income_summary: assessment.applicant_disposable_income_summary,
-          total_disposable_income: disposable_result.combined_total_disposable_income,
-          submission_date: assessment.submission_date,
-        )
-        disposable_income_subtotals = DisposableIncomeSubtotals.new(
+        disposable_income_subtotals = DisposableIncome::Subtotals.new(
           applicant_disposable_income_subtotals: disposable_result.applicant_disposable_income_subtotals,
           partner_disposable_income_subtotals: disposable_result.partner_disposable_income_subtotals,
-          income_contribution:,
           combined_total_disposable_income: disposable_result.combined_total_disposable_income,
           combined_total_outgoings_and_allowances: disposable_result.combined_total_outgoings_and_allowances,
+          proceeding_types: assessment.proceeding_types,
+          level_of_help: assessment.level_of_help,
+          submission_date: assessment.submission_date,
         )
 
-        return CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals: unassessed_capital, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support) if assessment.applicant_disposable_income_summary.ineligible?
+        if disposable_income_subtotals.ineligible?
+          return CalculationOutput.new(gross_income_subtotals:,
+                                       disposable_income_subtotals:,
+                                       capital_subtotals: unassessed_capital,
+                                       proceeding_types: assessment.proceeding_types,
+                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                       receives_asylum_support: applicant.details.receives_asylum_support)
+        end
 
         capital_subtotals = if partner.present?
-                              CapitalCollatorAndAssessor.partner assessment:,
+                              CapitalCollatorAndAssessor.partner proceeding_types: assessment.proceeding_types,
+                                                                 submission_date: assessment.submission_date,
+                                                                 level_of_help: assessment.level_of_help,
                                                                  capitals_data: applicant.capitals_data,
                                                                  partner_capitals_data: partner.capitals_data,
                                                                  date_of_birth: applicant.details.date_of_birth,
@@ -80,12 +103,18 @@ module Workflows
                                                                  receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                                  total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             else
-                              CapitalCollatorAndAssessor.call assessment:, capitals_data: applicant.capitals_data,
+                              CapitalCollatorAndAssessor.call proceeding_types: assessment.proceeding_types,
+                                                              submission_date: assessment.submission_date,
+                                                              level_of_help: assessment.level_of_help,
+                                                              capitals_data: applicant.capitals_data,
                                                               date_of_birth: applicant.details.date_of_birth,
                                                               receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             end
-        CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit, receives_asylum_support: applicant.details.receives_asylum_support)
+        CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:,
+                              proceeding_types: assessment.proceeding_types,
+                              receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                              receives_asylum_support: applicant.details.receives_asylum_support)
       end
 
     private
@@ -157,23 +186,21 @@ module Workflows
                                             gross_income_summary:)
       end
 
-      def collate_and_assess_gross_income(assessment:, self_employments:, partner_self_employments:,
-                                          applicant_gross_income_subtotals:, partner_gross_income_subtotals:)
+      def collate_and_assess_gross_income(self_employments:, partner_self_employments:,
+                                          applicant_gross_income_subtotals:, partner_gross_income_subtotals:,
+                                          dependants:, proceeding_types:, submission_date:)
 
-        GrossIncomeSubtotals.new(
+        GrossIncome::Subtotals.new(
           applicant_gross_income_subtotals:,
           partner_gross_income_subtotals:,
           self_employments:,
           partner_self_employments:,
-        ).tap do |gross_income_subtotals|
-          Summarizers::GrossIncomeSummarizer.call(
-            eligibilities: assessment.applicant_gross_income_summary.eligibilities,
-            total_gross_income: gross_income_subtotals.combined_monthly_gross_income,
-          )
-        end
+          dependants:,
+          proceeding_types:,
+          submission_date:,
+        )
       end
 
-      # TODO: make the Collators::DisposableIncomeCollator increment/sum to existing values so order of "collation" becomes unimportant
       def partner_disposable_income_assessment(assessment:, gross_income_subtotals:, applicant_person_data:, partner_person_data:)
         applicant = PersonWrapper.new is_single: false,
                                       dependants: applicant_person_data.dependants

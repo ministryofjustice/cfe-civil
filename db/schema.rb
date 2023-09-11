@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_11_161839) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_15_062754) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -53,16 +53,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_11_161839) do
     t.uuid "assessment_id", null: false
     t.string "type", default: "ApplicantDisposableIncomeSummary"
     t.index ["assessment_id"], name: "index_disposable_income_summaries_on_assessment_id"
-  end
-
-  create_table "eligibilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "parent_id", null: false
-    t.string "type"
-    t.string "proceeding_type_code", null: false
-    t.decimal "lower_threshold"
-    t.decimal "upper_threshold"
-    t.string "assessment_result", default: "pending", null: false
-    t.index ["parent_id", "type", "proceeding_type_code"], name: "eligibilities_unique_type_ptc", unique: true
   end
 
   create_table "explicit_remarks", force: :cascade do |t|

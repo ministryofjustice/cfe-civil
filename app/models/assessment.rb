@@ -20,11 +20,6 @@ class Assessment < ApplicationRecord
   has_one :partner_disposable_income_summary
 
   has_many :explicit_remarks, dependent: :destroy
-  has_many :eligibilities,
-           class_name: "Eligibility::Assessment",
-           foreign_key: :parent_id,
-           inverse_of: :assessment,
-           dependent: :destroy
   has_many :proceeding_types,
            dependent: :destroy
 
