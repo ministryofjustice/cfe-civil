@@ -32,6 +32,7 @@ module Decorators
                                                                 eligibilities: []),
                         assessment_result: "eligible",
                         income_contribution: 0,
+                        disposable_income_eligibilities: [],
                         combined_total_disposable_income: 0,
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,

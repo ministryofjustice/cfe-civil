@@ -11,6 +11,7 @@ module Workflows
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
+                      disposable_summarized_assessment_result: :eligible,
                       gross_income_subtotals: GrossIncome::Unassessed.new(assessment.proceeding_types),
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
                       capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0))
@@ -60,6 +61,8 @@ module Workflows
                                                            capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                            non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
+                                                           submission_date: assessment.submission_date,
+                                                           level_of_help: assessment.level_of_help,
                                                            receives_qualifying_benefit: true, receives_asylum_support: false).and_return(calculation_output)
           workflow_call
         end
@@ -94,6 +97,8 @@ module Workflows
                                                                                                        non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
+                                                               level_of_help: assessment.level_of_help,
+                                                               submission_date: assessment.submission_date,
                                                                receives_qualifying_benefit: true,
                                                                receives_asylum_support: false).and_call_original
           workflow_call
@@ -151,7 +156,8 @@ module Workflows
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:,
                                                                     receives_asylum_support: false, receives_qualifying_benefit: false,
-                                                                    gross_income_assessment_result: :pending)
+                                                                    gross_income_assessment_result: :pending,
+                                                                    disposable_income_result: :eligible)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -172,7 +178,8 @@ module Workflows
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false,
-                                                                    gross_income_assessment_result: :pending)
+                                                                    gross_income_assessment_result: :pending,
+                                                                    disposable_income_result: :eligible)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,

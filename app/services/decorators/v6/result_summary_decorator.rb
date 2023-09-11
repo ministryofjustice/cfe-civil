@@ -36,6 +36,7 @@ module Decorators
             combined_total_disposable_income: @calculation_output.combined_total_disposable_income,
             combined_total_outgoings_and_allowances: @calculation_output.combined_total_outgoings_and_allowances,
             income_contribution: @calculation_output.income_contribution,
+            eligibilities: @calculation_output.disposable_income_eligibilities,
           ),
           capital: ApplicantCapitalResultDecorator.new(
             summary: assessment.applicant_capital_summary,

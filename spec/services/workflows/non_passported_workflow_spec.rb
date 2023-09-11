@@ -25,13 +25,22 @@ module Workflows
       end
     end
 
-    before do
+    let(:disposable_income_eligibilities) do
       assessment.proceeding_type_codes.each do |ptc|
-        create :disposable_income_eligibility, disposable_income_summary: assessment.applicant_disposable_income_summary,
-                                               upper_threshold: disposable_income_upper_threshold,
-                                               lower_threshold: 500,
-                                               proceeding_type_code: ptc
+        build :disposable_income_eligibility,
+              upper_threshold: disposable_income_upper_threshold,
+              lower_threshold: 500,
+              proceeding_type_code: ptc
       end
+    end
+
+    before do
+      # assessment.proceeding_type_codes.each do |ptc|
+      #   create :disposable_income_eligibility, disposable_income_summary: assessment.applicant_disposable_income_summary,
+      #                                          upper_threshold: disposable_income_upper_threshold,
+      #                                          lower_threshold: 500,
+      #                                          proceeding_type_code: ptc
+      # end
       Creators::CapitalEligibilityCreator.call(assessment)
     end
 
@@ -104,7 +113,9 @@ module Workflows
                                   applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                   partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
         Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false,
-                                         gross_income_assessment_result: co.gross_income_subtotals.summarized_assessment_result).assessment_result
+                                         gross_income_assessment_result: co.gross_income_subtotals.summarized_assessment_result,
+                                         disposable_income_result: co.disposable_summarized_assessment_result)
+        co.assessment_result
       end
 
       before do
@@ -356,6 +367,7 @@ module Workflows
               context "with partner employment" do
                 let(:partner) { build :applicant, employed: true }
                 let(:partner_employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
+                let(:salary) { 17_000 }
 
                 it "is eligible" do
                   expect(assessment_result).to eq("eligible")
@@ -383,7 +395,7 @@ module Workflows
             let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 3_000) }
 
             before do
-              create(:housing_cost, amount: 1000,
+              create(:housing_cost, amount: 2000,
                                     gross_income_summary: assessment.applicant_gross_income_summary)
             end
 
@@ -420,6 +432,7 @@ module Workflows
               context "with an employed partner" do
                 let(:partner) { build(:applicant, employed: true) }
                 let(:partner_employments) { build_list(:partner_employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
+                let(:salary) { 5_000 }
 
                 before do
                   create(:partner_capital_summary, assessment:)

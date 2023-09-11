@@ -39,15 +39,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_disposable_income_summary_and_eligibilities do
-      after(:create) do |assessment|
-        dis = create(:disposable_income_summary, assessment:)
-        assessment.proceeding_type_codes.each do |ptc|
-          create :disposable_income_eligibility, disposable_income_summary: dis, proceeding_type_code: ptc
-        end
-      end
-    end
-
     trait :with_capital_summary do
       after(:create) do |assessment|
         create :capital_summary, assessment:
@@ -100,12 +91,6 @@ FactoryBot.define do
         if assessment.applicant_capital_summary
           assessment.proceeding_type_codes.each do |ptc|
             assessment.applicant_capital_summary.eligibilities << create(:capital_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
-        if assessment.applicant_disposable_income_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_disposable_income_summary.eligibilities << create(:disposable_income_eligibility, proceeding_type_code: ptc)
           end
         end
 

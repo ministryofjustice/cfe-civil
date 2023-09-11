@@ -5,6 +5,8 @@ module Workflows
         populate_eligibility_records(assessment:)
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(proceeding_types: assessment.proceeding_types,
+                                                        submission_date: assessment.submission_date,
+                                                        level_of_help: assessment.level_of_help,
                                                         applicant_capitals: applicant.capitals_data,
                                                         partner_capitals: partner&.capitals_data,
                                                         assessment:,
@@ -15,12 +17,16 @@ module Workflows
                                  PassportedWorkflow.partner(assessment:, capitals_data: applicant.capitals_data,
                                                             partner_capitals_data: partner.capitals_data,
                                                             date_of_birth: applicant.details.date_of_birth,
+                                                            level_of_help: assessment.level_of_help,
+                                                            submission_date: assessment.submission_date,
                                                             partner_date_of_birth: partner.details.date_of_birth,
                                                             receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                             receives_asylum_support: applicant.details.receives_asylum_support)
                                else
                                  PassportedWorkflow.call(assessment:, capitals_data: applicant.capitals_data,
                                                          date_of_birth: applicant.details.date_of_birth,
+                                                         submission_date: assessment.submission_date,
+                                                         level_of_help: assessment.level_of_help,
                                                          receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                          receives_asylum_support: applicant.details.receives_asylum_support)
                                end
@@ -62,12 +68,12 @@ module Workflows
           applicant.receives_asylum_support
       end
 
-      def blank_calculation_result(proceeding_types:, applicant_capitals:, partner_capitals:,
-                                   assessment:, receives_qualifying_benefit:,
-                                   receives_asylum_support:)
+      def blank_calculation_result(proceeding_types:, applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
+                                   assessment:, receives_qualifying_benefit:, receives_asylum_support:)
         CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:),
                               gross_income_subtotals: GrossIncome::Unassessed.new(proceeding_types),
-                              assessment:, receives_qualifying_benefit:, receives_asylum_support:)
+                              assessment:, receives_qualifying_benefit:, receives_asylum_support:,
+                              disposable_income_subtotals: DisposableIncome::Unassessed.new(proceeding_types:, level_of_help:, submission_date:))
       end
     end
   end

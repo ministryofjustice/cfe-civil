@@ -1,7 +1,11 @@
 module Eligibility
-  class DisposableIncome < Base
-    validates :upper_threshold, :lower_threshold, presence: true
+  class DisposableIncome
+    include ActiveModel::Model
+    include ActiveModel::Attributes
 
-    belongs_to :disposable_income_summary, inverse_of: :eligibilities, foreign_key: :parent_id
+    attribute :lower_threshold, :decimal
+    attribute :upper_threshold, :decimal
+    attribute :proceeding_type_code, :string
+    attribute :assessment_result, :string
   end
 end

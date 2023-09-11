@@ -5,7 +5,7 @@ module Workflows
     let!(:assessment) do
       create :assessment,
              :with_eligibilities,
-             :with_disposable_income_summary_and_eligibilities,
+             :with_disposable_income_summary,
              :with_gross_income_summary,
              :with_capital_summary_and_eligibilities,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
@@ -22,6 +22,8 @@ module Workflows
         described_class.call(assessment: assessment.reload,
                              capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: [], main_home: nil, additional_properties: []),
                              date_of_birth: applicant.date_of_birth,
+                             submission_date: assessment.submission_date,
+                             level_of_help: assessment.level_of_help,
                              receives_qualifying_benefit: applicant.receives_qualifying_benefit,
                              receives_asylum_support: applicant.receives_asylum_support)
       end
