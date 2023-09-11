@@ -8,10 +8,8 @@ FactoryBot.define do
   end
 
   factory :gross_income_eligibility, class: "Eligibility::GrossIncome" do
-    gross_income_summary
     proceeding_type_code { "DA001" }
     upper_threshold { 999_999_999_999.0 }
-    assessment_result { "pending" }
   end
 
   factory :disposable_income_eligibility, class: "Eligibility::DisposableIncome" do

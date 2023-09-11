@@ -12,24 +12,24 @@ module Decorators
       end
       let(:calculation_output) do
         instance_double(CalculationOutput,
-                        gross_income_subtotals: GrossIncomeSubtotals.new(
-                          self_employments: [],
-                          partner_self_employments: [],
-                          applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-                            employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
-                            regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
-                              GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
-                            end,
-                          ),
-                          partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-                            employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
-                            regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
-                              GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
-                            end,
-                          ),
-                        ),
+                        gross_income_subtotals: instance_double(GrossIncome::Subtotals,
+                                                                combined_monthly_gross_income: 0,
+                                                                applicant_gross_income_subtotals:
+                                                                  PersonGrossIncomeSubtotals.new(
+                                                                    employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                                                                    gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                    regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
+                                                                      GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
+                                                                    end,
+                                                                  ),
+                                                                partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
+                                                                  employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                                                                  gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                  regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
+                                                                    GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
+                                                                  end,
+                                                                ),
+                                                                eligibilities: []),
                         assessment_result: "eligible",
                         income_contribution: 0,
                         combined_total_disposable_income: 0,

@@ -21,7 +21,10 @@ module Decorators
     private
 
       def proceeding_types
-        ProceedingTypesResultDecorator.new(@summary.eligibilities, @summary.assessment.proceeding_types).as_json
+        results = @summary.eligibilities.map do |e|
+          ProceedingTypeResult.new(proceeding_type: @summary.assessment.proceeding_types.detect { |pt| pt.ccms_code == e.proceeding_type_code }, eligibility: e)
+        end
+        ProceedingTypesResultDecorator.new(results).as_json
       end
 
       def partner_allowance

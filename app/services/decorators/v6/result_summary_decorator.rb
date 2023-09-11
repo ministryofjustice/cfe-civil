@@ -10,14 +10,22 @@ module Decorators
       end
 
       def as_json
+        proceeding_type_results = assessment.eligibilities.map do |e|
+          pt = assessment.proceeding_types.find_by ccms_code: e.proceeding_type_code
+          ProceedingTypeResult.new(proceeding_type: pt, eligibility: e)
+        end
+        gross_proceeding_type_results = @calculation_output.gross_income_subtotals.eligibilities.map do |e|
+          pt = assessment.proceeding_types.find_by ccms_code: e.proceeding_type_code
+          ProceedingTypeResult.new(proceeding_type: pt, eligibility: e)
+        end
         details = {
           overall_result: {
             result: @calculation_output.assessment_result,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
             income_contribution: @calculation_output.income_contribution.to_f,
-            proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
+            proceeding_types: ProceedingTypesResultDecorator.new(proceeding_type_results).as_json,
           },
-          gross_income: ApplicantGrossIncomeResultDecorator.new(summary: assessment.applicant_gross_income_summary,
+          gross_income: ApplicantGrossIncomeResultDecorator.new(proceeding_type_results: gross_proceeding_type_results,
                                                                 person_gross_income_subtotals: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
                                                                 combined_monthly_gross_income: @calculation_output.gross_income_subtotals.combined_monthly_gross_income),
           disposable_income: ApplicantDisposableIncomeResultDecorator.new(

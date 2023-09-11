@@ -14,7 +14,6 @@ module Summarizers
 
     def call
       update_eligibility_records
-      # @disposable_income_summary.update!(income_contribution:)
       income_contribution
     end
 

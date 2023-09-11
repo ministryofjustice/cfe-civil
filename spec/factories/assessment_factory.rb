@@ -69,15 +69,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_gross_income_summary_and_eligibilities do
-      after(:create) do |assessment|
-        gis = create(:gross_income_summary, assessment:)
-        assessment.proceeding_type_codes.each do |ptc|
-          create :gross_income_eligibility, gross_income_summary: gis, proceeding_type_code: ptc
-        end
-      end
-    end
-
     trait :with_gross_income_summary_and_records do
       after(:create) do |assessment|
         create :gross_income_summary, :with_all_records, assessment:
@@ -109,12 +100,6 @@ FactoryBot.define do
         if assessment.applicant_capital_summary
           assessment.proceeding_type_codes.each do |ptc|
             assessment.applicant_capital_summary.eligibilities << create(:capital_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
-        if assessment.applicant_gross_income_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_gross_income_summary.eligibilities << create(:gross_income_eligibility, proceeding_type_code: ptc)
           end
         end
 

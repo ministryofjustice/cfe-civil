@@ -2,9 +2,10 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
+        populate_eligibility_records(assessment:)
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
-                               blank_calculation_result(applicant_capitals: applicant.capitals_data,
+                               blank_calculation_result(proceeding_types: assessment.proceeding_types,
+                                                        applicant_capitals: applicant.capitals_data,
                                                         partner_capitals: partner&.capitals_data,
                                                         assessment:,
                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
@@ -51,9 +52,9 @@ module Workflows
 
     private
 
-      def populate_eligibility_records(assessment:, dependants:, partner_dependants:)
+      def populate_eligibility_records(assessment:)
         Utilities::ProceedingTypeThresholdPopulator.call(assessment)
-        Creators::EligibilitiesCreator.call(assessment:, client_dependants: dependants, partner_dependants:)
+        Creators::EligibilitiesCreator.call(assessment)
       end
 
       def no_means_assessment_needed?(proceeding_types, applicant)
@@ -61,8 +62,12 @@ module Workflows
           applicant.receives_asylum_support
       end
 
-      def blank_calculation_result(applicant_capitals:, partner_capitals:, assessment:, receives_qualifying_benefit:, receives_asylum_support:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:), assessment:, receives_qualifying_benefit:, receives_asylum_support:)
+      def blank_calculation_result(proceeding_types:, applicant_capitals:, partner_capitals:,
+                                   assessment:, receives_qualifying_benefit:,
+                                   receives_asylum_support:)
+        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:),
+                              gross_income_subtotals: GrossIncome::Unassessed.new(proceeding_types),
+                              assessment:, receives_qualifying_benefit:, receives_asylum_support:)
       end
     end
   end

@@ -8,21 +8,21 @@ module Summarizers
     class AssessmentError < StandardError; end
 
     class << self
-      def call(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:)
+      def call(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:, gross_income_assessment_result:)
         assessment_eligibility(assessment, proceeding_type_code).update!(
-          assessment_result: result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:),
+          assessment_result: result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:, gross_income_assessment_result:),
         )
       end
 
     private
 
-      def result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:)
+      def result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:, gross_income_assessment_result:)
         if this_is_an_immigration_or_asylum_case?(proceeding_type_code) && receives_asylum_support
           "eligible"
         elsif receives_qualifying_benefit
-          passported_assessment assessment, proceeding_type_code, gross_income_result(assessment, proceeding_type_code)
+          passported_assessment assessment, proceeding_type_code, gross_income_assessment_result
         else
-          gross_income_assessment assessment, proceeding_type_code, gross_income_result(assessment, proceeding_type_code)
+          gross_income_assessment assessment, proceeding_type_code, gross_income_assessment_result
         end
       end
 
@@ -74,20 +74,12 @@ module Summarizers
         assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code:)
       end
 
-      def gross_income_eligibility(assessment, proceeding_type_code)
-        assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code:)
-      end
-
       def disposable_income_eligibility(assessment, proceeding_type_code)
         assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code:)
       end
 
       def combined_result(assessment, proceeding_type_code, gross_income_assessment_result)
         [gross_income_assessment_result, disposable_income_result(assessment, proceeding_type_code), capital_result(assessment, proceeding_type_code)].map(&:to_s)
-      end
-
-      def gross_income_result(assessment, proceeding_type_code)
-        gross_income_eligibility(assessment, proceeding_type_code).assessment_result
       end
 
       def disposable_income_result(assessment, proceeding_type_code)

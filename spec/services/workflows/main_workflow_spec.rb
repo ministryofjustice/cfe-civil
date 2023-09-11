@@ -11,6 +11,7 @@ module Workflows
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
+                      gross_income_subtotals: GrossIncome::Unassessed.new(assessment.proceeding_types),
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
                       capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0))
     end
@@ -85,7 +86,7 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Summarizers::MainSummarizer).to receive(:call)
+          allow(Summarizers::MainSummarizer).to receive(:call).and_return(OpenStruct.new(assessment_result: :ineligible))
           expect(PassportedWorkflow).to receive(:partner).with(assessment:,
                                                                capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                                non_liquid_capital_items: [], main_home: {}, additional_properties: []),
@@ -144,9 +145,13 @@ module Workflows
         it "Populates proceeding types with thresholds" do
           expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
 
-          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
+          allow(Creators::EligibilitiesCreator).to receive(:call)
+                                                      .with(assessment)
+                                                      .and_return(OpenStruct.new(gross_income_eligibilities: []))
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
+          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:,
+                                                                    receives_asylum_support: false, receives_qualifying_benefit: false,
+                                                                    gross_income_assessment_result: :pending)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -159,11 +164,15 @@ module Workflows
         end
 
         it "creates the eligibility records" do
-          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
+          allow(Creators::EligibilitiesCreator)
+            .to receive(:call)
+                 .with(assessment)
+                 .and_return(OpenStruct.new(gross_income_eligibilities: []))
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
+          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false,
+                                                                    gross_income_assessment_result: :pending)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,

@@ -6,15 +6,6 @@ module Collators
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
 
-    before do
-      assessment.proceeding_type_codes.each do |ptc|
-        create :gross_income_eligibility,
-               gross_income_summary:,
-               proceeding_type_code: ptc,
-               assessment_result: "pending"
-      end
-    end
-
     describe ".call" do
       subject(:collator) do
         described_class.call assessment:,

@@ -1,17 +1,18 @@
 module Creators
   class GrossIncomeEligibilityCreator
     class << self
-      def call(summary, dependants, proceeding_types, submission_date)
-        proceeding_types.each { |proceeding_type| create_eligibility(summary:, submission_date:, dependants:, proceeding_type:) }
+      def call(dependants:, proceeding_types:, submission_date:, total_gross_income:)
+        proceeding_types.map { |proceeding_type| create_eligibility(submission_date:, dependants:, proceeding_type:, total_gross_income:) }.map(&:freeze)
       end
 
     private
 
-      def create_eligibility(summary:, dependants:, proceeding_type:, submission_date:)
-        summary.eligibilities.create!(
+      def create_eligibility(dependants:, proceeding_type:, submission_date:, total_gross_income:)
+        upper_threshold = upper_threshold(proceeding_type:, submission_date:, dependants:)
+        Eligibility::GrossIncome.new(
           proceeding_type_code: proceeding_type.ccms_code,
-          upper_threshold: upper_threshold(proceeding_type:, submission_date:, dependants:),
-          assessment_result: "pending",
+          upper_threshold:,
+          assessment_result: (total_gross_income < upper_threshold ? "eligible" : "ineligible"),
         )
       end
 

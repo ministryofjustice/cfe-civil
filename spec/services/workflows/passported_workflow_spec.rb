@@ -2,10 +2,11 @@ require "rails_helper"
 
 module Workflows
   RSpec.describe PassportedWorkflow do
-    let(:assessment) do
+    let!(:assessment) do
       create :assessment,
-             :with_disposable_income_summary,
-             :with_gross_income_summary_and_eligibilities,
+             :with_eligibilities,
+             :with_disposable_income_summary_and_eligibilities,
+             :with_gross_income_summary,
              :with_capital_summary_and_eligibilities,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
     end
@@ -18,7 +19,7 @@ module Workflows
 
     describe ".call" do
       subject(:workflow_call) do
-        described_class.call(assessment:,
+        described_class.call(assessment: assessment.reload,
                              capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: [], main_home: nil, additional_properties: []),
                              date_of_birth: applicant.date_of_birth,
                              receives_qualifying_benefit: applicant.receives_qualifying_benefit,

@@ -46,7 +46,7 @@ RSpec.describe CullStaleAssessmentsService do
       create :gross_income_summary,
              :with_all_records,
              :with_everything,
-             :with_eligibilities, assessment: ass
+             assessment: ass
       create :partner_gross_income_summary, assessment: ass
       create :partner_gross_income_summary, assessment: ass
       create :disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
