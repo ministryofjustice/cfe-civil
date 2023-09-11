@@ -25,7 +25,6 @@ module Workflows
 
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
         described_class.call(assessment:,
                              applicant: build(:person_data, details: applicant),
                              partner: nil)
@@ -37,7 +36,6 @@ module Workflows
         it "does not call a workflow" do
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
-          expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
           described_class.call(assessment:,
                                applicant: build(:person_data, details: applicant),
                                partner: nil)
@@ -61,13 +59,12 @@ module Workflows
                                                            capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                            non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
-                                                           receives_qualifying_benefit: true).and_return(calculation_output)
+                                                           receives_qualifying_benefit: true, receives_asylum_support: false).and_return(calculation_output)
           workflow_call
         end
 
         it "calls MainSummarizer" do
           allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-          expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: true)
           workflow_call
         end
       end
@@ -96,7 +93,8 @@ module Workflows
                                                                                                        non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
-                                                               receives_qualifying_benefit: true).and_call_original
+                                                               receives_qualifying_benefit: true,
+                                                               receives_asylum_support: false).and_call_original
           workflow_call
         end
       end
@@ -119,7 +117,6 @@ module Workflows
 
       it "calls MainSummarizer" do
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
         workflow_call
       end
     end

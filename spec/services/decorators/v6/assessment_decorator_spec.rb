@@ -11,35 +11,41 @@ module Decorators
                :with_eligibilities
       end
       let(:calculation_output) do
-        CalculationOutput.new(
-          gross_income_subtotals: GrossIncomeSubtotals.new(
-            self_employments: [],
-            partner_self_employments: [],
-            applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-              employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-              gross_income_summary: assessment.applicant_gross_income_summary,
-              regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
-                GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
-              end,
-            ),
-            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
-              employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-              gross_income_summary: assessment.applicant_gross_income_summary,
-              regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
-                GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
-              end,
-            ),
-          ),
-          capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []), partner_capitals: nil),
-        )
+        instance_double(CalculationOutput,
+                        gross_income_subtotals: GrossIncomeSubtotals.new(
+                          self_employments: [],
+                          partner_self_employments: [],
+                          applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
+                            employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
+                            regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
+                              GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
+                            end,
+                          ),
+                          partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
+                            employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
+                            regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
+                              GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
+                            end,
+                          ),
+                        ),
+                        assessment_result: "eligible",
+                        income_contribution: 0,
+                        combined_total_disposable_income: 0,
+                        combined_total_outgoings_and_allowances: 0,
+                        applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
+                        partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
+                        capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []), partner_capitals: nil))
       end
 
       describe "#as_json" do
         subject(:decorator) do
           described_class.new(assessment: assessment.reload, calculation_output:,
-                              applicant: build(:person_data, details: build(:applicant)),
+                              applicant:,
                               partner:).as_json
         end
+        let(:applicant) { build(:person_data, details: build(:applicant)) }
         let(:partner) { nil }
 
         it "has the required keys in the returned hash" do
