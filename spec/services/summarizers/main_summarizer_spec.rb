@@ -29,11 +29,9 @@ module Summarizers
         allow(Summarizers::AssessmentProceedingTypeSummarizer).to receive(:call).with(assessment:, proceeding_type_code: "SE014", receives_qualifying_benefit: false, receives_asylum_support: false)
       end
 
-      it "calls the Results summarizer to update the assessment result" do
+      it "calls the Results summarizer to return the assessment result" do
         expect(Utilities::ResultSummarizer).to receive(:call).with(%w[eligible ineligible]).and_call_original
-
-        summarizer
-        expect(assessment.assessment_result).to eq "partially_eligible"
+        expect(summarizer.assessment_result).to eq "partially_eligible"
       end
     end
   end

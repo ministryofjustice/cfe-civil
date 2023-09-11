@@ -7,7 +7,7 @@ module Summarizers
           Summarizers::AssessmentProceedingTypeSummarizer.call(assessment:, proceeding_type_code: ptc,
                                                                receives_qualifying_benefit:, receives_asylum_support:)
         end
-        Result.new(assessment_result: summarized_result(assessment.eligibilities))
+        Result.new(assessment_result: summarized_result(assessment.eligibilities).to_s)
       end
 
     private
