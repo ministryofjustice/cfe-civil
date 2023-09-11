@@ -14,7 +14,7 @@ class CalculationOutput
   end
 
   def assessment_result
-    Summarizers::MainSummarizer.call(assessment: @assessment, receives_qualifying_benefit: @receives_qualifying_benefit, receives_asylum_support: @receives_asylum_support).assessment_result
+    Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit:, receives_asylum_support:).assessment_result
   end
 
   attr_reader :capital_subtotals, :gross_income_subtotals, :assessment, :receives_qualifying_benefit, :receives_asylum_support
