@@ -7,7 +7,7 @@ module Workflows
              :with_eligibilities,
              :with_disposable_income_summary,
              :with_gross_income_summary,
-             :with_capital_summary_and_eligibilities,
+             :with_capital_summary,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
     end
     let(:applicant) { build :applicant, :with_qualifying_benefits }
@@ -31,17 +31,13 @@ module Workflows
       it "calls Capital collator and return some data" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)
         expect(Collators::CapitalCollator).to receive(:call)
-        result = workflow_call
-        expect(result.capital_subtotals.applicant_capital_subtotals).to eq capital_data
-        expect(result.capital_subtotals.combined_assessed_capital).to eq capital_data.assessed_capital
+        expect(workflow_call.capital_subtotals.applicant_capital_subtotals).to eq capital_data
+        expect(workflow_call.capital_subtotals.combined_assessed_capital).to eq capital_data.assessed_capital
       end
 
       it "calls CapitalSummarizer and updates capital summary record with result" do
         allow(Collators::CapitalCollator).to receive(:call).and_return(capital_data)
-        expect(Collators::CapitalCollator).to receive(:call)
-        expect(Summarizers::CapitalSummarizer).to receive(:call).and_call_original
-        workflow_call
-        expect(applicant_capital_summary.summarized_assessment_result).to eq :eligible
+        expect(workflow_call.capital_subtotals.summarized_assessment_result).to eq :eligible
       end
     end
   end

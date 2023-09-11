@@ -39,8 +39,8 @@ RSpec.describe CullStaleAssessmentsService do
   end
 
   def create_assessment_and_associated_records
-    create(:assessment).tap do |ass|
-      create :capital_summary, :with_eligibilities, assessment: ass
+    create(:assessment, :with_eligibilities).tap do |ass|
+      create :capital_summary, assessment: ass
       create :partner_capital_summary, assessment: ass
       create :partner_capital_summary, assessment: ass
       create :gross_income_summary,

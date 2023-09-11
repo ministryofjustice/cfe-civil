@@ -88,12 +88,6 @@ FactoryBot.define do
 
     trait :with_eligibilities do
       after(:create) do |assessment|
-        if assessment.applicant_capital_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_capital_summary.eligibilities << create(:capital_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
         assessment.proceeding_type_codes.each do |ptc|
           assessment.eligibilities << create(:assessment_eligibility, proceeding_type_code: ptc)
         end

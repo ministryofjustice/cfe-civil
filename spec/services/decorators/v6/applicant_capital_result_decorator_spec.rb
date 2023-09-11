@@ -74,24 +74,24 @@ module Decorators
         }
       end
 
-      before do
-        pt_results.each do |ptc, details|
+      let(:eligibilities) do
+        pt_results.map do |ptc, details|
           lower_threshold, upper_threshold, result = details
-          create :capital_eligibility,
-                 capital_summary: summary,
-                 proceeding_type_code: ptc,
-                 lower_threshold:,
-                 upper_threshold:,
-                 assessment_result: result
+          build :capital_eligibility,
+                proceeding_type_code: ptc,
+                lower_threshold:,
+                upper_threshold:,
+                assessment_result: result
         end
       end
 
       subject(:decorator) do
-        described_class.new(summary: assessment.applicant_capital_summary,
+        described_class.new(summary:,
                             applicant_capital_subtotals: subtotals,
                             partner_capital_subtotals: subtotals,
                             capital_contribution:,
-                            combined_assessed_capital:).as_json
+                            combined_assessed_capital:,
+                            eligibilities:).as_json
       end
 
       describe "#as_json" do

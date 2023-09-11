@@ -44,6 +44,7 @@ module Decorators
             partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
             capital_contribution: @calculation_output.capital_subtotals.capital_contribution.to_f,
             combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f,
+            eligibilities: @calculation_output.capital_subtotals.eligibilities,
           ),
         }
         result = if @partner_present

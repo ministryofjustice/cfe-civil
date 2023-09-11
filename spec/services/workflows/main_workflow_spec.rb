@@ -11,10 +11,16 @@ module Workflows
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
-                      disposable_summarized_assessment_result: :eligible,
+                      disposable_eligibilities: [
+                        build(:disposable_income_eligibility, proceeding_type_code: "DA003"),
+                        build(:disposable_income_eligibility, proceeding_type_code: "SE013"),
+                      ],
                       gross_income_subtotals: GrossIncome::Unassessed.new(assessment.proceeding_types),
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
-                      capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0))
+                      capital_subtotals: instance_double(Capital::Subtotals,
+                                                         combined_assessed_capital: 0,
+                                                         summarized_assessment_result: :eligible,
+                                                         eligibilities: build_list(:capital_eligibility, 1)))
     end
     let(:person_blank) { nil }
 
@@ -154,10 +160,7 @@ module Workflows
                                                       .with(assessment)
                                                       .and_return(OpenStruct.new(gross_income_eligibilities: []))
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:,
-                                                                    receives_asylum_support: false, receives_qualifying_benefit: false,
-                                                                    gross_income_assessment_result: :pending,
-                                                                    disposable_income_result: :eligible)
+          allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -177,9 +180,7 @@ module Workflows
 
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false,
-                                                                    gross_income_assessment_result: :pending,
-                                                                    disposable_income_result: :eligible)
+          allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,

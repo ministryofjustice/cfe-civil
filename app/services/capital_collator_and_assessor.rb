@@ -8,12 +8,14 @@ class CapitalCollatorAndAssessor
                                                       level_of_help: assessment.level_of_help,
                                                       pensioner_capital_disregard:, capitals_data:)
       combined_assessed_capital = applicant_subtotals.assessed_capital
-      capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
-      CapitalSubtotals.new(
+      # capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
+      Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
-        capital_contribution:,
         combined_assessed_capital:,
+        proceeding_types: assessment.proceeding_types,
+        level_of_help: assessment.level_of_help,
+        submission_date: assessment.submission_date,
       )
     end
 
@@ -29,12 +31,14 @@ class CapitalCollatorAndAssessor
                                                   pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                   capitals_data: partner_capitals_data)
       combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
-      capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
-      CapitalSubtotals.new(
+      # capital_contribution = Summarizers::CapitalSummarizer.call(assessment.applicant_capital_summary, combined_assessed_capital)
+      Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
-        capital_contribution:,
         combined_assessed_capital:,
+        proceeding_types: assessment.proceeding_types,
+        level_of_help: assessment.level_of_help,
+        submission_date: assessment.submission_date,
       )
     end
 

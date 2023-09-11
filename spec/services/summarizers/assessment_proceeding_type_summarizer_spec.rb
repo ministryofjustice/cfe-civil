@@ -13,8 +13,7 @@ module Summarizers
     let(:receives_qualifying_benefit) { false }
     let(:receives_asylum_support) { false }
     let(:ptc) { "DA003" }
-    # let(:disposable_income_eligibility) { assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code: ptc) }
-    let(:capital_eligibility) { assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: ptc) }
+    # let(:capital_eligibility) { assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: ptc) }
     let(:assessment_eligibility) { assessment.eligibilities.find_by(proceeding_type_code: ptc) }
 
     describe ".call" do
@@ -62,9 +61,9 @@ module Summarizers
             let(:ptc) { "IM030" }
 
             it "returns eligible for immigration/asylum proceeding type codes" do
-              described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
-                                   gross_income_assessment_result: "pending", disposable_income_result: "pending")
-              expect(assessment_eligibility.assessment_result).to eq "eligible"
+              expect(described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+                                          gross_income_assessment_result: "pending", disposable_income_result: "pending", capital_assessment_result: "pending"))
+                .to eq "eligible"
             end
           end
         end
@@ -208,27 +207,19 @@ module Summarizers
       end
 
       def setup_and_test_error(gross_income_result, disposable_income_result, capital_summary_result)
-        capital_eligibility.update!(assessment_result: transform_result(capital_summary_result))
-        # disposable_income_eligibility.update!(assessment_result: transform_result(disposable_income_result))
-
-        begin
-          described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
-                               gross_income_assessment_result: transform_result(gross_income_result),
-                               disposable_income_result: transform_result(disposable_income_result))
-        rescue Summarizers::AssessmentProceedingTypeSummarizer::AssessmentError => e
-          return e.message
-        end
-        nil
+        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+                             gross_income_assessment_result: transform_result(gross_income_result),
+                             disposable_income_result: transform_result(disposable_income_result),
+                             capital_assessment_result: transform_result(capital_summary_result))
+      rescue Summarizers::AssessmentProceedingTypeSummarizer::AssessmentError => e
+        e.message
       end
 
       def setup_and_test_result(gross_income_result, disposable_income_result, capital_summary_result)
-        capital_eligibility.update!(assessment_result: transform_result(capital_summary_result))
-        # disposable_income_eligibility.update!(assessment_result: transform_result(disposable_income_result))
-
-        described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
                              gross_income_assessment_result: transform_result(gross_income_result),
-                             disposable_income_result: transform_result(disposable_income_result))
-        assessment_eligibility.assessment_result
+                             disposable_income_result: transform_result(disposable_income_result),
+                             capital_assessment_result: transform_result(capital_summary_result))
       end
 
       def transform_result(result)

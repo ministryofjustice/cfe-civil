@@ -1,11 +1,13 @@
 module Decorators
   module V6
     class ApplicantCapitalResultDecorator < CapitalResultDecorator
-      def initialize(summary:, applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:, combined_assessed_capital:)
+      def initialize(summary:, applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:,
+                     combined_assessed_capital:, eligibilities:)
         super(summary, applicant_capital_subtotals)
         @capital_contribution = capital_contribution
         @combined_assessed_capital = combined_assessed_capital
         @partner_capital_subtotals = partner_capital_subtotals
+        @eligibilities = eligibilities
       end
 
       def as_json
@@ -28,7 +30,7 @@ module Decorators
       end
 
       def proceeding_types
-        results = @summary.eligibilities.map do |e|
+        results = @eligibilities.map do |e|
           ProceedingTypeResult.new(proceeding_type: @summary.assessment.proceeding_types.detect { |pt| pt.ccms_code == e.proceeding_type_code },
                                    eligibility: e)
         end

@@ -34,7 +34,8 @@ module Workflows
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
         # we can take the lower threshold from the first eligibility records as they are all the same
-        lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
+        # lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
+        lower_capital_threshold = calculation_output.capital_subtotals.eligibilities.first.lower_threshold
 
         new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                           gross_income_summary: assessment.applicant_gross_income_summary,
@@ -70,7 +71,7 @@ module Workflows
 
       def blank_calculation_result(proceeding_types:, applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
                                    assessment:, receives_qualifying_benefit:, receives_asylum_support:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals:, partner_capitals:),
+        CalculationOutput.new(capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:, proceeding_types:),
                               gross_income_subtotals: GrossIncome::Unassessed.new(proceeding_types),
                               assessment:, receives_qualifying_benefit:, receives_asylum_support:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(proceeding_types:, level_of_help:, submission_date:))

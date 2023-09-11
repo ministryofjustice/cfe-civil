@@ -48,7 +48,11 @@ module Workflows
                                                                    submission_date: assessment.submission_date,
                                                                    dependants: applicant.dependants)
                                  end
-        unassessed_capital = CapitalSubtotals.unassessed(applicant_capitals: applicant.capitals_data, partner_capitals: partner&.capitals_data)
+        unassessed_capital = Capital::Unassessed.new(applicant_capitals: applicant.capitals_data,
+                                                     partner_capitals: partner&.capitals_data,
+                                                     proceeding_types: assessment.proceeding_types,
+                                                     submission_date: assessment.submission_date,
+                                                     level_of_help: assessment.level_of_help)
         if gross_income_subtotals.ineligible?
           return CalculationOutput.new(gross_income_subtotals:,
                                        assessment:,

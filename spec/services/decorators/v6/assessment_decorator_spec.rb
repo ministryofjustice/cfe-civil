@@ -37,7 +37,11 @@ module Decorators
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
                         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
-                        capital_subtotals: CapitalSubtotals.unassessed(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []), partner_capitals: nil))
+                        capital_subtotals: Capital::Unassessed.new(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []),
+                                                                   partner_capitals: nil,
+                                                                   proceeding_types: assessment.proceeding_types,
+                                                                   level_of_help: assessment.level_of_help,
+                                                                   submission_date: assessment.submission_date))
       end
 
       describe "#as_json" do

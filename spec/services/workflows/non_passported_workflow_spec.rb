@@ -34,16 +34,6 @@ module Workflows
       end
     end
 
-    before do
-      # assessment.proceeding_type_codes.each do |ptc|
-      #   create :disposable_income_eligibility, disposable_income_summary: assessment.applicant_disposable_income_summary,
-      #                                          upper_threshold: disposable_income_upper_threshold,
-      #                                          lower_threshold: 500,
-      #                                          proceeding_type_code: ptc
-      # end
-      Creators::CapitalEligibilityCreator.call(assessment)
-    end
-
     context "vehicle collection output", :calls_bank_holiday do
       let(:disposable_income_upper_threshold) { 5000 }
       let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 4000) }
@@ -113,8 +103,9 @@ module Workflows
                                   applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                   partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
         Summarizers::MainSummarizer.call(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false,
-                                         gross_income_assessment_result: co.gross_income_subtotals.summarized_assessment_result,
-                                         disposable_income_result: co.disposable_summarized_assessment_result)
+                                         gross_income_eligibilities: co.gross_income_subtotals.eligibilities,
+                                         disposable_income_eligibilities: co.disposable_eligibilities,
+                                         capital_eligibilities: co.capital_subtotals.eligibilities)
         co.assessment_result
       end
 
