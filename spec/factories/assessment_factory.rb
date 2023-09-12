@@ -86,7 +86,7 @@ FactoryBot.define do
 
     trait :with_gross_income_summary_and_employment do
       after(:create) do |assessment|
-        create :gross_income_summary, :with_employment, assessment:
+        create :gross_income_summary, assessment:
       end
     end
 

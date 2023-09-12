@@ -5,7 +5,6 @@ module Decorators
     RSpec.describe GrossIncomeDecorator do
       before do
         create :assessment
-        build_list(:employment, 2, :with_monthly_payments, submission_date: assessment.submission_date)
       end
 
       let(:assessment) { Assessment.last }

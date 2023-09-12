@@ -17,7 +17,7 @@ module RemarkGenerators
 
     before do
       create(:disposable_income_summary, :with_everything, assessment:)
-      create(:gross_income_summary, :with_everything, :with_employment, assessment:)
+      create(:gross_income_summary, :with_everything, assessment:)
       create(:capital_summary, :with_eligibilities, assessment:)
     end
 
