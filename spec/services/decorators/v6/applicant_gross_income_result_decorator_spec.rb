@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Decorators
   module V6
-    RSpec.describe GrossIncomeResultDecorator do
+    RSpec.describe ApplicantGrossIncomeResultDecorator do
       let(:unlimited) { 999_999_999_999.0 }
       let(:ptc_results) do
         {
@@ -49,10 +49,11 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(summary,
-                            PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
-                                                           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                           regular_income_categories: []), 0).as_json
+        described_class.new(summary:,
+                            person_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
+                                                                                          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                                                                                          regular_income_categories: []),
+                            combined_monthly_gross_income: 0).as_json
       end
 
       before do

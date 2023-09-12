@@ -17,9 +17,9 @@ module Decorators
             income_contribution: @calculation_output.income_contribution.to_f,
             proceeding_types: ProceedingTypesResultDecorator.new(assessment.eligibilities, assessment.proceeding_types).as_json,
           },
-          gross_income: GrossIncomeResultDecorator.new(assessment.applicant_gross_income_summary,
-                                                       @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
-                                                       @calculation_output.gross_income_subtotals.combined_monthly_gross_income.to_f),
+          gross_income: ApplicantGrossIncomeResultDecorator.new(summary: assessment.applicant_gross_income_summary,
+                                                                person_gross_income_subtotals: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals,
+                                                                combined_monthly_gross_income: @calculation_output.gross_income_subtotals.combined_monthly_gross_income),
           disposable_income: ApplicantDisposableIncomeResultDecorator.new(
             assessment.applicant_disposable_income_summary,
             assessment.applicant_gross_income_summary,
@@ -46,9 +46,7 @@ module Decorators
       end
 
       def partner_gross_income
-        GrossIncomeResultDecorator.new(assessment.partner_gross_income_summary,
-                                       @calculation_output.gross_income_subtotals.partner_gross_income_subtotals,
-                                       @calculation_output.gross_income_subtotals.combined_monthly_gross_income.to_f)
+        GrossIncomeResultDecorator.new(@calculation_output.gross_income_subtotals.partner_gross_income_subtotals)
       end
 
       def partner_disposable_income
