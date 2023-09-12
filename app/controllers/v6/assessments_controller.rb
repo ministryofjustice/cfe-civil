@@ -134,7 +134,8 @@ module V6
 
     def parse_self_employments(self_employments)
       self_employments.map do |s|
-        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference], income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
+        EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
+                                              income: SelfEmploymentIncome.new(s.fetch(:income)).freeze
       end
     end
 
@@ -155,14 +156,14 @@ module V6
             tax: payment[:tax],
             national_insurance: payment[:national_insurance],
             client_id: payment[:client_id],
-          )
+          ).freeze
         end
         Employment.new(
           name: employment[:name],
           client_id: employment[:client_id],
           receiving_only_statutory_sick_or_maternity_pay: employment[:receiving_only_statutory_sick_or_maternity_pay],
           employment_payments:,
-        )
+        ).freeze
       end
     end
 
