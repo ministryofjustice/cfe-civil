@@ -4,9 +4,7 @@ class Employment
 
   attribute :name, :string
   attribute :client_id, :string
-  attribute :type, :string, default: "ApplicantEmployment"
   attribute :receiving_only_statutory_sick_or_maternity_pay, :boolean, default: false
-  attribute :submission_date, :date
   attribute :employment_payments
 
   def entitles_employment_allowance?

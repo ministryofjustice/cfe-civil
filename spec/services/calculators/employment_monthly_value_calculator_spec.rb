@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
   describe ".call" do
     let(:submission_date) { Date.new(2022, 6, 6) }
-    let(:employment) { build(:employment, submission_date:) }
+    let(:employment) { build(:employment) }
 
     it "calls the tax and national insurance refund calculator" do
       allow(Calculators::TaxNiRefundCalculator).to receive(:call).and_return([])

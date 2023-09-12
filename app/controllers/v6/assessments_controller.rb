@@ -84,7 +84,7 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant, main_home, additional_properties, submission_date)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties, _submission_date)
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                                        main_home: main_home.present? ? parse_main_home(main_home) : nil,
@@ -96,7 +96,7 @@ module V6
       PersonData.new(details: applicant.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
-                     employments: parse_employment_income(employments, submission_date),
+                     employments: parse_employment_income(employments),
                      capitals_data:,
                      dependants: dependants.map(&:freeze))
     end
@@ -145,7 +145,7 @@ module V6
       end
     end
 
-    def parse_employment_income(employments, submission_date)
+    def parse_employment_income(employments)
       employments.map do |employment|
         employment_payments = employment[:payments].map do |payment|
           EmploymentPayment.new(
@@ -162,7 +162,6 @@ module V6
           client_id: employment[:client_id],
           receiving_only_statutory_sick_or_maternity_pay: employment[:receiving_only_statutory_sick_or_maternity_pay],
           employment_payments:,
-          submission_date:,
         )
       end
     end

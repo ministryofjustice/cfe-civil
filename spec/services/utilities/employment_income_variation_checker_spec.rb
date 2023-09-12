@@ -4,8 +4,8 @@ module Utilities
   RSpec.describe EmploymentIncomeVariationChecker do
     let(:submission_date) { Date.new(2022, 6, 6) }
     let(:payments) { amounts.map { |amount| Data.define(:gross_income_monthly_equiv).new(gross_income_monthly_equiv: amount) } }
-    let(:employment) { build :employment, employment_payments: payments, submission_date: }
-    let(:result) { described_class.new(payments).below_threshold?(employment.submission_date) }
+    let(:employment) { build :employment, employment_payments: payments }
+    let(:result) { described_class.new(payments).below_threshold?(submission_date) }
 
     context "no variance" do
       let(:amounts) { [2000.0, 2000.0, 2000.0, 2000.0] }

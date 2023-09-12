@@ -2,8 +2,6 @@ class EmploymentPayment
   include ActiveModel::Model
   include ActiveModel::Attributes
 
-  attr_accessor :tax, :national_insurance
-
   attribute :date, :date
   attribute :client_id, :string
   attribute :gross_income, :decimal, default: 0.0

@@ -7,7 +7,7 @@ RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_ba
       build :employment_payment, date: Date.parse(date_string), gross_income: gross_income[i]
     end
   end
-  let(:employment) { build :employment, employment_payments:, submission_date: assessment.submission_date }
+  let(:employment) { build :employment, employment_payments: }
 
   context "with valid payment period" do
     subject(:monthly_equivalent_calculator) { described_class.call(employment.employment_payments) }
