@@ -9,103 +9,94 @@ module Summarizers
 
     class << self
       def call(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:)
-        new(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:).call
+        assessment_eligibility(assessment, proceeding_type_code).update!(
+          assessment_result: result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:),
+        )
       end
-    end
 
-    def initialize(assessment:, proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:)
-      @assessment = assessment
-      @proceeding_type_code = proceeding_type_code
-      @receives_qualifying_benefit = receives_qualifying_benefit
-      @receives_asylum_support = receives_asylum_support
-    end
+    private
 
-    def call
-      assessment_eligibility.update!(assessment_result: result)
-    end
+      def result(assessment:, receives_qualifying_benefit:, receives_asylum_support:, proceeding_type_code:)
+        if this_is_an_immigration_or_asylum_case?(proceeding_type_code) && receives_asylum_support
+          "eligible"
+        elsif receives_qualifying_benefit
+          passported_assessment assessment, proceeding_type_code, gross_income_result(assessment, proceeding_type_code)
+        else
+          gross_income_assessment assessment, proceeding_type_code, gross_income_result(assessment, proceeding_type_code)
+        end
+      end
 
-  private
+      def this_is_an_immigration_or_asylum_case?(proceeding_type_code)
+        proceeding_type_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
+      end
 
-    attr_reader :assessment
+      def passported_assessment(assessment, proceeding_type_code, gross_income_assessment_result)
+        raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result(assessment, proceeding_type_code).to_s == "pending"
+        raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_disposable_income_summary && disposable_income_result(assessment, proceeding_type_code) != "pending"
+        raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_gross_income_summary && gross_income_assessment_result.to_s != "pending"
 
-    def result
-      return "eligible" if this_is_an_immigration_or_asylum_case? && @receives_asylum_support
+        capital_result assessment, proceeding_type_code
+      end
 
-      passported? ? passported_assessment : gross_income_assessment
-    end
+      def gross_income_assessment(assessment, proceeding_type_code, gross_income_assessment_result)
+        raise AssessmentError, "Assessment not complete: Gross Income assessment still pending" if gross_income_assessment_result.to_s == "pending"
 
-    def this_is_an_immigration_or_asylum_case?
-      @proceeding_type_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
-    end
+        return "ineligible" if gross_income_assessment_result.to_s == "ineligible"
 
-    def passported?
-      @receives_qualifying_benefit
-    end
+        disposble_income_assessment assessment, proceeding_type_code, gross_income_assessment_result
+      end
 
-    def passported_assessment
-      raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result == "pending"
-      raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_disposable_income_summary && disposable_income_result != "pending"
-      raise AssessmentError, "Invalid assessment status: for passported applicant" if assessment.applicant_gross_income_summary && gross_income_result != "pending"
+      def disposble_income_assessment(assessment, proceeding_type_code, gross_income_assessment_result)
+        raise AssessmentError, "Assessment not complete: Disposable Income assessment still pending" if disposable_income_result(assessment, proceeding_type_code).to_s == "pending"
 
-      capital_result
-    end
+        return disposable_income_result(assessment, proceeding_type_code) if disposable_income_result(assessment, proceeding_type_code).to_s == "ineligible"
 
-    def gross_income_assessment
-      raise AssessmentError, "Assessment not complete: Gross Income assessment still pending" if gross_income_result == "pending"
+        capital_assessment assessment, proceeding_type_code, gross_income_assessment_result
+      end
 
-      return "ineligible" if gross_income_result == "ineligible"
+      def capital_assessment(assessment, proceeding_type_code, gross_income_assessment_result)
+        raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result(assessment, proceeding_type_code).to_s == "pending"
 
-      disposble_income_assessment
-    end
+        if capital_result(assessment, proceeding_type_code).to_s == "ineligible"
+          "ineligible"
+        elsif "contribution_required".in?(combined_result(assessment, proceeding_type_code, gross_income_assessment_result))
+          "contribution_required"
+        else
+          "eligible"
+        end
+      end
 
-    def disposble_income_assessment
-      raise AssessmentError, "Assessment not complete: Disposable Income assessment still pending" if disposable_income_result == "pending"
+      def assessment_eligibility(assessment, proceeding_type_code)
+        assessment.eligibilities.find_by(proceeding_type_code:)
+      end
 
-      return disposable_income_result if disposable_income_result == "ineligible"
+      def capital_eligibility(assessment, proceeding_type_code)
+        assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code:)
+      end
 
-      capital_assessment
-    end
+      def gross_income_eligibility(assessment, proceeding_type_code)
+        assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code:)
+      end
 
-    def capital_assessment
-      raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result == "pending"
+      def disposable_income_eligibility(assessment, proceeding_type_code)
+        assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code:)
+      end
 
-      return "ineligible" if capital_result == "ineligible"
+      def combined_result(assessment, proceeding_type_code, gross_income_assessment_result)
+        [gross_income_assessment_result, disposable_income_result(assessment, proceeding_type_code), capital_result(assessment, proceeding_type_code)].map(&:to_s)
+      end
 
-      return "contribution_required" if "contribution_required".in?(combined_result)
+      def gross_income_result(assessment, proceeding_type_code)
+        gross_income_eligibility(assessment, proceeding_type_code).assessment_result
+      end
 
-      "eligible"
-    end
+      def disposable_income_result(assessment, proceeding_type_code)
+        disposable_income_eligibility(assessment, proceeding_type_code).assessment_result
+      end
 
-    def assessment_eligibility
-      @assessment_eligibility ||= assessment.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
-    end
-
-    def capital_eligibility
-      @capital_eligibility ||= assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
-    end
-
-    def gross_income_eligibility
-      @gross_income_eligibility ||= assessment.applicant_gross_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
-    end
-
-    def disposable_income_eligibility
-      @disposable_income_eligibility ||= assessment.applicant_disposable_income_summary.eligibilities.find_by(proceeding_type_code: @proceeding_type_code)
-    end
-
-    def combined_result
-      [gross_income_result, disposable_income_result, capital_result]
-    end
-
-    def gross_income_result
-      gross_income_eligibility.assessment_result
-    end
-
-    def disposable_income_result
-      disposable_income_eligibility.assessment_result
-    end
-
-    def capital_result
-      capital_eligibility.assessment_result
+      def capital_result(assessment, proceeding_type_code)
+        capital_eligibility(assessment, proceeding_type_code).assessment_result
+      end
     end
   end
 end

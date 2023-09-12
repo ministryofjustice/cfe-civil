@@ -214,9 +214,7 @@ module Summarizers
 
         begin
           described_class.call(assessment:, proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:)
-        rescue StandardError => e
-          raise "Unexpected exception: #{e.class}" unless e.is_a?(Summarizers::AssessmentProceedingTypeSummarizer::AssessmentError)
-
+        rescue Summarizers::AssessmentProceedingTypeSummarizer::AssessmentError => e
           return e.message
         end
         nil
