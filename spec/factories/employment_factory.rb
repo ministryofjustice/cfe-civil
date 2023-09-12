@@ -13,7 +13,8 @@ FactoryBot.define do
     end
 
     transient do
-      submission_date { Time.zone.today }
+      # everything in CFE revolves around (assessment) submission_date, so this can never sensibly be defaulted
+      submission_date { nil }
     end
 
     trait :with_monthly_payments do
