@@ -3,8 +3,8 @@ require "rails_helper"
 RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_bank_holiday do
   let(:assessment) { create :assessment }
   let(:employment_payments) do
-    dates.each_with_index.map do |date_string, i|
-      build :employment_payment, date: Date.parse(date_string), gross_income: gross_income[i]
+    dates.zip(gross_income).map do |date_string, income_value|
+      build :employment_payment, date: Date.parse(date_string), gross_income: income_value
     end
   end
   let(:employment) { build :employment, employment_payments: }
