@@ -84,7 +84,7 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant, main_home, additional_properties, _submission_date)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties)
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                                        main_home: main_home.present? ? parse_main_home(main_home) : nil,
