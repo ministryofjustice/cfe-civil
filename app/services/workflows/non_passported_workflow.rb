@@ -18,7 +18,7 @@ module Workflows
         applicant_self_employments = convert_employment_details(applicant.self_employments)
         applicant_employment_details = convert_employment_details(applicant.employment_details)
         applicant_gross_income = collate_gross_income(assessment:,
-                                                      employments: assessment.employments,
+                                                      employments: applicant.employments,
                                                       gross_income_summary: assessment.applicant_gross_income_summary,
                                                       self_employments: applicant_self_employments,
                                                       employment_details: applicant_employment_details)
@@ -27,7 +27,7 @@ module Workflows
                                    partner_self_employments = convert_employment_details(partner.self_employments)
                                    partner_employment_details = convert_employment_details(partner.employment_details)
                                    partner_gross_income = collate_gross_income(assessment:,
-                                                                               employments: assessment.partner_employments,
+                                                                               employments: partner.employments,
                                                                                gross_income_summary: assessment.partner_gross_income_summary,
                                                                                self_employments: partner_self_employments,
                                                                                employment_details: partner_employment_details)

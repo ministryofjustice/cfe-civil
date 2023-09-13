@@ -2,9 +2,10 @@ require "rails_helper"
 
 module Utilities
   RSpec.describe EmploymentIncomeVariationChecker do
-    let(:employment) { create :employment }
+    let(:submission_date) { Date.new(2022, 6, 6) }
     let(:payments) { amounts.map { |amount| Data.define(:gross_income_monthly_equiv).new(gross_income_monthly_equiv: amount) } }
-    let(:result) { described_class.new(payments).below_threshold?(employment.assessment.submission_date) }
+    let(:employment) { build :employment, employment_payments: payments }
+    let(:result) { described_class.new(payments).below_threshold?(submission_date) }
 
     context "no variance" do
       let(:amounts) { [2000.0, 2000.0, 2000.0, 2000.0] }

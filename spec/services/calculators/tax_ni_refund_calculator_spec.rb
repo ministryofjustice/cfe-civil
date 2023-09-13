@@ -2,7 +2,9 @@ require "rails_helper"
 
 RSpec.describe Calculators::TaxNiRefundCalculator do
   let(:calculator) { described_class.call(employment_payments: employment.employment_payments) }
-  let(:employment) { create :employment, employment_payments: payments }
+
+  let(:submission_date) { Date.new(2022, 6, 6) }
+  let(:employment) { build :employment, employment_payments: payments }
   let(:payments) do
     %w[2021-09-30 2021-10-29 2021-11-30].map.with_index do |date_string, i|
       build :employment_payment,

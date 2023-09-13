@@ -11,12 +11,13 @@ module RemarkGenerators
     let(:maintenance_outgoings) { assessment.applicant_disposable_income_summary.maintenance_outgoings }
     let(:housing_outgoings) { assessment.applicant_disposable_income_summary.housing_cost_outgoings }
     let(:legal_aid_outgoings) { assessment.applicant_disposable_income_summary.legal_aid_outgoings }
-    let(:employment_payments) { assessment.employments.first.employment_payments }
+    let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date) }
+    let(:employment_payments) { employments.first.employment_payments }
     let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
 
     before do
       create(:disposable_income_summary, :with_everything, assessment:)
-      create(:gross_income_summary, :with_everything, :with_employment, assessment:)
+      create(:gross_income_summary, :with_everything, assessment:)
       create(:capital_summary, :with_eligibilities, assessment:)
     end
 
@@ -42,7 +43,7 @@ module RemarkGenerators
                            lower_capital_threshold: 100,
                            child_care_bank: 0,
                            outgoings: assessment.applicant_disposable_income_summary.outgoings,
-                           employments: assessment.employments,
+                           employments:,
                            gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
     end
   end

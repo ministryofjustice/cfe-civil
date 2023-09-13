@@ -89,9 +89,12 @@ module V6
                                        additional_properties: parse_additional_properties(additional_properties),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
+
+      employments = input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])
       PersonData.new(details: applicant.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
+                     employments: parse_employment_income(employments),
                      capitals_data:,
                      dependants: dependants.map(&:freeze))
     end
@@ -138,6 +141,27 @@ module V6
       employments.map do |s|
         EmploymentOrSelfEmploymentDetails.new client_reference: s[:client_reference],
                                               income: EmploymentIncome.new(s.fetch(:income)).freeze
+      end
+    end
+
+    def parse_employment_income(employments)
+      employments.map do |employment|
+        employment_payments = employment[:payments].map do |payment|
+          EmploymentPayment.new(
+            date: Date.parse(payment[:date]),
+            gross_income: payment[:gross],
+            benefits_in_kind: payment[:benefits_in_kind],
+            tax: payment[:tax],
+            national_insurance: payment[:national_insurance],
+            client_id: payment[:client_id],
+          ).freeze
+        end
+        Employment.new(
+          name: employment[:name],
+          client_id: employment[:client_id],
+          receiving_only_statutory_sick_or_maternity_pay: employment[:receiving_only_statutory_sick_or_maternity_pay],
+          employment_payments:,
+        ).freeze
       end
     end
 

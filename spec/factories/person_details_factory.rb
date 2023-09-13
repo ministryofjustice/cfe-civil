@@ -3,6 +3,7 @@ FactoryBot.define do
     initialize_with { new(**attributes) }
     employment_details { [] }
     self_employments { [] }
+    employments { [] }
     dependants { [] }
     capitals_data
   end

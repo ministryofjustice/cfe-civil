@@ -2,13 +2,14 @@ require "rails_helper"
 
 RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_bank_holiday do
   let(:assessment) { create :assessment }
-  let(:employment) { create :employment, assessment: }
+  let(:employment_payments) do
+    dates.zip(gross_income).map do |date_string, income_value|
+      build :employment_payment, date: Date.parse(date_string), gross_income: income_value
+    end
+  end
+  let(:employment) { build :employment, employment_payments: }
 
   context "with valid payment period" do
-    before do
-      create_employment_payment_records
-    end
-
     subject(:monthly_equivalent_calculator) { described_class.call(employment.employment_payments) }
 
     context "with monthly payment frequency and non varying gross_income" do
@@ -188,18 +189,11 @@ RSpec.describe Utilities::EmploymentIncomeMonthlyEquivalentCalculator, :calls_ba
     let(:gross_income) { [2456.83] * 3 }
 
     before do
-      create_employment_payment_records
       allow(Utilities::PaymentPeriodAnalyser).to receive(:new).and_return(mock_analyser)
     end
 
     it "raises an argument error for unacceptable period" do
       expect { described_class.call(employment.employment_payments) }.to raise_error ArgumentError, "unexpected frequency testing"
-    end
-  end
-
-  def create_employment_payment_records
-    dates.each_with_index do |date_string, i|
-      create :employment_payment, employment:, date: Date.parse(date_string), gross_income: gross_income[i]
     end
   end
 end

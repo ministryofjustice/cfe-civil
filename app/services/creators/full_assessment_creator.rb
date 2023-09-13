@@ -33,12 +33,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:employment_income]
-            Creators::EmploymentsCreator.call(employment_collection: assessment.employments,
-                                              employments_params: { employment_income: params[:employment_income] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:irregular_incomes]
             Creators::IrregularIncomeCreator.call(irregular_income_params: params[:irregular_incomes],
                                                   gross_income_summary: assessment.applicant_gross_income_summary)

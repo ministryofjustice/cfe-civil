@@ -24,7 +24,7 @@ module Workflows
         # we can take the lower threshold from the first eligibility records as they are all the same
         lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
 
-        new_remarks = RemarkGenerators::Orchestrator.call(employments: assessment.employments,
+        new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                           gross_income_summary: assessment.applicant_gross_income_summary,
                                                           outgoings: assessment.applicant_disposable_income_summary.outgoings,
                                                           liquid_capital_items: applicant.capitals_data.liquid_capital_items,
@@ -32,7 +32,7 @@ module Workflows
                                                           child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                           assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         if partner.present?
-          new_remarks += RemarkGenerators::Orchestrator.call(employments: assessment.partner_employments,
+          new_remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
                                                              gross_income_summary: assessment.partner_gross_income_summary,
                                                              outgoings: assessment.partner_disposable_income_summary.outgoings,
                                                              liquid_capital_items: partner.capitals_data.liquid_capital_items,

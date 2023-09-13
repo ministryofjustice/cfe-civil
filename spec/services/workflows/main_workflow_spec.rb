@@ -150,7 +150,7 @@ module Workflows
           expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
                                                                        liquid_capital_items: [],
@@ -167,7 +167,7 @@ module Workflows
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
           allow(Summarizers::MainSummarizer).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: assessment.employments,
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
                                                                        liquid_capital_items: [],
