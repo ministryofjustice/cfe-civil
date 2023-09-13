@@ -15,7 +15,7 @@ capital_immigration_upper_tribunal_certificated: 3_000
 capital_asylum_upper_tribunal_certificated: 8_000
 partner_allowance: 211.32
 pensioner_capital_disregard:
-  minimum_age_in_years: 60
+  minimum_age_in_years: "state_pension_age"
   passported: 100_000
   non_passported: 100_000
   # capital to disregard if monthly disposable income (excluding income derived from capital) is below these figures
