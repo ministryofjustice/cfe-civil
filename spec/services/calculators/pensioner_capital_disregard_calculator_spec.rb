@@ -58,6 +58,16 @@ module Calculators
               let(:disposable_income) { 76.0 }
 
               it { is_expected.to eq 70_000.0 }
+
+              context "with 'pensioner_capital_disregard.minimum_age_in_years' threshold set to 'state_pension_age'" do
+                around do |example|
+                  travel_to Date.new(2525, 4, 20)
+                  example.run
+                  travel_back
+                end
+
+                it { is_expected.to eq 70_000.0 }
+              end
             end
 
             context "with an income above the max threshold" do
@@ -74,6 +84,16 @@ module Calculators
 
         it "returns the passported value" do
           expect(service.value).to eq 100_000.0
+        end
+
+        context "with 'pensioner_capital_disregard.minimum_age_in_years' threshold set to 'state_pension_age'" do
+          around do |example|
+            travel_to Date.new(2525, 4, 20)
+            example.run
+            travel_back
+          end
+
+          it { is_expected.to eq 100_000.0 }
         end
       end
     end
