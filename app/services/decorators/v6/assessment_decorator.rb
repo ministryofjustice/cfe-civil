@@ -37,7 +37,7 @@ module Decorators
           ),
           capital: CapitalDecorator.new(assessment.applicant_capital_summary,
                                         @calculation_output.capital_subtotals.applicant_capital_subtotals),
-          remarks: RemarksDecorator.new(assessment.remarks, assessment),
+          remarks: RemarksDecorator.new(assessment.remarks, @calculation_output.assessment_result),
         }
         if @partner.present?
           details.merge(partner_gross_income:, partner_disposable_income:, partner_capital:)
