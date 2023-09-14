@@ -16,7 +16,11 @@ module Calculators
   private
 
     def pensioner?
-      earliest_dob_for_pensioner >= @date_of_birth
+      if thresholds[:minimum_age_in_years] == "state_pension_age"
+        @submission_date > Calculators::StatePensionDateCalculator.state_pension_date(date_of_birth: @date_of_birth)
+      else
+        earliest_dob_for_pensioner >= @date_of_birth
+      end
     end
 
     def earliest_dob_for_pensioner
