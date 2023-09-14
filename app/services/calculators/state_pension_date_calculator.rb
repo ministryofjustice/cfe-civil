@@ -7,7 +7,7 @@ module Calculators
       # Calculates the date on which a UK citizen becomes eligible for their State Pension.
       def state_pension_date(date_of_birth:)
         date_of_birth = Date.parse(date_of_birth)
-        pension_table.detect do |obj|
+        PENSION_TABLE.detect do |obj|
           start_date = Date.parse(obj[:periodStart])
           if start_date >= Date.parse("1978-04-06")
             # After 6th April 1978 then pension age is 68.
@@ -25,10 +25,8 @@ module Calculators
         end
       end
 
-    private
-
       # https://github.com/dwp/get-state-pension-date/blob/master/src/spa-data.js
-      def pension_table
+      PENSION_TABLE =
         [
           {
             periodStart: "1953-12-06",
@@ -333,8 +331,7 @@ module Calculators
               months: 0,
             },
           },
-        ]
-      end
+        ].freeze
     end
   end
 end
