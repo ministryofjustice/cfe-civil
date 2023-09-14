@@ -27,6 +27,7 @@ module Calculators
 
     private
 
+      # https://github.com/dwp/get-state-pension-date/blob/master/src/spa-data.js
       def pension_table
         [
           {
