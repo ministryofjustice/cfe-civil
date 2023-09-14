@@ -10,7 +10,10 @@ module Calculators
 
     context "Increase in State Pension age from 66 to 67, men and women" do
       it { expect(described_class.state_pension_date(date_of_birth: "1960-04-06")).to eq "2026-05-06" }
+      it { expect(described_class.state_pension_date(date_of_birth: "1960-07-31")).to eq "2026-11-30" }
       it { expect(described_class.state_pension_date(date_of_birth: "1960-12-06")).to eq "2027-09-06" }
+      it { expect(described_class.state_pension_date(date_of_birth: "1960-12-31")).to eq "2027-09-30" }
+      it { expect(described_class.state_pension_date(date_of_birth: "1961-01-31")).to eq "2027-11-30" }
       it { expect(described_class.state_pension_date(date_of_birth: "1961-02-05")).to eq "2027-12-05" }
       it { expect(described_class.state_pension_date(date_of_birth: "1977-04-05")).to eq "2044-04-05" }
     end
