@@ -6,21 +6,24 @@ module Calculators
 
       # Calculates the date on which a UK citizen becomes eligible for their State Pension.
       def state_pension_date(date_of_birth:)
-        PENSION_TABLE.detect do |obj|
-          start_date = Date.parse(obj[:periodStart])
-          if start_date >= Date.parse("1978-04-06")
-            # After 6th April 1978 then pension age is 68.
-            return (date_of_birth + obj[:pensionDate][:years].years + obj[:pensionDate][:months].months)
+        pension_rule = PENSION_TABLE.detect do |rule|
+          start_date = Date.parse(rule[:periodStart])
+          end_date = Date.parse(rule.fetch(:periodEnd, "2525-01-01"))
+          date_of_birth.between?(start_date, end_date)
+        end
+        # We must be before the start of the table
+        if pension_rule.present?
+          data = pension_rule[:pensionDate]
+          if data[:type] == FIXED
+            Date.parse(data[:value])
+          elsif data[:type] == AGE
+            (date_of_birth + data[:years].years + data[:months].months)
           else
-            end_date = Date.parse(obj[:periodEnd])
-            if date_of_birth.between?(start_date, end_date)
-              if obj[:pensionDate][:type] == FIXED
-                return Date.parse(obj[:pensionDate][:value])
-              elsif obj[:pensionDate][:type] == AGE
-                return (date_of_birth + obj[:pensionDate][:years].years + obj[:pensionDate][:months].months)
-              end
-            end
+            raise StandardError, "Invalid pension rule #{data[:type]}"
           end
+        else
+          #  This person is a pensioner so any value will do
+          date_of_birth + 60.years
         end
       end
 

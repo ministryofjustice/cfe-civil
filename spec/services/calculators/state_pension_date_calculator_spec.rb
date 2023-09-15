@@ -28,5 +28,9 @@ module Calculators
       it { expect(described_class.state_pension_date(date_of_birth: Date.parse("1978-04-06")).to_s).to eq "2046-04-06" }
       it { expect(described_class.state_pension_date(date_of_birth: Date.parse("1980-04-06")).to_s).to eq "2048-04-06" }
     end
+
+    context "when pension_rule is missing" do
+      it { expect(described_class.state_pension_date(date_of_birth: Date.parse("1950-04-06")).to_s).to eq "2010-04-06" }
+    end
   end
 end
