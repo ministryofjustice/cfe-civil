@@ -48,21 +48,6 @@ module Workflows
                                                                    submission_date: assessment.submission_date,
                                                                    dependants: applicant.dependants)
                                  end
-        unassessed_capital = Capital::Unassessed.new(applicant_capitals: applicant.capitals_data,
-                                                     partner_capitals: partner&.capitals_data,
-                                                     proceeding_types: assessment.proceeding_types,
-                                                     submission_date: assessment.submission_date,
-                                                     level_of_help: assessment.level_of_help)
-        if gross_income_subtotals.ineligible?
-          return CalculationOutput.new(gross_income_subtotals:,
-                                       proceeding_types: assessment.proceeding_types,
-                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                       receives_asylum_support: applicant.details.receives_asylum_support,
-                                       disposable_income_subtotals: DisposableIncome::Unassessed.new(proceeding_types: assessment.proceeding_types,
-                                                                                                     level_of_help: assessment.level_of_help,
-                                                                                                     submission_date: assessment.submission_date),
-                                       capital_subtotals: unassessed_capital)
-        end
 
         disposable_result = if partner.present?
                               partner_disposable_income_assessment(assessment:,
@@ -82,15 +67,6 @@ module Workflows
           level_of_help: assessment.level_of_help,
           submission_date: assessment.submission_date,
         )
-
-        if disposable_income_subtotals.ineligible?
-          return CalculationOutput.new(gross_income_subtotals:,
-                                       disposable_income_subtotals:,
-                                       capital_subtotals: unassessed_capital,
-                                       proceeding_types: assessment.proceeding_types,
-                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                       receives_asylum_support: applicant.details.receives_asylum_support)
-        end
 
         capital_subtotals = if partner.present?
                               CapitalCollatorAndAssessor.partner proceeding_types: assessment.proceeding_types,
