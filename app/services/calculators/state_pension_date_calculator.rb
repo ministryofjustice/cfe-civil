@@ -3,12 +3,13 @@ module Calculators
     class << self
       AGE = "age".freeze
       FIXED = "fixed".freeze
+      FAR_FLUNG_FUTURE_DATE = "2999-12-31".freeze
 
       # Calculates the date on which a UK citizen becomes eligible for their State Pension.
       def state_pension_date(date_of_birth:)
         pension_rule = PENSION_TABLE.detect do |rule|
           start_date = Date.parse(rule[:periodStart])
-          end_date = Date.parse(rule.fetch(:periodEnd, "2525-01-01"))
+          end_date = Date.parse(rule.fetch(:periodEnd, FAR_FLUNG_FUTURE_DATE))
           date_of_birth.between?(start_date, end_date)
         end
         # We must be before the start of the table
