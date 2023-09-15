@@ -85,19 +85,19 @@ module Calculators
             travel_back
           end
 
-          context "when applicant is pensioner" do
-            let(:applicant) { build :applicant, :with_qualifying_benefits, :pensionable_age_under_60 }
-
-            it "returns the passported value" do
-              expect(service.value).to eq 0
-            end
-          end
-
-          context "when applicant is not pensioner" do
-            let(:applicant) { build :applicant, :with_qualifying_benefits, :pensionable_age_over_60 }
+          context "when applicant is pensioner(69 years old)" do
+            let(:applicant) { build :applicant, :with_qualifying_benefits, date_of_birth: Date.parse("2456-04-20") }
 
             it "returns the passported value" do
               expect(service.value).to eq 100_000.0
+            end
+          end
+
+          context "when applicant is not pensioner(67 years old)" do
+            let(:applicant) { build :applicant, :with_qualifying_benefits, date_of_birth: Date.parse("2458-04-20") }
+
+            it "returns the passported value" do
+              expect(service.value).to eq 0
             end
           end
         end
