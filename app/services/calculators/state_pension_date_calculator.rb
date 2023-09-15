@@ -14,17 +14,21 @@ module Calculators
         # We must be before the start of the table
         if pension_rule.present?
           data = pension_rule[:pensionDate]
-          if data[:type] == FIXED
-            Date.parse(data[:value])
-          elsif data[:type] == AGE
-            (date_of_birth + data[:years].years + data[:months].months)
-          else
-            raise StandardError, "Invalid pension rule #{data[:type]}"
-          end
+          send("#{data[:type]}_pension_date", date_of_birth, data)
         else
           #  This person is a pensioner so any value will do
           date_of_birth + 60.years
         end
+      end
+
+    private
+
+      def fixed_pension_date(_date_of_birth, data)
+        Date.parse(data[:value])
+      end
+
+      def age_pension_date(date_of_birth, data)
+        (date_of_birth + data[:years].years + data[:months].months)
       end
 
       # https://github.com/dwp/get-state-pension-date/blob/master/src/spa-data.js
