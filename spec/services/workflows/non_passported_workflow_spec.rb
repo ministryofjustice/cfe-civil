@@ -230,7 +230,7 @@ module Workflows
 
         describe "capital thresholds for controlled" do
           let(:self_employments) { [] }
-          let(:applicant) { build :applicant, :under_pensionable_age }
+          let(:applicant) { build :applicant, :pensionable_age_under_60 }
 
           let(:additional_properties) do
             [build(:property, :additional_property, value: property_value, outstanding_mortgage: 0, percentage_owned: 100)]
@@ -278,7 +278,7 @@ module Workflows
           end
 
           context "without partner" do
-            let(:applicant) { build :applicant, :under_pensionable_age }
+            let(:applicant) { build :applicant, :pensionable_age_under_60 }
 
             it "is not eligible" do
               expect(assessment_result).to eq("ineligible")
@@ -286,8 +286,8 @@ module Workflows
           end
 
           context "with pensionable partner" do
-            let(:applicant) { build :applicant, :under_pensionable_age }
-            let(:partner) { build :applicant, :over_pensionable_age }
+            let(:applicant) { build :applicant, :pensionable_age_under_60 }
+            let(:partner) { build :applicant, :pensionable_age_over_60 }
 
             before do
               create(:partner_capital_summary, assessment:)
@@ -301,8 +301,8 @@ module Workflows
           end
 
           context "when both pensioners" do
-            let(:applicant) { build :applicant, :over_pensionable_age }
-            let(:partner) { build :applicant, :over_pensionable_age }
+            let(:applicant) { build :applicant, :pensionable_age_over_60 }
+            let(:partner) { build :applicant, :pensionable_age_over_60 }
             let(:partner_additional_properties) do
               [build(:property, :additional_property, value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)]
             end
@@ -320,7 +320,7 @@ module Workflows
         end
 
         context "without capital" do
-          let(:applicant) { build :applicant, :over_pensionable_age, employed: }
+          let(:applicant) { build :applicant, :pensionable_age_over_60, employed: }
 
           context "with childcare costs (and at least 1 dependent child)" do
             let(:salary) { 19_000 }
