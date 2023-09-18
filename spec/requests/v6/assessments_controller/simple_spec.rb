@@ -2137,6 +2137,48 @@ module V6
           end
         end
       end
+
+      context "MTR" do
+        let(:current_date) { Date.new(2525, 0o5, 0o1) }
+
+        context "when threshold 'fixed_employment_allowance' is set to 60" do
+          let(:employed) { true }
+          let(:employment_income_params) do
+            [
+              {
+                name: "Job 1",
+                client_id: SecureRandom.uuid,
+                payments: employment_payment_dates.map do |date|
+                  {
+                    client_id: SecureRandom.uuid,
+                    gross: 846.00,
+                    benefits_in_kind: 16.60,
+                    tax: 48.22,
+                    national_insurance: 12.73,
+                    date:,
+                  }
+                end,
+              },
+            ]
+          end
+          let(:params) { { employment_income: employment_income_params } }
+          let(:disposable_employment_income) { parsed_response.dig(:result_summary, :disposable_income, :employment_income) }
+
+          it "keeps the correct income values in disposable" do
+            expect(disposable_employment_income)
+              .to eq(
+                {
+                  gross_income: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 48.22,
+                  national_insurance: 12.73,
+                  fixed_employment_deduction: -66.0,
+                  net_employment_income: 857.55,
+                },
+              )
+          end
+        end
+      end
     end
   end
 end
