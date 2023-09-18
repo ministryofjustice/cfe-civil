@@ -125,7 +125,7 @@ RSpec.describe Threshold do
 
   context "MTR" do
     it "retrieves values from the mtr-2026 file" do
-      expect(described_class.value_for(:fixed_employment_allowance, at: Time.zone.parse("2525-04-10"))).to eq 66.0
+      expect(described_class.value_for(:fixed_employment_allowance, at: Date.parse("2525-04-10"))).to eq 66.0
     end
   end
 end
