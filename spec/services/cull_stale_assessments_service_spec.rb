@@ -40,18 +40,18 @@ RSpec.describe CullStaleAssessmentsService do
 
   def create_assessment_and_associated_records
     create(:assessment).tap do |ass|
-      create :capital_summary, :with_eligibilities, assessment: ass
+      create :capital_summary, assessment: ass
       create :partner_capital_summary, assessment: ass
       create :partner_capital_summary, assessment: ass
       create :gross_income_summary,
              :with_all_records,
              :with_everything,
-             :with_eligibilities, assessment: ass
+             assessment: ass
       create :partner_gross_income_summary, assessment: ass
       create :partner_gross_income_summary, assessment: ass
-      create :disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
-      create :partner_disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
-      create :partner_disposable_income_summary, :with_everything, :with_eligibilities, assessment: ass
+      create :disposable_income_summary, :with_everything, assessment: ass
+      create :partner_disposable_income_summary, :with_everything, assessment: ass
+      create :partner_disposable_income_summary, :with_everything, assessment: ass
       create :explicit_remark, assessment: ass
       create :regular_transaction, gross_income_summary: ass.applicant_gross_income_summary
     end
@@ -63,7 +63,6 @@ RSpec.describe CullStaleAssessmentsService do
       CashTransactionCategory,
       CashTransaction,
       DisposableIncomeSummary,
-      Eligibility::Base,
       ExplicitRemark,
       GrossIncomeSummary,
       IrregularIncomePayment,

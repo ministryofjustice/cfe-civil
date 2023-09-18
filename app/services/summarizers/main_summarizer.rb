@@ -1,19 +1,23 @@
 module Summarizers
   class MainSummarizer
     class << self
-      Result = Data.define(:assessment_result)
-      def call(assessment:, receives_qualifying_benefit:, receives_asylum_support:)
-        assessment.proceeding_types.map(&:ccms_code).each do |ptc|
-          Summarizers::AssessmentProceedingTypeSummarizer.call(assessment:, proceeding_type_code: ptc,
-                                                               receives_qualifying_benefit:, receives_asylum_support:)
+      Results = Data.define(:eligibilities, :assessment_result)
+
+      def call(proceeding_types:, receives_qualifying_benefit:, receives_asylum_support:,
+               gross_income_eligibilities:, disposable_income_eligibilities:, capital_eligibilities:)
+        eligibilities = proceeding_types.map do |ptc|
+          r = Summarizers::AssessmentProceedingTypeSummarizer.call(
+            proceeding_type_code: ptc.ccms_code,
+            receives_qualifying_benefit:,
+            receives_asylum_support:,
+            gross_income_assessment_result: gross_income_eligibilities.detect { |e| e.proceeding_type == ptc }.assessment_result,
+            disposable_income_result: disposable_income_eligibilities.detect { |e| e.proceeding_type == ptc }.assessment_result,
+            capital_assessment_result: capital_eligibilities.detect { |e| e.proceeding_type == ptc }.assessment_result,
+          )
+          Eligibility::Assessment.new(assessment_result: r, proceeding_type: ptc).freeze
         end
-        Result.new(assessment_result: summarized_result(assessment.eligibilities).to_s)
-      end
-
-    private
-
-      def summarized_result(eligibilities)
-        Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
+        Results.new(eligibilities:,
+                    assessment_result: Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result)).to_s)
       end
     end
   end

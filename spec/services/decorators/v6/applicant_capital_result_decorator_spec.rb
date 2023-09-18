@@ -7,8 +7,8 @@ module Decorators
       let(:assessment) { create :assessment, proceedings: pr_hash }
       let(:pt_results) do
         {
-          DA003: [3000, unlimited, "eligible"],
-          SE014: [3000, 8000, "ineligible"],
+          build(:proceeding_type, ccms_code: "DA003") => [3000, unlimited, "eligible"],
+          build(:proceeding_type, ccms_code: "SE014") => [3000, 8000, "ineligible"],
         }
       end
       let(:pr_hash) { [%w[DA003 A], %w[SE014 Z]] }
@@ -53,14 +53,14 @@ module Decorators
           proceeding_types: [
             {
               ccms_code: "DA003",
-              client_involvement_type: "A",
+              client_involvement_type: pt_results.keys.first.client_involvement_type,
               lower_threshold: 3_000.0,
               upper_threshold: 999_999_999_999.0,
               result: "eligible",
             },
             {
               ccms_code: "SE014",
-              client_involvement_type: "Z",
+              client_involvement_type: pt_results.keys.last.client_involvement_type,
               lower_threshold: 3_000.0,
               upper_threshold: 8_000.0,
               result: "ineligible",
@@ -74,24 +74,25 @@ module Decorators
         }
       end
 
-      before do
-        pt_results.each do |ptc, details|
+      let(:eligibilities) do
+        pt_results.map do |ptc, details|
           lower_threshold, upper_threshold, result = details
-          create :capital_eligibility,
-                 capital_summary: summary,
-                 proceeding_type_code: ptc,
-                 lower_threshold:,
-                 upper_threshold:,
-                 assessment_result: result
+          Eligibility::Capital.new(
+            proceeding_type: ptc,
+            lower_threshold:,
+            upper_threshold:,
+            assessment_result: result,
+          )
         end
       end
 
       subject(:decorator) do
-        described_class.new(summary: assessment.applicant_capital_summary,
+        described_class.new(summary:,
                             applicant_capital_subtotals: subtotals,
                             partner_capital_subtotals: subtotals,
                             capital_contribution:,
-                            combined_assessed_capital:).as_json
+                            combined_assessed_capital:,
+                            eligibilities:).as_json
       end
 
       describe "#as_json" do
