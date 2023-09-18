@@ -2,8 +2,10 @@
 # MTR (Means Test Review) config file - start date TBD
 gross_income_upper: 2912.50
 infinite_gross_income_upper: 999_999_999_999
-dependant_step: 222
-dependant_increase_starts_after: 4
+gross_income:
+  dependant_increase_starts_after: 0
+  dependant_over_14_increase_percent: 50
+  dependant_under_14_increase_percent: 30
 disposable_income_lower_certificated: 315
 disposable_income_lower_controlled: 733
 disposable_income_upper: 733
