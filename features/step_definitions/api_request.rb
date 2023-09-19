@@ -130,15 +130,15 @@ Given("I add the following employment details:") do |table|
   @applicant_data.merge! employed: true
 end
 
-Given("I add the employment details") do
+Given("I add employment income of {int} per month") do |monthly_income|
   payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
     {
       client_id: "client_id",
       date:,
-      gross: 500,
-      benefits_in_kind: 100,
-      tax: -55.00,
-      national_insurance: -25.0,
+      gross: monthly_income,
+      benefits_in_kind: 0,
+      tax: 0.00,
+      national_insurance: 0.0,
     }
   end
   @employments << { "name": "A",
@@ -159,7 +159,7 @@ Given("I add the following additional property details for the partner in the cu
 end
 
 Given("I add the following main property details for the current assessment:") do |table|
-  @main_home = cast_values(table.rows_hash)
+  @main_home = { percentage_owned: 100, shared_with_housing_assoc: false }.merge(cast_values(table.rows_hash))
 end
 
 Given("I add the following additional property details for the current assessment:") do |table|

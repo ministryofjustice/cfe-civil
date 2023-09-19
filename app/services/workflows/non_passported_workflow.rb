@@ -100,7 +100,6 @@ module Workflows
                                                                  partner_capitals_data: partner.capitals_data,
                                                                  date_of_birth: applicant.details.date_of_birth,
                                                                  partner_date_of_birth: partner.details.date_of_birth,
-                                                                 receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                                  total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             else
                               CapitalCollatorAndAssessor.call proceeding_types: assessment.proceeding_types,
@@ -108,7 +107,6 @@ module Workflows
                                                               level_of_help: assessment.level_of_help,
                                                               capitals_data: applicant.capitals_data,
                                                               date_of_birth: applicant.details.date_of_birth,
-                                                              receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
                             end
         CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:,

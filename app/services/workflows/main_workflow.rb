@@ -20,7 +20,6 @@ module Workflows
                                                             level_of_help: assessment.level_of_help,
                                                             submission_date: assessment.submission_date,
                                                             partner_date_of_birth: partner.details.date_of_birth,
-                                                            receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                             receives_asylum_support: applicant.details.receives_asylum_support)
                                else
                                  PassportedWorkflow.call(proceeding_types: assessment.proceeding_types,
@@ -28,7 +27,6 @@ module Workflows
                                                          date_of_birth: applicant.details.date_of_birth,
                                                          submission_date: assessment.submission_date,
                                                          level_of_help: assessment.level_of_help,
-                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                          receives_asylum_support: applicant.details.receives_asylum_support)
                                end
                              else
