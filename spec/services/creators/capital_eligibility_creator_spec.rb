@@ -100,8 +100,8 @@ module Creators
       context "controlled work" do
         let(:level_of_help) { "controlled" }
 
-        it "uses the new thresholds" do
-          expect(creator.fetch("SE013")).to have_attributes(upper_threshold: 11_000, lower_threshold: 7000)
+        it "uses the new upper threshold for both" do
+          expect(creator.fetch("SE013")).to have_attributes(upper_threshold: 11_000, lower_threshold: 11_000)
         end
       end
     end
