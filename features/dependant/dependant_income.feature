@@ -34,8 +34,8 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant allowance under 16      | 0       |
-      | dependant allowance over 16       | 0       |
+      | dependant allowance under 16      | 0.0     |
+      | dependant allowance over 16       | 0.0     |
 
   Scenario: Dependant has non-zero weekly income that exceeds allowance threshold
     Given I am undertaking a certificated assessment
@@ -46,6 +46,6 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant allowance under 16      | 0       |
-      | dependant allowance over 16       | 0       |
+      | dependant allowance under 16      | 0.0     |
+      | dependant allowance over 16       | 0.0     |
 

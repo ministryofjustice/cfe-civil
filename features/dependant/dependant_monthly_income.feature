@@ -13,7 +13,6 @@ Feature:
       | dependant allowance under 16      | 207.64  |
       | dependant allowance over 16       | 207.64  |
 
-
   Scenario:   Scenario: Dependant has non-zero monthly income that exceeds allowance threshold
     Given I am undertaking a certificated assessment
     And I add the following dependent details for the current assessment:
@@ -23,8 +22,5 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
-      | dependant allowance under 16      | 0       |
-      | dependant allowance over 16       | 0       |
-
-
-
+      | dependant allowance under 16      | 0.0     |
+      | dependant allowance over 16       | 0.0     |

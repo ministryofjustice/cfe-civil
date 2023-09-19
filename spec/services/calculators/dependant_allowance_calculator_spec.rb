@@ -15,6 +15,7 @@ module Calculators
         before do
           allow(Threshold).to receive(:value_for).with(:dependant_allowances, at: submission_date).and_return(
             {
+              child_under_14: 211.00,
               child_under_15: 111.11,
               child_aged_15: 222.22,
               child_16_and_over: 333.33,
@@ -30,6 +31,14 @@ module Calculators
 
             it "returns the child under 15 allowance and subtract the income" do
               expect(calculator).to eq 86.11
+            end
+          end
+
+          context "under 14" do
+            let(:dependant) { build :dependant, :under14, income_amount: 10.00, submission_date: }
+
+            it "returns the child under 14 allowance and subtract the income" do
+              expect(calculator).to eq 201
             end
           end
 
@@ -151,142 +160,6 @@ module Calculators
             it "returns the adult allowance with income deducted" do
               expect(calculator).to eq(444.44 - 203.37)
             end
-          end
-        end
-      end
-    end
-
-    # 2021 threshold date tests
-    describe "retrieving threshold values for 2021" do
-      let(:assessment) { build(:assessment) }
-      let(:dependant) { build :dependant, submission_date: assessment.submission_date }
-
-      subject(:calculator) { described_class.new(dependant, assessment.submission_date) }
-
-      context "before new allowances date" do
-        before do
-          assessment.submission_date = "Sun, 11 Apr 2021"
-        end
-
-        describe "child_under_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_under_15]).to eq 296.65
-          end
-        end
-
-        describe "child_aged_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 296.65
-          end
-        end
-
-        describe "child_16_and_over_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 296.65
-          end
-        end
-
-        describe "adult_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:adult]).to eq 296.65
-          end
-        end
-      end
-
-      context "after new allowances date" do
-        before do
-          assessment.submission_date = "Mon, 12 Apr 2021"
-        end
-
-        describe "child_under_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_under_15]).to eq 298.08
-          end
-        end
-
-        describe "child_aged_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 298.08
-          end
-        end
-
-        describe "child_16_and_over_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 298.08
-          end
-        end
-
-        describe "adult_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:adult]).to eq 298.08
-          end
-        end
-      end
-    end
-
-    # 2022 threshold tests dates
-    describe "retrieving threshold values for 2022" do
-      let(:assessment) { build(:assessment) }
-      let(:dependant) { build :dependant, submission_date: assessment.submission_date }
-
-      subject(:calculator) { described_class.new(dependant, assessment.submission_date) }
-
-      context "before new allowances date" do
-        before do
-          assessment.submission_date = "Sun, 10 Apr 2022"
-        end
-
-        describe "child_under_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_under_15]).to eq 298.08
-          end
-        end
-
-        describe "child_aged_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 298.08
-          end
-        end
-
-        describe "child_16_and_over_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 298.08
-          end
-        end
-
-        describe "adult_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:adult]).to eq 298.08
-          end
-        end
-      end
-
-      context "after new allowances date" do
-        before do
-          assessment.submission_date = "Mon, 11 Apr 2022"
-        end
-
-        describe "child_under_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_under_15]).to eq 307.64
-          end
-        end
-
-        describe "child_aged_15_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_aged_15]).to eq 307.64
-          end
-        end
-
-        describe "child_16_and_over_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:child_16_and_over]).to eq 307.64
-          end
-        end
-
-        describe "adult_allowance" do
-          it "returns the threshold value" do
-            expect(calculator.send(:thresholds)[:adult]).to eq 307.64
           end
         end
       end

@@ -108,9 +108,9 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
     And I am using version 6 of the API
     And I add the following housing benefit details for the applicant:
       | client_id |     date     |  amount |
-      |     C     |  2022-07-22  | 500.0   |
-      |     C     |  2022-08-22  | 500.0   |
-      |     C     |  2022-09-22  | 500.0   |
+      |     C     |  2021-07-22  | 500.0   |
+      |     C     |  2021-08-22  | 500.0   |
+      |     C     |  2021-09-22  | 500.0   |
     And I add the following regular_transaction details for the partner:
       | operation | category         | frequency | amount |
       | debit     | rent_or_mortgage | monthly   | 600.0  |

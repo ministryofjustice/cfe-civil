@@ -18,6 +18,10 @@ class Dependant
     date_of_birth.years_since(16)
   end
 
+  def under_14_years_old?
+    date_of_birth > (submission_date - 14.years)
+  end
+
   def under_15_years_old?
     date_of_birth > (submission_date - 15.years)
   end

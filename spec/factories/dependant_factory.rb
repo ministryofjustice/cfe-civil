@@ -18,6 +18,11 @@ FactoryBot.define do
       date_of_birth { submission_date - 16.years }
     end
 
+    trait :under14 do
+      relationship { "child_relative" }
+      date_of_birth { Faker::Date.between(from: submission_date - 14.years + 1.day, to: submission_date - 1.day) }
+    end
+
     trait :under15 do
       relationship { "child_relative" }
       date_of_birth { Faker::Date.between(from: submission_date - 15.years + 1.day, to: submission_date - 1.day) }
