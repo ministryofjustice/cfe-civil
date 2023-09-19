@@ -4,6 +4,10 @@ The date is when it was released/deployed to production - see [cfe-civil CI/CD](
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 18th September 2023
+
+* LEP-233 added support for new MTR percentage based thresholds after MTR go-live date
+
 ## 25th July 2023
 
 * LEP-84 Feature: Added "other_incomes" to partner input structure

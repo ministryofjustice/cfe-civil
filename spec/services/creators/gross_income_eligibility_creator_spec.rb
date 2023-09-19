@@ -3,43 +3,44 @@ require "rails_helper"
 module Creators
   RSpec.describe GrossIncomeEligibilityCreator do
     let(:summary) { assessment.applicant_gross_income_summary }
+    let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
+    let(:proceeding_types) { assessment.proceeding_types }
+    let(:submission_date) { assessment.submission_date.to_date }
 
-    around do |example|
-      travel_to Date.new(2021, 4, 20)
-      example.run
-      travel_back
+    before do
+      ::Utilities::ProceedingTypeThresholdPopulator.call(assessment)
     end
 
     subject(:creator) do
       described_class.call(dependants:,
-                           proceeding_types: assessment.proceeding_types,
-                           submission_date: assessment.submission_date, total_gross_income: 0)
+                           proceeding_types:,
+                           submission_date:, total_gross_income: 0).index_by { |h| h.proceeding_type.ccms_code }
     end
 
-    context "version 6" do
-      let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
-      let(:proceeding_types) { assessment.proceeding_types }
-      let(:dependants) { [] }
-
-      it "creates a capital eligibility record for each proceeding type" do
-        expect(creator.map(&:proceeding_type)).to match_array(proceeding_types)
-      end
-
-      it "creates eligibility record with correct waived thresholds" do
-        pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
-        elig = creator.detect { _1.proceeding_type.ccms_code == "DA002" }
-        expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-        expect(elig.lower_threshold).to be_nil
+    context "without MTR" do
+      around do |example|
+        travel_to Date.new(2021, 4, 20)
+        example.run
+        travel_back
       end
 
       context "no dependants" do
         let(:dependants) { [] }
 
+        it "creates eligibility record with correct waived thresholds" do
+          expect(creator.fetch("DA002"))
+            .to have_attributes(
+              upper_threshold: 999_999_999_999,
+              lower_threshold: nil,
+            )
+        end
+
         it "creates eligibility record with correct un-waived thresholds" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-          expect(elig.lower_threshold).to be_nil
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: 2657.0,
+              lower_threshold: nil,
+            )
         end
       end
 
@@ -50,10 +51,11 @@ module Creators
         end
 
         it "creates eligibility record with no dependant uplift on threshold" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-          expect(elig.lower_threshold).to be_nil
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: 2657.0,
+              lower_threshold: nil,
+            )
         end
       end
 
@@ -62,10 +64,41 @@ module Creators
         let(:dependants) { build_list :dependant, 6, :child_relative, submission_date: assessment.submission_date }
 
         it "creates a record with the uplifted threshold" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold + expected_uplift
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: 2657.0 + expected_uplift,
+              lower_threshold: nil,
+            )
         end
+      end
+    end
+
+    context "with MTR" do
+      around do |example|
+        travel_to Date.new(2525, 4, 20)
+        example.run
+        travel_back
+      end
+
+      let(:dependants) do
+        build_list(:dependant, 2, :child_relative, date_of_birth: submission_date - 12.years, submission_date:) +
+          build_list(:dependant, 4, :adult_relative, date_of_birth: submission_date - 15.years, submission_date:)
+      end
+
+      it "creates a record with the uplifted threshold" do
+        expect(creator.fetch("SE013"))
+          .to have_attributes(
+            upper_threshold: 2912.50 * 3.6,
+            lower_threshold: nil,
+          )
+      end
+
+      it "does not uplift the waived threshold" do
+        expect(creator.fetch("DA002"))
+          .to have_attributes(
+            upper_threshold: 999_999_999_999,
+            lower_threshold: nil,
+          )
       end
     end
   end

@@ -1,8 +1,9 @@
 ---
 gross_income_upper: 2657
 infinite_gross_income_upper: 999_999_999_999
-dependant_step: 222
-dependant_increase_starts_after: 4
+gross_income:
+  dependant_step: 222
+  dependant_increase_starts_after: 4
 disposable_income_lower_certificated: 315
 disposable_income_lower_controlled: 733
 disposable_income_upper: 733
