@@ -6,9 +6,7 @@ module Calculators
       let(:submission_date) { Date.current }
 
       subject(:calculator) do
-        described_class.call(
-          dependant, submission_date
-        )
+        described_class.call(dependant, submission_date).to_f
       end
 
       context "when mocking Threshold values" do
