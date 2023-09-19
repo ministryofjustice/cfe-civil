@@ -28,19 +28,17 @@ module Creators
         let(:dependants) { [] }
 
         it "creates eligibility record with correct waived thresholds" do
-          pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
           expect(creator.fetch("DA002"))
             .to have_attributes(
-              upper_threshold: pt.gross_income_upper_threshold,
+              upper_threshold: 999_999_999_999,
               lower_threshold: nil,
             )
         end
 
         it "creates eligibility record with correct un-waived thresholds" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
           expect(creator.fetch("SE013"))
             .to have_attributes(
-              upper_threshold: pt.gross_income_upper_threshold,
+              upper_threshold: 2657.0,
               lower_threshold: nil,
             )
         end
@@ -53,10 +51,9 @@ module Creators
         end
 
         it "creates eligibility record with no dependant uplift on threshold" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
           expect(creator.fetch("SE013"))
             .to have_attributes(
-              upper_threshold: pt.gross_income_upper_threshold,
+              upper_threshold: 2657.0,
               lower_threshold: nil,
             )
         end
@@ -67,10 +64,9 @@ module Creators
         let(:dependants) { build_list :dependant, 6, :child_relative, submission_date: assessment.submission_date }
 
         it "creates a record with the uplifted threshold" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
           expect(creator.fetch("SE013"))
             .to have_attributes(
-              upper_threshold: pt.gross_income_upper_threshold + expected_uplift,
+              upper_threshold: 2657.0 + expected_uplift,
               lower_threshold: nil,
             )
         end
@@ -90,10 +86,17 @@ module Creators
       end
 
       it "creates a record with the uplifted threshold" do
-        proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
         expect(creator.fetch("SE013"))
           .to have_attributes(
             upper_threshold: 2912.50 * 3.6,
+            lower_threshold: nil,
+          )
+      end
+
+      it "does not uplift the waived threshold" do
+        expect(creator.fetch("DA002"))
+          .to have_attributes(
+            upper_threshold: 999_999_999_999,
             lower_threshold: nil,
           )
       end
