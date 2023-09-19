@@ -14,7 +14,7 @@ module Creators
     subject(:creator) do
       described_class.call(dependants:,
                            proceeding_types:,
-                           submission_date:, total_gross_income: 0)
+                           submission_date:, total_gross_income: 0).index_by { |h| h.proceeding_type.ccms_code }
     end
 
     context "without MTR" do
@@ -29,16 +29,20 @@ module Creators
 
         it "creates eligibility record with correct waived thresholds" do
           pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "DA002" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-          expect(elig.lower_threshold).to be_nil
+          expect(creator.fetch("DA002"))
+            .to have_attributes(
+              upper_threshold: pt.gross_income_upper_threshold,
+              lower_threshold: nil,
+            )
         end
 
         it "creates eligibility record with correct un-waived thresholds" do
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-          expect(elig.lower_threshold).to be_nil
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: pt.gross_income_upper_threshold,
+              lower_threshold: nil,
+            )
         end
       end
 
@@ -50,9 +54,11 @@ module Creators
 
         it "creates eligibility record with no dependant uplift on threshold" do
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold
-          expect(elig.lower_threshold).to be_nil
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: pt.gross_income_upper_threshold,
+              lower_threshold: nil,
+            )
         end
       end
 
@@ -62,8 +68,11 @@ module Creators
 
         it "creates a record with the uplifted threshold" do
           pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-          elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-          expect(elig.upper_threshold).to eq pt.gross_income_upper_threshold + expected_uplift
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: pt.gross_income_upper_threshold + expected_uplift,
+              lower_threshold: nil,
+            )
         end
       end
     end
@@ -82,8 +91,11 @@ module Creators
 
       it "creates a record with the uplifted threshold" do
         proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
-        elig = creator.detect { _1.proceeding_type.ccms_code == "SE013" }
-        expect(elig.upper_threshold.to_f).to eq 2912.50 * 3.6
+        expect(creator.fetch("SE013"))
+          .to have_attributes(
+            upper_threshold: 2912.50 * 3.6,
+            lower_threshold: nil,
+          )
       end
     end
   end
