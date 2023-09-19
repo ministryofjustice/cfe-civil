@@ -129,6 +129,22 @@ Given("I add the following employment details:") do |table|
   @applicant_data.merge! employed: true
 end
 
+Given("I add the employment details") do
+  payments = %w[2022-06-22 2022-07-22 2022-08-22].map do |date|
+    {
+      client_id: "client_id",
+      date:,
+      gross: 500,
+      benefits_in_kind: 100,
+      tax: -55.00,
+      national_insurance: -25.0,
+    }
+  end
+  @employments << { "name": "A",
+                    "client_id": "B",
+                    "payments": payments }
+end
+
 Given("I add the following regular_transaction details for the partner:") do |table|
   @partner_regular_transactions = table.hashes.map { cast_values(_1) }
 end

@@ -70,6 +70,6 @@ disposable_income_contribution_bands:
     percentage: 70.0
     base: 121.85
 
-fixed_employment_allowance: 45.0
+fixed_employment_allowance: 66.0
 employment_income_variance: 60.0
 subject_matter_of_dispute_disregard: 100000.0
