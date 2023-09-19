@@ -37,6 +37,7 @@ Given("I am undertaking a controlled assessment") do
                       receives_qualifying_benefit: false }
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "DA001", client_involvement_type: "A" }] }
   @employments = []
+  @api_version = 6
 end
 
 Given("A domestic abuse case") do

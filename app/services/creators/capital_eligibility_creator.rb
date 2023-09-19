@@ -29,29 +29,45 @@ module Creators
 
       def create_eligibility(proceeding_type:, level_of_help:, submission_date:)
         if level_of_help == "controlled"
-          threshold = controlled_threshold(proceeding_type, submission_date)
+          controlled_eligibility(proceeding_type:, submission_date:)
+        else
+          certificated_eligibility(proceeding_type:, submission_date:)
+        end
+      end
+
+      def controlled_eligibility(proceeding_type:, submission_date:)
+        controlled_immigration_threshold = Threshold.value_for(:capital_immigration_first_tier_tribunal_controlled, at: submission_date)
+
+        threshold = if controlled_immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+                      controlled_immigration_threshold
+                    else
+                      proceeding_type.capital_upper_threshold
+                    end
+        CapitalEligibility.new(
+          proceeding_type:,
+          upper_threshold: threshold,
+          lower_threshold: threshold,
+        )
+      end
+
+      def certificated_eligibility(proceeding_type:, submission_date:)
+        immigration_threshold = Threshold.value_for(:capital_immigration_upper_tribunal_certificated, at: submission_date)
+        asylum_threshold = Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: submission_date)
+        if immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
           CapitalEligibility.new(
             proceeding_type:,
-            upper_threshold: threshold,
-            lower_threshold: threshold,
+            upper_threshold: immigration_threshold,
+            lower_threshold: immigration_threshold,
           )
-        elsif proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
-          threshold = immigration_threshold(submission_date)
+        elsif asylum_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
           CapitalEligibility.new(
             proceeding_type:,
-            upper_threshold: threshold,
-            lower_threshold: threshold,
-          )
-        elsif proceeding_type.ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
-          threshold = asylum_threshold(submission_date)
-          CapitalEligibility.new(
-            proceeding_type:,
-            upper_threshold: threshold,
-            lower_threshold: threshold,
+            upper_threshold: asylum_threshold,
+            lower_threshold: asylum_threshold,
           )
         else
           upper_threshold = proceeding_type.capital_upper_threshold
-          lower_threshold = lower_threshold(submission_date)
+          lower_threshold = Threshold.value_for(:capital_lower_certificated, at: submission_date)
           CapitalEligibility.new(
             proceeding_type:,
             upper_threshold:,
@@ -68,26 +84,6 @@ module Creators
         else
           :ineligible
         end
-      end
-
-      def immigration_threshold(submission_date)
-        Threshold.value_for(:capital_immigration_upper_tribunal_certificated, at: submission_date)
-      end
-
-      def asylum_threshold(submission_date)
-        Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: submission_date)
-      end
-
-      def controlled_threshold(ptc, submission_date)
-        if ptc.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
-          Threshold.value_for(:capital_immigration_first_tier_tribunal_controlled, at: submission_date)
-        else
-          ptc.capital_upper_threshold
-        end
-      end
-
-      def lower_threshold(submission_date)
-        Threshold.value_for(:capital_lower_certificated, at: submission_date)
       end
     end
   end
