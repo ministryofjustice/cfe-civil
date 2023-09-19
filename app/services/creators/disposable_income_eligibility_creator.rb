@@ -24,8 +24,8 @@ module Creators
       DisposableIncomeEligibility = Data.define :proceeding_type, :lower_threshold, :upper_threshold
 
       def create_eligibility(proceeding_type:, submission_date:, level_of_help:)
-        if proceeding_type.ccms_code.to_sym.in? CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES
-          threshold = immigration_and_asylum_certificated_threshold(submission_date)
+        threshold = immigration_and_asylum_certificated_threshold(submission_date)
+        if threshold.present? && proceeding_type.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
           DisposableIncomeEligibility.new(
             proceeding_type:,
             upper_threshold: threshold,
