@@ -22,6 +22,7 @@ Given("An applicant who is a pensioner") do
 end
 
 Given("A submission date of {string}") do |date|
+  travel_to Date.parse(date)
   @assessment_data.merge! submission_date: date
 end
 
