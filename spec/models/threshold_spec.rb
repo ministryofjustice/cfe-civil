@@ -130,6 +130,7 @@ RSpec.describe Threshold do
       it "retrieves values from the mtr-2026 file" do
         expect(described_class.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
         expect(described_class.value_for(:property_disregard, at: submission_date)[:main_home]).to eq 185_000.0
+        expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 999_999_999_999
       end
     end
 
@@ -139,6 +140,7 @@ RSpec.describe Threshold do
       it "retrieves values from the mtr-2026 file" do
         expect(described_class.value_for(:fixed_employment_allowance, at: submission_date)).to eq 45.0
         expect(described_class.value_for(:property_disregard, at: submission_date)[:main_home]).to eq 100_000.0
+        expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 100000.0
       end
     end
   end
