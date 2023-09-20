@@ -3,7 +3,6 @@ Feature:
 
   Scenario: SMOD Disregard Cap is applied
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And A submission date of "2020-04-10"
     And I add the following main property details for the current assessment:
       | value                     | 200000 |
@@ -18,7 +17,6 @@ Feature:
 
   Scenario: SMOD Disregard Cap is removed under MTR rules
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And A submission date of "2525-04-10"
     And I add the following main property details for the current assessment:
       | value                     | 200000 |
