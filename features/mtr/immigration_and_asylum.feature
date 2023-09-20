@@ -10,7 +10,7 @@ Feature:
       | attribute                    | value   |
       | capital_lower_threshold      | 7000.0  |
       | capital_upper_threshold      | 11000.0 |
-      | disposable_upper_threshold   | 733.0   |
+      | disposable_upper_threshold   | 946.0   |
       | disposable_lower_threshold   | 315.0   |
 
   Scenario: Immigration case after MTR
@@ -22,7 +22,7 @@ Feature:
       | attribute                    | value   |
       | capital_lower_threshold      | 7000.0  |
       | capital_upper_threshold      | 11000.0 |
-      | disposable_upper_threshold   | 733.0   |
+      | disposable_upper_threshold   | 946.0   |
       | disposable_lower_threshold   | 315.0   |
 
   Scenario: Immigration controller case after MTR
@@ -34,7 +34,7 @@ Feature:
       | attribute                    | value   |
       | capital_lower_threshold      | 11000.0 |
       | capital_upper_threshold      | 11000.0 |
-      | disposable_upper_threshold   | 733.0   |
-      | disposable_lower_threshold   | 733.0   |
+      | disposable_upper_threshold   | 946.0   |
+      | disposable_lower_threshold   | 946.0   |
 
 
