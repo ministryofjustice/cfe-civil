@@ -40,10 +40,11 @@ vehicle_disregard: 15_000
 vehicle_out_of_scope_months: 36
 
 dependant_allowances:
-  child_under_15: 338.90
-  child_aged_15: 338.90
-  child_16_and_over: 338.90
-  adult: 338.90
+  child_under_14: 211.00
+  child_under_15: 448.00
+  child_aged_15: 448.00
+  child_16_and_over: 448.00
+  adult: 448.00
   adult_capital_threshold: 8_000
 
 single_monthly_housing_costs_cap: 999_999_999_999

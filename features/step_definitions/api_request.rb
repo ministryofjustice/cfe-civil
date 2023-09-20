@@ -89,7 +89,13 @@ Given("I add the following dependent details for the current assessment:") do |t
       cast_values(h)
     end
   end
-  @dependant_data = { "dependants": data }
+  deps = data.map do |d|
+    d.symbolize_keys.slice(:date_of_birth, :in_full_time_education,
+                           :relationship, :income, :monthly_income, :income_frequency, :assets_value)
+  end
+  @dependant_data = {
+    "dependants": deps,
+  }
 end
 
 Given("I add the following other_income details for {string} in the current assessment:") do |string, table|
