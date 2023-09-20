@@ -46,7 +46,7 @@ dependant_allowances:
   adult: 338.90
   adult_capital_threshold: 8_000
 
-single_monthly_housing_costs_cap: 545
+single_monthly_housing_costs_cap: 999_999_999_999
 
 disposable_income_contribution_bands:
   band_zero:
