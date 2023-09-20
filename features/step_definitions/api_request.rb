@@ -21,8 +21,12 @@ Given("An applicant who is a pensioner") do
   @applicant_data.merge! date_of_birth: "1939-12-20"
 end
 
+Given("An Applicant of {int} years old") do |int|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - int.years
+  @applicant_data.merge! date_of_birth:
+end
+
 Given("A submission date of {string}") do |date|
-  travel_to Date.parse(date)
   @assessment_data.merge! submission_date: date
 end
 
