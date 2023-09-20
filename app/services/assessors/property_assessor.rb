@@ -31,7 +31,7 @@ module Assessors
 
           transaction_allowance_cap = property_transaction_allowance_cap(property, level_of_help, submission_date)
           equity = property.value - allowable_outstanding_mortgage
-          transaction_allowance = Utilities::NumberUtilities.negative_to_zero [equity, transaction_allowance_cap].min
+          transaction_allowance = Utilities::NumberUtilities.positive_or_zero [equity, transaction_allowance_cap].min
           net_value = equity - transaction_allowance
           net_equity = calculate_net_equity(property, net_value)
 
@@ -60,7 +60,7 @@ module Assessors
     private
 
       def apply_disregard(equity, disregard)
-        equity_after_disregard = Utilities::NumberUtilities.negative_to_zero equity - disregard
+        equity_after_disregard = Utilities::NumberUtilities.positive_or_zero equity - disregard
         Disregard.new(result: equity_after_disregard, applied: equity - equity_after_disregard)
       end
 
