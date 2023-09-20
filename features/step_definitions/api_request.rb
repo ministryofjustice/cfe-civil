@@ -65,7 +65,7 @@ Given("I create an assessment with the following details:") do |table|
     data["proceeding_types"] = { 'ccms_codes': data["proceeding_types"].split(";") }
   end
 
-  @assessment_data = data
+  @assessment_data = data.symbolize_keys
 end
 
 Given("I add the following applicant details for the current assessment:") do |table|
@@ -131,7 +131,7 @@ Given("I add the following employment details:") do |table|
 end
 
 Given("I add the employment details") do
-  payments = %w[2022-06-22 2022-07-22 2022-08-22].map do |date|
+  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
     {
       client_id: "client_id",
       date:,
@@ -233,7 +233,9 @@ When("I retrieve the final assessment") do
   single_shot_api_data[:self_employment_details] = @self_employment_details[:client] if @self_employment_details && @self_employment_details.key?(:client)
   single_shot_api_data[:employment_details] = @employment_details[:client] if @employment_details && @employment_details.key?(:client)
 
-  @single_shot_response = submit_post_request "/v6/assessments", single_shot_api_data
+  travel_to @assessment_data.fetch(:submission_date) do
+    @single_shot_response = submit_post_request "/v6/assessments", single_shot_api_data
+  end
 end
 
 Then("I should see the following overall summary:") do |table|
