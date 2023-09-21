@@ -23,7 +23,6 @@ module Workflows
                              date_of_birth: applicant.date_of_birth,
                              submission_date: assessment.submission_date,
                              level_of_help: assessment.level_of_help,
-                             receives_qualifying_benefit: applicant.receives_qualifying_benefit,
                              receives_asylum_support: applicant.receives_asylum_support)
       end
 

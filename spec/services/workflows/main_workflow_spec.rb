@@ -75,7 +75,7 @@ module Workflows
                                                            date_of_birth: applicant.date_of_birth,
                                                            submission_date: assessment.submission_date,
                                                            level_of_help: assessment.level_of_help,
-                                                           receives_qualifying_benefit: true, receives_asylum_support: false).and_return(calculation_output)
+                                                           receives_asylum_support: false).and_return(calculation_output)
           workflow_call
         end
 
@@ -111,7 +111,6 @@ module Workflows
                                                                date_of_birth: applicant.date_of_birth,
                                                                level_of_help: assessment.level_of_help,
                                                                submission_date: assessment.submission_date,
-                                                               receives_qualifying_benefit: true,
                                                                receives_asylum_support: false).and_call_original
           workflow_call
         end
