@@ -24,7 +24,7 @@ pensioner_capital_disregard:
     [176.0, 200.99]: 30_000
     [201.0, 225.99]: 20_000
     [226.0, 315.99]: 10_000
-    [316.0]: 0
+    [316.0, .inf]: 0
 property_notional_sale_costs_percentage: 3.0
 property_maximum_mortgage_allowance: 999_999_999_999
 property_disregard:
