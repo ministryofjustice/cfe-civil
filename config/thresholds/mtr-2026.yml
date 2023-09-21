@@ -6,8 +6,8 @@ gross_income:
   dependant_over_14_increase_percent: 50
   dependant_under_14_increase_percent: 30
 disposable_income_lower_certificated: 315
-disposable_income_lower_controlled: 733
-disposable_income_upper: 733
+disposable_income_lower_controlled: 946
+disposable_income_upper: 946
 capital_lower_certificated: 7_000
 capital_upper: 11_000
 #capital_immigration_first_tier_tribunal_controlled: 3_000
