@@ -46,31 +46,33 @@ single_monthly_housing_costs_cap: 999_999_999_999
 # previous lower bands i.e. base for band_b is 730 - 622 * 40%, and band_c is 838 - 730 * 60% + band_b base value
 # The bands are equally spaced (at the moment) so band_c's figure is exactly 50% of 838 - 622
 disposable_income_contribution_bands:
-  band_zero:
-    threshold: -.inf
-    percentage: 0.0
-    disregard: 0.0
-    base: 0
-  band_a:
-    threshold: 622.0
-    percentage: 40.0
-    disregard: 622.0
-    base: 0
-  band_b:
-    threshold: 730.0
-    percentage: 60.0
-    disregard: 730.0
-    base: 43.2
-  band_c:
-    threshold: 838.0
-    percentage: 80.0
-    disregard: 838.0
-    base: 108
-  band_z:
-    threshold: 946.0
-    percentage: 0
-    disregard: 946.0
-    base: 194.4
+  bands:
+    band_zero:
+      threshold: -.inf
+      percentage: 0.0
+      disregard: 0.0
+      base: 0
+    band_a:
+      threshold: 622.0
+      percentage: 40.0
+      disregard: 622.0
+      base: 0
+    band_b:
+      threshold: 730.0
+      percentage: 60.0
+      disregard: 730.0
+      base: 43.2
+    band_c:
+      threshold: 838.0
+      percentage: 80.0
+      disregard: 838.0
+      base: 108
+    band_z:
+      threshold: 946.0
+      percentage: 0
+      disregard: 946.0
+      base: 194.4
+  minimum_contribution: 20.0
 
 fixed_employment_allowance: 66.0
 employment_income_variance: 60.0

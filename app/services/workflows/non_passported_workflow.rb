@@ -2,17 +2,7 @@ module Workflows
   class NonPassportedWorkflow
     class << self
       DisposableResult = Data.define(:applicant_disposable_income_subtotals,
-                                     :partner_disposable_income_subtotals) do
-        def combined_total_disposable_income
-          applicant_disposable_income_subtotals.total_disposable_income +
-            partner_disposable_income_subtotals.total_disposable_income
-        end
-
-        def combined_total_outgoings_and_allowances
-          applicant_disposable_income_subtotals.total_outgoings_and_allowances +
-            partner_disposable_income_subtotals.total_outgoings_and_allowances
-        end
-      end
+                                     :partner_disposable_income_subtotals)
 
       def call(assessment:, applicant:, partner:)
         applicant_self_employments = convert_employment_details(applicant.self_employments)
@@ -76,8 +66,6 @@ module Workflows
         disposable_income_subtotals = DisposableIncome::Subtotals.new(
           applicant_disposable_income_subtotals: disposable_result.applicant_disposable_income_subtotals,
           partner_disposable_income_subtotals: disposable_result.partner_disposable_income_subtotals,
-          combined_total_disposable_income: disposable_result.combined_total_disposable_income,
-          combined_total_outgoings_and_allowances: disposable_result.combined_total_outgoings_and_allowances,
           proceeding_types: assessment.proceeding_types,
           level_of_help: assessment.level_of_help,
           submission_date: assessment.submission_date,
@@ -234,16 +222,22 @@ module Workflows
                                                                    eligible_for_childcare:)
 
         DisposableResult.new(
-          applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(gross_income_subtotals: gross_income_subtotals.applicant_gross_income_subtotals,
-                                                                                     outgoings: applicant_outgoings,
-                                                                                     partner_allowance: partner_allowance(assessment.submission_date),
-                                                                                     regular: applicant_regular,
-                                                                                     disposable: applicant_disposable),
-          partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(gross_income_subtotals: gross_income_subtotals.partner_gross_income_subtotals,
-                                                                                   outgoings: partner_outgoings,
-                                                                                   partner_allowance: 0,
-                                                                                   regular: partner_regular,
-                                                                                   disposable: partner_disposable),
+          applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(
+            total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
+            disposable_employment_deductions: gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals.disposable_employment_deductions,
+            outgoings: applicant_outgoings,
+            partner_allowance: partner_allowance(assessment.submission_date),
+            regular: applicant_regular,
+            disposable: applicant_disposable,
+          ),
+          partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(
+            total_gross_income: gross_income_subtotals.partner_gross_income_subtotals.total_gross_income,
+            disposable_employment_deductions: gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals.disposable_employment_deductions,
+            outgoings: partner_outgoings,
+            partner_allowance: 0,
+            regular: partner_regular,
+            disposable: partner_disposable,
+          ),
         )
       end
 
@@ -266,11 +260,14 @@ module Workflows
         regular = Collators::RegularOutgoingsCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze,
                                                            eligible_for_childcare:)
         DisposableResult.new(
-          applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(gross_income_subtotals: gross_income_subtotals.applicant_gross_income_subtotals,
-                                                                                     outgoings:,
-                                                                                     partner_allowance: 0,
-                                                                                     regular:,
-                                                                                     disposable:),
+          applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(
+            total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
+            disposable_employment_deductions: gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals.disposable_employment_deductions,
+            outgoings:,
+            partner_allowance: 0,
+            regular:,
+            disposable:,
+          ),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
         )
       end

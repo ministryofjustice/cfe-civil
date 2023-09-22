@@ -65,8 +65,16 @@ module Calculators
       context "income £30 above band a threshold" do
         let(:income) { 652.0 }
 
+        it "returns zero as it is less than £20" do
+          expect(calculator).to be_zero
+        end
+      end
+
+      context "income £60 above band a threshold" do
+        let(:income) { 682.0 }
+
         it "returns 40% of income less £622" do
-          expect(calculator).to eq 12.00
+          expect(calculator).to eq 24.00
         end
       end
 

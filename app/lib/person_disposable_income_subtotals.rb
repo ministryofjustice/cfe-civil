@@ -1,7 +1,8 @@
 class PersonDisposableIncomeSubtotals
   class << self
     def blank
-      new(gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
+      new(total_gross_income: 0,
+          disposable_employment_deductions: 0,
           outgoings: Collators::OutgoingsCollator::Result.blank,
           partner_allowance: 0,
           regular: Collators::RegularOutgoingsCollator::Result.blank,
@@ -11,16 +12,18 @@ class PersonDisposableIncomeSubtotals
 
   attr_reader :partner_allowance
 
-  def initialize(gross_income_subtotals:, outgoings:, partner_allowance:, regular:, disposable:)
-    @gross_income_subtotals = gross_income_subtotals
+  def initialize(total_gross_income:,
+                 disposable_employment_deductions:, outgoings:, partner_allowance:, regular:, disposable:)
     @outgoings = outgoings
     @partner_allowance = partner_allowance
     @regular = regular
     @disposable = disposable
+    @total_gross_income = total_gross_income
+    @disposable_employment_deductions = disposable_employment_deductions
   end
 
   def total_disposable_income
-    @gross_income_subtotals.total_gross_income - total_outgoings_and_allowances
+    @total_gross_income - total_outgoings_and_allowances
   end
 
   def total_outgoings_and_allowances
@@ -29,10 +32,7 @@ class PersonDisposableIncomeSubtotals
      dependant_allowance_over_16,
      monthly_bank_transactions_total,
      monthly_regular_outgoings_total,
-     monthly_cash_transactions_total].sum -
-      [@gross_income_subtotals.employment_income_subtotals.fixed_employment_allowance,
-       @gross_income_subtotals.employment_income_subtotals.employment_income_deductions].sum +
-      @partner_allowance + lone_parent_allowance
+     monthly_cash_transactions_total].sum - @disposable_employment_deductions + @partner_allowance + lone_parent_allowance
   end
 
   def lone_parent_allowance

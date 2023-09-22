@@ -134,8 +134,7 @@ module Workflows
                   .to have_attributes(gross_employment_income: 900.0,
                                       national_insurance: -150.0,
                                       benefits_in_kind: 100.0,
-                                      tax: -200.0,
-                                      employment_income_deductions: -350.0)
+                                      tax: -200.0)
               end
             end
 
@@ -159,8 +158,7 @@ module Workflows
                   .to have_attributes(gross_employment_income: 3900.0,
                                       benefits_in_kind: 433.33,
                                       national_insurance: -650.0,
-                                      tax: -866.67,
-                                      employment_income_deductions: -1516.67)
+                                      tax: -866.67)
               end
             end
 
@@ -172,8 +170,7 @@ module Workflows
                   .to have_attributes(gross_employment_income: 1950.0,
                                       national_insurance: -325.00,
                                       benefits_in_kind: 216.67,
-                                      tax: -433.33,
-                                      employment_income_deductions: -758.33)
+                                      tax: -433.33)
               end
             end
 
@@ -185,8 +182,7 @@ module Workflows
                   .to have_attributes(gross_employment_income: 975.0,
                                       benefits_in_kind: 108.33,
                                       national_insurance: -162.50,
-                                      tax: -216.67,
-                                      employment_income_deductions: -379.17)
+                                      tax: -216.67)
               end
             end
 
@@ -198,8 +194,7 @@ module Workflows
                   .to have_attributes(gross_employment_income: 300.0,
                                       national_insurance: -50.0,
                                       benefits_in_kind: 33.33,
-                                      tax: -66.67,
-                                      employment_income_deductions: -116.67)
+                                      tax: -66.67)
               end
             end
           end
@@ -218,8 +213,7 @@ module Workflows
                                     gross_employment_income: 1260.0,
                                     benefits_in_kind: 20.0,
                                     national_insurance: -60.0,
-                                    tax: -640.0,
-                                    employment_income_deductions: -700.0)
+                                    tax: -640.0)
             end
           end
         end
