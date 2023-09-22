@@ -7,28 +7,16 @@ module Collators
     end
 
     class << self
-      def call(disposable_income_summary:, gross_income_summary:, partner_allowance:, gross_income_subtotals:, outgoings:)
-        new(gross_income_summary:, disposable_income_summary:, partner_allowance:, gross_income_subtotals:, outgoings:).call
+      def call(gross_income_summary:)
+        Result.new(legal_aid_cash: monthly_cash_by_category(gross_income_summary, :legal_aid),
+                   maintenance_out_cash: monthly_cash_by_category(gross_income_summary, :maintenance_out),
+                   rent_or_mortgage_cash: monthly_cash_by_category(gross_income_summary, :rent_or_mortgage))
       end
-    end
 
-    def initialize(disposable_income_summary:, gross_income_summary:, partner_allowance:, gross_income_subtotals:, outgoings:)
-      @disposable_income_summary = disposable_income_summary
-      @gross_income_summary = gross_income_summary
-      @partner_allowance = partner_allowance
-      @gross_income_subtotals = gross_income_subtotals
-      @outgoings = outgoings
-    end
-
-    def call
-      Result.new(legal_aid_cash: monthly_cash_by_category(:legal_aid),
-                 maintenance_out_cash: monthly_cash_by_category(:maintenance_out),
-                 rent_or_mortgage_cash: monthly_cash_by_category(:rent_or_mortgage))
-    end
-
-    def monthly_cash_by_category(category)
-      cash_transactions = @gross_income_summary.cash_transactions(:debit, category)
-      Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+      def monthly_cash_by_category(gross_income_summary, category)
+        cash_transactions = gross_income_summary.cash_transactions(:debit, category)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+      end
     end
   end
 end

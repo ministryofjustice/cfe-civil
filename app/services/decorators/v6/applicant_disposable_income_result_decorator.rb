@@ -16,6 +16,7 @@ module Decorators
                     combined_total_disposable_income:,
                     combined_total_outgoings_and_allowances:,
                     partner_allowance:,
+                    lone_parent_allowance: @disposable_income_subtotals.lone_parent_allowance,
                     income_contribution: @income_contribution)
       end
 

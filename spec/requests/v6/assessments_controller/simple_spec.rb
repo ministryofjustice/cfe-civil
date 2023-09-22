@@ -1495,6 +1495,7 @@ module V6
                     net_employment_income: 0.0,
                   },
                   partner_allowance: 191.41,
+                  lone_parent_allowance: 0,
                 },
               )
           end
