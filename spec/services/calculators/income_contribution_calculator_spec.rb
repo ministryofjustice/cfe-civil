@@ -2,8 +2,10 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe IncomeContributionCalculator do
-    describe ".call" do
-      subject(:calculator) { described_class.call(income, Time.zone.today) }
+    subject(:calculator) { described_class.call(income, submission_date) }
+
+    context "without MTR" do
+      let(:submission_date) { Date.new(2023, 9, 23) }
 
       context "income below band a" do
         let(:income) { 312.0 }
@@ -45,6 +47,50 @@ module Calculators
 
         it "returns £121.85 + 70% of income less 616.99" do
           expect(calculator).to eq 2_719.39
+        end
+      end
+    end
+
+    context "with MTR" do
+      let(:submission_date) { Date.new(2525, 9, 23) }
+
+      context "income below band a" do
+        let(:income) { 621.0 }
+
+        it "returns zero" do
+          expect(calculator).to be_zero
+        end
+      end
+
+      context "income £30 above band a threshold" do
+        let(:income) { 652.0 }
+
+        it "returns 40% of income less £622" do
+          expect(calculator).to eq 12.00
+        end
+      end
+
+      context "income £30 above band b threshold" do
+        let(:income) { 760 }
+
+        it "returns 60% of income over 730 plus the base value" do
+          expect(calculator).to eq 0.4 * (730 - 622) + 18
+        end
+      end
+
+      context "income £30 over band c threshold" do
+        let(:income) { 868 }
+
+        it "returns 80% of income over 838 plus the base value" do
+          expect(calculator).to eq 0.4 * (730 - 622) + 0.6 * (838 - 730) + 24
+        end
+      end
+
+      context "income £30 over band z threshold" do
+        let(:income) { 976 }
+
+        it "returns the maximum value" do
+          expect(calculator).to eq 0.4 * (730 - 622) + 0.6 * (838 - 730) + 0.8 * (946 - 838)
         end
       end
     end

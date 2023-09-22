@@ -42,27 +42,35 @@ dependant_allowances:
 
 single_monthly_housing_costs_cap: 999_999_999_999
 
+# The 'base' values in this table represent the total payable inside the
+# previous lower bands i.e. base for band_b is 730 - 622 * 40%, and band_c is 838 - 730 * 60% + band_b base value
+# The bands are equally spaced (at the moment) so band_c's figure is exactly 50% of 838 - 622
 disposable_income_contribution_bands:
   band_zero:
     threshold: -.inf
-    disregard: 0.0
     percentage: 0.0
-    base: 0.0
+    disregard: 0.0
+    base: 0
   band_a:
-    threshold: 315.0
-    disregard: 311.0
-    percentage: 35.0
+    threshold: 622.0
+    percentage: 40.0
+    disregard: 622.0
     base: 0
   band_b:
-    threshold: 466
-    disregard: 465
-    percentage: 45.0
-    base: 53.90
+    threshold: 730.0
+    percentage: 60.0
+    disregard: 730.0
+    base: 43.2
   band_c:
-    threshold: 617
-    disregard: 616
-    percentage: 70.0
-    base: 121.85
+    threshold: 838.0
+    percentage: 80.0
+    disregard: 838.0
+    base: 108
+  band_z:
+    threshold: 946.0
+    percentage: 0
+    disregard: 946.0
+    base: 194.4
 
 fixed_employment_allowance: 66.0
 employment_income_variance: 60.0

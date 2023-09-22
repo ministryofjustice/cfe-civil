@@ -1,54 +1,21 @@
 module Calculators
   class IncomeContributionCalculator
-    def self.call(income, submission_date)
-      new(income, submission_date).call
-    end
+    class << self
+      def call(income, submission_date)
+        bands = Threshold.value_for(:disposable_income_contribution_bands, at: submission_date)
+        band_name, band_value = bands.reverse_each.detect { |_name, value| income > value[:threshold] }
+        if band_name == :band_zero
+          0.0
+        else
+          contribution band_value, income
+        end
+      end
 
-    def initialize(income, submission_date)
-      @income = income
-      @submission_date = submission_date
-    end
+    private
 
-    def call
-      return 0.0 if band_name == :band_zero
-
-      contribution
-    end
-
-  private
-
-    def band_details
-      bands[band_name]
-    end
-
-    def band_name
-      @band_name ||= determine_band_name
-    end
-
-    def determine_band_name
-      thresholds = bands.map { |_k, v| v[:threshold] }
-      band_value = thresholds.reverse.detect { |v| @income > v }
-      bands.detect { |_k, v| v[:threshold] == band_value }.first
-    end
-
-    def bands
-      Threshold.value_for(:disposable_income_contribution_bands, at: @submission_date)
-    end
-
-    def contribution
-      (base + ((@income - disregard) * percentage)).round(2)
-    end
-
-    def base
-      band_details[:base]
-    end
-
-    def disregard
-      band_details[:disregard]
-    end
-
-    def percentage
-      band_details[:percentage] / 100.0
+      def contribution(band, income)
+        (band[:base] + (income - band[:disregard]) * (band[:percentage] / 100.0)).round(2)
+      end
     end
   end
 end
