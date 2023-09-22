@@ -46,7 +46,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                       description: "A main home and additional properties",
                       additionalProperties: false,
                       properties: {
-                        main_home: { "$ref" => components[:property] },
+                        main_home: { "$ref" => components[:main_home] },
                         additional_properties: {
                           type: :array,
                           description: "Additional properties owned by the applicant - i.e. not including the main home",

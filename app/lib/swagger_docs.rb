@@ -28,6 +28,7 @@ class SwaggerDocs
     v6_applicant_disposable_income: "#/components/schemas/v6/ApplicantDisposableIncome",
     v7_applicant_disposable_income: "#/components/schemas/v7/ApplicantDisposableIncome",
     property: "#/components/schemas/Property",
+    main_home: "#/components/schemas/MainHome",
     v6_proceeding_type_results: "#/components/schemas/v6/ProceedingTypeResults",
     v7_proceeding_type_results: "#/components/schemas/v7/ProceedingTypeResults",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
@@ -598,6 +599,10 @@ class SwaggerDocs
                 description: "Property is the subject of a dispute. Defaults to false",
               },
             },
+          },
+          MainHome: {
+            oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:property] }],
+            description: "Property where applicant is living, or original main property in a domestic abuse case",
           },
           RegularTransaction: {
             type: :object,

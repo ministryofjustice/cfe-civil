@@ -551,6 +551,11 @@ components:
           type: boolean
           description: Property is the subject of a dispute. Defaults to false
       additionalProperties: false
+    MainHome:
+      oneOf:
+      - "$ref": "#/components/schemas/Property"
+      description: Property where applicant is living, or original main property in
+        a domestic abuse case
     RegularTransaction:
       type: object
       description: regular transaction detail
@@ -2164,7 +2169,7 @@ paths:
                   additionalProperties: false
                   properties:
                     main_home:
-                      "$ref": "#/components/schemas/Property"
+                      "$ref": "#/components/schemas/MainHome"
                     additional_properties:
                       type: array
                       description: Additional properties owned by the applicant -
