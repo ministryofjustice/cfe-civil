@@ -43,7 +43,7 @@ module Calculators
 
     def gross_housing_costs_cash
       cash_transactions = @gross_income_summary.cash_transactions(:debit, :rent_or_mortgage)
-      Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+      Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
     end
 
     def gross_housing_costs_regular_transactions
