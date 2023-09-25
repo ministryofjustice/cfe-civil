@@ -447,7 +447,7 @@ class SwaggerDocs
                     category: {
                       description: "The category of the outgoing transaction",
                       type: :string,
-                      enum: %w[child_care rent_or_mortgage maintenance_out legal_aid],
+                      enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
                     },
                     payments: {
                       description: "The payments of the outgoing transaction",
@@ -1190,6 +1190,7 @@ class SwaggerDocs
                       rent_or_mortgage: { type: :number },
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
+                      pension_contribution: { type: :number },
                     },
                   },
                   bank_transactions: {
@@ -1200,6 +1201,7 @@ class SwaggerDocs
                       rent_or_mortgage: { type: :number },
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
+                      pension_contribution: { type: :number },
                     },
                   },
                   cash_transactions: {
@@ -1210,6 +1212,7 @@ class SwaggerDocs
                       rent_or_mortgage: { type: :number },
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
+                      pension_contribution: { type: :number },
                     },
                   },
                 },
