@@ -96,36 +96,30 @@ class PersonDisposableIncomeSubtotals
   end
 
   def pension_contribution_bank
-    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
-    total = Calculators::MonthlyEquivalentCalculator.call(collection: @pension_contributions)
-
-    if total > cap
-      cap
-    else
-      total
-    end
+    Calculators::PensionContributionCalculator.pension_contribution_cap(
+      submission_date: @submission_date,
+      total_gross_income: @gross_income_subtotals.total_gross_income,
+      pension_contributions: @pension_contributions,
+      calculator: Calculators::MonthlyEquivalentCalculator,
+    )
   end
 
   def pension_contribution_cash
-    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
-    total = Calculators::MonthlyCashTransactionAmountCalculator.call(@pension_cash_transactions)
-
-    if total > cap
-      cap
-    else
-      total
-    end
+    Calculators::PensionContributionCalculator.pension_contribution_cap(
+      submission_date: @submission_date,
+      total_gross_income: @gross_income_subtotals.total_gross_income,
+      pension_contributions: @pension_cash_transactions,
+      calculator: Calculators::MonthlyCashTransactionAmountCalculator,
+    )
   end
 
   def pension_contribution_regular
-    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
-    total = Calculators::MonthlyCashTransactionAmountCalculator.call(@pension_regular_transactions)
-
-    if total > cap
-      cap
-    else
-      total
-    end
+    Calculators::PensionContributionCalculator.pension_contribution_cap(
+      submission_date: @submission_date,
+      total_gross_income: @gross_income_subtotals.total_gross_income,
+      pension_contributions: @pension_regular_transactions,
+      calculator: Calculators::MonthlyCashTransactionAmountCalculator,
+    )
   end
 
   def legal_aid_all_sources

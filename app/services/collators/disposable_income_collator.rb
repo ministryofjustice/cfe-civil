@@ -15,7 +15,7 @@ module Collators
 
       def monthly_cash_by_category(gross_income_summary, category)
         cash_transactions = gross_income_summary.cash_transactions(:debit, category)
-        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
     end
   end
