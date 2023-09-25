@@ -10,10 +10,10 @@ disposable_income_lower_controlled: 946
 disposable_income_upper: 946
 capital_lower_certificated: 7_000
 capital_upper: 11_000
-#capital_immigration_first_tier_tribunal_controlled: 3_000
-#capital_immigration_upper_tribunal_certificated: 3_000
-#capital_asylum_upper_tribunal_certificated: 8_000
+
 partner_allowance: 211.32
+lone_parent_allowance: 315.0
+
 pensioner_capital_disregard:
   minimum_age_in_years: "state_pension_age"
   passported: 100_000

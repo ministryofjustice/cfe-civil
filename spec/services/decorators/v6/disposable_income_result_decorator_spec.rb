@@ -76,6 +76,7 @@ module Decorators
           combined_total_disposable_income: 900.0,
           combined_total_outgoings_and_allowances: 400.32,
           partner_allowance: 191.41,
+          lone_parent_allowance: 315.0,
         }
       end
 
@@ -98,6 +99,7 @@ module Decorators
                             income_contribution: 75,
                             disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
                                                                          partner_allowance: 191.41,
+                                                                         lone_parent_allowance: 315.0,
                                                                          dependant_allowance_under_16: 28.34,
                                                                          dependant_allowance_over_16: 98.12,
                                                                          dependant_allowance: 220.21,

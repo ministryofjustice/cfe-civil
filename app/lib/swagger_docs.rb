@@ -1038,6 +1038,12 @@ class SwaggerDocs
             minimum: 0,
             description: "Fixed allowance given if applicant has a partner for means assessment purposes",
           },
+          LoneParentAllowance: {
+            type: :number,
+            format: :decimal,
+            minimum: 0,
+            description: "Fixed allowance given if applicant is a lone parent",
+          },
           CombinedOutgoingsAndAllowances: {
             type: :number,
             format: :decimal,
@@ -1409,10 +1415,29 @@ class SwaggerDocs
                 total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
                 income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
                 partner_allowance: { "$ref": "#/components/schemas/PartnerAllowance" },
+                lone_parent_allowance: { "$ref": "#/components/schemas/LoneParentAllowance" },
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
                 proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
               },
+              required: %i[
+                employment_income
+                gross_housing_costs
+                housing_benefit
+                net_housing_costs
+                maintenance_allowance
+                dependant_allowance_under_16
+                dependant_allowance_over_16
+                dependant_allowance
+                total_outgoings_and_allowances
+                total_disposable_income
+                income_contribution
+                partner_allowance
+                lone_parent_allowance
+                combined_total_outgoings_and_allowances
+                combined_total_disposable_income
+                proceeding_types
+              ],
             },
             Dependants: {
               type: :array,
@@ -1601,10 +1626,29 @@ class SwaggerDocs
                 total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
                 income_contribution: { "$ref": "#/components/schemas/IncomeContribution" },
                 partner_allowance: { "$ref": "#/components/schemas/PartnerAllowance" },
+                lone_parent_allowance: { "$ref": "#/components/schemas/LoneParentAllowance" },
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
                 proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
               },
+              required: %i[
+                employment_income
+                gross_housing_costs
+                housing_benefit
+                net_housing_costs
+                maintenance_allowance
+                dependant_allowance_under_16
+                dependant_allowance_over_16
+                dependant_allowance
+                total_outgoings_and_allowances
+                total_disposable_income
+                income_contribution
+                partner_allowance
+                lone_parent_allowance
+                combined_total_outgoings_and_allowances
+                combined_total_disposable_income
+                proceeding_types
+              ],
             },
             Dependants: {
               type: :array,
