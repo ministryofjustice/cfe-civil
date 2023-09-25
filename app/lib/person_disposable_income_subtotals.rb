@@ -5,18 +5,26 @@ class PersonDisposableIncomeSubtotals
           outgoings: Collators::OutgoingsCollator::Result.blank,
           partner_allowance: 0,
           regular: Collators::RegularOutgoingsCollator::Result.blank,
-          disposable: Collators::DisposableIncomeCollator::Result.blank)
+          disposable: Collators::DisposableIncomeCollator::Result.blank,
+          submission_date: nil,
+          pension_contributions: [],
+          pension_cash_transactions: [],
+          pension_regular_transactions: [])
     end
   end
 
   attr_reader :partner_allowance
 
-  def initialize(gross_income_subtotals:, outgoings:, partner_allowance:, regular:, disposable:)
+  def initialize(gross_income_subtotals:, outgoings:, partner_allowance:, regular:, disposable:, submission_date:, pension_contributions:, pension_cash_transactions:, pension_regular_transactions:)
     @gross_income_subtotals = gross_income_subtotals
     @outgoings = outgoings
     @partner_allowance = partner_allowance
     @regular = regular
     @disposable = disposable
+    @submission_date = submission_date
+    @pension_contributions = pension_contributions
+    @pension_cash_transactions = pension_cash_transactions
+    @pension_regular_transactions = pension_regular_transactions
   end
 
   def total_disposable_income
@@ -83,6 +91,43 @@ class PersonDisposableIncomeSubtotals
     @disposable.legal_aid_cash
   end
 
+  def pension_contribution_all_sources
+    pension_contribution_bank + pension_contribution_cash + pension_contribution_regular
+  end
+
+  def pension_contribution_bank
+    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
+    total = Calculators::MonthlyEquivalentCalculator.call(collection: @pension_contributions)
+
+    if total > cap
+      cap
+    else
+      total
+    end
+  end
+
+  def pension_contribution_cash
+    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
+    total = Calculators::MonthlyCashTransactionAmountCalculator.call(@pension_cash_transactions)
+
+    if total > cap
+      cap
+    else
+      total
+    end
+  end
+
+  def pension_contribution_regular
+    cap = Calculators::PensionContributionCalculator.pension_contribution_cap(submission_date: @submission_date, total_gross_income: @gross_income_subtotals.total_gross_income)
+    total = Calculators::MonthlyCashTransactionAmountCalculator.call(@pension_regular_transactions)
+
+    if total > cap
+      cap
+    else
+      total
+    end
+  end
+
   def legal_aid_all_sources
     legal_aid_bank + legal_aid_cash + @regular.legal_aid_regular
   end
@@ -114,16 +159,16 @@ class PersonDisposableIncomeSubtotals
 private
 
   def monthly_cash_transactions_total
-    [maintenance_out_cash, child_care_cash, legal_aid_cash].sum
+    [maintenance_out_cash, child_care_cash, legal_aid_cash, pension_contribution_cash].sum
   end
 
   def monthly_bank_transactions_total
-    [@outgoings.child_care.bank, @outgoings.maintenance_out_bank, @outgoings.legal_aid_bank].sum
+    [@outgoings.child_care.bank, @outgoings.maintenance_out_bank, @outgoings.legal_aid_bank, pension_contribution_bank].sum
   end
 
   # ** :rent_or_mortgage has already been added to totals by the
   # HousingCostCollator/HousingCostCalculator and DisposableIncomeCollator :(
   def monthly_regular_outgoings_total
-    [@regular.legal_aid_regular, @regular.child_care_regular, @regular.maintenance_out_regular].sum
+    [@regular.legal_aid_regular, @regular.child_care_regular, @regular.maintenance_out_regular, pension_contribution_regular].sum
   end
 end

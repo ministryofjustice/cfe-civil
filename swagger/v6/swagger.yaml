@@ -183,6 +183,7 @@ components:
               - child_care
               - maintenance_out
               - legal_aid
+              - pension_contribution
               description: Type of outgoing
               example: child_care
             payments:
@@ -395,6 +396,7 @@ components:
                 - rent_or_mortgage
                 - maintenance_out
                 - legal_aid
+                - pension_contribution
               payments:
                 description: The payments of the outgoing transaction
                 type: array
@@ -587,6 +589,7 @@ components:
           - rent_or_mortgage
           - maintenance_out
           - legal_aid
+          - pension_contribution
           description: 'Identifying category for this regular transaction<p>Do not
             include “disregarded payments” - those which should be excluded from the
             gross income and disposable income calculations, as described in the Lord
@@ -1184,6 +1187,8 @@ components:
                   type: number
                 legal_aid:
                   type: number
+                pension_contribution:
+                  type: number
             bank_transactions:
               type: object
               additionalProperties: false
@@ -1196,6 +1201,8 @@ components:
                   type: number
                 legal_aid:
                   type: number
+                pension_contribution:
+                  type: number
             cash_transactions:
               type: object
               additionalProperties: false
@@ -1207,6 +1214,8 @@ components:
                 maintenance_out:
                   type: number
                 legal_aid:
+                  type: number
+                pension_contribution:
                   type: number
         childcare_allowance:
           type: number

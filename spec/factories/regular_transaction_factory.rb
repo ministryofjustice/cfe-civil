@@ -10,5 +10,10 @@ FactoryBot.define do
       category { "rent_or_mortgage" }
       operation { "debit" }
     end
+
+    trait :pension_contribution do
+      category { "pension_contribution" }
+      operation { "debit" }
+    end
   end
 end
