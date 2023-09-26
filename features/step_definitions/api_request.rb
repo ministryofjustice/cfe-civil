@@ -165,6 +165,26 @@ Given("I add employment income of {int} per month") do |monthly_income|
                     "payments": payments }
 end
 
+Given("I add {string} outgoings of {int} per month") do |name, amount|
+  payments = %w[2021-05-10 2021-04-10 2021-03-10].map do |payment_date|
+    {
+      client_id: "client_id",
+      payment_date:,
+      amount:,
+    }
+  end
+  @outgoings_data = { "outgoings": ["name": name, "payments": payments] }
+end
+
+Given("I add {string} regular_transactions of {int} per month") do |category, amount|
+  @regular_transactions = [{
+    category:,
+    frequency: "monthly",
+    operation: "debit",
+    amount:,
+  }]
+end
+
 Given("I add the following regular_transaction details for the partner:") do |table|
   @partner_regular_transactions = table.hashes.map { cast_values(_1) }
 end
