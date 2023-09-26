@@ -350,14 +350,6 @@ components:
                 - property_or_lodger
                 - pension
                 example: benefits
-                description: "<p>Do not include “disregarded payments” - those which
-                  should be excluded from the gross income and disposable income calculations,
-                  as described in the Lord Chancellor's guidance - certificated: ‘5.3
-                  Disregarded payments', controlled: '5.4 Disregarded income’.</p><p>Note:
-                  for submissions after MTR Phase 2 is implemented, “disregarded payments”
-                  will be extended to cover “Modern Slavery Victim Care Contract (MSVCC)
-                  financial support payments”, and no longer cover “Back to Work Bonus
-                  payments”</p>"
               payments:
                 type: array
                 description: One or more payment details
@@ -590,14 +582,7 @@ components:
           - maintenance_out
           - legal_aid
           - pension_contribution
-          description: 'Identifying category for this regular transaction<p>Do not
-            include “disregarded payments” - those which should be excluded from the
-            gross income and disposable income calculations, as described in the Lord
-            Chancellor''s guidance - certificated: ‘5.3 Disregarded payments'', controlled:
-            ''5.4 Disregarded income’.</p><p>Note: for submissions after MTR Phase
-            2 is implemented, “disregarded payments” will be extended to cover “Modern
-            Slavery Victim Care Contract (MSVCC) financial support payments”, and
-            no longer cover “Back to Work Bonus payments”</p>'
+          description: Identifying category for this regular transaction
           example: benefits
         operation:
           type: string
@@ -727,14 +712,7 @@ components:
       properties:
         name:
           type: string
-          description: 'Name of the state benefit<p>Do not include “disregarded payments”
-            - those which should be excluded from the gross income and disposable
-            income calculations, as described in the Lord Chancellor''s guidance -
-            certificated: ‘5.3 Disregarded payments'', controlled: ''5.4 Disregarded
-            income’.</p><p>Note: for submissions after MTR Phase 2 is implemented,
-            “disregarded payments” will be extended to cover “Modern Slavery Victim
-            Care Contract (MSVCC) financial support payments”, and no longer cover
-            “Back to Work Bonus payments”</p>'
+          description: Name of the state benefit
           example: my_state_benefit
         payments:
           type: array
