@@ -8,18 +8,24 @@ RSpec.describe "PersonDisposableIncomeSubtotals" do
            submission_date: Date.new(2525, 4, 20))
   end
 
+  let(:subtotals) do
+    PersonDisposableIncomeSubtotals.new(gross_income_subtotals: instance_double(PersonGrossIncomeSubtotals, total_gross_income: 1000),
+                                        outgoings: instance_double(Collators::OutgoingsCollator::Result, pension_contribution:),
+                                        partner_allowance: 0,
+                                        regular: nil,
+                                        disposable: nil,
+                                        submission_date: assessment.submission_date)
+  end
+
   describe "#pension_contribution_bank" do
-    let(:subtotals) do
-      PersonDisposableIncomeSubtotals.new(gross_income_subtotals: instance_double(PersonGrossIncomeSubtotals, total_gross_income: 1000),
-                                          outgoings: nil,
-                                          partner_allowance: 0,
-                                          regular: nil,
-                                          disposable: nil,
-                                          pension_contributions:,
-                                          pension_cash_transactions: [],
-                                          pension_regular_transactions: [],
-                                          submission_date: assessment.submission_date)
+    let(:pension_contribution) do
+      Collators::PensionContributionCollator.call(
+        outgoings: pension_contributions,
+        cash_transactions: [],
+        regular_transactions: [],
+      )
     end
+
     let(:pension_contributions) do
       create_list(:pension_contribution_outgoing, 3, amount: monthly_contribution)
     end
@@ -47,16 +53,12 @@ RSpec.describe "PersonDisposableIncomeSubtotals" do
       create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: monthly_contribution)
     end
 
-    let(:subtotals) do
-      PersonDisposableIncomeSubtotals.new(gross_income_subtotals: instance_double(PersonGrossIncomeSubtotals, total_gross_income: 1000),
-                                          outgoings: nil,
-                                          partner_allowance: 0,
-                                          regular: nil,
-                                          disposable: nil,
-                                          pension_contributions: [],
-                                          pension_cash_transactions: pension_contributions,
-                                          pension_regular_transactions: [],
-                                          submission_date: assessment.submission_date)
+    let(:pension_contribution) do
+      Collators::PensionContributionCollator.call(
+        outgoings: [],
+        cash_transactions: pension_contributions,
+        regular_transactions: [],
+      )
     end
 
     context "when exceeding the 5% gross income threshold" do
@@ -81,16 +83,12 @@ RSpec.describe "PersonDisposableIncomeSubtotals" do
       create_list(:regular_transaction, 3, :pension_contribution, gross_income_summary: assessment.applicant_gross_income_summary, amount: monthly_contribution)
     end
 
-    let(:subtotals) do
-      PersonDisposableIncomeSubtotals.new(gross_income_subtotals: instance_double(PersonGrossIncomeSubtotals, total_gross_income: 1000),
-                                          outgoings: nil,
-                                          partner_allowance: 0,
-                                          regular: nil,
-                                          disposable: nil,
-                                          pension_contributions: [],
-                                          pension_cash_transactions: [],
-                                          pension_regular_transactions: pension_contributions,
-                                          submission_date: assessment.submission_date)
+    let(:pension_contribution) do
+      Collators::PensionContributionCollator.call(
+        outgoings: [],
+        cash_transactions: [],
+        regular_transactions: pension_contributions,
+      )
     end
 
     context "when exceeding the 5% gross income threshold" do
