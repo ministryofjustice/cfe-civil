@@ -49,6 +49,11 @@ class SwaggerDocs
 
   attr_reader :version
 
+  MSVCC_TEXT = [
+    "<p>Do not include “disregarded payments” - those which should be excluded from the gross income and disposable income calculations, as described in the Lord Chancellor's guidance - certificated: ‘5.3 Disregarded payments', controlled: '5.4 Disregarded income’.</p>",
+    "<p>Note: for submissions after MTR Phase 2 is implemented, “disregarded payments” will be extended to cover “Modern Slavery Victim Care Contract (MSVCC) financial support payments”, and no longer cover “Back to Work Bonus payments”</p>",
+  ].join
+
   def initialize(version:)
     @version = version
   end
@@ -411,6 +416,7 @@ class SwaggerDocs
                       type: :string,
                       enum: CFEConstants::VALID_INCOME_CATEGORIES,
                       example: CFEConstants::VALID_INCOME_CATEGORIES.first,
+                      description: MSVCC_TEXT,
                     },
                     payments: {
                       type: :array,
@@ -613,7 +619,7 @@ class SwaggerDocs
               category: {
                 type: :string,
                 enum: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES + CFEConstants::VALID_OUTGOING_CATEGORIES,
-                description: "Identifying category for this regular transaction",
+                description: ["Identifying category for this regular transaction", MSVCC_TEXT].join,
                 example: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES.first,
               },
               operation: {
@@ -729,7 +735,7 @@ class SwaggerDocs
             properties: {
               name: {
                 type: :string,
-                description: "Name of the state benefit",
+                description: ["Name of the state benefit", MSVCC_TEXT].join,
                 example: "my_state_benefit",
               },
               payments: {
