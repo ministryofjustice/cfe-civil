@@ -6,25 +6,19 @@ class PersonDisposableIncomeSubtotals
           partner_allowance: 0,
           regular: Collators::RegularOutgoingsCollator::Result.blank,
           disposable: Collators::DisposableIncomeCollator::Result.blank,
-          submission_date: nil,
-          pension_contributions: [],
-          pension_cash_transactions: [],
-          pension_regular_transactions: [])
+          submission_date: nil)
     end
   end
 
   attr_reader :partner_allowance
 
-  def initialize(gross_income_subtotals:, outgoings:, partner_allowance:, regular:, disposable:, submission_date:, pension_contributions:, pension_cash_transactions:, pension_regular_transactions:)
+  def initialize(gross_income_subtotals:, outgoings:, partner_allowance:, regular:, disposable:, submission_date:)
     @gross_income_subtotals = gross_income_subtotals
     @outgoings = outgoings
     @partner_allowance = partner_allowance
     @regular = regular
     @disposable = disposable
     @submission_date = submission_date
-    @pension_contributions = pension_contributions
-    @pension_cash_transactions = pension_cash_transactions
-    @pension_regular_transactions = pension_regular_transactions
   end
 
   def total_disposable_income
@@ -99,7 +93,7 @@ class PersonDisposableIncomeSubtotals
     Calculators::PensionContributionCalculator.pension_contribution_cap(
       submission_date: @submission_date,
       total_gross_income: @gross_income_subtotals.total_gross_income,
-      pension_contributions: @pension_contributions,
+      pension_contributions: @outgoings.pension_contribution.bank,
       calculator: Calculators::MonthlyEquivalentCalculator,
     )
   end
@@ -108,7 +102,7 @@ class PersonDisposableIncomeSubtotals
     Calculators::PensionContributionCalculator.pension_contribution_cap(
       submission_date: @submission_date,
       total_gross_income: @gross_income_subtotals.total_gross_income,
-      pension_contributions: @pension_cash_transactions,
+      pension_contributions: @outgoings.pension_contribution.cash,
       calculator: Calculators::MonthlyCashTransactionAmountCalculator,
     )
   end
@@ -117,7 +111,7 @@ class PersonDisposableIncomeSubtotals
     Calculators::PensionContributionCalculator.pension_contribution_cap(
       submission_date: @submission_date,
       total_gross_income: @gross_income_subtotals.total_gross_income,
-      pension_contributions: @pension_regular_transactions,
+      pension_contributions: @outgoings.pension_contribution.regular,
       calculator: Calculators::MonthlyCashTransactionAmountCalculator,
     )
   end

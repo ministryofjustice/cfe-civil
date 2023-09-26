@@ -236,12 +236,14 @@ module Workflows
                                                                                      outgoings: applicant_outgoings,
                                                                                      partner_allowance: partner_allowance(assessment.submission_date),
                                                                                      regular: applicant_regular,
-                                                                                     disposable: applicant_disposable),
+                                                                                     disposable: applicant_disposable,
+                                                                                     submission_date: assessment.submission_date),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(gross_income_subtotals: gross_income_subtotals.partner_gross_income_subtotals,
                                                                                    outgoings: partner_outgoings,
                                                                                    partner_allowance: 0,
                                                                                    regular: partner_regular,
-                                                                                   disposable: partner_disposable),
+                                                                                   disposable: partner_disposable,
+                                                                                   submission_date: assessment.submission_date),
         )
       end
 
@@ -267,7 +269,8 @@ module Workflows
                                                                                      outgoings:,
                                                                                      partner_allowance: 0,
                                                                                      regular:,
-                                                                                     disposable:),
+                                                                                     disposable:,
+                                                                                     submission_date: assessment.submission_date),
           partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
         )
       end
