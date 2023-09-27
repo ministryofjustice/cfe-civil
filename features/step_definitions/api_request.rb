@@ -133,6 +133,18 @@ Given("I add the following outgoing details for {string} in the current assessme
   @outgoings_data = { "outgoings": ["name": string, "payments": table.hashes.map { cast_values(_1) }] }
 end
 
+Given("I add outgoing details for {string} of {int} per month") do |string, monthly_amount|
+  dates = %w[2021-05-10 2021-04-10 2021-03-10]
+
+  payments = dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
+  if string == "rent_or_mortgage"
+    payments = payments.map { |p| p.merge(housing_cost_type: "rent") }
+  end
+
+  @outgoings_data = { outgoings: [name: string,
+                                  payments:] }
+end
+
 Given("I add the following capital details for {string} in the current assessment:") do |string, table|
   capitals_data = { string.to_s => table.hashes.map { cast_values(_1) } }
   @capitals_data.merge! capitals_data
