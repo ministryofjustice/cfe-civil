@@ -176,6 +176,18 @@ Given("I add {string} outgoings of {int} per month") do |name, amount|
   @outgoings_data = { "outgoings": ["name": name, "payments": payments] }
 end
 
+Given("I add {string} cash_transactions of {int} per month") do |category, amount|
+  submission_date = Date.parse(@assessment_data[:submission_date])
+  payments = (1..3).map do |i|
+    {
+      client_id: "client_id",
+      date: (submission_date - i.months).beginning_of_month,
+      amount:,
+    }
+  end
+  @cash_transactions = { "cash_transactions": { "outgoings": ["category": category, "payments": payments], "income": [] } }
+end
+
 Given("I add {string} regular_transactions of {int} per month") do |category, amount|
   @regular_transactions = [{
     category:,
@@ -260,6 +272,7 @@ When("I retrieve the final assessment") do
   single_shot_api_data.merge!(@benefits_data) if @benefits_data
 
   single_shot_api_data.merge!(@outgoings_data) if @outgoings_data
+  single_shot_api_data.merge!(@cash_transactions) if @cash_transactions
 
   single_shot_api_data.merge!(main_home_data) if main_home_data
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
