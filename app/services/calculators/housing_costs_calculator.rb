@@ -2,17 +2,17 @@ module Calculators
   class HousingCostsCalculator
     Result = Data.define(:gross_housing_costs, :net_housing_costs, :monthly_housing_benefit, :gross_housing_costs_bank)
     class << self
-      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_cost_cap:)
+      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:)
         Result.new gross_housing_costs: gross_housing_costs(gross_income_summary, housing_cost_outgoings),
-                   net_housing_costs: net_housing_costs(gross_income_summary:, housing_cost_outgoings:, submission_date:, housing_cost_cap_applies: housing_cost_cap),
+                   net_housing_costs: net_housing_costs(gross_income_summary:, housing_cost_outgoings:, submission_date:, housing_costs_cap_applies:),
                    monthly_housing_benefit: monthly_housing_benefit(gross_income_summary),
                    gross_housing_costs_bank: gross_housing_costs_bank(housing_cost_outgoings)
       end
 
     private
 
-      def net_housing_costs(gross_income_summary:, housing_cost_outgoings:, submission_date:, housing_cost_cap_applies:)
-        if housing_cost_cap_applies
+      def net_housing_costs(gross_income_summary:, housing_cost_outgoings:, submission_date:, housing_costs_cap_applies:)
+        if housing_costs_cap_applies
           [gross_housing_costs(gross_income_summary, housing_cost_outgoings),
            gross_cost_minus_housing_benefit(gross_income_summary, housing_cost_outgoings),
            single_monthly_housing_costs_cap(submission_date)].min

@@ -6,7 +6,7 @@ module Calculators
 
     subject(:calculator) do
       described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
-                           housing_cost_cap: children.zero?,
+                           housing_costs_cap_applies: children.zero?,
                            submission_date: assessment.submission_date,
                            gross_income_summary: assessment.applicant_gross_income_summary)
     end
@@ -322,7 +322,7 @@ module Calculators
       let(:instance) do
         described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
                              gross_income_summary: assessment.applicant_gross_income_summary,
-                             housing_cost_cap: dependants.none?,
+                             housing_costs_cap_applies: dependants.none?,
                              submission_date: assessment.submission_date)
       end
       let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
