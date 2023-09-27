@@ -34,6 +34,7 @@ module CFEConstants
     rent_or_mortgage: Outgoings::HousingCost,
     maintenance_out: Outgoings::Maintenance,
     legal_aid: Outgoings::LegalAid,
+    pension_contribution: Outgoings::PensionContribution,
   }.freeze
   VALID_OUTGOING_CATEGORIES = OUTGOING_KLASSES.keys.map(&:to_s).freeze
   NON_HOUSING_OUTGOING_CATEGORIES = OUTGOING_KLASSES.except(:rent_or_mortgage).keys.map(&:to_s).freeze

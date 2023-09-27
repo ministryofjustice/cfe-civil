@@ -22,7 +22,7 @@ module Collators
       end
 
       def child_care_cash(cash_transactions)
-        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
     end
   end

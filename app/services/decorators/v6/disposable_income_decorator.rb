@@ -34,6 +34,7 @@ module Decorators
           rent_or_mortgage: @disposable_income_subtotals.__send__("rent_or_mortgage_#{source}").to_f,
           maintenance_out: @disposable_income_subtotals.__send__("maintenance_out_#{source}").to_f,
           legal_aid: @disposable_income_subtotals.__send__("legal_aid_#{source}").to_f,
+          pension_contribution: @disposable_income_subtotals.__send__("pension_contribution_#{source}").to_f,
         }
       end
 

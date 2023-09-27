@@ -1,11 +1,11 @@
 module Calculators
   class MonthlyCashTransactionAmountCalculator
     class << self
-      def call(transactions)
-        if transactions.empty?
+      def call(collection:)
+        if collection.empty?
           0.0
         else
-          (transactions.sum(&:amount) / transactions.size).round(2)
+          (collection.sum(&:amount) / collection.size).round(2)
         end
       end
     end
