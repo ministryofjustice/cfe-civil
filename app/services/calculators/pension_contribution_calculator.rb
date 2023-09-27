@@ -15,7 +15,7 @@ module Calculators
         if (outgoings + cash_transactions + regular_transactions).any?
           monthly_bank = Calculators::MonthlyEquivalentCalculator.call(collection: outgoings)
           monthly_cash = Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
-          monthly_regular = Calculators::MonthlyRegularTransactionAmountCalculator.result_for_transactions(regular_transactions)
+          monthly_regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions)
           monthly_source_total = monthly_bank + monthly_cash + monthly_regular
           total = pension_contribution_cap(
             submission_date:,

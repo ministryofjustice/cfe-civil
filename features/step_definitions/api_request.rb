@@ -115,6 +115,16 @@ Given("I add the following housing benefit details for the applicant:") do |tabl
                                         "payments": table.hashes.map { cast_values(_1) } }] }
 end
 
+Given("I add housing benefit of {int} per month") do |monthly_housing_benefit|
+  dates = %w[2021-07-22 2021-08-22 2021-09-22]
+  @benefits_data = {
+    state_benefits: [
+      { "name": "housing_benefit",
+        "payments": dates.map { |date| { client_id: SecureRandom.uuid, amount: monthly_housing_benefit, date: } } },
+    ],
+  }
+end
+
 Given("I add the following irregular_income details in the current assessment:") do |table|
   @irregular_income_data = { "payments": table.hashes.map { cast_values(_1) } }
 end

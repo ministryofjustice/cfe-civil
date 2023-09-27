@@ -32,7 +32,8 @@ module Collators
       end
 
       def regular_amount_for(gross_income_summary, category)
-        Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary:, operation: :debit, category:)
+        txns = gross_income_summary.regular_transactions.with_operation_and_category(:debit, category)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(txns)
       end
     end
   end

@@ -23,6 +23,10 @@ class RegularTransaction < ApplicationRecord
     message: "is not a valid frequency: %<value>s",
   }
 
+  scope :with_operation_and_category, lambda { |operation, category|
+    where(operation:, category:)
+  }
+
   def credit?
     operation == "credit"
   end

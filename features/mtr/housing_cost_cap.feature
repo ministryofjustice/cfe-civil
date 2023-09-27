@@ -11,8 +11,8 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                      | value   |
-      | gross housing costs            |  545.0  |
-      | net housing costs              | 1200.0  |
+      | net housing costs              |  545.0  |
+      | gross housing costs            | 1200.0  |
     And I should see the following "disposable_income_summary" details:
       | attribute                      | value   |
       | total_outgoings_and_allowances |  545.0  |

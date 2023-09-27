@@ -13,5 +13,10 @@ FactoryBot.define do
       operation { "debit" }
       name { "child_care" }
     end
+
+    factory :rent_or_mortgage_transaction_category do
+      name { "rent_or_mortgage" }
+      operation { "debit" }
+    end
   end
 end
