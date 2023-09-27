@@ -64,7 +64,7 @@ class PersonDisposableIncomeSubtotals
   end
 
   def rent_or_mortgage_bank
-    @outgoings.rent_or_mortgage_bank
+    @outgoings.housing_costs.gross_housing_costs_bank
   end
 
   def rent_or_mortgage_cash

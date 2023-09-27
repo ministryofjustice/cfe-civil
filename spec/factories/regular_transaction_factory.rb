@@ -15,5 +15,10 @@ FactoryBot.define do
       category { "pension_contribution" }
       operation { "debit" }
     end
+
+    factory :housing_benefit_regular do
+      category { "housing_benefit" }
+      operation { "credit" }
+    end
   end
 end
