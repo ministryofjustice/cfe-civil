@@ -15,8 +15,8 @@ class EmploymentIncomeSubtotals
     gross_employment_income + benefits_in_kind + employment_income_deductions + fixed_employment_allowance
   end
 
-  def employment_income_deductions
-    tax + national_insurance
+  def disposable_employment_deductions
+    fixed_employment_allowance + employment_income_deductions
   end
 
   def employment_details
@@ -58,6 +58,10 @@ class EmploymentIncomeSubtotals
   end
 
 private
+
+  def employment_income_deductions
+    tax + national_insurance
+  end
 
   def employments_excluding_self_employments
     (@employment_details_results + [@employment_result]).compact.flat_map(&:employments)

@@ -151,10 +151,7 @@ module Collators
           end
 
           it "returns employment_income_subtotals" do
-            expect(collator.employment_income_subtotals.employment_income_deductions).to eq(-645)
-            expect(collator.employment_income_subtotals.tax).to eq(-495)
-            expect(collator.employment_income_subtotals.national_insurance).to eq(-150)
-            expect(collator.employment_income_subtotals.fixed_employment_allowance).to eq(-45)
+            expect(collator.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, fixed_employment_allowance: -45)
           end
         end
       end

@@ -67,7 +67,7 @@ module Collators
           bank:,
           cash:,
           regular:,
-        ).freeze
+        )
       end
 
       def categorised_bank_transactions(gross_income_summary, category)

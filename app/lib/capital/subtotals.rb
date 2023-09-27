@@ -12,6 +12,10 @@ module Capital
                                                assessed_capital: combined_assessed_capital
     end
 
+    def summarized_assessment_result
+      Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
+    end
+
     def combined_assessed_capital
       @applicant_capital_subtotals.assessed_capital + @partner_capital_subtotals.assessed_capital
     end

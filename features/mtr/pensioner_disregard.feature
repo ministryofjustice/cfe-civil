@@ -12,7 +12,11 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
-      | assessment_result            | contribution_required |
+      | assessment_result            | eligible |
+    And I should see the following "disposable_income_summary" details:
+      | attribute               | value   |
+      | total_disposable_income |  334.0  |
+      | income_contribution     |  0.0    |
     And I should see the following "capital summary" details:
       | attribute                     | value   |
       | total_capital                 | 41500.0 |

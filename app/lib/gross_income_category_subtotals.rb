@@ -1,4 +1,4 @@
-GrossIncomeCategorySubtotals = Struct.new(:category, :bank, :cash, :regular, keyword_init: true) do
+GrossIncomeCategorySubtotals = Data.define(:category, :bank, :cash, :regular) do
   def all_sources
     bank + cash + regular
   end

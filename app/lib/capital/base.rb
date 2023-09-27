@@ -10,9 +10,5 @@ module Capital
       @submission_date = submission_date
       @level_of_help = level_of_help
     end
-
-    def summarized_assessment_result
-      Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
-    end
   end
 end

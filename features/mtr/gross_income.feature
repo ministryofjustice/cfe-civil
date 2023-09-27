@@ -9,4 +9,3 @@ Feature:
       | attribute                      | value    |
       | assessment_result              | eligible |
       | gross_income_upper_threshold_0 | 2912.5  |
-

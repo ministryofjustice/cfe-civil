@@ -1,7 +1,7 @@
 Feature:
   "Income contributions"
 
-  Scenario: Just above the contribution threshold
+  Scenario: Just above the contribution threshold (so zero)
     Given I am undertaking a certificated assessment
     And A submission date of "2525-12-31"
     And I add employment income of 1952 per month
@@ -9,11 +9,25 @@ Feature:
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
-      | assessment_result            | contribution_required |
+      | assessment_result            | eligible |
     And I should see the following "disposable_income_summary" details:
       | attribute               | value   |
       | total_disposable_income |  652.0  |
-      | income_contribution     |  12.0   |
+      | income_contribution     |  0.0    |
+
+  Scenario: A bit more above the contribution threshold
+    Given I am undertaking a certificated assessment
+    And A submission date of "2525-12-31"
+    And I add employment income of 1952 per month
+    And I add outgoing details for "rent_or_mortgage" of 1204 per month
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                    | value    |
+      | assessment_result            | contribution_required |
+    And I should see the following "disposable_income_summary" details:
+      | attribute               | value   |
+      | total_disposable_income |  682.0  |
+      | income_contribution     |  24.0   |
 
   Scenario: Band B
     Given I am undertaking a certificated assessment
