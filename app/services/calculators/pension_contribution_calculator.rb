@@ -22,9 +22,8 @@ module Calculators
             total_gross_income:,
             monthly_pension_contribution: monthly_source_total,
           )
-
-          pension_contribution = ->(monthly_source) { (monthly_source * (total / monthly_source_total)).round(2) }
-          Result.new(bank: pension_contribution.call(monthly_bank), cash: pension_contribution.call(monthly_cash), regular: pension_contribution.call(monthly_regular))
+          multiplicand = (total / monthly_source_total)
+          Result.new(bank: (monthly_bank * multiplicand).round(2), cash: (monthly_cash * multiplicand).round(2), regular: (monthly_regular * multiplicand).round(2))
         else
           Result.blank
         end
