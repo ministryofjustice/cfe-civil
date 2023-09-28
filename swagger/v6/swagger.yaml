@@ -92,7 +92,9 @@ components:
     BankAccounts:
       type: array
       description: Describes the name of the bank account and the lowest balance during
-        the computation period
+        the computation periodInaccessible capital - For submissions after MTR Phase
+        2 is implemented, capital where the value cannot be accessed to pay legal
+        costs, should be excluded. Detailed guidance TBD
       example:
       - value: 1.01
         description: test name 1
@@ -136,7 +138,9 @@ components:
             subject_matter_of_dispute: true
           items:
             type: object
-            description: Asset detail
+            description: Asset detailInaccessible capital - For submissions after
+              MTR Phase 2 is implemented, capital where the value cannot be accessed
+              to pay legal costs, should be excluded. Detailed guidance TBD
             required:
             - value
             - description

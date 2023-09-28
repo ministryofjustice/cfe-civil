@@ -54,6 +54,11 @@ class SwaggerDocs
     "<p>Note: for submissions after MTR Phase 2 is implemented, “disregarded payments” will be extended to cover “Modern Slavery Victim Care Contract (MSVCC) financial support payments”, and no longer cover “Back to Work Bonus payments”</p>",
   ].join
 
+  INACCESSIBLE_CAPITAL_TEXT = [
+    "Inaccessible capital - For submissions after MTR Phase 2 is implemented, capital where the value cannot be accessed to pay legal costs, should be excluded.",
+    " Detailed guidance TBD",
+  ].join
+
   def initialize(version:)
     @version = version
   end
@@ -208,7 +213,7 @@ class SwaggerDocs
           },
           BankAccounts: {
             type: :array,
-            description: "Describes the name of the bank account and the lowest balance during the computation period",
+            description: ["Describes the name of the bank account and the lowest balance during the computation period", INACCESSIBLE_CAPITAL_TEXT].join,
             example: [{ value: 1.01, description: "test name 1", subject_matter_of_dispute: false },
                       { value: 100.01, description: "test name 2", subject_matter_of_dispute: true }],
             items: {
@@ -240,7 +245,7 @@ class SwaggerDocs
                           { value: 100.01, description: "asset name 2", subject_matter_of_dispute: true }],
                 items: {
                   type: :object,
-                  description: "Asset detail",
+                  description: ["Asset detail", INACCESSIBLE_CAPITAL_TEXT].join,
                   required: %i[value description],
                   additionalProperties: false,
                   properties: {
