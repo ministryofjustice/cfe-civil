@@ -55,8 +55,8 @@ class SwaggerDocs
   ].join
 
   INACCESSIBLE_CAPITAL_TEXT = [
-    "Inaccessible capital - For submissions after MTR Phase 2 is implemented, capital where the value cannot be accessed to pay legal costs, should be excluded.",
-    " Detailed guidance TBD",
+    "<p>Inaccessible capital - For submissions after MTR Phase 2 is implemented, capital where the value cannot be accessed to pay legal costs, should be excluded.</p>",
+    "<p>Detailed guidance TBD</p>",
   ].join
 
   def initialize(version:)
@@ -583,6 +583,7 @@ class SwaggerDocs
           },
           Property: {
             type: :object,
+            description: ["Details of property", INACCESSIBLE_CAPITAL_TEXT].join,
             required: %i[value outstanding_mortgage percentage_owned shared_with_housing_assoc],
             properties: {
               value: {
@@ -613,7 +614,7 @@ class SwaggerDocs
           },
           MainHome: {
             oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:property] }],
-            description: "Property where applicant is living, or original main property in a domestic abuse case",
+            description: ["Property where applicant is living, or original main property in a domestic abuse case", INACCESSIBLE_CAPITAL_TEXT].join,
           },
           RegularTransaction: {
             type: :object,
@@ -783,6 +784,7 @@ class SwaggerDocs
           },
           Vehicle: {
             type: :object,
+            description: ["Detail of vehicle", INACCESSIBLE_CAPITAL_TEXT].join,
             required: %i[value date_of_purchase],
             properties: {
               value: {
