@@ -1167,6 +1167,96 @@ components:
               "$ref": "#/components/schemas/OutgoingResult"
             cash_transactions:
               "$ref": "#/components/schemas/OutgoingResult"
+    GrossIncomeResult:
+      type: object
+      additionalProperties: false
+      required:
+      - employment_income
+      - irregular_income
+      - state_benefits
+      - other_income
+      properties:
+        employment_income:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - name
+            - payments
+            properties:
+              name:
+                type: string
+              payments:
+                type: array
+        irregular_income:
+          type: object
+          additionalProperties: false
+          required:
+          - monthly_equivalents
+          properties:
+            monthly_equivalents:
+              type: object
+              additionalProperties: false
+              required:
+              - student_loan
+              - unspecified_source
+              properties:
+                student_loan:
+                  type: number
+                unspecified_source:
+                  type: number
+        state_benefits:
+          "$ref": "#/components/schemas/StateBenefitsResult"
+        other_income:
+          "$ref": "#/components/schemas/OtherIncomeResult"
+        self_employments:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - monthly_income
+            properties:
+              client_reference:
+                type: string
+                description: client reference from request
+              monthly_income:
+                type: object
+                description: Monthly versions of input data
+                additionalProperties: false
+                required:
+                - gross
+                - tax
+                - national_insurance
+                - benefits_in_kind
+                properties:
+                  gross:
+                    type: number
+                    format: decimal
+                    minimum: 0
+                    description: A positive number representing a gross income
+                    example: '2050.20'
+                  tax:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a tax deduction
+                    example: "-250.20"
+                  national_insurance:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a National Insurance
+                      deduction
+                    example: "-150.20"
+                  benefits_in_kind:
+                    type: number
+                    minimum: 0
+                    format: decimal
+                    description: A positive number representing a benefit in kind
+                      payment
+                    example: '100.00'
     DisposableIncomeResult:
       type: object
       additionalProperties: false
@@ -1227,6 +1317,41 @@ components:
               type: number
             disregarded_state_benefits:
               type: number
+    AssessmentCapitalResult:
+      type: object
+      additionalProperties: false
+      properties:
+        capital_items:
+          type: object
+          additionalProperties: false
+          required:
+          - liquid
+          - non_liquid
+          - vehicles
+          - properties
+          properties:
+            liquid:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            non_liquid:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            vehicles:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            properties:
+              type: object
+              additionalProperties: false
+              properties:
+                main_home:
+                  "$ref": "#/components/schemas/PropertyResult"
+                additional_properties:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/PropertyResult"
     v6:
       Applicant:
         type: object
@@ -2053,134 +2178,17 @@ paths:
                       applicant:
                         "$ref": "#/components/schemas/ApplicantResult"
                       gross_income:
-                        type: object
-                        additionalProperties: false
-                        required:
-                        - employment_income
-                        - irregular_income
-                        - state_benefits
-                        - other_income
-                        properties:
-                          employment_income:
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties: false
-                              required:
-                              - name
-                              - payments
-                              properties:
-                                name:
-                                  type: string
-                                payments:
-                                  type: array
-                          irregular_income:
-                            type: object
-                            additionalProperties: false
-                            required:
-                            - monthly_equivalents
-                            properties:
-                              monthly_equivalents:
-                                type: object
-                                additionalProperties: false
-                                required:
-                                - student_loan
-                                - unspecified_source
-                                properties:
-                                  student_loan:
-                                    type: number
-                                  unspecified_source:
-                                    type: number
-                          state_benefits:
-                            "$ref": "#/components/schemas/StateBenefitsResult"
-                          other_income:
-                            "$ref": "#/components/schemas/OtherIncomeResult"
-                          self_employments:
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties: false
-                              required:
-                              - monthly_income
-                              properties:
-                                client_reference:
-                                  type: string
-                                  description: client reference from request
-                                monthly_income:
-                                  type: object
-                                  description: Monthly versions of input data
-                                  additionalProperties: false
-                                  required:
-                                  - gross
-                                  - tax
-                                  - national_insurance
-                                  - benefits_in_kind
-                                  properties:
-                                    gross:
-                                      type: number
-                                      format: decimal
-                                      minimum: 0
-                                      description: A positive number representing
-                                        a gross income
-                                      example: '2050.20'
-                                    tax:
-                                      type: number
-                                      format: decimal
-                                      maximum: 0
-                                      description: A negative number representing
-                                        a tax deduction
-                                      example: "-250.20"
-                                    national_insurance:
-                                      type: number
-                                      format: decimal
-                                      maximum: 0
-                                      description: A negative number representing
-                                        a National Insurance deduction
-                                      example: "-150.20"
-                                    benefits_in_kind:
-                                      type: number
-                                      minimum: 0
-                                      format: decimal
-                                      description: A positive number representing
-                                        a benefit in kind payment
-                                      example: '100.00'
+                        "$ref": "#/components/schemas/GrossIncomeResult"
                       disposable_income:
                         "$ref": "#/components/schemas/DisposableIncomeResult"
                       capital:
-                        type: object
-                        additionalProperties: false
-                        properties:
-                          capital_items:
-                            type: object
-                            additionalProperties: false
-                            required:
-                            - liquid
-                            - non_liquid
-                            - vehicles
-                            - properties
-                            properties:
-                              liquid:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              non_liquid:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              vehicles:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              properties:
-                                type: object
-                                additionalProperties: false
-                                properties:
-                                  main_home:
-                                    "$ref": "#/components/schemas/PropertyResult"
-                                  additional_properties:
-                                    type: array
-                                    items:
-                                      "$ref": "#/components/schemas/PropertyResult"
+                        "$ref": "#/components/schemas/AssessmentCapitalResult"
+                      partner_gross_income:
+                        "$ref": "#/components/schemas/GrossIncomeResult"
+                      partner_disposable_income:
+                        "$ref": "#/components/schemas/DisposableIncomeResult"
+                      partner_capital:
+                        "$ref": "#/components/schemas/AssessmentCapitalResult"
                       remarks:
                         "$ref": "#/components/schemas/Remarks"
                   version:
