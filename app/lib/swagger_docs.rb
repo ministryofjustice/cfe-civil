@@ -47,6 +47,7 @@ class SwaggerDocs
     income_contribution: "#/components/schemas/IncomeContribution",
     capital_contribution: "#/components/schemas/CapitalContribution",
     assessment_capital_result: "#/components/schemas/AssessmentCapitalResult",
+    employment_details_result: "#/components/schemas/EmploymentDetailsResult",
   }.freeze
 
   attr_reader :version
@@ -1196,6 +1197,16 @@ class SwaggerDocs
                   properties: {
                     name: { type: :string },
                     payments: { type: :array },
+                  },
+                },
+              },
+              employment_details: {
+                type: :array,
+                items: {
+                  type: :object,
+                  additionalProperties: false,
+                  properties: {
+                    monthly_income: { type: :number },
                   },
                 },
               },

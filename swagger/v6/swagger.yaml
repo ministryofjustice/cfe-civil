@@ -1189,6 +1189,14 @@ components:
                 type: string
               payments:
                 type: array
+        employment_details:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              monthly_income:
+                type: number
         irregular_income:
           type: object
           additionalProperties: false
