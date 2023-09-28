@@ -166,7 +166,7 @@ module Workflows
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
                                                                        liquid_capital_items: [],
-                                                                       outgoings: assessment.applicant_disposable_income_summary.outgoings,
+                                                                       outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
                                                                        assessed_capital: 0).and_call_original
 
@@ -181,7 +181,7 @@ module Workflows
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
                                                                        liquid_capital_items: [],
-                                                                       outgoings: assessment.applicant_disposable_income_summary.outgoings,
+                                                                       outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
                                                                        assessed_capital: 0).and_call_original
 

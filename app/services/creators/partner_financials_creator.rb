@@ -74,15 +74,6 @@ module Creators
         )
       },
       lambda { |assessment, params|
-        outgoings_params = params[:outgoings]
-        return if outgoings_params.blank?
-
-        OutgoingsCreator.call(
-          disposable_income_summary: assessment.partner_disposable_income_summary,
-          outgoings_params: { outgoings: outgoings_params },
-        )
-      },
-      lambda { |assessment, params|
         if params[:cash_transactions]
           CashTransactionsCreator.call(submission_date: assessment.submission_date,
                                        gross_income_summary: assessment.partner_gross_income_summary,

@@ -8,7 +8,7 @@ module Collators
       let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
       subject(:collator) do
-        described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
+        described_class.call(housing_cost_outgoings:,
                              person: instance_double(PersonWrapper, single?: true, dependants: []),
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              submission_date: assessment.submission_date,
@@ -16,6 +16,8 @@ module Collators
       end
 
       context "with no housing cost outgoings" do
+        let(:housing_cost_outgoings) { [] }
+
         context "without housing benefit" do
           it "has expected housing cost attributes" do
             collator
@@ -49,10 +51,10 @@ module Collators
       end
 
       context "with housing cost outgoings" do
-        before do
-          create(:housing_cost_outgoing, disposable_income_summary:, amount: 355.44, payment_date: Date.current, housing_cost_type:)
-          create(:housing_cost_outgoing, disposable_income_summary:, amount: 355.44, payment_date: 1.month.ago, housing_cost_type:)
-          create :housing_cost_outgoing, disposable_income_summary:, amount: 355.44, payment_date: 2.months.ago, housing_cost_type:
+        let(:housing_cost_outgoings) do
+          [build(:housing_cost_outgoing, amount: 355.44, payment_date: Date.current, housing_cost_type:),
+           build(:housing_cost_outgoing, amount: 355.44, payment_date: 1.month.ago, housing_cost_type:),
+           build(:housing_cost_outgoing, amount: 355.44, payment_date: 2.months.ago, housing_cost_type:)]
         end
 
         context "without housing benefit" do
@@ -121,6 +123,8 @@ module Collators
       end
 
       context "with housing cost regular_transactions" do
+        let(:housing_cost_outgoings) { [] }
+
         before do
           create(:regular_transaction, gross_income_summary:, operation: "debit", category: "rent_or_mortgage", frequency: "three_monthly", amount: 1000.00)
         end

@@ -13,10 +13,17 @@ module Collators
     end
 
     class << self
-      def call(submission_date:, person:, gross_income_summary:, disposable_income_summary:, eligible_for_childcare:, allow_negative_net:, total_gross_income:)
-        child_care = Collators::ChildcareCollator.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
-                                                       childcare_outgoings: disposable_income_summary.childcare_outgoings,
-                                                       eligible_for_childcare:)
+      def call(submission_date:, person:, gross_income_summary:,
+               outgoings:,
+               eligible_for_childcare:, allow_negative_net:, total_gross_income:)
+        child_care = if eligible_for_childcare
+                       Collators::ChildcareCollator.call(
+                         cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
+                         childcare_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::Childcare) },
+                       )
+                     else
+                       Collators::ChildcareCollator::Result.blank
+                     end
 
         dependant_allowance = Collators::DependantsAllowanceCollator.call(dependants: person.dependants,
                                                                           submission_date:)
@@ -27,18 +34,18 @@ module Collators
                                   0
                                 end
 
-        maintenance_out_bank = Collators::MaintenanceCollator.call(disposable_income_summary.maintenance_outgoings)
+        maintenance_out_bank = Collators::MaintenanceCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::Maintenance) })
 
-        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
+        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::HousingCost) },
                                                              gross_income_summary:,
                                                              person:,
                                                              submission_date:,
                                                              allow_negative_net:)
 
-        legal_aid_bank = Collators::LegalAidCollator.call(disposable_income_summary.legal_aid_outgoings)
+        legal_aid_bank = Collators::LegalAidCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::LegalAid) })
 
         pension_contribution = Calculators::PensionContributionCalculator.call(
-          outgoings: disposable_income_summary.pension_contribution_outgoings,
+          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PensionContribution) },
           cash_transactions: gross_income_summary.cash_transactions(:debit, :pension_contribution),
           regular_transactions: gross_income_summary.regular_transactions.pension_contributions,
           total_gross_income:,

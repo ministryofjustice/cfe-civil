@@ -3,10 +3,6 @@ require "rails_helper"
 module Collators
   RSpec.describe ChildcareCollator, :calls_bank_holiday do
     describe ".call" do
-      let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
-      let(:disposable_income_summary) { assessment.disposable_income_summary }
-      let(:gross_income_summary) { assessment.applicant_gross_income_summary }
-
       let(:childcare_outgoings) do
         [
           build(:childcare_outgoing, payment_date: Date.current, amount: 155.63),
@@ -16,23 +12,11 @@ module Collators
       end
 
       subject(:collator) do
-        described_class.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care), childcare_outgoings:, eligible_for_childcare:)
+        described_class.call(cash_transactions: [], childcare_outgoings:)
       end
 
-      context "Not eligible for childcare" do
-        let(:eligible_for_childcare) { false }
-
-        it "does not update the childcare value on the disposable income summary" do
-          expect(collator.bank).to eq 0.0
-        end
-      end
-
-      context "Eligible for childcare" do
-        let(:eligible_for_childcare) { true }
-
-        it "updates the childcare value on the disposable income summary" do
-          expect(collator.bank).to eq 155.63
-        end
+      it "adds the the childcare values" do
+        expect(collator).to have_attributes(bank: 155.63, cash: 0)
       end
     end
   end

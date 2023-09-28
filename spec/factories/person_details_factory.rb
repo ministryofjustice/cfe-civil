@@ -5,6 +5,7 @@ FactoryBot.define do
     self_employments { [] }
     employments { [] }
     dependants { [] }
+    outgoings { [] }
     capitals_data
   end
 

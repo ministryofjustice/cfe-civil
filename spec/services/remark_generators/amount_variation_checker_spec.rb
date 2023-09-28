@@ -41,9 +41,9 @@ module RemarkGenerators
       context "no variation in amount" do
         let(:collection) do
           [
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[0], amount:),
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[1], amount:),
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[2], amount:),
+            build(:housing_cost_outgoing, payment_date: dates[0], amount:),
+            build(:housing_cost_outgoing, payment_date: dates[1], amount:),
+            build(:housing_cost_outgoing,  payment_date: dates[2], amount:),
           ]
         end
 
@@ -55,9 +55,9 @@ module RemarkGenerators
       context "varying amounts" do
         let(:collection) do
           [
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[0], amount:),
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[1], amount: amount + 0.01),
-            create(:housing_cost_outgoing, disposable_income_summary:, payment_date: dates[2], amount:),
+            build(:housing_cost_outgoing,  payment_date: dates[0], amount:),
+            build(:housing_cost_outgoing,  payment_date: dates[1], amount: amount + 0.01),
+            build(:housing_cost_outgoing,  payment_date: dates[2], amount:),
           ]
         end
 
@@ -71,9 +71,9 @@ module RemarkGenerators
       context "when childcare costs with an amount variation are declared" do
         let(:collection) do
           [
-            create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[0], amount:),
-            create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[1], amount: amount + 0.01),
-            create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[2], amount:),
+            build(:childcare_outgoing, payment_date: dates[0], amount:),
+            build(:childcare_outgoing,  payment_date: dates[1], amount: amount + 0.01),
+            build(:childcare_outgoing,  payment_date: dates[2], amount:),
           ]
         end
 

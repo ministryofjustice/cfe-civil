@@ -33,13 +33,13 @@ module RemarkGenerators
       end
 
       def check_outgoings_variation(outgoings:, child_care_bank:)
-        outgoings.group_by(&:type).values.flat_map { |collection| AmountVariationChecker.call(collection:, child_care_bank:) }.compact
+        outgoings.group_by(&:class).values.flat_map { |collection| AmountVariationChecker.call(collection:, child_care_bank:) }.compact
       end
 
       def check_frequencies(employments:, state_benefits:, outgoings:, other_income_sources:, child_care_bank:)
         state_benefits.map { |sb| FrequencyChecker.call(collection: sb.state_benefit_payments, child_care_bank:) }.compact +
           other_income_sources.map { |oi| FrequencyChecker.call(collection: oi.other_income_payments, child_care_bank:) }.compact +
-          outgoings.group_by(&:type).values.flat_map { |collection| FrequencyChecker.call(collection:, child_care_bank:) }.compact +
+          outgoings.group_by(&:class).values.flat_map { |collection| FrequencyChecker.call(collection:, child_care_bank:) }.compact +
           employments.map { |job| FrequencyChecker.call(collection: job.employment_payments, date_attribute: :date, child_care_bank:) }.compact
       end
 
