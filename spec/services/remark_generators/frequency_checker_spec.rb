@@ -11,11 +11,10 @@ module RemarkGenerators
     context "when checking state benefit payments" do
       let(:amount) { 123.45 }
       let(:dates) { [Date.current, 1.month.ago, 2.months.ago] }
-      let(:state_benefit) { create :state_benefit }
       let(:assessment) { state_benefit.gross_income_summary.assessment }
-      let(:payment1) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[0] }
-      let(:payment2) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[1] }
-      let(:payment3) { create :state_benefit_payment, state_benefit:, amount:, payment_date: dates[2] }
+      let(:payment1) { build :state_benefit_payment, amount:, payment_date: dates[0] }
+      let(:payment2) { build :state_benefit_payment, amount:, payment_date: dates[1] }
+      let(:payment3) { build :state_benefit_payment, amount:, payment_date: dates[2] }
       let(:collection) { [payment1, payment2, payment3] }
 
       context "with regular dates" do

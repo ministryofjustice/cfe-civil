@@ -65,15 +65,6 @@ module Creators
         )
       },
       lambda { |assessment, params|
-        state_benefit_params = params[:state_benefits]
-        return if state_benefit_params.blank?
-
-        StateBenefitsCreator.call(
-          state_benefits_params: { state_benefits: state_benefit_params },
-          gross_income_summary: assessment.partner_gross_income_summary,
-        )
-      },
-      lambda { |assessment, params|
         if params[:cash_transactions]
           CashTransactionsCreator.call(submission_date: assessment.submission_date,
                                        gross_income_summary: assessment.partner_gross_income_summary,

@@ -1,14 +1,14 @@
 module Collators
   class GrossIncomeCollator
     class << self
-      def call(assessment:, submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:)
+      def call(assessment:, submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
         employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
 
         add_remarks(assessment:, employments:) if employments.count > 1
 
         regular_income_categories = income_categories.map do |category|
           if category == :benefits
-            benefits_category_subtotals(gross_income_summary:, submission_date:)
+            benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
           else
             calculate_category_subtotals(category:, gross_income_summary:)
           end
@@ -18,6 +18,7 @@ module Collators
           gross_income_summary:,
           regular_income_categories:,
           employment_income_subtotals:,
+          state_benefits:,
         )
       end
 
@@ -50,9 +51,9 @@ module Collators
         CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym)
       end
 
-      def benefits_category_subtotals(gross_income_summary:, submission_date:)
+      def benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
         state_benefits_calculations = Calculators::StateBenefitsCalculator.benefits(gross_income_summary:,
-                                                                                    submission_date:)
+                                                                                    submission_date:, state_benefits:)
         GrossIncomeCategorySubtotals.new(
           category: :benefits,
           bank: state_benefits_calculations.state_benefits_bank,

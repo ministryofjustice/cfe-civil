@@ -129,35 +129,6 @@ module Creators
         end
       end
 
-      context "with valid state benefits" do
-        let(:state_benefit_type) { create :state_benefit_type }
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            state_benefits: [
-              {
-                name: state_benefit_type.label,
-                payments: [
-                  { date: 3.days.ago.to_date.to_s, amount: 266.95, client_id: "abc123" },
-                ],
-              },
-            ],
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-
-        it "creates a benefit object" do
-          creator
-          expect(assessment.partner_gross_income_summary.state_benefits.count).to eq 1
-        end
-      end
-
       context "with valid properties" do
         let(:partner_financials_params) do
           {

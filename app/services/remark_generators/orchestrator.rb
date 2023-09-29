@@ -2,18 +2,18 @@ module RemarkGenerators
   class Orchestrator
     class << self
       def call(employments:, outgoings:, child_care_bank:, gross_income_summary:,
-               assessed_capital:, lower_capital_threshold:, liquid_capital_items:)
-        check_amount_variations(state_benefits: gross_income_summary.state_benefits,
+               assessed_capital:, lower_capital_threshold:, liquid_capital_items:, state_benefits:)
+        check_amount_variations(state_benefits:,
                                 other_income_sources: gross_income_summary.other_income_sources,
                                 outgoings:,
                                 child_care_bank:) +
           check_frequencies(employments:,
                             other_income_sources: gross_income_summary.other_income_sources,
-                            state_benefits: gross_income_summary.state_benefits,
+                            state_benefits:,
                             child_care_bank:,
                             outgoings:) +
           check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold) +
-          check_flags(gross_income_summary.state_benefits)
+          check_flags(state_benefits)
       end
 
     private

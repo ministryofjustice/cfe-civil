@@ -1,7 +1,11 @@
-class StateBenefitPayment < ApplicationRecord
-  belongs_to :state_benefit
+class StateBenefitPayment
+  include ActiveModel::Model
+  include ActiveModel::Attributes
+  include ActiveModel::Validations
 
-  validates :payment_date, presence: true, date: {
-    before: proc { Time.zone.tomorrow }, message: "cannot be in the future"
-  }
+  attribute :payment_date, :date
+  attribute :amount, :decimal
+  attribute :client_id, :string
+
+  attr_accessor :flags
 end

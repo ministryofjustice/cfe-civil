@@ -2,13 +2,8 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe DisregardedStateBenefitsCalculator do
-    let(:assessment) { create :assessment, :with_disposable_income_summary, :with_gross_income_summary }
-    let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
-    let(:included_state_benefit_type) { create :state_benefit_type, :benefit_included }
-    let(:excluded_state_benefit_type) { create :state_benefit_type, :benefit_excluded }
-    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:state_benefits_input) do
-      gross_income_summary.state_benefits.map do |sb|
+      state_benefits.map do |sb|
         OpenStruct.new(monthly_value: 88.3, exclude_from_gross_income?: sb.exclude_from_gross_income)
       end
     end
@@ -18,14 +13,16 @@ module Calculators
     end
 
     context "no state benefit payments" do
+      let(:state_benefits) { [] }
+
       it "returns zero" do
         expect(calculator).to eq 0
       end
     end
 
     context "only included state benefit payments" do
-      before do
-        create :state_benefit, :with_monthly_payments, state_benefit_type: included_state_benefit_type, gross_income_summary:
+      let(:state_benefits) do
+        [OpenStruct.new(exclude_from_gross_income: false)]
       end
 
       it "returns zero" do
@@ -34,10 +31,10 @@ module Calculators
     end
 
     context "has excluded state benefit payments" do
-      before do
-        create(:state_benefit, :with_monthly_payments, state_benefit_type: excluded_state_benefit_type, gross_income_summary:)
-        create(:state_benefit, :with_monthly_payments, state_benefit_type: included_state_benefit_type, gross_income_summary:)
-        create :state_benefit, :with_monthly_payments, state_benefit_type: excluded_state_benefit_type, gross_income_summary:
+      let(:state_benefits) do
+        [OpenStruct.new(exclude_from_gross_income: true),
+         OpenStruct.new(exclude_from_gross_income: false),
+         OpenStruct.new(exclude_from_gross_income: true)]
       end
 
       it "returns value x 2" do

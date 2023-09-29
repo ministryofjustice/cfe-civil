@@ -58,7 +58,8 @@ module Decorators
         described_class.new(eligibilities: eligibility_records,
                             person_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
                                                                                           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                                          regular_income_categories: []),
+                                                                                          regular_income_categories: [],
+                                                                                          state_benefits: []),
                             combined_monthly_gross_income: 0).as_json
       end
 

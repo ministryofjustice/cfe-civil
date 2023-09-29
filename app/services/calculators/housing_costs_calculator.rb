@@ -20,7 +20,7 @@ module Calculators
 
         gross_housing_costs = gross_housing_costs_bank + gross_housing_costs_regular_transactions + gross_housing_costs_cash
 
-        housing_benefit = if housing_benefit_in_gross_income?(submission_date)
+        housing_benefit = if StateBenefitsCalculator.housing_benefit_in_gross_income?(submission_date)
                             0
                           else
                             monthly_housing_benefit
@@ -73,11 +73,6 @@ module Calculators
 
       def single_monthly_housing_costs_cap(submission_date)
         Threshold.value_for(:single_monthly_housing_costs_cap, at: submission_date)
-      end
-
-      # are housing benefits part of gross income (post MTR) or disposable income (before)
-      def housing_benefit_in_gross_income?(submission_date)
-        Threshold.value_for(:housing_benefit_in_gross_income, at: submission_date).present?
       end
     end
   end

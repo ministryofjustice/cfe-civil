@@ -7,6 +7,7 @@ FactoryBot.define do
     dependants { [] }
     outgoings { [] }
     capitals_data
+    state_benefits { [] }
   end
 
   factory :capitals_data do

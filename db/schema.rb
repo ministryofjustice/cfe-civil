@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_10_11_144523) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_13_151142) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -118,15 +118,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_144523) do
     t.string "user_agent", null: false
   end
 
-  create_table "state_benefit_payments", force: :cascade do |t|
-    t.uuid "state_benefit_id", null: false
-    t.date "payment_date", null: false
-    t.decimal "amount", null: false
-    t.string "client_id"
-    t.json "flags"
-    t.index ["state_benefit_id"], name: "index_state_benefit_payments_on_state_benefit_id"
-  end
-
   create_table "state_benefit_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "label"
     t.text "name"
@@ -135,14 +126,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_144523) do
     t.string "category"
     t.index ["dwp_code"], name: "index_state_benefit_types_on_dwp_code", unique: true
     t.index ["label"], name: "index_state_benefit_types_on_label", unique: true
-  end
-
-  create_table "state_benefits", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "gross_income_summary_id", null: false
-    t.uuid "state_benefit_type_id", null: false
-    t.string "name"
-    t.index ["gross_income_summary_id"], name: "index_state_benefits_on_gross_income_summary_id"
-    t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
 
   add_foreign_key "capital_summaries", "assessments"
@@ -155,7 +138,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_10_11_144523) do
   add_foreign_key "other_income_sources", "gross_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
   add_foreign_key "regular_transactions", "gross_income_summaries"
-  add_foreign_key "state_benefit_payments", "state_benefits"
-  add_foreign_key "state_benefits", "gross_income_summaries"
-  add_foreign_key "state_benefits", "state_benefit_types"
 end

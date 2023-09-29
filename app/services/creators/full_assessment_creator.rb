@@ -43,12 +43,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:state_benefits]
-            Creators::StateBenefitsCreator.call(gross_income_summary: assessment.applicant_gross_income_summary,
-                                                state_benefits_params: { state_benefits: params[:state_benefits] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:regular_transactions]
             Creators::RegularTransactionsCreator.call(
               gross_income_summary: assessment.applicant_gross_income_summary,

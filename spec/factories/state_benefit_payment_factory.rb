@@ -1,7 +1,5 @@
 FactoryBot.define do
   factory :state_benefit_payment do
-    association(:state_benefit)
-
     payment_date { Date.current }
     amount { 123.45 }
     flags { nil }

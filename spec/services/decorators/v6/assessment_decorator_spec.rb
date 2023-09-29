@@ -16,6 +16,7 @@ module Decorators
                                                                 combined_monthly_gross_income: 0,
                                                                 applicant_gross_income_subtotals:
                                                                   PersonGrossIncomeSubtotals.new(
+                                                                    state_benefits: [],
                                                                     employment_income_subtotals: EmploymentIncomeSubtotals.blank,
                                                                     gross_income_summary: assessment.applicant_gross_income_summary,
                                                                     regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
@@ -23,6 +24,7 @@ module Decorators
                                                                     end,
                                                                   ),
                                                                 partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
+                                                                  state_benefits: [],
                                                                   employment_income_subtotals: EmploymentIncomeSubtotals.blank,
                                                                   gross_income_summary: assessment.applicant_gross_income_summary,
                                                                   regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
