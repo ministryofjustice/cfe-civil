@@ -92,7 +92,9 @@ components:
     BankAccounts:
       type: array
       description: Describes the name of the bank account and the lowest balance during
-        the computation period
+        the computation period<p>Inaccessible capital - For submissions after MTR
+        Phase 2 is implemented, capital where the value cannot be accessed to pay
+        legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       example:
       - value: 1.01
         description: test name 1
@@ -136,7 +138,9 @@ components:
             subject_matter_of_dispute: true
           items:
             type: object
-            description: Asset detail
+            description: Asset detail<p>Inaccessible capital - For submissions after
+              MTR Phase 2 is implemented, capital where the value cannot be accessed
+              to pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
             required:
             - value
             - description
@@ -533,6 +537,9 @@ components:
         additionalProperties: false
     Property:
       type: object
+      description: Details of property<p>Inaccessible capital - For submissions after
+        MTR Phase 2 is implemented, capital where the value cannot be accessed to
+        pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       required:
       - value
       - outstanding_mortgage
@@ -565,7 +572,9 @@ components:
       oneOf:
       - "$ref": "#/components/schemas/Property"
       description: Property where applicant is living, or original main property in
-        a domestic abuse case
+        a domestic abuse case<p>Inaccessible capital - For submissions after MTR Phase
+        2 is implemented, capital where the value cannot be accessed to pay legal
+        costs, should be excluded.</p><p>Detailed guidance TBD</p>
     RegularTransaction:
       type: object
       description: regular transaction detail
@@ -772,6 +781,9 @@ components:
                 additionalProperties: false
     Vehicle:
       type: object
+      description: Detail of vehicle<p>Inaccessible capital - For submissions after
+        MTR Phase 2 is implemented, capital where the value cannot be accessed to
+        pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       required:
       - value
       - date_of_purchase
