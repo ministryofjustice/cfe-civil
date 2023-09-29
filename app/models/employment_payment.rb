@@ -8,4 +8,5 @@ class EmploymentPayment
   attribute :benefits_in_kind, :decimal, default: 0.0
   attribute :tax, :decimal, default: 0.0
   attribute :national_insurance, :decimal, default: 0.0
+  attribute :prisoner_levy, :decimal, default: 0.0
 end

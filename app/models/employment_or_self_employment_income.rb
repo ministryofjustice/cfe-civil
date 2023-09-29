@@ -6,6 +6,7 @@ class EmploymentOrSelfEmploymentIncome
 
   attribute :tax, :decimal
   attribute :national_insurance, :decimal
+  attribute :prisoner_levy, :decimal
   attribute :gross, :decimal
 
   attribute :frequency, :string
