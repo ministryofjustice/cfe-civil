@@ -1205,8 +1205,19 @@ class SwaggerDocs
                 items: {
                   type: :object,
                   additionalProperties: false,
+                  required: %i[monthly_income],
                   properties: {
-                    monthly_income: { type: :number },
+                    monthly_income: {
+                      type: :object,
+                      additionalProperties: false,
+                      properties: {
+                        gross: { type: :number },
+                        tax: { type: :number },
+                        national_insurance: { type: :number },
+                        benefits_in_kind: { type: :number },
+                        client_id: { type: :string },
+                      },
+                    },
                   },
                 },
               },

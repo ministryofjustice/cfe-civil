@@ -1194,9 +1194,23 @@ components:
           items:
             type: object
             additionalProperties: false
+            required:
+            - monthly_income
             properties:
               monthly_income:
-                type: number
+                type: object
+                additionalProperties: false
+                properties:
+                  gross:
+                    type: number
+                  tax:
+                    type: number
+                  national_insurance:
+                    type: number
+                  benefits_in_kind:
+                    type: number
+                  client_id:
+                    type: string
         irregular_income:
           type: object
           additionalProperties: false
