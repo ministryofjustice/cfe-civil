@@ -6,7 +6,19 @@ module Collators
 
         add_remarks(assessment:, employments:) if employments.count > 1
 
-        perform_collation(gross_income_summary:, employment_income_subtotals:)
+        regular_income_categories = income_categories.map do |category|
+          if category == :benefits
+            benefits_category_subtotals(gross_income_summary:, submission_date:)
+          else
+            calculate_category_subtotals(category:, gross_income_summary:)
+          end
+        end
+
+        PersonGrossIncomeSubtotals.new(
+          gross_income_summary:,
+          regular_income_categories:,
+          employment_income_subtotals:,
+        )
       end
 
     private
@@ -38,36 +50,31 @@ module Collators
         CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym)
       end
 
-      def perform_collation(gross_income_summary:, employment_income_subtotals:)
-        regular_income_categories = income_categories.map do |category|
-          calculate_category_subtotals(category, gross_income_summary)
-        end
-
-        PersonGrossIncomeSubtotals.new(
-          gross_income_summary:,
-          regular_income_categories:,
-          employment_income_subtotals:,
+      def benefits_category_subtotals(gross_income_summary:, submission_date:)
+        state_benefits_calculations = Calculators::StateBenefitsCalculator.benefits(gross_income_summary:,
+                                                                                    submission_date:)
+        GrossIncomeCategorySubtotals.new(
+          category: :benefits,
+          bank: state_benefits_calculations.state_benefits_bank,
+          cash: cash_transactions_for_category(gross_income_summary, :benefits),
+          regular: state_benefits_calculations.state_benefits_regular,
         )
       end
 
-      def calculate_category_subtotals(category, gross_income_summary)
-        bank = if category == :benefits
-                 Calculators::StateBenefitsCalculator.call(gross_income_summary.state_benefits)
-               else
-                 categorised_bank_transactions(gross_income_summary, category)
-               end
-
-        cash_transactions = gross_income_summary.cash_transactions(:credit, category)
-        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
-        regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(
-          gross_income_summary.regular_transactions.with_operation_and_category(:credit, category),
-        )
+      def calculate_category_subtotals(category:, gross_income_summary:)
         GrossIncomeCategorySubtotals.new(
           category:,
-          bank:,
-          cash:,
-          regular:,
+          bank: categorised_bank_transactions(gross_income_summary, category),
+          cash: cash_transactions_for_category(gross_income_summary, category),
+          regular: Calculators::MonthlyRegularTransactionAmountCalculator.call(
+            gross_income_summary.regular_transactions.with_operation_and_category(:credit, category),
+          ),
         )
+      end
+
+      def cash_transactions_for_category(gross_income_summary, category)
+        cash_transactions = gross_income_summary.cash_transactions(:credit, category)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
 
       def categorised_bank_transactions(gross_income_summary, category)

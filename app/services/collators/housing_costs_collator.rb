@@ -1,13 +1,13 @@
 module Collators
   class HousingCostsCollator
+    # The regular housing costs total is not exposed, so don't expose it here
     Result = Data.define(:housing_benefit, :gross_housing_costs, :gross_housing_costs_bank, :net_housing_costs,
-                         :gross_housing_costs_cash, :gross_housing_costs_regular) do
+                         :gross_housing_costs_cash) do
       def self.blank
         new(housing_benefit: 0,
             gross_housing_costs: 0,
             gross_housing_costs_bank: 0,
             gross_housing_costs_cash: 0,
-            gross_housing_costs_regular: 0,
             net_housing_costs: 0)
       end
     end
@@ -31,7 +31,6 @@ module Collators
           gross_housing_costs: housing_calculator.gross_housing_costs,
           gross_housing_costs_bank: housing_calculator.gross_housing_costs_bank,
           gross_housing_costs_cash: housing_calculator.gross_housing_costs_cash,
-          gross_housing_costs_regular: housing_calculator.gross_housing_costs_regular,
           net_housing_costs:,
         )
       end
