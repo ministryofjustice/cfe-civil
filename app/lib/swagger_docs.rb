@@ -42,9 +42,12 @@ class SwaggerDocs
     state_benefits_result: "#/components/schemas/StateBenefitsResult",
     other_income_result: "#/components/schemas/OtherIncomeResult",
     disposable_income_result: "#/components/schemas/DisposableIncomeResult",
+    gross_income_result: "#/components/schemas/GrossIncomeResult",
     overall_result: "#/components/schemas/OverallResult",
     income_contribution: "#/components/schemas/IncomeContribution",
     capital_contribution: "#/components/schemas/CapitalContribution",
+    assessment_capital_result: "#/components/schemas/AssessmentCapitalResult",
+    employment_details_result: "#/components/schemas/EmploymentDetailsResult",
   }.freeze
 
   attr_reader :version
@@ -1187,6 +1190,114 @@ class SwaggerDocs
               },
             },
           },
+          GrossIncomeResult: {
+            type: :object,
+            additionalProperties: false,
+            required: %i[employment_income irregular_income state_benefits other_income],
+            properties: {
+              employment_income: {
+                type: :array,
+                items: {
+                  type: :object,
+                  additionalProperties: false,
+                  required: %i[name payments],
+                  properties: {
+                    name: { type: :string },
+                    payments: { type: :array },
+                  },
+                },
+              },
+              employment_details: {
+                type: :array,
+                items: {
+                  type: :object,
+                  additionalProperties: false,
+                  required: %i[monthly_income],
+                  properties: {
+                    monthly_income: {
+                      type: :object,
+                      additionalProperties: false,
+                      properties: {
+                        gross: { type: :number },
+                        tax: { type: :number },
+                        national_insurance: { type: :number },
+                        benefits_in_kind: { type: :number },
+                        client_id: { type: :string },
+                      },
+                    },
+                  },
+                },
+              },
+              irregular_income: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[monthly_equivalents],
+                properties: {
+                  monthly_equivalents: {
+                    type: :object,
+                    additionalProperties: false,
+                    required: %i[student_loan unspecified_source],
+                    properties: {
+                      student_loan: { type: :number },
+                      unspecified_source: { type: :number },
+                    },
+                  },
+                },
+              },
+              state_benefits: { "$ref": SCHEMA_COMPONENTS[:state_benefits_result] },
+              other_income: { "$ref": SCHEMA_COMPONENTS[:other_income_result] },
+              self_employments: {
+                type: :array,
+                items: {
+                  type: :object,
+                  additionalProperties: false,
+                  required: %i[monthly_income],
+                  properties: {
+                    client_reference: {
+                      type: :string,
+                      description: "client reference from request",
+                    },
+                    monthly_income: {
+                      type: :object,
+                      description: "Monthly versions of input data",
+                      additionalProperties: false,
+                      required: %i[gross tax national_insurance benefits_in_kind],
+                      properties: {
+                        gross: {
+                          type: :number,
+                          format: :decimal,
+                          minimum: 0,
+                          description: "A positive number representing a gross income",
+                          example: "2050.20",
+                        },
+                        tax: {
+                          type: :number,
+                          format: :decimal,
+                          maximum: 0,
+                          description: "A negative number representing a tax deduction",
+                          example: "-250.20",
+                        },
+                        national_insurance: {
+                          type: :number,
+                          format: :decimal,
+                          maximum: 0,
+                          description: "A negative number representing a National Insurance deduction",
+                          example: "-150.20",
+                        },
+                        benefits_in_kind: {
+                          type: :number,
+                          minimum: 0,
+                          format: :decimal,
+                          description: "A positive number representing a benefit in kind payment",
+                          example: "100.00",
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
           DisposableIncomeResult: {
             type: :object,
             additionalProperties: false,
@@ -1237,6 +1348,46 @@ class SwaggerDocs
                 properties: {
                   dependants_allowance: { type: :number },
                   disregarded_state_benefits: { type: :number },
+                },
+              },
+            },
+          },
+          AssessmentCapitalResult: {
+            type: :object,
+            additionalProperties: false,
+            properties: {
+              capital_items: {
+                type: :object,
+                additionalProperties: false,
+                required: %i[liquid non_liquid vehicles properties],
+                properties: {
+                  liquid: {
+                    type: :array,
+                    items: { "$ref": SCHEMA_COMPONENTS[:non_property_asset] },
+                  },
+                  non_liquid: {
+                    type: :array,
+                    items: { "$ref": SCHEMA_COMPONENTS[:non_property_asset] },
+                  },
+                  vehicles: {
+                    type: :array,
+                    items: { "$ref": SCHEMA_COMPONENTS[:non_property_asset] },
+                  },
+                  properties: {
+                    type: :object,
+                    additionalProperties: false,
+                    properties: {
+                      main_home: {
+                        "$ref" => SCHEMA_COMPONENTS[:property_result],
+                      },
+                      additional_properties: {
+                        type: :array,
+                        items: {
+                          "$ref" => SCHEMA_COMPONENTS[:property_result],
+                        },
+                      },
+                    },
+                  },
                 },
               },
             },
