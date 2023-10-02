@@ -19,6 +19,7 @@ module Calculators
                                               gross_income: payment.gross_income,
                                               tax: payment.tax,
                                               national_insurance: payment.national_insurance,
+                                              prisoner_levy: payment.prisoner_levy,
                                               client_id: payment.client_id,
                                               benefits_in_kind: payment.benefits_in_kind
 

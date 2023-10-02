@@ -1302,6 +1302,13 @@ class SwaggerDocs
                           description: "A negative number representing a National Insurance deduction",
                           example: "-150.20",
                         },
+                        prisoner_levy: {
+                          type: :number,
+                          format: :decimal,
+                          maximum: 0,
+                          description: "A negative number representing a Prisoner Levy deduction",
+                          example: "-20.00",
+                        },
                         benefits_in_kind: {
                           type: :number,
                           minimum: 0,

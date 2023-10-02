@@ -53,6 +53,7 @@ module Decorators
                   benefits_in_kind: 23.87,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -61,6 +62,7 @@ module Decorators
                   benefits_in_kind: 23.87,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -69,6 +71,7 @@ module Decorators
                   benefits_in_kind: 23.87,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
               ],
@@ -82,6 +85,7 @@ module Decorators
                   gross: 1500.0,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -90,6 +94,7 @@ module Decorators
                   gross: 1500.0,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -98,6 +103,7 @@ module Decorators
                   gross: 1500.0,
                   tax: -495.0,
                   national_insurance: -150.0,
+                  prisoner_levy: 0.0,
                   net_employment_income: 878.87,
                 },
               ],

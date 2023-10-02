@@ -13,6 +13,14 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
         Performs a complete assessment
       DESCRIPTION
 
+      prisoner_levy: {
+        type: :number,
+        format: :decimal,
+        maximum: 0,
+        description: "A negative number representing a Prisoner Levy deduction",
+        example: "-20.00",
+      },
+
       components = SwaggerDocs::SCHEMA_COMPONENTS
 
       parameter name: :params,
@@ -265,6 +273,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
+                    prisoner_levy: -20.00,
                   },
                   {
                     client_id: "employment-1-payment-2",
@@ -273,6 +282,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
+                    prisoner_levy: -20.00,
                   },
                 ],
               },
@@ -287,6 +297,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     benefits_in_kind: 16.60,
                     tax: 14.10,
                     national_insurance: 3.66,
+                    prisoner_levy: 20.00,
                   },
                   {
                     client_id: "employment-2-payment-2",
@@ -295,6 +306,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
+                    prisoner_levy: -20.00,
                   },
                   {
                     client_id: "employment-2-payment-3",
@@ -303,6 +315,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     benefits_in_kind: 16.60,
                     tax: -104.10,
                     national_insurance: -18.66,
+                    prisoner_levy: -20.00,
                   },
                 ],
               },

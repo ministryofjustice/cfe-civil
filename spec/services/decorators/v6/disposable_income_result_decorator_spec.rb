@@ -39,6 +39,7 @@ module Decorators
               fixed_employment_deduction: -45.0,
               gross_income: 0.0,
               national_insurance: 0.0,
+              prisoner_levy: 0.0,
               net_employment_income: -45.0,
               tax: 0.0,
             },
@@ -87,6 +88,7 @@ module Decorators
                         net_employment_income: -45.0,
                         gross_employment_income: 0.0,
                         national_insurance: 0.0,
+                        prisoner_levy: 0.0,
                         tax: 0.0)
       end
 

@@ -30,6 +30,7 @@ module TestCase
         employment_income_benefits_in_kind: ->(o) { { actual: o.actual_employment_income[:benefits_in_kind], expected: o.expected_employment_income_benefits_in_kind } },
         employment_income_tax: ->(o) { { actual: o.actual_employment_income[:tax], expected: o.expected_employment_income_tax } },
         employment_income_nic: ->(o) { { actual: o.actual_employment_income[:national_insurance], expected: o.expected_employment_income_nic } },
+        # TODO: : employment_income_prisoner_levy: ->(o) { { actual: o.actual_employment_income[:prisoner_levy], expected: o.expected_employment_income_prisoner_levy } },
         fixed_employment_allowance: ->(o) { { actual: o.actual_employment_income[:fixed_employment_deduction], expected: o.expected_fixed_employment_allowance } },
         total_gross_income: ->(o) { { actual: o.actual_total_gross_income, expected: o.expected_total_gross_income } },
       }.freeze
