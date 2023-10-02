@@ -1239,6 +1239,7 @@ class SwaggerDocs
                         gross: { type: :number },
                         tax: { type: :number },
                         national_insurance: { type: :number },
+                        prisoner_levy: { type: :number },
                         benefits_in_kind: { type: :number },
                         client_id: { type: :string },
                       },

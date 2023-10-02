@@ -13,14 +13,6 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
         Performs a complete assessment
       DESCRIPTION
 
-      prisoner_levy: {
-        type: :number,
-        format: :decimal,
-        maximum: 0,
-        description: "A negative number representing a Prisoner Levy deduction",
-        example: "-20.00",
-      },
-
       components = SwaggerDocs::SCHEMA_COMPONENTS
 
       parameter name: :params,
