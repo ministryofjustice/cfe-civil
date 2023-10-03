@@ -84,8 +84,6 @@ module TestCase
         payment_hash[:tax] = row[3]
       when "national insurance"
         payment_hash[:national_insurance] = row[3]
-      when "prisoner levy"
-        payment_hash[:prisoner_levy] = row[3]
       else
         raise "Unexpected key '#{row[2]}' in column C of employment data"
       end
