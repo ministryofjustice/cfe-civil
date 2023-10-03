@@ -59,12 +59,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:outgoings]
-            Creators::OutgoingsCreator.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
-                                            outgoings_params: { outgoings: params[:outgoings] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:partner]
             Creators::PartnerFinancialsCreator.call(assessment:,
                                                     partner_financials_params: params[:partner])

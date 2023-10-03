@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_15_062754) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_28_101033) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -91,16 +91,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_15_062754) do
     t.index ["gross_income_summary_id"], name: "index_other_income_sources_on_gross_income_summary_id"
   end
 
-  create_table "outgoings", force: :cascade do |t|
-    t.uuid "disposable_income_summary_id", null: false
-    t.string "type", null: false
-    t.date "payment_date", null: false
-    t.decimal "amount", null: false
-    t.string "housing_cost_type"
-    t.string "client_id"
-    t.index ["disposable_income_summary_id"], name: "index_outgoings_on_disposable_income_summary_id"
-  end
-
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
@@ -165,7 +155,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_15_062754) do
   add_foreign_key "irregular_income_payments", "gross_income_summaries"
   add_foreign_key "other_income_payments", "other_income_sources"
   add_foreign_key "other_income_sources", "gross_income_summaries"
-  add_foreign_key "outgoings", "disposable_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
   add_foreign_key "regular_transactions", "gross_income_summaries"
   add_foreign_key "state_benefit_payments", "state_benefits"

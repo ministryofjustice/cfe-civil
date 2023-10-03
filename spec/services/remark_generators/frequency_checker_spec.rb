@@ -44,9 +44,9 @@ module RemarkGenerators
       let(:amount) { 277.67 }
       let(:collection) do
         [
-          create(:legal_aid_outgoing, disposable_income_summary:, payment_date: dates[0], amount:),
-          create(:legal_aid_outgoing, disposable_income_summary:, payment_date: dates[1], amount:),
-          create(:legal_aid_outgoing, disposable_income_summary:, payment_date: dates[2], amount:),
+          build(:legal_aid_outgoing,  payment_date: dates[0], amount:),
+          build(:legal_aid_outgoing,  payment_date: dates[1], amount:),
+          build(:legal_aid_outgoing,  payment_date: dates[2], amount:),
         ]
       end
 
@@ -71,9 +71,9 @@ module RemarkGenerators
         context "when childcare costs with an amount variation are declared" do
           let(:collection) do
             [
-              create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[0], amount:),
-              create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[1], amount: amount + 0.01),
-              create(:childcare_outgoing, disposable_income_summary:, payment_date: dates[2], amount:),
+              build(:childcare_outgoing, payment_date: dates[0], amount:),
+              build(:childcare_outgoing, payment_date: dates[1], amount: amount + 0.01),
+              build(:childcare_outgoing, payment_date: dates[2], amount:),
             ]
           end
 

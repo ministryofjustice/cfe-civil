@@ -38,7 +38,7 @@ module Workflows
 
         new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                           gross_income_summary: assessment.applicant_gross_income_summary,
-                                                          outgoings: assessment.applicant_disposable_income_summary.outgoings,
+                                                          outgoings: applicant.outgoings,
                                                           liquid_capital_items: applicant.capitals_data.liquid_capital_items,
                                                           lower_capital_threshold:,
                                                           child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
@@ -46,7 +46,7 @@ module Workflows
         if partner.present?
           new_remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
                                                              gross_income_summary: assessment.partner_gross_income_summary,
-                                                             outgoings: assessment.partner_disposable_income_summary.outgoings,
+                                                             outgoings: partner.outgoings,
                                                              liquid_capital_items: partner.capitals_data.liquid_capital_items,
                                                              lower_capital_threshold:,
                                                              child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,

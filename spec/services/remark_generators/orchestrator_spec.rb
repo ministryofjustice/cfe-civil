@@ -7,16 +7,16 @@ module RemarkGenerators
     let(:state_benefit_payments) { state_benefits.first.state_benefit_payments }
     let(:other_income_sources) { assessment.applicant_gross_income_summary.other_income_sources }
     let(:other_income_payments) { other_income_sources.first.other_income_payments }
-    let(:childcare_outgoings) { assessment.applicant_disposable_income_summary.childcare_outgoings }
-    let(:maintenance_outgoings) { assessment.applicant_disposable_income_summary.maintenance_outgoings }
-    let(:housing_outgoings) { assessment.applicant_disposable_income_summary.housing_cost_outgoings }
-    let(:legal_aid_outgoings) { assessment.applicant_disposable_income_summary.legal_aid_outgoings }
+    let(:childcare_outgoings) { build_list(:childcare_outgoing, 1) }
+    let(:maintenance_outgoings) { build_list(:maintenance_outgoing, 1) }
+    let(:housing_outgoings) { build_list(:housing_cost_outgoing, 1) }
+    let(:legal_aid_outgoings) { build_list(:legal_aid_outgoing, 1) }
     let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date) }
     let(:employment_payments) { employments.first.employment_payments }
     let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
 
     before do
-      create(:disposable_income_summary, :with_everything, assessment:)
+      create(:disposable_income_summary, assessment:)
       create(:gross_income_summary, :with_everything, assessment:)
       create(:capital_summary, assessment:)
     end
@@ -42,7 +42,7 @@ module RemarkGenerators
       described_class.call(liquid_capital_items:,
                            lower_capital_threshold: 100,
                            child_care_bank: 0,
-                           outgoings: assessment.applicant_disposable_income_summary.outgoings,
+                           outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                            employments:,
                            gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
     end

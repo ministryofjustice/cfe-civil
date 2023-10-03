@@ -43,25 +43,13 @@ en:
           attributes:
             date_of_birth:
               not_in_the_future: cannot be in the future
+        outgoings/base_outgoing:
+          attributes:
+            payment_date:
+              not_in_the_future: cannot be in the future
   activerecord:
     errors:
       models:
-        outgoings/maintenance:
-          attributes:
-            payment_date:
-              not_in_the_future: cannot be in the future
-        outgoings/childcare:
-          attributes:
-            payment_date:
-              not_in_the_future: cannot be in the future
-        outgoings/housing_costs:
-          attributes:
-            payment_date:
-              not_in_the_future: cannot be in the future
-        outgoings/legal_aid:
-          attributes:
-            payment_date:
-              not_in_the_future: cannot be in the future
         vehicle:
           attributes:
             date_of_purchase:

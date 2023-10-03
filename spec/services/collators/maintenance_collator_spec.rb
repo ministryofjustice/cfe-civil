@@ -6,25 +6,24 @@ module Collators
     let(:disposable_income_summary) { assessment.applicant_disposable_income_summary }
 
     describe ".call" do
-      subject(:collator) { described_class.call(disposable_income_summary.maintenance_outgoings) }
+      subject(:collator) { described_class.call(maintenance_outgoings) }
 
       context "when there are no maintenance outgoings" do
+        let(:maintenance_outgoings) { [] }
+
         it "leaves the monthly maintenance field on the disposable income summary as zero" do
           expect(collator).to be_zero
         end
       end
 
       context "when there are maintenance outgoings" do
-        before do
-          # payments every 28 days which equals 112.08 per calendar month
-          create :maintenance_outgoing, disposable_income_summary:, payment_date: 2.days.ago, amount: 103.46
-          create :maintenance_outgoing, disposable_income_summary:, payment_date: 30.days.ago, amount: 103.46
-          create :maintenance_outgoing, disposable_income_summary:, payment_date: 58.days.ago, amount: 103.46
-
-          # childcare payments should be ignored
-          create :childcare_outgoing, disposable_income_summary:, payment_date: 10.days.ago, amount: 99.00
-          create :childcare_outgoing, disposable_income_summary:, payment_date: 28.days.ago, amount: 99.00
-          create :childcare_outgoing, disposable_income_summary:, payment_date: 66.days.ago, amount: 99.00
+        let(:maintenance_outgoings) do
+          [
+            # payments every 28 days which equals 112.08 per calendar month
+            build(:maintenance_outgoing,  payment_date: 2.days.ago, amount: 103.46),
+            build(:maintenance_outgoing,  payment_date: 30.days.ago, amount: 103.46),
+            build(:maintenance_outgoing,  payment_date: 58.days.ago, amount: 103.46),
+          ]
         end
 
         it "calculates the monthly equivalent" do

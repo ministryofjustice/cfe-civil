@@ -14,11 +14,15 @@ module V6
         applicant_model = Applicant.new(full_assessment_params.fetch(:applicant, {}))
         render_unprocessable(applicant_model.errors.full_messages) && return unless applicant_model.valid?
 
+        applicant_outgoings = parse_outgoings(full_assessment_params.fetch(:outgoings, []))
+        render_unprocessable(dependant_errors(applicant_outgoings)) && return if applicant_outgoings.reject(&:valid?).any?
+
         applicant = person_data(full_assessment_params,
                                 applicant_dependants,
                                 applicant_model,
                                 full_assessment_params.fetch(:properties, {})[:main_home],
-                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []))
+                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []),
+                                applicant_outgoings)
 
         partner_params = full_assessment_params[:partner]
         if partner_params.present?
@@ -28,11 +32,15 @@ module V6
           partner_model = Applicant.new(partner_params.fetch(:partner, {}))
           render_unprocessable(partner_model.errors.full_messages) && return unless partner_model.valid?
 
+          partner_outgoings = parse_outgoings(partner_params.fetch(:outgoings, []))
+          render_unprocessable(dependant_errors(partner_outgoings)) && return if partner_outgoings.reject(&:valid?).any?
+
           partner = person_data(partner_params,
                                 partner_dependants,
                                 partner_model,
                                 nil,
-                                partner_params.fetch(:additional_properties, []))
+                                partner_params.fetch(:additional_properties, []),
+                                partner_outgoings)
 
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
@@ -82,7 +90,7 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant, main_home, additional_properties)
+    def person_data(input_params, dependants, applicant, main_home, additional_properties, outgoings)
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
                                        main_home: main_home.present? ? parse_main_home(main_home) : nil,
@@ -96,7 +104,17 @@ module V6
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
                      employments: parse_employment_income(employments),
                      capitals_data:,
+                     outgoings:,
                      dependants: dependants.map(&:freeze))
+    end
+
+    def parse_outgoings(outgoings_params)
+      outgoings_params.map { |outgoing|
+        klass = CFEConstants::OUTGOING_KLASSES[outgoing[:name].to_sym]
+        outgoing[:payments].map do |payment_params|
+          klass.new payment_params
+        end
+      }.flatten
     end
 
     def parse_capitals(capital_params)

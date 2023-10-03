@@ -18,7 +18,7 @@ RSpec.describe "Calculators::PensionContributionCalculator", :calls_bank_holiday
   end
 
   describe "#pension_contributions" do
-    let(:pension_outgoings) { create_list(:pension_contribution_outgoing, 3, amount: monthly_contribution) }
+    let(:pension_outgoings) { build_list(:pension_contribution_outgoing, 3, amount: monthly_contribution) }
     let(:pension_cash_transactions) do
       ctc = create(:cash_transaction_category, name: "pension_contribution", operation: :debit, gross_income_summary: assessment.applicant_gross_income_summary)
       create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: monthly_contribution)

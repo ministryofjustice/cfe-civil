@@ -5,7 +5,7 @@ module Calculators
     let(:housing_benefit_type) { create :state_benefit_type, label: "housing_benefit" }
 
     subject(:calculator) do
-      described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
+      described_class.call(housing_cost_outgoings:,
                            housing_costs_cap_applies: children.zero?,
                            submission_date: assessment.submission_date,
                            gross_income_summary: assessment.applicant_gross_income_summary)
@@ -21,13 +21,12 @@ module Calculators
       let(:rent_or_mortgage_transactions) { rent_or_mortgage_category.cash_transactions.order(:date) }
       let(:rent_or_mortgage_category) { create(:rent_or_mortgage_transaction_category, gross_income_summary: assessment.applicant_gross_income_summary) }
 
-      before do
-        [submission_date - 2.months, submission_date - 1.month, submission_date].each do |date|
-          create :housing_cost_outgoing,
-                 disposable_income_summary: assessment.applicant_disposable_income_summary,
-                 payment_date: date,
-                 amount: housing_cost_amount,
-                 housing_cost_type:
+      let(:housing_cost_outgoings) do
+        [submission_date - 2.months, submission_date - 1.month, submission_date].map do |date|
+          build :housing_cost_outgoing,
+                payment_date: date,
+                amount: housing_cost_amount,
+                housing_cost_type:
         end
       end
 
@@ -320,7 +319,7 @@ module Calculators
 
     context "when using regular_transactions" do
       let(:instance) do
-        described_class.call(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
+        described_class.call(housing_cost_outgoings:,
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              housing_costs_cap_applies: dependants.none?,
                              submission_date: assessment.submission_date)
@@ -333,17 +332,19 @@ module Calculators
 
         context "with no housing costs" do
           let(:dependants) { [] }
+          let(:housing_cost_outgoings) { [] }
 
           it { is_expected.to eq 0 }
         end
 
         context "with all forms of housing costs" do
           let(:dependants) { [] }
+          let(:housing_cost_outgoings) do
+            # add monthly equivalent bank transactions of 111.11
+            build_list(:housing_cost_outgoing, 1, payment_date: dates[0], amount: 333.33)
+          end
 
           before do
-            # add monthly equivalent bank transactions of 111.11
-            create(:housing_cost_outgoing, disposable_income_summary: assessment.applicant_disposable_income_summary, payment_date: dates[0], amount: 333.33)
-
             # add average cash transactions of 111.11
             rent_or_mortgage = create(:rent_or_mortgage_transaction_category, gross_income_summary: assessment.applicant_gross_income_summary)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[0], amount: 111.11)
@@ -363,6 +364,7 @@ module Calculators
 
       describe "#monthly_housing_benefit" do
         subject(:monthly_housing_benefit) { instance.monthly_housing_benefit }
+        let(:housing_cost_outgoings) { [] }
 
         context "with state_benefits of housing_benefit type" do
           let(:dependants) { [] }
@@ -397,6 +399,7 @@ module Calculators
 
       describe "#net_housing_costs" do
         subject(:net_housing_costs) { instance.net_housing_costs }
+        let(:housing_cost_outgoings) { [] }
 
         context "when single, with no dependants" do
           let(:dependants) { [] }

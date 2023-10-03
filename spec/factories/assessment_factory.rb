@@ -75,7 +75,7 @@ FactoryBot.define do
     trait :with_everything do
       after(:create) do |assessment|
         create(:gross_income_summary, :with_everything, assessment:)
-        create(:disposable_income_summary, :with_everything, assessment:)
+        create(:disposable_income_summary, assessment:)
         create :capital_summary, assessment:
       end
     end

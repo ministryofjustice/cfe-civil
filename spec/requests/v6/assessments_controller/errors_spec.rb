@@ -178,6 +178,36 @@ module V6
           end
         end
 
+        context "with invalid partner outgoings" do
+          let(:params) do
+            {
+              partner: {
+                partner: { employed: true, date_of_birth: },
+                outgoings: [
+                  {
+                    name: "child_care",
+                    payments: [
+                      {
+                        payment_date: "2090-01-01",
+                        amount: 29.12,
+                        client_id: SecureRandom.uuid,
+                      },
+                    ],
+                  },
+                ],
+              },
+            }
+          end
+
+          it "errors" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "contains the error" do
+            expect(parsed_response).to eq({ success: false, errors: ["Payment date cannot be in the future"] })
+          end
+        end
+
         context "invalid additional attribute for partner.employments" do
           let(:params) do
             {
