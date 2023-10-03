@@ -1,7 +1,7 @@
 Feature:
   "Dependant allowances including lone parent allowance"
 
-  Scenario: With some dependants
+  Scenario: Single with dependants
     Given I am undertaking a certificated assessment
     And A submission date of "2525-12-31"
     And I add the following dependent details for the current assessment:
@@ -16,7 +16,7 @@ Feature:
       | dependant_allowance_over_16      | 448.0  |
       | lone_parent_allowance            | 315.0  |
 
-  Scenario: Without dependants
+  Scenario: Single without dependants
     Given I am undertaking a certificated assessment
     And A submission date of "2525-12-31"
     When I retrieve the final assessment
@@ -24,7 +24,7 @@ Feature:
       | attribute                        | value  |
       | lone_parent_allowance            | 0      |
 
-  Scenario: With a partner
+  Scenario: With a partner and dependants
     Given I am undertaking a certificated assessment
     And A submission date of "2525-12-31"
     And I add the following "partner" employment details in the current assessment:
