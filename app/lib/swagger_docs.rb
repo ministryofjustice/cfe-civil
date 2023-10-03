@@ -1515,7 +1515,7 @@ class SwaggerDocs
                   },
                   prisoner_levy: {
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                    description: "Amount of prisoner levy paid - normally negative, but can be positive for a refund",
+                    description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
                   },
                   net_employment_income: {
@@ -1749,7 +1749,7 @@ class SwaggerDocs
                   },
                   prisoner_levy: {
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
-                    description: "Amount of prisoner levy paid - normally negative, but can be positive for a refund",
+                    description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
                   },
                 },
