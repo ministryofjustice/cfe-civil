@@ -1519,8 +1519,7 @@ components:
             prisoner_levy:
               oneOf:
               - "$ref": "#/components/schemas/currency"
-              description: Amount of prisoner levy paid - normally negative, but can
-                be positive for a refund
+              description: Amount of prisoner levy paid - always negative
               example: -5.24
             net_employment_income:
               oneOf:
@@ -1889,8 +1888,7 @@ components:
             prisoner_levy:
               oneOf:
               - "$ref": "#/components/schemas/currency"
-              description: Amount of prisoner levy paid - normally negative, but can
-                be positive for a refund
+              description: Amount of prisoner levy paid - always negative
               example: -5.24
       ProceedingTypes:
         type: array
