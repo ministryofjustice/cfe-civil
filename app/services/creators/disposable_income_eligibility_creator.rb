@@ -6,7 +6,9 @@ module Creators
           Eligibility::DisposableIncome.new(proceeding_type: e.proceeding_type,
                                             upper_threshold: e.upper_threshold,
                                             lower_threshold: e.lower_threshold,
-                                            assessment_result: assessment_result(lower_threshold: e.lower_threshold, upper_threshold: e.upper_threshold, total_disposable_income:))
+                                            assessment_result: assessment_result(lower_threshold: e.lower_threshold,
+                                                                                 upper_threshold: e.upper_threshold,
+                                                                                 total_disposable_income:))
         end
       end
 

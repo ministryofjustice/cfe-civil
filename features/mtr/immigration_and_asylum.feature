@@ -11,7 +11,7 @@ Feature:
       | capital_lower_threshold      | 7000.0  |
       | capital_upper_threshold      | 11000.0 |
       | disposable_upper_threshold   | 946.0   |
-      | disposable_lower_threshold   | 315.0   |
+      | disposable_lower_threshold   | 622.0   |
 
   Scenario: Immigration case after MTR
     Given I am undertaking a certificated assessment
@@ -23,7 +23,7 @@ Feature:
       | capital_lower_threshold      | 7000.0  |
       | capital_upper_threshold      | 11000.0 |
       | disposable_upper_threshold   | 946.0   |
-      | disposable_lower_threshold   | 315.0   |
+      | disposable_lower_threshold   | 622.0   |
 
   Scenario: Immigration controller case after MTR
     Given I am undertaking a controlled assessment

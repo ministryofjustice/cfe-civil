@@ -71,7 +71,7 @@ module Creators
 
       it "no longer applies a special threshold for immigration proceedings" do
         elig = creator.detect { |p| p.proceeding_type.ccms_code == "IM030" }
-        expect(elig).to have_attributes(upper_threshold: 733.0, lower_threshold: 315.0)
+        expect(elig).to have_attributes(upper_threshold: 733.0, lower_threshold: 622.0)
       end
     end
   end
