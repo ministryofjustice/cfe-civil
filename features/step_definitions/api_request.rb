@@ -26,8 +26,8 @@ Given("An Applicant of {int} years old") do |int|
   @applicant_data.merge! date_of_birth:
 end
 
-Given("I add disputed main property") do
-  @main_home = { subject_matter_of_dispute: true, value: 200_000, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
+Given("I add disputed main property of value {int}") do |value|
+  @main_home = { subject_matter_of_dispute: true, value: value, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
 end
 
 Given("I add non-disputed main property") do
