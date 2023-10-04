@@ -32,7 +32,7 @@ Feature:
     Then I should see the following overall summary:
       | attribute                      | value    |
       | assessment_result              | eligible |
-      | disposable_lower_threshold     | 315.0    |
+      | disposable_lower_threshold     | 622.0    |
       | disposable_upper_threshold     | 946.0    |
     And I should see the following "disposable_income_summary" details:
       | attribute                      | value    |
@@ -48,7 +48,7 @@ Feature:
       | attribute                      | value                 |
       | assessment_result              | contribution_required |
       | gross_income_upper_threshold_0 |       2912.5          |
-      | disposable_lower_threshold     |        315.0          |
+      | disposable_lower_threshold     |        622.0          |
       | disposable_upper_threshold     |        946.0          |
     And I should see the following "disposable_income_summary" details:
       | attribute                      | value    |
@@ -86,7 +86,7 @@ Feature:
     Then I should see the following overall summary:
       | attribute                      | value                 |
       | assessment_result              | contribution_required |
-      | disposable_lower_threshold     | 315.0                 |
+      | disposable_lower_threshold     | 622.0                 |
       | disposable_upper_threshold     | 946.0                 |
       | capital_lower_threshold        | 7000.0                |
       | capital_upper_threshold        | 11000.0               |

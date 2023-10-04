@@ -5,7 +5,7 @@ infinite_gross_income_upper: 999_999_999_999
 gross_income:
   dependant_over_14_increase_percent: 50
   dependant_under_14_increase_percent: 30
-disposable_income_lower_certificated: 315
+disposable_income_lower_certificated: 622
 disposable_income_lower_controlled: 946
 disposable_income_upper: 946
 capital_lower_certificated: 7_000
