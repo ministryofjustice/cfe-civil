@@ -9,4 +9,5 @@ class EmploymentPayment
   attribute :tax, :decimal, default: 0.0
   attribute :national_insurance, :decimal, default: 0.0
   attribute :prisoner_levy, :decimal, default: 0.0
+  attribute :student_debt_repayment, :decimal, default: 0.0
 end

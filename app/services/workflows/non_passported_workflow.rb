@@ -112,6 +112,7 @@ module Workflows
                                    :monthly_benefits_in_kind,
                                    :monthly_national_insurance,
                                    :monthly_prisoner_levy,
+                                   :monthly_student_debt_repayment,
                                    :employment_name,
                                    :employment_payments)
 
@@ -136,6 +137,7 @@ module Workflows
                              monthly_gross_income: _1.values.fetch(:monthly_gross_income),
                              monthly_national_insurance: _1.values.fetch(:monthly_national_insurance),
                              monthly_prisoner_levy: _1.values.fetch(:monthly_prisoner_levy),
+                             monthly_student_debt_repayment: _1.values.fetch(:monthly_student_debt_repayment),
                              entitles_employment_allowance?: _1.employment.entitles_employment_allowance?,
                              entitles_childcare_allowance?: _1.employment.entitles_childcare_allowance?,
                              client_id: _1.employment.client_id,
@@ -150,6 +152,7 @@ module Workflows
           monthly_gross_income = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.gross)
           monthly_national_insurance = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.national_insurance)
           monthly_prisoner_levy = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.prisoner_levy)
+          monthly_student_debt_repayment = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.student_debt_repayment)
           monthly_tax = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.tax)
           monthly_benefits_in_kind = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.benefits_in_kind)
 
@@ -157,6 +160,7 @@ module Workflows
                              monthly_gross_income:,
                              monthly_national_insurance:,
                              monthly_prisoner_levy:,
+                             monthly_student_debt_repayment:,
                              entitles_employment_allowance?: detail.income.entitles_employment_allowance?,
                              entitles_childcare_allowance?: detail.income.entitles_childcare_allowance?,
                              client_id: detail.client_reference,

@@ -5,6 +5,7 @@ module Utilities
                                           :benefits_in_kind_monthly_equiv,
                                           :national_insurance_monthly_equiv,
                                           :prisoner_levy_monthly_equiv,
+                                          :student_debt_repayment_monthly_equiv,
                                           :date)
     class << self
       def call(employment_payments)
@@ -29,6 +30,7 @@ module Utilities
                                       benefits_in_kind_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.benefits_in_kind),
                                       national_insurance_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.national_insurance),
                                       prisoner_levy_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.prisoner_levy),
+                                      student_debt_repayment_monthly_equiv: Utilities::MonthlyAmountConverter.call(period, payment.student_debt_repayment),
                                       date: payment.date)
         end
       end
@@ -40,6 +42,7 @@ module Utilities
                                       benefits_in_kind_monthly_equiv: blunt_average(payments, :benefits_in_kind),
                                       national_insurance_monthly_equiv: blunt_average(payments, :national_insurance),
                                       prisoner_levy_monthly_equiv: blunt_average(payments, :prisoner_levy),
+                                      student_debt_repayment_monthly_equiv: blunt_average(payments, :student_debt_repayment),
                                       date: payment.date)
         end
       end

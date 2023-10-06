@@ -689,6 +689,12 @@ class SwaggerDocs
                     format: :decimal,
                     description: "prisoner levy paid (negative) on this income",
                   },
+                  student_debt_repayment: {
+                    type: :number,
+                    maximum: 0,
+                    format: :decimal,
+                    description: "student debt repayment paid (negative) on this income",
+                  },
                 },
               },
             },
@@ -743,6 +749,12 @@ class SwaggerDocs
                     format: :decimal,
                     maximum: 0,
                     description: "prisoner levy paid (negative) on this employment",
+                  },
+                  student_debt_repayment: {
+                    type: :number,
+                    maximum: 0,
+                    format: :decimal,
+                    description: "student debt repayment paid (negative) on this income",
                   },
                 },
               },
@@ -979,6 +991,12 @@ class SwaggerDocs
                 format: :decimal,
                 maximum: 0,
                 description: "(negative) monthly prisoner levy paid",
+              },
+              student_debt_repayment: {
+                type: :number,
+                format: :decimal,
+                maximum: 0,
+                description: "(negative) monthly student debt repayment",
               },
               fixed_employment_deduction: {
                 type: :number,
@@ -1240,6 +1258,7 @@ class SwaggerDocs
                         tax: { type: :number },
                         national_insurance: { type: :number },
                         prisoner_levy: { type: :number },
+                        student_debt_repayment: { type: :number },
                         benefits_in_kind: { type: :number },
                         client_id: { type: :string },
                       },
@@ -1309,6 +1328,13 @@ class SwaggerDocs
                           maximum: 0,
                           description: "A negative number representing a Prisoner Levy deduction",
                           example: "-20.00",
+                        },
+                        student_debt_repayment: {
+                          type: :number,
+                          format: :decimal,
+                          maximum: 0,
+                          description: "A negative number representing a Student Debt Repayment deduction",
+                          example: "-50.00",
                         },
                         benefits_in_kind: {
                           type: :number,
@@ -1517,6 +1543,11 @@ class SwaggerDocs
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
+                  },
+                  student_debt_repayment: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of student debt repayment paid - always negative",
+                    example: -50.00,
                   },
                   net_employment_income: {
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
@@ -1751,6 +1782,11 @@ class SwaggerDocs
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
+                  },
+                  student_debt_repayment: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of student debt repayment paid - always negative",
+                    example: -50.00,
                   },
                 },
               },

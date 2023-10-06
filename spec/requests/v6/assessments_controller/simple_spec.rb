@@ -783,6 +783,7 @@ module V6
                   tax: -104.1,
                   national_insurance: -18.66,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   fixed_employment_deduction: -45.0,
                   net_employment_income: 694.84,
                 },
@@ -823,6 +824,7 @@ module V6
                     tax: 48.22,
                     national_insurance: 12.73,
                     prisoner_levy: 0.0,
+                    student_debt_repayment: 0.0,
                     fixed_employment_deduction: -45.0,
                     net_employment_income: 878.55,
                   },
@@ -840,6 +842,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                     {
@@ -849,6 +852,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                     {
@@ -858,6 +862,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                   ],
@@ -908,6 +913,7 @@ module V6
                     tax: 0.0,
                     national_insurance: 0.0,
                     prisoner_levy: 0.0,
+                    student_debt_repayment: 0.0,
                     fixed_employment_deduction: -45.0,
                     net_employment_income: -45.0,
                   },
@@ -925,6 +931,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                     {
@@ -934,6 +941,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                     {
@@ -943,6 +951,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 862.6,
                     },
                     {
@@ -952,6 +961,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 752.6,
                     },
                     {
@@ -961,6 +971,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 752.6,
                     },
                     {
@@ -970,6 +981,7 @@ module V6
                       tax: 0.0,
                       national_insurance: 0.0,
                       prisoner_levy: 0.0,
+                      student_debt_repayment: 0.0,
                       net_employment_income: 752.6,
                     },
                   ],
@@ -995,6 +1007,7 @@ module V6
                         tax: -104.1,
                         national_insurance: -18.66,
                         prisoner_levy: 0.0,
+                        student_debt_repayment: 0.0,
                         net_employment_income: 739.84,
                       },
                       {
@@ -1004,6 +1017,7 @@ module V6
                         tax: -104.1,
                         national_insurance: -18.66,
                         prisoner_levy: 0.0,
+                        student_debt_repayment: 0.0,
                         net_employment_income: 739.84,
                       },
                       {
@@ -1013,6 +1027,7 @@ module V6
                         tax: -104.1,
                         national_insurance: -18.66,
                         prisoner_levy: 0.0,
+                        student_debt_repayment: 0.0,
                         net_employment_income: 739.84,
                       },
                     ],
@@ -1100,6 +1115,7 @@ module V6
                      fixed_employment_deduction: 0.0,
                      tax: -526.0,
                      prisoner_levy: 0.0,
+                     student_debt_repayment: 0.0,
                      national_insurance: -68.0,
                      net_employment_income: 366.0 })
         end
@@ -1112,6 +1128,7 @@ module V6
               tax: -263.0,
               national_insurance: -34.0,
               prisoner_levy: 0.0,
+              student_debt_repayment: 0.0,
               benefits_in_kind: 0.0,
             },
           }])
@@ -1125,6 +1142,7 @@ module V6
                 tax: -131.50,
                 national_insurance: -17.0,
                 prisoner_levy: 0.0,
+                student_debt_repayment: 0.0,
                 benefits_in_kind: 20.0,
               } },
             {
@@ -1133,6 +1151,7 @@ module V6
                 tax: -131.50,
                 national_insurance: -17.0,
                 prisoner_levy: 0.0,
+                student_debt_repayment: 0.0,
                 benefits_in_kind: 20.0,
               },
             },
@@ -1155,6 +1174,7 @@ module V6
                   tax: 0.0,
                   national_insurance: 0.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   fixed_employment_deduction: 0.0,
                   net_employment_income: 0.0,
                 },
@@ -1520,6 +1540,7 @@ module V6
                     tax: 0.0,
                     national_insurance: 0.0,
                     prisoner_levy: 0.0,
+                    student_debt_repayment: 0.0,
                     fixed_employment_deduction: 0.0,
                     net_employment_income: 0.0,
                   },
@@ -1547,6 +1568,7 @@ module V6
                   tax: -104.1,
                   national_insurance: -18.66,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   fixed_employment_deduction: -45.0,
                   net_employment_income: 694.84,
                 },
@@ -1715,9 +1737,9 @@ module V6
                 expect(partner_gross_income[:employment_income].map { |x| x.fetch(:payments) }).to eq(
                   [
                     [
-                      { date: "2022-05-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, net_employment_income: 739.84 },
-                      { date: "2022-04-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, net_employment_income: 739.84 },
-                      { date: "2022-03-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, net_employment_income: 739.84 },
+                      { date: "2022-05-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, student_debt_repayment: 0.0, net_employment_income: 739.84 },
+                      { date: "2022-04-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, student_debt_repayment: 0.0, net_employment_income: 739.84 },
+                      { date: "2022-03-30", gross: 846.0, benefits_in_kind: 16.6, tax: -104.1, national_insurance: -18.66, prisoner_levy: 0.0, student_debt_repayment: 0.0, net_employment_income: 739.84 },
                     ],
                   ],
                 )
