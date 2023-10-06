@@ -15,6 +15,7 @@ module Calculators
         monthly_benefits_in_kind: 0.0,
         monthly_tax: 0.0,
         monthly_national_insurance: 0.0,
+        monthly_prisoner_levy: 0.0,
         entitles_childcare_allowance?: true,
         entitles_employment_allowance?: true,
       )

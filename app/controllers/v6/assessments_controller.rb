@@ -171,6 +171,7 @@ module V6
             benefits_in_kind: payment[:benefits_in_kind],
             tax: payment[:tax],
             national_insurance: payment[:national_insurance],
+            prisoner_levy: payment.fetch(:prisoner_levy, 0.0),
             client_id: payment[:client_id],
           ).freeze
         end

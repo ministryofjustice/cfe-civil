@@ -43,6 +43,10 @@ class EmploymentIncomeSubtotals
     employment_results.flat_map(&:employments).sum(&:monthly_national_insurance)
   end
 
+  def prisoner_levy
+    employment_results.flat_map(&:employments).sum(&:monthly_prisoner_levy)
+  end
+
   def fixed_employment_allowance
     employment_results.map(&:result).map(&:fixed_employment_allowance).min || 0.0
   end
@@ -60,7 +64,7 @@ class EmploymentIncomeSubtotals
 private
 
   def employment_income_deductions
-    tax + national_insurance
+    tax + national_insurance + prisoner_levy
   end
 
   def employments_excluding_self_employments

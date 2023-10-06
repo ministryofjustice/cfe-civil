@@ -672,6 +672,11 @@ components:
               maximum: 0
               format: decimal
               description: NI paid (negative) on this income
+            prisoner_levy:
+              type: number
+              maximum: 0
+              format: decimal
+              description: prisoner levy paid (negative) on this income
     EmploymentDetails:
       type: object
       required:
@@ -726,6 +731,11 @@ components:
               format: decimal
               maximum: 0
               description: NI paid (negative) on this employment
+            prisoner_levy:
+              type: number
+              format: decimal
+              maximum: 0
+              description: prisoner levy paid (negative) on this employment
     StateBenefit:
       type: object
       required:
@@ -955,6 +965,11 @@ components:
           format: decimal
           maximum: 0
           description: "(negative) monthly NI paid"
+        prisoner_levy:
+          type: number
+          format: decimal
+          maximum: 0
+          description: "(negative) monthly prisoner levy paid"
         fixed_employment_deduction:
           type: number
           format: decimal
@@ -1219,6 +1234,8 @@ components:
                     type: number
                   national_insurance:
                     type: number
+                  prisoner_levy:
+                    type: number
                   benefits_in_kind:
                     type: number
                   client_id:
@@ -1284,6 +1301,12 @@ components:
                     description: A negative number representing a National Insurance
                       deduction
                     example: "-150.20"
+                  prisoner_levy:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a Prisoner Levy deduction
+                    example: "-20.00"
                   benefits_in_kind:
                     type: number
                     minimum: 0
@@ -1492,6 +1515,11 @@ components:
               - "$ref": "#/components/schemas/currency"
               description: Amount of national insurance paid - normally negative,
                 but can be positive for a refund
+              example: -5.24
+            prisoner_levy:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of prisoner levy paid - always negative
               example: -5.24
             net_employment_income:
               oneOf:
@@ -1856,6 +1884,11 @@ components:
               - "$ref": "#/components/schemas/currency"
               description: Amount of national insurance paid - normally negative,
                 but can be positive for a refund
+              example: -5.24
+            prisoner_levy:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of prisoner levy paid - always negative
               example: -5.24
       ProceedingTypes:
         type: array

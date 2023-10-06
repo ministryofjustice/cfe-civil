@@ -683,6 +683,12 @@ class SwaggerDocs
                     format: :decimal,
                     description: "NI paid (negative) on this income",
                   },
+                  prisoner_levy: {
+                    type: :number,
+                    maximum: 0,
+                    format: :decimal,
+                    description: "prisoner levy paid (negative) on this income",
+                  },
                 },
               },
             },
@@ -731,6 +737,12 @@ class SwaggerDocs
                     format: :decimal,
                     maximum: 0,
                     description: "NI paid (negative) on this employment",
+                  },
+                  prisoner_levy: {
+                    type: :number,
+                    format: :decimal,
+                    maximum: 0,
+                    description: "prisoner levy paid (negative) on this employment",
                   },
                 },
               },
@@ -961,6 +973,12 @@ class SwaggerDocs
                 format: :decimal,
                 maximum: 0,
                 description: "(negative) monthly NI paid",
+              },
+              prisoner_levy: {
+                type: :number,
+                format: :decimal,
+                maximum: 0,
+                description: "(negative) monthly prisoner levy paid",
               },
               fixed_employment_deduction: {
                 type: :number,
@@ -1221,6 +1239,7 @@ class SwaggerDocs
                         gross: { type: :number },
                         tax: { type: :number },
                         national_insurance: { type: :number },
+                        prisoner_levy: { type: :number },
                         benefits_in_kind: { type: :number },
                         client_id: { type: :string },
                       },
@@ -1283,6 +1302,13 @@ class SwaggerDocs
                           maximum: 0,
                           description: "A negative number representing a National Insurance deduction",
                           example: "-150.20",
+                        },
+                        prisoner_levy: {
+                          type: :number,
+                          format: :decimal,
+                          maximum: 0,
+                          description: "A negative number representing a Prisoner Levy deduction",
+                          example: "-20.00",
                         },
                         benefits_in_kind: {
                           type: :number,
@@ -1485,6 +1511,11 @@ class SwaggerDocs
                   national_insurance: {
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
+                    example: -5.24,
+                  },
+                  prisoner_levy: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
                   },
                   net_employment_income: {
@@ -1714,6 +1745,11 @@ class SwaggerDocs
                   national_insurance: {
                     oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
                     description: "Amount of national insurance paid - normally negative, but can be positive for a refund",
+                    example: -5.24,
+                  },
+                  prisoner_levy: {
+                    oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:currency] }], # "oneOf" hack
+                    description: "Amount of prisoner levy paid - always negative",
                     example: -5.24,
                   },
                 },

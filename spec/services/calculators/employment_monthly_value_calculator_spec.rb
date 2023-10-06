@@ -20,8 +20,8 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
       let(:monthly_equiv_payment_data) { Utilities::EmploymentIncomeMonthlyEquivalentCalculator::MonthlyEquivPaymentData }
       let(:payments) do
         [
-          monthly_equiv_payment_data.new(date: Date.yesterday, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 90, national_insurance_monthly_equiv: -10, tax_monthly_equiv: -20),
-          monthly_equiv_payment_data.new(date: Date.current, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 490, national_insurance_monthly_equiv: -20, tax_monthly_equiv: -50),
+          monthly_equiv_payment_data.new(date: Date.yesterday, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 90, national_insurance_monthly_equiv: -10, tax_monthly_equiv: -20, prisoner_levy_monthly_equiv: 0.0),
+          monthly_equiv_payment_data.new(date: Date.current, benefits_in_kind_monthly_equiv: 10, gross_income_monthly_equiv: 490, national_insurance_monthly_equiv: -20, tax_monthly_equiv: -50, prisoner_levy_monthly_equiv: 0.0),
         ]
       end
 
@@ -43,6 +43,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
               monthly_gross_income: 490,
               monthly_benefits_in_kind: 10,
               monthly_national_insurance: -20,
+              monthly_prisoner_levy: 0.0,
               monthly_tax: -50,
             )
         end
@@ -70,6 +71,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
             .to eq(
               monthly_gross_income: 290,
               monthly_national_insurance: -15,
+              monthly_prisoner_levy: 0.0,
               monthly_tax: -35,
               monthly_benefits_in_kind: 10,
             )
@@ -90,6 +92,7 @@ RSpec.describe Calculators::EmploymentMonthlyValueCalculator do
           .to eq(
             monthly_gross_income: 0,
             monthly_national_insurance: 0,
+            monthly_prisoner_levy: 0,
             monthly_tax: 0,
             monthly_benefits_in_kind: 0,
           )

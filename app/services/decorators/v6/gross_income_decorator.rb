@@ -45,6 +45,7 @@ module Decorators
               gross: details.monthly_gross_income,
               tax: details.monthly_tax,
               national_insurance: details.monthly_national_insurance,
+              prisoner_levy: details.monthly_prisoner_levy,
               benefits_in_kind: details.monthly_benefits_in_kind,
             },
           }.tap do |result|
@@ -60,12 +61,13 @@ module Decorators
           benefits_in_kind: payment.benefits_in_kind.to_f,
           tax: payment.tax.to_f,
           national_insurance: payment.national_insurance.to_f,
+          prisoner_levy: payment.prisoner_levy.to_f,
           net_employment_income: net_employment_income(payment).to_f,
         }
       end
 
       def net_employment_income(payment)
-        payment.gross_income + payment.benefits_in_kind + payment.tax + payment.national_insurance
+        payment.gross_income + payment.benefits_in_kind + payment.tax + payment.national_insurance + payment.prisoner_levy
       end
 
       def irregular_income

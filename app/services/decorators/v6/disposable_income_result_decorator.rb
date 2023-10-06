@@ -31,6 +31,7 @@ module Decorators
           benefits_in_kind: @employment_income_subtotals.benefits_in_kind.to_f,
           tax: @employment_income_subtotals.tax.to_f,
           national_insurance: @employment_income_subtotals.national_insurance.to_f,
+          prisoner_levy: @employment_income_subtotals.prisoner_levy.to_f,
           fixed_employment_deduction: @employment_income_subtotals.fixed_employment_allowance.to_f,
           net_employment_income: @employment_income_subtotals.net_employment_income.to_f,
         }
