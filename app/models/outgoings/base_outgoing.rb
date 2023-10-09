@@ -1,8 +1,12 @@
 module Outgoings
-  class BaseOutgoing < ApplicationRecord
-    belongs_to :disposable_income_summary
+  class BaseOutgoing
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations
 
-    self.table_name = "outgoings"
+    attribute :payment_date, :date
+    attribute :amount, :decimal
+    attribute :client_id, :string
 
     validates :payment_date, date: {
       before: proc { Time.zone.tomorrow }, message: :not_in_the_future

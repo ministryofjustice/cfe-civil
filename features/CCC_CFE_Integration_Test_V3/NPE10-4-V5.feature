@@ -6,7 +6,7 @@ Feature:
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am using version 6 of the API
     And I create an assessment with the following details:
-      | submission_date     | 2020-04-21 |
+      | submission_date     | 2020-04-27 |
     And I add the following applicant details for the current assessment:
       | date_of_birth               | 1972-12-20 |
       | involvement_type            | applicant  |

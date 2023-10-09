@@ -4,7 +4,8 @@ FactoryBot.define do
     date_of_birth { Faker::Date.birthday }
     in_full_time_education { [true, false].sample }
     relationship { %w[child_relative adult_relative].sample }
-    monthly_income { 0.0 }
+    income_amount { 0.0 }
+    income_frequency { "monthly" }
     assets_value { 0.0 }
 
     trait :child_relative do
@@ -17,9 +18,14 @@ FactoryBot.define do
       date_of_birth { submission_date - 16.years }
     end
 
+    trait :under14 do
+      relationship { "child_relative" }
+      date_of_birth { Faker::Date.between(from: submission_date - 14.years + 1.day, to: submission_date - 1.day) }
+    end
+
     trait :under15 do
       relationship { "child_relative" }
-      date_of_birth { Faker::Date.between(from: submission_date - 15.years + 1.day, to: submission_date - 1.day) }
+      date_of_birth { Faker::Date.between(from: submission_date - 15.years + 1.day, to: submission_date - 14.years) }
     end
 
     trait :aged15 do

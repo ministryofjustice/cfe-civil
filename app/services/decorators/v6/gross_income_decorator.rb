@@ -14,8 +14,8 @@ module Decorators
           state_benefits:,
           other_income:,
         }.tap do |result|
-          self_employments = @subtotals.employment_income_subtotals.self_employment_details
-          employments = @subtotals.employment_income_subtotals.employment_details
+          self_employments = employment_income_subtotals.self_employment_details
+          employments = employment_income_subtotals.employment_details
           result[:self_employment_details] = employment_details(self_employments) if self_employments.any?
           result.merge!(employment_details: employment_details(employments)) if employments.any?
         end
@@ -25,6 +25,19 @@ module Decorators
 
       attr_reader :summary
 
+      def employment_incomes
+        employment_income_subtotals.payment_based_employments.sort_by(&:employment_name).map do |job|
+          {
+            name: job.employment_name,
+            payments: job.employment_payments.sort_by(&:date).reverse.map { |p| employment_payment(p) },
+          }
+        end
+      end
+
+      def employment_income_subtotals
+        @subtotals.employment_income_subtotals
+      end
+
       def employment_details(employments)
         employments.map do |details|
           {
@@ -32,27 +45,13 @@ module Decorators
               gross: details.monthly_gross_income,
               tax: details.monthly_tax,
               national_insurance: details.monthly_national_insurance,
+              prisoner_levy: details.monthly_prisoner_levy,
               benefits_in_kind: details.monthly_benefits_in_kind,
             },
           }.tap do |result|
             result.merge!(client_reference: details.client_id) if details.client_id
           end
         end
-      end
-
-      def employment_incomes
-        @employments.order(:name).map { |employment| employment_income(employment) }
-      end
-
-      def employment_income(employment)
-        {
-          name: employment.name,
-          payments: employment_payments(employment),
-        }
-      end
-
-      def employment_payments(employment)
-        employment.employment_payments.order(date: :desc).map { |payment| employment_payment(payment) }
       end
 
       def employment_payment(payment)
@@ -62,12 +61,13 @@ module Decorators
           benefits_in_kind: payment.benefits_in_kind.to_f,
           tax: payment.tax.to_f,
           national_insurance: payment.national_insurance.to_f,
+          prisoner_levy: payment.prisoner_levy.to_f,
           net_employment_income: net_employment_income(payment).to_f,
         }
       end
 
       def net_employment_income(payment)
-        payment.gross_income + payment.benefits_in_kind + payment.tax + payment.national_insurance
+        payment.gross_income + payment.benefits_in_kind + payment.tax + payment.national_insurance + payment.prisoner_levy
       end
 
       def irregular_income

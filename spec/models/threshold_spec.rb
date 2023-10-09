@@ -122,4 +122,30 @@ RSpec.describe Threshold do
       end
     end
   end
+
+  context "MTR" do
+    context "with MTR" do
+      let(:submission_date) { Date.new(2525, 4, 20) }
+
+      it "retrieves values from the mtr-2026 file" do
+        expect(described_class.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
+        expect(described_class.value_for(:property_disregard, at: submission_date)[:main_home]).to eq 185_000.0
+        expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 999_999_999_999
+        expect(described_class.value_for(:disposable_income_lower_controlled, at: submission_date)).to eq 946
+        expect(described_class.value_for(:disposable_income_upper, at: submission_date)).to eq 946
+      end
+    end
+
+    context "without MTR" do
+      let(:submission_date) { Date.new(2022, 4, 20) }
+
+      it "retrieves values from the mtr-2026 file" do
+        expect(described_class.value_for(:fixed_employment_allowance, at: submission_date)).to eq 45.0
+        expect(described_class.value_for(:property_disregard, at: submission_date)[:main_home]).to eq 100_000.0
+        expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 100_000.0
+        expect(described_class.value_for(:disposable_income_lower_controlled, at: submission_date)).to eq 733
+        expect(described_class.value_for(:disposable_income_upper, at: submission_date)).to eq 733
+      end
+    end
+  end
 end

@@ -11,55 +11,30 @@
 #
 module Collators
   class RegularOutgoingsCollator
+    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular, :maintenance_out_regular) do
+      def self.blank
+        new(child_care_regular: 0, rent_or_mortgage_regular: 0, legal_aid_regular: 0, maintenance_out_regular: 0)
+      end
+    end
+
     class << self
-      def call(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
-        new(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:).call
-      end
-    end
+      def call(gross_income_summary:, eligible_for_childcare:)
+        childcare_monthly_amount = if eligible_for_childcare # see *§ above
+                                     regular_amount_for(gross_income_summary, :child_care)
+                                   else
+                                     0
+                                   end
 
-    def initialize(disposable_income_summary:, gross_income_summary:, eligible_for_childcare:)
-      @disposable_income_summary = disposable_income_summary
-      @gross_income_summary = gross_income_summary
-      @eligible_for_childcare = eligible_for_childcare
-    end
-
-    def call
-      @disposable_income_summary.update!(disposable_income_attributes)
-    end
-
-  private
-
-    def outgoing_categories
-      CFEConstants::VALID_OUTGOING_CATEGORIES.map(&:to_sym)
-    end
-
-    def disposable_income_attributes
-      attrs = initialize_attributes
-
-      outgoing_categories.each do |category|
-        next if category == :child_care && !@eligible_for_childcare # see *§ above
-
-        category_all_sources = "#{category}_all_sources".to_sym
-        category_monthly_amount = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary: @gross_income_summary, operation: :debit, category:)
-
-        attrs[category_all_sources] += category_monthly_amount
-        next if category == :rent_or_mortgage # see ** above
-
-        attrs[:total_outgoings_and_allowances] += category_monthly_amount
-        attrs[:total_disposable_income] -= category_monthly_amount
+        Result.new(child_care_regular: childcare_monthly_amount,
+                   rent_or_mortgage_regular: regular_amount_for(gross_income_summary, :rent_or_mortgage),
+                   legal_aid_regular: regular_amount_for(gross_income_summary, :legal_aid),
+                   maintenance_out_regular: regular_amount_for(gross_income_summary, :maintenance_out))
       end
 
-      attrs
-    end
-
-    def initialize_attributes
-      attrs = outgoing_categories.each_with_object({}) { |category, dict|
-        dict["#{category}_all_sources"] = @disposable_income_summary.send("#{category}_all_sources")
-      }.symbolize_keys
-
-      attrs[:total_outgoings_and_allowances] = @disposable_income_summary.total_outgoings_and_allowances
-      attrs[:total_disposable_income] = @disposable_income_summary.total_disposable_income
-      attrs
+      def regular_amount_for(gross_income_summary, category)
+        txns = gross_income_summary.regular_transactions.with_operation_and_category(:debit, category)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(txns)
+      end
     end
   end
 end

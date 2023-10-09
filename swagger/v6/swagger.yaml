@@ -3,7 +3,7 @@ openapi: 3.0.1
 info:
   title: API v6
   description: |-
-    # Check financial eligibility for legal aid.
+    # CFE-Civil - Check Financial Eligibility for Civil legal aid
 
     ## Usage:
       - Calculate eligibility by POSTing a payload to `/v6/assessments`
@@ -15,16 +15,23 @@ info:
 components:
   schemas:
     currency:
-      description: A negative or positive number (including zero) with two decimal
-        places
       oneOf:
       - type: number
         format: decimal
         multipleOf: 0.01
       - type: string
         pattern: "^[-+]?\\d+(\\.\\d{1,2})?$"
+      example: 70.25
+    numeric_currency:
+      description: Currency as number
+      type: number
+      format: decimal
+      multipleOf: 0.01
+    string_currency:
+      description: Currency as string
+      type: string
+      pattern: "^[-+]?\\d+(\\.\\d{1,2})?$"
     positive_currency:
-      description: Non-negative number (including zero) with two decimal places
       oneOf:
       - type: number
         format: decimal
@@ -32,82 +39,13 @@ components:
         multipleOf: 0.01
       - type: string
         pattern: "^[+]?\\d+(\\.\\d{1,2})?$"
-    ProceedingTypeResult:
-      type: object
-      required:
-      - ccms_code
-      - client_involvement_type
-      - upper_threshold
-      - lower_threshold
-      - result
-      properties:
-        ccms_code:
-          type: string
-          enum:
-          - DA001
-          - DA002
-          - DA003
-          - DA004
-          - DA005
-          - DA006
-          - DA007
-          - DA020
-          - SE003
-          - SE004
-          - SE013
-          - SE014
-          - SE007
-          - SE008
-          - SE015
-          - SE016
-          - SE095
-          - SE097
-          - SE003A
-          - SE004A
-          - SE007A
-          - SE008A
-          - SE013A
-          - SE014A
-          - SE015A
-          - SE016A
-          - SE095A
-          - SE097A
-          - SE101A
-          - IM030
-          - IA031
-          - SE003E
-          - SE004E
-          - SE007E
-          - SE008E
-          - SE013E
-          - SE014E
-          - SE015E
-          - SE016E
-          - SE096E
-          - SE099E
-          - SE100E
-          - SE101E
-          description: The code expected by CCMS
-        client_involvement_type:
-          type: string
-          enum:
-          - A
-          - D
-          - W
-          - Z
-          - I
-          example: A
-          description: The client_involvement_type expected by CCMS
-        upper_threshold:
-          type: number
-        lower_threshold:
-          type: number
-        result:
-          type: string
-          enum:
-          - eligible
-          - ineligible
-          - contribution_required
+      example: 60.99
+    OverallResult:
+      type: string
+      enum:
+      - eligible
+      - ineligible
+      - contribution_required
     PropertyResult:
       type: object
       additionalProperties: false
@@ -148,10 +86,15 @@ components:
         assessed_equity:
           type: number
           minimum: 0.0
+        subject_matter_of_dispute:
+          type: boolean
+          nullable: true
     BankAccounts:
       type: array
       description: Describes the name of the bank account and the lowest balance during
-        the computation period
+        the computation period<p>Inaccessible capital - For submissions after MTR
+        Phase 2 is implemented, capital where the value cannot be accessed to pay
+        legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       example:
       - value: 1.01
         description: test name 1
@@ -195,7 +138,9 @@ components:
             subject_matter_of_dispute: true
           items:
             type: object
-            description: Asset detail
+            description: Asset detail<p>Inaccessible capital - For submissions after
+              MTR Phase 2 is implemented, capital where the value cannot be accessed
+              to pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
             required:
             - value
             - description
@@ -209,48 +154,6 @@ components:
               subject_matter_of_dispute:
                 description: Whether the item is the subject of a dispute
                 type: boolean
-    EmploymentPaymentList:
-      type: array
-      description: 0 or more employment payment details
-      items:
-        type: object
-        additionalProperties: false
-        required:
-        - client_id
-        - date
-        - gross
-        - benefits_in_kind
-        - tax
-        - national_insurance
-        properties:
-          client_id:
-            type: string
-            description: Client supplied id to identify the payment
-            example: '05459c0f-a620-4743-9f0c-b3daa93e571'
-          date:
-            type: string
-            format: date
-            example: '1992-07-22'
-          gross:
-            "$ref": "#/components/schemas/currency"
-            description: Gross payment income received
-            example: '101.01'
-          benefits_in_kind:
-            "$ref": "#/components/schemas/positive_currency"
-            description: Benefit in kind amount received
-          tax:
-            "$ref": "#/components/schemas/currency"
-            description: Amount of tax paid - normally negative, but can be positive
-              for a refund
-            example: -10.01
-          national_insurance:
-            "$ref": "#/components/schemas/currency"
-            description: Amount of national insurance paid - normally negative, but
-              can be positive for a refund
-            example: -5.24
-          net_employment_income:
-            "$ref": "#/components/schemas/currency"
-            description: Deprecated field not used in calculation
     NonPropertyAsset:
       type: object
       additionalProperties: false
@@ -266,30 +169,6 @@ components:
         description:
           type: string
           description: Description of asset
-    Employments:
-      type: array
-      description: One or more employment income details
-      items:
-        type: object
-        additionalProperties: false
-        required:
-        - name
-        - client_id
-        - payments
-        description: Employment income detail
-        properties:
-          name:
-            type: string
-            description: Identifying name for this employment - e.g. employer's name
-          client_id:
-            type: string
-            description: Client supplied id to identify the employment
-          receiving_only_statutory_sick_or_maternity_pay:
-            type: boolean
-            description: Client is in receipt only of Statutory Sick Pay (SSP) or
-              Statutory Maternity Pay (SMP)
-          payments:
-            "$ref": "#/components/schemas/EmploymentPaymentList"
     OutgoingsList:
       type: array
       description: One or more outgoings categorized by name
@@ -308,6 +187,7 @@ components:
               - child_care
               - maintenance_out
               - legal_aid
+              - pension_contribution
               description: Type of outgoing
               example: child_care
             payments:
@@ -374,47 +254,13 @@ components:
                     - rent
                     - mortgage
                     - board_and_lodging
-                    description: Housing cost type
+                    description: Housing cost type - should also be in cash_transactions.outgoings,
+                      but currently unused by both clients
                   amount:
                     type: number
                     format: decimal
                     description: Amount of payment made
                     example: 101.01
-    Applicant:
-      type: object
-      description: Object describing pertinent applicant details
-      required:
-      - date_of_birth
-      - receives_qualifying_benefit
-      additionalProperties: false
-      properties:
-        date_of_birth:
-          type: string
-          format: date
-          example: '1992-07-25'
-          description: Applicant date of birth
-        employed:
-          oneOf:
-          - type: boolean
-          - type: 'null'
-          example: true
-          description: Applicant is employed
-        has_partner_opponent:
-          type: boolean
-          example: false
-          description: Applicant has partner opponent (unused in calculation)
-        receives_qualifying_benefit:
-          type: boolean
-          example: false
-          description: Applicant receives qualifying benefit
-        receives_asylum_support:
-          type: boolean
-          example: false
-          description: Applicant receives section 4 or section 95 Asylum Support
-        involvement_type:
-          type: string
-          enum:
-          - applicant
     Assessment:
       type: object
       additionalProperties: false
@@ -427,6 +273,7 @@ components:
           description: Client's reference number for this application (free text)
         submission_date:
           type: string
+          format: date
           description: Date of the original submission (iso8601 format)
           example: '2022-05-19'
         level_of_help:
@@ -507,6 +354,14 @@ components:
                 - property_or_lodger
                 - pension
                 example: benefits
+                description: "<p>Do not include “disregarded payments” - those which
+                  should be excluded from the gross income and disposable income calculations,
+                  as described in the Lord Chancellor's guidance - certificated: ‘5.3
+                  Disregarded payments', controlled: '5.4 Disregarded income’.</p><p>Note:
+                  for submissions after MTR Phase 2 is implemented, “disregarded payments”
+                  will be extended to cover “Modern Slavery Victim Care Contract (MSVCC)
+                  financial support payments”, and no longer cover “Back to Work Bonus
+                  payments”</p>"
               payments:
                 type: array
                 description: One or more payment details
@@ -545,6 +400,7 @@ components:
                 - rent_or_mortgage
                 - maintenance_out
                 - legal_aid
+                - pension_contribution
               payments:
                 description: The payments of the outgoing transaction
                 type: array
@@ -562,33 +418,42 @@ components:
                     date:
                       type: string
                       format: date
-    Dependant:
+                  additionalProperties: false
+      additionalProperties: false
+    DateOfBirth:
+      type: string
+      format: date
+      example: '1992-07-27'
+    InFullTimeEducation:
+      type: boolean
+      example: false
+      description: Dependant is in full time education or not
+    RelationShip:
+      type: string
+      enum:
+      - child_relative
+      - adult_relative
+      description: Dependant's relationship to the applicant
+    DependantIncome:
       type: object
       required:
-      - date_of_birth
-      - in_full_time_education
-      - relationship
+      - frequency
+      - amount
+      additionalProperties: false
       properties:
-        date_of_birth:
-          type: string
-          format: date
-          example: '1992-07-27'
-        in_full_time_education:
-          type: boolean
-          example: false
-          description: Dependant is in full time education or not
-        relationship:
+        frequency:
           type: string
           enum:
-          - child_relative
-          - adult_relative
-          description: Dependant's relationship to the applicant
-        monthly_income:
-          "$ref": "#/components/schemas/currency"
-          description: Dependant's monthly income
-        assets_value:
-          "$ref": "#/components/schemas/currency"
-          description: Dependant's total assets value
+          - weekly
+          - two_weekly
+          - four_weekly
+          - monthly
+          - three_monthly
+          - annually
+        amount:
+          oneOf:
+          - "$ref": "#/components/schemas/numeric_currency"
+          example: 0
     IrregularIncomePayments:
       type: array
       minItems: 0
@@ -619,6 +484,7 @@ components:
             example: monthly
           amount:
             "$ref": "#/components/schemas/currency"
+        additionalProperties: false
     OtherIncomes:
       type: array
       description: One or more other regular income payments categorized by source
@@ -659,86 +525,21 @@ components:
                   format: date
                   example: '1992-07-28'
                 amount:
-                  "$ref": "#/components/schemas/positive_currency"
+                  oneOf:
+                  - "$ref": "#/components/schemas/positive_currency"
                   description: Amount of payment received
                 client_id:
                   type: string
                   format: uuid
                   description: Client identifier for payment received
                   example: '05459c0f-a620-4743-9f0c-b3daa93e'
-    ProceedingTypes:
-      type: array
-      minItems: 1
-      description: One or more proceeding_type details
-      items:
-        type: object
-        required:
-        - ccms_code
-        - client_involvement_type
-        properties:
-          ccms_code:
-            type: string
-            enum:
-            - DA001
-            - DA002
-            - DA003
-            - DA004
-            - DA005
-            - DA006
-            - DA007
-            - DA020
-            - SE003
-            - SE004
-            - SE013
-            - SE014
-            - SE007
-            - SE008
-            - SE015
-            - SE016
-            - SE095
-            - SE097
-            - SE003A
-            - SE004A
-            - SE007A
-            - SE008A
-            - SE013A
-            - SE014A
-            - SE015A
-            - SE016A
-            - SE095A
-            - SE097A
-            - SE101A
-            - IM030
-            - IA031
-            - SE003E
-            - SE004E
-            - SE007E
-            - SE008E
-            - SE013E
-            - SE014E
-            - SE015E
-            - SE016E
-            - SE096E
-            - SE099E
-            - SE100E
-            - SE101E
-            example: DA001
-            description: A proxy for the type of law. Values beginning with DA are
-              considered domestic abuse cases. IM030 indicates an immigration case.
-              IA031 indicates an asylum case.
-          client_involvement_type:
-            type: string
-            enum:
-            - A
-            - D
-            - W
-            - Z
-            - I
-            example: A
-            description: A CCMS client_involvement_type. This is not used in the calculation,
-              so can be set to any valid value.
+              additionalProperties: false
+        additionalProperties: false
     Property:
       type: object
+      description: Details of property<p>Inaccessible capital - For submissions after
+        MTR Phase 2 is implemented, capital where the value cannot be accessed to
+        pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       required:
       - value
       - outstanding_mortgage
@@ -746,10 +547,12 @@ components:
       - shared_with_housing_assoc
       properties:
         value:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Financial value of the property
         outstanding_mortgage:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Amount outstanding on all mortgages against this property
         percentage_owned:
           type: number
@@ -764,6 +567,14 @@ components:
         subject_matter_of_dispute:
           type: boolean
           description: Property is the subject of a dispute. Defaults to false
+      additionalProperties: false
+    MainHome:
+      oneOf:
+      - "$ref": "#/components/schemas/Property"
+      description: Property where applicant is living, or original main property in
+        a domestic abuse case<p>Inaccessible capital - For submissions after MTR Phase
+        2 is implemented, capital where the value cannot be accessed to pay legal
+        costs, should be excluded.</p><p>Detailed guidance TBD</p>
     RegularTransaction:
       type: object
       description: regular transaction detail
@@ -787,7 +598,15 @@ components:
           - rent_or_mortgage
           - maintenance_out
           - legal_aid
-          description: Identifying category for this regular transaction
+          - pension_contribution
+          description: 'Identifying category for this regular transaction<p>Do not
+            include “disregarded payments” - those which should be excluded from the
+            gross income and disposable income calculations, as described in the Lord
+            Chancellor''s guidance - certificated: ‘5.3 Disregarded payments'', controlled:
+            ''5.4 Disregarded income’.</p><p>Note: for submissions after MTR Phase
+            2 is implemented, “disregarded payments” will be extended to cover “Modern
+            Slavery Victim Care Contract (MSVCC) financial support payments”, and
+            no longer cover “Back to Work Bonus payments”</p>'
           example: benefits
         operation:
           type: string
@@ -814,7 +633,8 @@ components:
       required:
       - income
       additionalProperties: false
-      description: This should be filled out when the client or partner is self employed
+      description: Self employment, with pay info supplied in the 'how much, how often'
+        pattern
       properties:
         client_reference:
           type: string
@@ -852,12 +672,18 @@ components:
               maximum: 0
               format: decimal
               description: NI paid (negative) on this income
+            prisoner_levy:
+              type: number
+              maximum: 0
+              format: decimal
+              description: prisoner levy paid (negative) on this income
     EmploymentDetails:
       type: object
       required:
       - income
       additionalProperties: false
-      description: Details about standard employment
+      description: Employment, with pay info supplied in the 'how much, how often'
+        pattern
       properties:
         client_reference:
           type: string
@@ -905,6 +731,11 @@ components:
               format: decimal
               maximum: 0
               description: NI paid (negative) on this employment
+            prisoner_levy:
+              type: number
+              format: decimal
+              maximum: 0
+              description: prisoner levy paid (negative) on this employment
     StateBenefit:
       type: object
       required:
@@ -915,7 +746,14 @@ components:
       properties:
         name:
           type: string
-          description: Name of the state benefit
+          description: 'Name of the state benefit<p>Do not include “disregarded payments”
+            - those which should be excluded from the gross income and disposable
+            income calculations, as described in the Lord Chancellor''s guidance -
+            certificated: ‘5.3 Disregarded payments'', controlled: ''5.4 Disregarded
+            income’.</p><p>Note: for submissions after MTR Phase 2 is implemented,
+            “disregarded payments” will be extended to cover “Modern Slavery Victim
+            Care Contract (MSVCC) financial support payments”, and no longer cover
+            “Back to Work Bonus payments”</p>'
           example: my_state_benefit
         payments:
           type: array
@@ -938,7 +776,8 @@ components:
                 format: date
                 example: '1992-07-29'
               amount:
-                "$ref": "#/components/schemas/currency"
+                oneOf:
+                - "$ref": "#/components/schemas/currency"
                 description: Amount of payment received
               flags:
                 type: object
@@ -949,17 +788,23 @@ components:
                 properties:
                   multi_benefit:
                     type: boolean
+                additionalProperties: false
     Vehicle:
       type: object
+      description: Detail of vehicle<p>Inaccessible capital - For submissions after
+        MTR Phase 2 is implemented, capital where the value cannot be accessed to
+        pay legal costs, should be excluded.</p><p>Detailed guidance TBD</p>
       required:
       - value
       - date_of_purchase
       properties:
         value:
-          "$ref": "#/components/schemas/positive_currency"
+          oneOf:
+          - "$ref": "#/components/schemas/positive_currency"
           description: Financial value of the vehicle
         loan_amount_outstanding:
-          "$ref": "#/components/schemas/currency"
+          oneOf:
+          - "$ref": "#/components/schemas/currency"
           description: Amount remaining, if any, of a loan used to purchase the vehicle
         date_of_purchase:
           type: string
@@ -971,6 +816,7 @@ components:
         subject_matter_of_dispute:
           type: boolean
           description: Whether this vehicle is the subject of a dispute
+      additionalProperties: false
     ExplicitRemarks:
       type: array
       description: One or more remarks by category
@@ -993,189 +839,1298 @@ components:
             description: One or more remarks for that category
             items:
               type: string
+        additionalProperties: false
+    TotalLiquidCapital:
+      type: number
+      description: Total value of all liquid assets in submission
+      format: decimal
+    TotalNonLiquidCapital:
+      description: Total value of all non-liquid assets in submission
+      type: number
+      format: decimal
+      minimum: 0.0
+    TotalVehicleCapital:
+      description: Total value of all client vehicle assets in submission
+      type: number
+      format: decimal
+    TotalPropertyCapital:
+      description: Total value of all client property assets in submission
+      type: number
+      format: decimal
+    TotalCapital:
+      description: Total value of all capital assets in submission
+      type: number
+      format: decimal
+    TotalCapitalWithSmod:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Total of all capital but with subject matter of dispute deduction
+        applied where applicable
+    TotalMortgageAllowance:
+      description: Maximum mortgage allowance used in submission. Cases post-April
+        2020 will all be set to 999_999_999
+      type: number
+      format: decimal
+    SmodDisregard:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Total amount of subject matter of dispute disregard applied on
+        this submission
+    AssessedCapital:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of assessed client capital. Zero if deductions exceed total
+        capital.
+    DisputedNonPropertyDisregard:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of subject matter of dispute deduction applied for assets
+        other than property
+    PensionerDisregardApplied:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of pensioner capital disregard applied to this assessment
     CapitalResult:
       type: object
+      additionalProperties: false
       properties:
         total_liquid:
-          type: number
-          description: Total value of all liquid assets in submission
-          format: decimal
+          "$ref": "#/components/schemas/TotalLiquidCapital"
         total_non_liquid:
-          description: Total value of all non-liquid assets in submission
-          type: number
-          format: decimal
-          minimum: 0.0
+          "$ref": "#/components/schemas/TotalNonLiquidCapital"
         total_vehicle:
-          description: Total value of all client vehicle assets in submission
-          type: number
-          format: decimal
+          "$ref": "#/components/schemas/TotalVehicleCapital"
         total_property:
-          description: Total value of all client property assets in submission
-          type: number
-          format: decimal
+          "$ref": "#/components/schemas/TotalPropertyCapital"
         total_capital:
-          description: Total value of all capital assets in submission
-          type: number
-          format: decimal
-        total_mortgage_allowance:
-          description: Maximum mortgage allowance used in submission. Cases post-April
-            2020 will all be set to 999_999_999
-          type: number
-          format: decimal
-        subject_matter_of_dispute_disregard:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Total amount of subject matter of dispute disregard applied
-            on this submission
-        assessed_capital:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Amount of assessed client capital. Zero if deductions exceed
-            total capital.
+          "$ref": "#/components/schemas/TotalCapital"
         total_capital_with_smod:
-          type: number
+          "$ref": "#/components/schemas/TotalCapitalWithSmod"
+        total_mortgage_allowance:
+          "$ref": "#/components/schemas/TotalMortgageAllowance"
+        subject_matter_of_dispute_disregard:
+          "$ref": "#/components/schemas/SmodDisregard"
+        assessed_capital:
+          "$ref": "#/components/schemas/AssessedCapital"
         disputed_non_property_disregard:
-          type: number
-        combined_disputed_capital:
-          type: number
-        combined_non_disputed_capital:
-          type: number
-        capital_contribution:
-          type: number
-          format: decimal
-        pensioner_capital_disregard:
-          type: number
-          format: decimal
+          "$ref": "#/components/schemas/DisputedNonPropertyDisregard"
         pensioner_disregard_applied:
+          "$ref": "#/components/schemas/PensionerDisregardApplied"
+    PensionerCapitalDisregard:
+      type: number
+      format: decimal
+      description: Cap on pensioner capital disregard for this assessment (based on
+        disposable_income)
+      minimum: 0.0
+    CapitalContribution:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of capital contribution required (only valid if result is
+        contribution_required)
+    CombinedDisputedCapital:
+      description: Combined applicant and partner disputed capital
+      type: number
+      format: decimal
+    CombinedNonDisputedCapital:
+      description: Combined applicant and partner non-disputed capital
+      type: number
+      format: decimal
+    CombinedAssessedCapital:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of assessed capital for both client and partner
+    EmploymentIncomeResult:
+      type: object
+      description: Calculated monthly employment income
+      additionalProperties: false
+      properties:
+        gross_income:
+          type: number
+        benefits_in_kind:
+          type: number
+        tax:
           type: number
           format: decimal
-        combined_assessed_capital:
+          maximum: 0
+          description: "(negative) monthly tax paid"
+        national_insurance:
           type: number
           format: decimal
-        proceeding_types:
-          type: array
-          items:
-            type: object
-            properties:
-              ccms_code:
-                type: string
-              client_involvement_type:
-                type: string
-              upper_threshold:
-                type: number
-                format: decimal
-              lower_threshold:
-                type: number
-                format: decimal
-              result:
-                type: string
+          maximum: 0
+          description: "(negative) monthly NI paid"
+        prisoner_levy:
+          type: number
+          format: decimal
+          maximum: 0
+          description: "(negative) monthly prisoner levy paid"
+        fixed_employment_deduction:
+          type: number
+          format: decimal
+          maximum: 0
+          description: "(negative) fixed employment deduction (if applicable) otherwise
+            zero"
+        net_employment_income:
+          type: number
+          description: Calculated monthly net income (gross + benefits_in_kind - tax
+            - ni - deductions)
+    GrossHousingCosts:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Calculated monthly rent/mortgage costs
+    HousingBenefit:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Calculated monthly housing benefit received
+    NetHousingCosts:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Calculated monthly net housing costs (gross - housing_benefit)
+    MaintenanceAllowance:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Total of maintenance outgoings costs
+    DependantAllowanceUnder16:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Allowance for dependants under 16
+    DependantAllowanceOver16:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Allowance for dependants 16 and over
+    DependantAllowance:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Sum of dependant_allowance_under_16 and dependant_allowance_over_16
+    TotalOutgoingsAndAllowances:
+      type: number
+      format: decimal
+      description: Sum of outgoings and allowances
+    TotalDisposableIncome:
+      type: number
+      format: decimal
+      description: Calculated monthly disposable income (gross - outgoings - allowances)
+    IncomeContribution:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Amount of income contribution required (only valid if result is
+        contribution_required)
     DisposableIncome:
       type: object
+      additionalProperties: false
       properties:
         employment_income:
+          "$ref": "#/components/schemas/EmploymentIncomeResult"
+        gross_housing_costs:
+          "$ref": "#/components/schemas/GrossHousingCosts"
+        housing_benefit:
+          "$ref": "#/components/schemas/HousingBenefit"
+        net_housing_costs:
+          "$ref": "#/components/schemas/NetHousingCosts"
+        maintenance_allowance:
+          "$ref": "#/components/schemas/MaintenanceAllowance"
+        dependant_allowance_under_16:
+          "$ref": "#/components/schemas/DependantAllowanceUnder16"
+        dependant_allowance_over_16:
+          "$ref": "#/components/schemas/DependantAllowanceOver16"
+        dependant_allowance:
+          "$ref": "#/components/schemas/DependantAllowance"
+        total_outgoings_and_allowances:
+          "$ref": "#/components/schemas/TotalOutgoingsAndAllowances"
+        total_disposable_income:
+          "$ref": "#/components/schemas/TotalDisposableIncome"
+    PartnerAllowance:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Fixed allowance given if applicant has a partner for means assessment
+        purposes
+    LoneParentAllowance:
+      type: number
+      format: decimal
+      minimum: 0
+      description: Fixed allowance given if applicant is a lone parent
+    CombinedOutgoingsAndAllowances:
+      type: number
+      format: decimal
+      description: total_outgoings_and_allowances + partner total_outgoings_and_allowances
+    CombinedDisposableIncome:
+      type: number
+      format: decimal
+      description: total_disposable_income + partner total_disposable_income
+    ApplicantResult:
+      type: object
+      additionalProperties: false
+      properties:
+        date_of_birth:
+          type: string
+          format: date
+        involvement_type:
+          type: string
+        employed:
+          type: boolean
+        has_partner_opponent:
+          type: boolean
+        receives_qualifying_benefit:
+          type: boolean
+    ClientIdArray:
+      type: array
+      description: Array of client_ids affected by remark
+      items:
+        type: string
+    AmountVariationRemark:
+      type: object
+      additionalProperties: false
+      properties:
+        amount_variation:
+          "$ref": "#/components/schemas/ClientIdArray"
+        unknown_frequency:
+          "$ref": "#/components/schemas/ClientIdArray"
+        multi_benefit:
+          "$ref": "#/components/schemas/ClientIdArray"
+    Remarks:
+      type: object
+      additionalProperties: false
+      properties:
+        employment:
           type: object
-          description: Calculated monthly employment income
           additionalProperties: false
           properties:
-            gross_income:
-              type: number
-            benefits_in_kind:
-              type: number
-            tax:
+            multiple_employments:
+              "$ref": "#/components/schemas/ClientIdArray"
+        employment_tax:
+          type: object
+          additionalProperties: false
+          properties:
+            refunds:
+              "$ref": "#/components/schemas/ClientIdArray"
+        employment_nic:
+          type: object
+          additionalProperties: false
+          properties:
+            refunds:
+              "$ref": "#/components/schemas/ClientIdArray"
+        employment_payment:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        state_benefit_payment:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        other_income_payment:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        outgoings_housing_cost:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        outgoings_legal_aid:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        outgoings_maintenance:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+        outgoings_childcare:
+          "$ref": "#/components/schemas/AmountVariationRemark"
+    OutgoingResult:
+      type: object
+      additionalProperties: false
+      properties:
+        friends_or_family:
+          type: number
+        maintenance_in:
+          type: number
+        property_or_lodger:
+          type: number
+        pension:
+          type: number
+    StateBenefitsResult:
+      type: object
+      additionalProperties: false
+      properties:
+        monthly_equivalents:
+          type: object
+          additionalProperties: false
+          required:
+          - all_sources
+          - cash_transactions
+          - bank_transactions
+          properties:
+            all_sources:
               type: number
               format: decimal
-              maximum: 0
-              description: "(negative) monthly tax paid"
-            national_insurance:
+            cash_transactions:
               type: number
               format: decimal
-              maximum: 0
-              description: "(negative) monthly NI paid"
-            fixed_employment_deduction:
-              type: number
-              format: decimal
-              maximum: 0
-              description: "(negative) fixed employment deduction (if applicable)
-                otherwise zero"
-            net_employment_income:
-              type: number
-              description: Calculated monthly net income (gross + benefits_in_kind
-                - tax - ni - deductions)
-        gross_housing_costs:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Calculated monthly rent/mortgage costs
-        housing_benefit:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Calculated monthly housing benefit received
-        net_housing_costs:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Calculated monthly net housing costs (gross - housing_benefit)
-        maintenance_allowance:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Total of maintenance outgoings costs
-        dependant_allowance_under_16:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Allowance for dependants under 16
-        dependant_allowance_over_16:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Allowance for dependants 16 and over
-        dependant_allowance:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Sum of dependant_allowance_under_16 and dependant_allowance_over_16
-        total_outgoings_and_allowances:
-          type: number
-          format: decimal
-          description: Sum of outgoings and allowances
-        total_disposable_income:
-          type: number
-          format: decimal
-          description: Calculated monthly disposable income (gross - outgoings - allowances)
-        income_contribution:
-          type: number
-          format: decimal
-          minimum: 0
-          description: Duplicate of result_summary.income_contribution
-        combined_total_disposable_income:
-          type: number
-          format: decimal
-        combined_total_outgoings_and_allowances:
-          type: number
-          format: decimal
-        partner_allowance:
-          type: number
-        proceeding_types:
+            bank_transactions:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  name:
+                    type: string
+                  monthly_value:
+                    type: number
+                  excluded_from_income_assessment:
+                    type: boolean
+    OtherIncomeResult:
+      type: object
+      additionalProperties: false
+      properties:
+        monthly_equivalents:
+          type: object
+          additionalProperties: false
+          properties:
+            all_sources:
+              "$ref": "#/components/schemas/OutgoingResult"
+            bank_transactions:
+              "$ref": "#/components/schemas/OutgoingResult"
+            cash_transactions:
+              "$ref": "#/components/schemas/OutgoingResult"
+    GrossIncomeResult:
+      type: object
+      additionalProperties: false
+      required:
+      - employment_income
+      - irregular_income
+      - state_benefits
+      - other_income
+      properties:
+        employment_income:
           type: array
           items:
             type: object
+            additionalProperties: false
+            required:
+            - name
+            - payments
             properties:
-              ccms_code:
+              name:
                 type: string
-              client_involvement_type:
+              payments:
+                type: array
+        employment_details:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - monthly_income
+            properties:
+              monthly_income:
+                type: object
+                additionalProperties: false
+                properties:
+                  gross:
+                    type: number
+                  tax:
+                    type: number
+                  national_insurance:
+                    type: number
+                  prisoner_levy:
+                    type: number
+                  benefits_in_kind:
+                    type: number
+                  client_id:
+                    type: string
+        irregular_income:
+          type: object
+          additionalProperties: false
+          required:
+          - monthly_equivalents
+          properties:
+            monthly_equivalents:
+              type: object
+              additionalProperties: false
+              required:
+              - student_loan
+              - unspecified_source
+              properties:
+                student_loan:
+                  type: number
+                unspecified_source:
+                  type: number
+        state_benefits:
+          "$ref": "#/components/schemas/StateBenefitsResult"
+        other_income:
+          "$ref": "#/components/schemas/OtherIncomeResult"
+        self_employments:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - monthly_income
+            properties:
+              client_reference:
                 type: string
-              upper_threshold:
-                type: number
-                format: decimal
-              lower_threshold:
-                type: number
-                format: decimal
-              result:
-                type: string
+                description: client reference from request
+              monthly_income:
+                type: object
+                description: Monthly versions of input data
+                additionalProperties: false
+                required:
+                - gross
+                - tax
+                - national_insurance
+                - benefits_in_kind
+                properties:
+                  gross:
+                    type: number
+                    format: decimal
+                    minimum: 0
+                    description: A positive number representing a gross income
+                    example: '2050.20'
+                  tax:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a tax deduction
+                    example: "-250.20"
+                  national_insurance:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a National Insurance
+                      deduction
+                    example: "-150.20"
+                  prisoner_levy:
+                    type: number
+                    format: decimal
+                    maximum: 0
+                    description: A negative number representing a Prisoner Levy deduction
+                    example: "-20.00"
+                  benefits_in_kind:
+                    type: number
+                    minimum: 0
+                    format: decimal
+                    description: A positive number representing a benefit in kind
+                      payment
+                    example: '100.00'
+    DisposableIncomeResult:
+      type: object
+      additionalProperties: false
+      properties:
+        monthly_equivalents:
+          type: object
+          additionalProperties: false
+          properties:
+            all_sources:
+              type: object
+              additionalProperties: false
+              properties:
+                child_care:
+                  type: number
+                rent_or_mortgage:
+                  type: number
+                maintenance_out:
+                  type: number
+                legal_aid:
+                  type: number
+                pension_contribution:
+                  type: number
+            bank_transactions:
+              type: object
+              additionalProperties: false
+              properties:
+                child_care:
+                  type: number
+                rent_or_mortgage:
+                  type: number
+                maintenance_out:
+                  type: number
+                legal_aid:
+                  type: number
+                pension_contribution:
+                  type: number
+            cash_transactions:
+              type: object
+              additionalProperties: false
+              properties:
+                child_care:
+                  type: number
+                rent_or_mortgage:
+                  type: number
+                maintenance_out:
+                  type: number
+                legal_aid:
+                  type: number
+                pension_contribution:
+                  type: number
+        childcare_allowance:
+          type: number
+        deductions:
+          type: object
+          additionalProperties: false
+          properties:
+            dependants_allowance:
+              type: number
+            disregarded_state_benefits:
+              type: number
+    AssessmentCapitalResult:
+      type: object
+      additionalProperties: false
+      properties:
+        capital_items:
+          type: object
+          additionalProperties: false
+          required:
+          - liquid
+          - non_liquid
+          - vehicles
+          - properties
+          properties:
+            liquid:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            non_liquid:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            vehicles:
+              type: array
+              items:
+                "$ref": "#/components/schemas/NonPropertyAsset"
+            properties:
+              type: object
+              additionalProperties: false
+              properties:
+                main_home:
+                  "$ref": "#/components/schemas/PropertyResult"
+                additional_properties:
+                  type: array
+                  items:
+                    "$ref": "#/components/schemas/PropertyResult"
+    v6:
+      Applicant:
+        type: object
+        description: Object describing pertinent applicant details
+        required:
+        - date_of_birth
+        - receives_qualifying_benefit
+        additionalProperties: false
+        properties:
+          date_of_birth:
+            type: string
+            format: date
+            example: '1992-07-25'
+            description: Applicant date of birth
+          employed:
+            oneOf:
+            - type: boolean
+            - type: 'null'
+            example: true
+            description: Deprecated - employment is determined by presence of gross
+              employment income
+            deprecated: true
+          has_partner_opponent:
+            type: boolean
+            example: false
+            description: Applicant has partner opponent (unused in calculation)
+          receives_qualifying_benefit:
+            type: boolean
+            example: false
+            description: Applicant receives qualifying benefit
+          receives_asylum_support:
+            type: boolean
+            example: false
+            description: Applicant receives section 4 or section 95 Asylum Support
+          involvement_type:
+            type: string
+            enum:
+            - applicant
+      Employments:
+        type: array
+        description: One or more employment income details
+        items:
+          type: object
+          additionalProperties: false
+          required:
+          - name
+          - client_id
+          - payments
+          description: Employment income detail
+          properties:
+            name:
+              type: string
+              description: Identifying name for this employment - e.g. employer's
+                name
+            client_id:
+              type: string
+              description: Client supplied id to identify the employment
+            receiving_only_statutory_sick_or_maternity_pay:
+              type: boolean
+              description: Client is in receipt only of Statutory Sick Pay (SSP) or
+                Statutory Maternity Pay (SMP)
+            payments:
+              "$ref": "#/components/schemas/v6/EmploymentPaymentList"
+      EmploymentPaymentList:
+        type: array
+        description: 0 or more employment payment details
+        items:
+          type: object
+          additionalProperties: false
+          required:
+          - client_id
+          - date
+          - gross
+          - benefits_in_kind
+          - tax
+          - national_insurance
+          properties:
+            client_id:
+              type: string
+              description: Client supplied id to identify the payment
+              example: '05459c0f-a620-4743-9f0c-b3daa93e571'
+            date:
+              type: string
+              format: date
+              example: '1992-07-22'
+            gross:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Gross payment income received
+              example: 101.01
+            benefits_in_kind:
+              oneOf:
+              - "$ref": "#/components/schemas/positive_currency"
+              description: Benefit in kind amount received
+              example: 10.5
+            tax:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of tax paid - normally negative, but can be positive
+                for a refund
+              example: -10.01
+            national_insurance:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of national insurance paid - normally negative,
+                but can be positive for a refund
+              example: -5.24
+            prisoner_levy:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of prisoner levy paid - always negative
+              example: -5.24
+            net_employment_income:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Deprecated field not used in calculation
+              deprecated: true
+      ProceedingTypes:
+        type: array
+        minItems: 1
+        description: One or more proceeding_type details
+        items:
+          type: object
+          required:
+          - ccms_code
+          properties:
+            ccms_code:
+              type: string
+              enum:
+              - DA001
+              - DA002
+              - DA003
+              - DA004
+              - DA005
+              - DA006
+              - DA007
+              - DA020
+              - SE003
+              - SE004
+              - SE013
+              - SE014
+              - SE007
+              - SE008
+              - SE015
+              - SE016
+              - SE095
+              - SE097
+              - SE003A
+              - SE004A
+              - SE007A
+              - SE008A
+              - SE013A
+              - SE014A
+              - SE015A
+              - SE016A
+              - SE095A
+              - SE097A
+              - SE101A
+              - IM030
+              - IA031
+              - SE003E
+              - SE004E
+              - SE007E
+              - SE008E
+              - SE013E
+              - SE014E
+              - SE015E
+              - SE016E
+              - SE096E
+              - SE099E
+              - SE100E
+              - SE101E
+              example: DA001
+              description: A proxy for the type of law. Values beginning with DA are
+                considered domestic abuse cases. IM030 indicates an immigration case.
+                IA031 indicates an asylum case.
+            client_involvement_type:
+              type: string
+              enum:
+              - A
+              - D
+              - W
+              - Z
+              - I
+              example: A
+              description: A CCMS client_involvement_type. This is not used in the
+                calculation, so can be set to any valid value.
+              deprecated: true
+          additionalProperties: false
+      ProceedingTypeResults:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - ccms_code
+          - client_involvement_type
+          - upper_threshold
+          - lower_threshold
+          - result
+          properties:
+            ccms_code:
+              type: string
+              enum:
+              - DA001
+              - DA002
+              - DA003
+              - DA004
+              - DA005
+              - DA006
+              - DA007
+              - DA020
+              - SE003
+              - SE004
+              - SE013
+              - SE014
+              - SE007
+              - SE008
+              - SE015
+              - SE016
+              - SE095
+              - SE097
+              - SE003A
+              - SE004A
+              - SE007A
+              - SE008A
+              - SE013A
+              - SE014A
+              - SE015A
+              - SE016A
+              - SE095A
+              - SE097A
+              - SE101A
+              - IM030
+              - IA031
+              - SE003E
+              - SE004E
+              - SE007E
+              - SE008E
+              - SE013E
+              - SE014E
+              - SE015E
+              - SE016E
+              - SE096E
+              - SE099E
+              - SE100E
+              - SE101E
+              description: The code expected by CCMS
+            client_involvement_type:
+              type: string
+              enum:
+              - A
+              - D
+              - W
+              - Z
+              - I
+              example: A
+              description: The client_involvement_type expected by CCMS
+            upper_threshold:
+              type: number
+            lower_threshold:
+              type: number
+            result:
+              "$ref": "#/components/schemas/OverallResult"
+          additionalProperties: false
+      ApplicantCapitalResult:
+        type: object
+        additionalProperties: false
+        properties:
+          total_liquid:
+            "$ref": "#/components/schemas/TotalLiquidCapital"
+          total_non_liquid:
+            "$ref": "#/components/schemas/TotalNonLiquidCapital"
+          total_vehicle:
+            "$ref": "#/components/schemas/TotalVehicleCapital"
+          total_property:
+            "$ref": "#/components/schemas/TotalPropertyCapital"
+          total_capital:
+            "$ref": "#/components/schemas/TotalCapital"
+          total_capital_with_smod:
+            "$ref": "#/components/schemas/TotalCapitalWithSmod"
+          total_mortgage_allowance:
+            "$ref": "#/components/schemas/TotalMortgageAllowance"
+          subject_matter_of_dispute_disregard:
+            "$ref": "#/components/schemas/SmodDisregard"
+          assessed_capital:
+            "$ref": "#/components/schemas/AssessedCapital"
+          disputed_non_property_disregard:
+            "$ref": "#/components/schemas/DisputedNonPropertyDisregard"
+          pensioner_disregard_applied:
+            "$ref": "#/components/schemas/PensionerDisregardApplied"
+          proceeding_types:
+            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+          pensioner_capital_disregard:
+            "$ref": "#/components/schemas/PensionerCapitalDisregard"
+          capital_contribution:
+            "$ref": "#/components/schemas/CapitalContribution"
+          combined_disputed_capital:
+            "$ref": "#/components/schemas/CombinedDisputedCapital"
+          combined_non_disputed_capital:
+            "$ref": "#/components/schemas/CombinedNonDisputedCapital"
+          combined_assessed_capital:
+            "$ref": "#/components/schemas/CombinedAssessedCapital"
+      ApplicantDisposableIncome:
+        type: object
+        additionalProperties: false
+        properties:
+          employment_income:
+            "$ref": "#/components/schemas/EmploymentIncomeResult"
+          gross_housing_costs:
+            "$ref": "#/components/schemas/GrossHousingCosts"
+          housing_benefit:
+            "$ref": "#/components/schemas/HousingBenefit"
+          net_housing_costs:
+            "$ref": "#/components/schemas/NetHousingCosts"
+          maintenance_allowance:
+            "$ref": "#/components/schemas/MaintenanceAllowance"
+          dependant_allowance_under_16:
+            "$ref": "#/components/schemas/DependantAllowanceUnder16"
+          dependant_allowance_over_16:
+            "$ref": "#/components/schemas/DependantAllowanceOver16"
+          dependant_allowance:
+            "$ref": "#/components/schemas/DependantAllowance"
+          total_outgoings_and_allowances:
+            "$ref": "#/components/schemas/TotalOutgoingsAndAllowances"
+          total_disposable_income:
+            "$ref": "#/components/schemas/TotalDisposableIncome"
+          income_contribution:
+            "$ref": "#/components/schemas/IncomeContribution"
+          partner_allowance:
+            "$ref": "#/components/schemas/PartnerAllowance"
+          lone_parent_allowance:
+            "$ref": "#/components/schemas/LoneParentAllowance"
+          combined_total_outgoings_and_allowances:
+            "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances"
+          combined_total_disposable_income:
+            "$ref": "#/components/schemas/CombinedDisposableIncome"
+          proceeding_types:
+            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+        required:
+        - employment_income
+        - gross_housing_costs
+        - housing_benefit
+        - net_housing_costs
+        - maintenance_allowance
+        - dependant_allowance_under_16
+        - dependant_allowance_over_16
+        - dependant_allowance
+        - total_outgoings_and_allowances
+        - total_disposable_income
+        - income_contribution
+        - partner_allowance
+        - lone_parent_allowance
+        - combined_total_outgoings_and_allowances
+        - combined_total_disposable_income
+        - proceeding_types
+      Dependants:
+        type: array
+        description: One or more dependants details
+        items:
+          type: object
+          required:
+          - date_of_birth
+          - in_full_time_education
+          - relationship
+          properties:
+            date_of_birth:
+              "$ref": "#/components/schemas/DateOfBirth"
+            in_full_time_education:
+              "$ref": "#/components/schemas/InFullTimeEducation"
+            relationship:
+              "$ref": "#/components/schemas/RelationShip"
+            monthly_income:
+              description: Dependant's monthly income
+              deprecated: true
+              oneOf:
+              - "$ref": "#/components/schemas/numeric_currency"
+              - "$ref": "#/components/schemas/string_currency"
+            income:
+              "$ref": "#/components/schemas/DependantIncome"
+            assets_value:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Dependant's total assets value
+          additionalProperties: false
+    v7:
+      Applicant:
+        type: object
+        description: Object describing pertinent applicant details
+        required:
+        - date_of_birth
+        - receives_qualifying_benefit
+        additionalProperties: false
+        properties:
+          date_of_birth:
+            type: string
+            format: date
+            example: '1992-07-25'
+            description: Applicant date of birth
+          receives_qualifying_benefit:
+            type: boolean
+            example: false
+            description: Applicant receives qualifying benefit
+          receives_asylum_support:
+            type: boolean
+            example: false
+            description: Applicant receives section 4 or section 95 Asylum Support
+      Employments:
+        type: array
+        description: One or more employment income details
+        items:
+          type: object
+          additionalProperties: false
+          required:
+          - name
+          - client_id
+          - payments
+          description: Employment income detail
+          properties:
+            name:
+              type: string
+              description: Identifying name for this employment - e.g. employer's
+                name
+            client_id:
+              type: string
+              description: Client supplied id to identify the employment
+            receiving_only_statutory_sick_or_maternity_pay:
+              type: boolean
+              description: Client is in receipt only of Statutory Sick Pay (SSP) or
+                Statutory Maternity Pay (SMP)
+            payments:
+              "$ref": "#/components/schemas/v7/EmploymentPaymentList"
+      EmploymentPaymentList:
+        type: array
+        description: 0 or more employment payment details
+        items:
+          type: object
+          additionalProperties: false
+          required:
+          - client_id
+          - date
+          - gross
+          - benefits_in_kind
+          - tax
+          - national_insurance
+          properties:
+            client_id:
+              type: string
+              description: Client supplied id to identify the payment
+              example: '05459c0f-a620-4743-9f0c-b3daa93e571'
+            date:
+              type: string
+              format: date
+              example: '1992-07-22'
+            gross:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Gross payment income received
+              example: 101.01
+            benefits_in_kind:
+              oneOf:
+              - "$ref": "#/components/schemas/positive_currency"
+              description: Benefit in kind amount received
+              example: 10.5
+            tax:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of tax paid - normally negative, but can be positive
+                for a refund
+              example: -10.01
+            national_insurance:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of national insurance paid - normally negative,
+                but can be positive for a refund
+              example: -5.24
+            prisoner_levy:
+              oneOf:
+              - "$ref": "#/components/schemas/currency"
+              description: Amount of prisoner levy paid - always negative
+              example: -5.24
+      ProceedingTypes:
+        type: array
+        minItems: 1
+        description: One or more proceeding_type details
+        items:
+          type: object
+          required:
+          - ccms_code
+          properties:
+            ccms_code:
+              type: string
+              enum:
+              - DA001
+              - DA002
+              - DA003
+              - DA004
+              - DA005
+              - DA006
+              - DA007
+              - DA020
+              - SE003
+              - SE004
+              - SE013
+              - SE014
+              - SE007
+              - SE008
+              - SE015
+              - SE016
+              - SE095
+              - SE097
+              - SE003A
+              - SE004A
+              - SE007A
+              - SE008A
+              - SE013A
+              - SE014A
+              - SE015A
+              - SE016A
+              - SE095A
+              - SE097A
+              - SE101A
+              - IM030
+              - IA031
+              - SE003E
+              - SE004E
+              - SE007E
+              - SE008E
+              - SE013E
+              - SE014E
+              - SE015E
+              - SE016E
+              - SE096E
+              - SE099E
+              - SE100E
+              - SE101E
+              example: DA001
+              description: A proxy for the type of law. Values beginning with DA are
+                considered domestic abuse cases. IM030 indicates an immigration case.
+                IA031 indicates an asylum case.
+          additionalProperties: false
+      ProceedingTypeResults:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required:
+          - ccms_code
+          - upper_threshold
+          - lower_threshold
+          - result
+          properties:
+            ccms_code:
+              type: string
+              enum:
+              - DA001
+              - DA002
+              - DA003
+              - DA004
+              - DA005
+              - DA006
+              - DA007
+              - DA020
+              - SE003
+              - SE004
+              - SE013
+              - SE014
+              - SE007
+              - SE008
+              - SE015
+              - SE016
+              - SE095
+              - SE097
+              - SE003A
+              - SE004A
+              - SE007A
+              - SE008A
+              - SE013A
+              - SE014A
+              - SE015A
+              - SE016A
+              - SE095A
+              - SE097A
+              - SE101A
+              - IM030
+              - IA031
+              - SE003E
+              - SE004E
+              - SE007E
+              - SE008E
+              - SE013E
+              - SE014E
+              - SE015E
+              - SE016E
+              - SE096E
+              - SE099E
+              - SE100E
+              - SE101E
+              description: The code expected by CCMS
+            upper_threshold:
+              type: number
+            lower_threshold:
+              type: number
+            result:
+              "$ref": "#/components/schemas/OverallResult"
+          additionalProperties: false
+      ApplicantCapitalResult:
+        type: object
+        additionalProperties: false
+        properties:
+          total_liquid:
+            "$ref": "#/components/schemas/TotalLiquidCapital"
+          total_non_liquid:
+            "$ref": "#/components/schemas/TotalNonLiquidCapital"
+          total_vehicle:
+            "$ref": "#/components/schemas/TotalVehicleCapital"
+          total_property:
+            "$ref": "#/components/schemas/TotalPropertyCapital"
+          total_capital:
+            "$ref": "#/components/schemas/TotalCapital"
+          total_capital_with_smod:
+            "$ref": "#/components/schemas/TotalCapitalWithSmod"
+          total_mortgage_allowance:
+            "$ref": "#/components/schemas/TotalMortgageAllowance"
+          subject_matter_of_dispute_disregard:
+            "$ref": "#/components/schemas/SmodDisregard"
+          assessed_capital:
+            "$ref": "#/components/schemas/AssessedCapital"
+          disputed_non_property_disregard:
+            "$ref": "#/components/schemas/DisputedNonPropertyDisregard"
+          pensioner_disregard_applied:
+            "$ref": "#/components/schemas/PensionerDisregardApplied"
+          proceeding_types:
+            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
+          pensioner_capital_disregard:
+            "$ref": "#/components/schemas/PensionerCapitalDisregard"
+          capital_contribution:
+            "$ref": "#/components/schemas/CapitalContribution"
+          combined_disputed_capital:
+            "$ref": "#/components/schemas/CombinedDisputedCapital"
+          combined_non_disputed_capital:
+            "$ref": "#/components/schemas/CombinedNonDisputedCapital"
+          combined_assessed_capital:
+            "$ref": "#/components/schemas/CombinedAssessedCapital"
+      ApplicantDisposableIncome:
+        type: object
+        additionalProperties: false
+        properties:
+          employment_income:
+            "$ref": "#/components/schemas/EmploymentIncomeResult"
+          gross_housing_costs:
+            "$ref": "#/components/schemas/GrossHousingCosts"
+          housing_benefit:
+            "$ref": "#/components/schemas/HousingBenefit"
+          net_housing_costs:
+            "$ref": "#/components/schemas/NetHousingCosts"
+          maintenance_allowance:
+            "$ref": "#/components/schemas/MaintenanceAllowance"
+          dependant_allowance_under_16:
+            "$ref": "#/components/schemas/DependantAllowanceUnder16"
+          dependant_allowance_over_16:
+            "$ref": "#/components/schemas/DependantAllowanceOver16"
+          dependant_allowance:
+            "$ref": "#/components/schemas/DependantAllowance"
+          total_outgoings_and_allowances:
+            "$ref": "#/components/schemas/TotalOutgoingsAndAllowances"
+          total_disposable_income:
+            "$ref": "#/components/schemas/TotalDisposableIncome"
+          income_contribution:
+            "$ref": "#/components/schemas/IncomeContribution"
+          partner_allowance:
+            "$ref": "#/components/schemas/PartnerAllowance"
+          lone_parent_allowance:
+            "$ref": "#/components/schemas/LoneParentAllowance"
+          combined_total_outgoings_and_allowances:
+            "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances"
+          combined_total_disposable_income:
+            "$ref": "#/components/schemas/CombinedDisposableIncome"
+          proceeding_types:
+            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
+        required:
+        - employment_income
+        - gross_housing_costs
+        - housing_benefit
+        - net_housing_costs
+        - maintenance_allowance
+        - dependant_allowance_under_16
+        - dependant_allowance_over_16
+        - dependant_allowance
+        - total_outgoings_and_allowances
+        - total_disposable_income
+        - income_contribution
+        - partner_allowance
+        - lone_parent_allowance
+        - combined_total_outgoings_and_allowances
+        - combined_total_disposable_income
+        - proceeding_types
+      Dependants:
+        type: array
+        description: One or more dependants details
+        items:
+          type: object
+          required:
+          - date_of_birth
+          - in_full_time_education
+          - relationship
+          properties:
+            date_of_birth:
+              "$ref": "#/components/schemas/DateOfBirth"
+            in_full_time_education:
+              "$ref": "#/components/schemas/InFullTimeEducation"
+            relationship:
+              "$ref": "#/components/schemas/RelationShip"
+            income:
+              "$ref": "#/components/schemas/DependantIncome"
+            assets_value:
+              oneOf:
+              - oneOf:
+                - "$ref": "#/components/schemas/numeric_currency"
+                description: Dependant's total assets value
+              example: 0
+          additionalProperties: false
 paths:
   "/v6/assessments":
     post:
@@ -1197,6 +2152,7 @@ paths:
                 - assessment
                 - version
                 - success
+                additionalProperties: false
                 properties:
                   result_summary:
                     type: object
@@ -1205,6 +2161,7 @@ paths:
                     - gross_income
                     - disposable_income
                     - capital
+                    additionalProperties: false
                     properties:
                       overall_result:
                         type: object
@@ -1213,30 +2170,16 @@ paths:
                         - capital_contribution
                         - income_contribution
                         - proceeding_types
+                        additionalProperties: false
                         properties:
                           result:
-                            type: string
-                            enum:
-                            - eligible
-                            - ineligible
-                            - contribution_required
+                            "$ref": "#/components/schemas/OverallResult"
                           income_contribution:
-                            type: number
-                            format: decimal
-                            minimum: 0
-                            description: Amount of income contribution required (only
-                              valid if result is contribution_required)
+                            "$ref": "#/components/schemas/IncomeContribution"
                           capital_contribution:
-                            type: number
-                            format: decimal
-                            minimum: 0
-                            description: Amount of capital contribution required (only
-                              valid if result is contribution_required)
+                            "$ref": "#/components/schemas/CapitalContribution"
                           proceeding_types:
-                            type: array
-                            minItems: 1
-                            items:
-                              "$ref": "#/components/schemas/ProceedingTypeResult"
+                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
                       gross_income:
                         type: object
                         description: gross_income calculation for partner, with some
@@ -1245,6 +2188,7 @@ paths:
                         - total_gross_income
                         - combined_total_gross_income
                         - proceeding_types
+                        additionalProperties: false
                         properties:
                           total_gross_income:
                             type: number
@@ -1257,14 +2201,12 @@ paths:
                             description: Calculated monthly total gross income for
                               applicant and partner
                           proceeding_types:
-                            type: array
-                            minItems: 1
-                            items:
-                              "$ref": "#/components/schemas/ProceedingTypeResult"
+                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
                       partner_gross_income:
                         type: object
                         required:
                         - total_gross_income
+                        additionalProperties: false
                         properties:
                           total_gross_income:
                             type: number
@@ -1272,91 +2214,16 @@ paths:
                             description: Calculated monthly total gross income for
                               partner
                       disposable_income:
-                        allOf:
-                        - "$ref": "#/components/schemas/DisposableIncome"
-                        - type: object
-                          properties:
-                            partner_allowance:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Fixed allowance given if applicant has
-                                a partner for means assessment purposes
-                            combined_total_outgoings_and_allowances:
-                              type: number
-                              format: decimal
-                              description: total_outgoings_and_allowances + partner
-                                total_outgoings_and_allowances
-                            combined_total_disposable_income:
-                              type: number
-                              format: decimal
-                              description: total_disposable_income + partner total_disposable_income
-                            proceeding_types:
-                              type: array
-                              minItems: 1
-                              items:
-                                "$ref": "#/components/schemas/ProceedingTypeResult"
+                        "$ref": "#/components/schemas/v6/ApplicantDisposableIncome"
                       partner_disposable_income:
                         "$ref": "#/components/schemas/DisposableIncome"
                       capital:
-                        allOf:
-                        - "$ref": "#/components/schemas/CapitalResult"
-                        - type: object
-                          properties:
-                            proceeding_types:
-                              type: array
-                              items:
-                                "$ref": "#/components/schemas/ProceedingTypeResult"
-                            pensioner_capital_disregard:
-                              type: number
-                              format: decimal
-                              description: Cap on pensioner capital disregard for
-                                this assessment (based on disposable_income)
-                              minimum: 0.0
-                            pensioner_disregard_applied:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Amount of pensioner capital disregard applied
-                                to this assessment
-                            total_capital_with_smod:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Total of all capital but with subject matter
-                                of dispute deduction applied where applicable
-                            disputed_non_property_disregard:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Amount of subject matter of dispute deduction
-                                applied for assets other than property
-                            capital_contribution:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Duplicate of results_summary capital_contribution
-                                field
-                            combined_disputed_capital:
-                              description: Combined applicant and partner disputed
-                                capital
-                              type: number
-                              format: decimal
-                            combined_non_disputed_capital:
-                              description: Combined applicant and partner non-disputed
-                                capital
-                              type: number
-                              format: decimal
-                            combined_assessed_capital:
-                              type: number
-                              format: decimal
-                              minimum: 0
-                              description: Amount of assessed capital for both client
-                                and partner
+                        "$ref": "#/components/schemas/v6/ApplicantCapitalResult"
                       partner_capital:
                         "$ref": "#/components/schemas/CapitalResult"
                   assessment:
                     type: object
+                    additionalProperties: false
                     properties:
                       id:
                         type: string
@@ -1376,150 +2243,21 @@ paths:
                         example: certificated
                         description: The level of representation required by the client
                       applicant:
-                        type: object
+                        "$ref": "#/components/schemas/ApplicantResult"
                       gross_income:
-                        type: object
-                        additionalProperties: false
-                        required:
-                        - employment_income
-                        - irregular_income
-                        - state_benefits
-                        - other_income
-                        properties:
-                          employment_income:
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties: false
-                              required:
-                              - name
-                              - payments
-                              properties:
-                                name:
-                                  type: string
-                                payments:
-                                  type: array
-                          irregular_income:
-                            type: object
-                            additionalProperties: false
-                            required:
-                            - monthly_equivalents
-                            properties:
-                              monthly_equivalents:
-                                type: object
-                                additionalProperties: false
-                                required:
-                                - student_loan
-                                - unspecified_source
-                                properties:
-                                  student_loan:
-                                    type: number
-                                  unspecified_source:
-                                    type: number
-                          state_benefits:
-                            type: object
-                            additionalProperties: false
-                            properties:
-                              monthly_equivalents:
-                                type: object
-                                additionalProperties: false
-                                properties:
-                                  all_sources:
-                                    type: number
-                                    format: decimal
-                                  cash_transactions:
-                                    type: number
-                                    format: decimal
-                                  bank_transactions:
-                                    type: array
-                          other_income:
-                            type: object
-                          self_employments:
-                            type: array
-                            items:
-                              type: object
-                              additionalProperties: false
-                              required:
-                              - monthly_income
-                              properties:
-                                client_reference:
-                                  type: string
-                                  description: client reference from request
-                                monthly_income:
-                                  type: object
-                                  description: Monthly versions of input data
-                                  additionalProperties: false
-                                  required:
-                                  - gross
-                                  - tax
-                                  - national_insurance
-                                  - benefits_in_kind
-                                  properties:
-                                    gross:
-                                      type: number
-                                      format: decimal
-                                      minimum: 0
-                                      description: A positive number representing
-                                        a gross income
-                                      example: '2050.20'
-                                    tax:
-                                      type: number
-                                      format: decimal
-                                      maximum: 0
-                                      description: A negative number representing
-                                        a tax deduction
-                                      example: "-250.20"
-                                    national_insurance:
-                                      type: number
-                                      format: decimal
-                                      maximum: 0
-                                      description: A negative number representing
-                                        a National Insurance deduction
-                                      example: "-150.20"
-                                    benefits_in_kind:
-                                      type: number
-                                      minimum: 0
-                                      format: decimal
-                                      description: A positive number representing
-                                        a benefit in kind payment
-                                      example: '100.00'
+                        "$ref": "#/components/schemas/GrossIncomeResult"
                       disposable_income:
-                        type: object
+                        "$ref": "#/components/schemas/DisposableIncomeResult"
                       capital:
-                        type: object
-                        additionalProperties: false
-                        properties:
-                          capital_items:
-                            type: object
-                            additionalProperties: false
-                            required:
-                            - liquid
-                            - non_liquid
-                            - vehicles
-                            - properties
-                            properties:
-                              liquid:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              non_liquid:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              vehicles:
-                                type: array
-                                items:
-                                  "$ref": "#/components/schemas/NonPropertyAsset"
-                              properties:
-                                type: object
-                                additionalProperties: false
-                                properties:
-                                  main_home:
-                                    "$ref": "#/components/schemas/PropertyResult"
-                                  additional_properties:
-                                    type: array
-                                    items:
-                                      "$ref": "#/components/schemas/PropertyResult"
+                        "$ref": "#/components/schemas/AssessmentCapitalResult"
+                      partner_gross_income:
+                        "$ref": "#/components/schemas/GrossIncomeResult"
+                      partner_disposable_income:
+                        "$ref": "#/components/schemas/DisposableIncomeResult"
+                      partner_capital:
+                        "$ref": "#/components/schemas/AssessmentCapitalResult"
+                      remarks:
+                        "$ref": "#/components/schemas/Remarks"
                   version:
                     type: string
                     enum:
@@ -1539,24 +2277,22 @@ paths:
               - assessment
               - applicant
               - proceeding_types
+              additionalProperties: false
               properties:
                 assessment:
                   "$ref": "#/components/schemas/Assessment"
                 applicant:
-                  "$ref": "#/components/schemas/Applicant"
+                  "$ref": "#/components/schemas/v6/Applicant"
                 proceeding_types:
-                  "$ref": "#/components/schemas/ProceedingTypes"
+                  "$ref": "#/components/schemas/v6/ProceedingTypes"
                 capitals:
                   "$ref": "#/components/schemas/Capitals"
                 cash_transactions:
                   "$ref": "#/components/schemas/CashTransactions"
                 dependants:
-                  type: array
-                  description: One or more dependants details
-                  items:
-                    "$ref": "#/components/schemas/Dependant"
+                  "$ref": "#/components/schemas/v6/Dependants"
                 employment_income:
-                  "$ref": "#/components/schemas/Employments"
+                  "$ref": "#/components/schemas/v6/Employments"
                 irregular_incomes:
                   type: object
                   description: A set of irregular income payments
@@ -1579,13 +2315,14 @@ paths:
                   type: object
                   required: []
                   description: A main home and additional properties
+                  additionalProperties: false
                   properties:
                     main_home:
-                      "$ref": "#/components/schemas/Property"
+                      "$ref": "#/components/schemas/MainHome"
                     additional_properties:
                       type: array
-                      description: One or more additional properties owned by the
-                        applicant
+                      description: Additional properties owned by the applicant -
+                        i.e. not including the main home
                       items:
                         "$ref": "#/components/schemas/Property"
                 regular_transactions:
@@ -1595,8 +2332,8 @@ paths:
                     "$ref": "#/components/schemas/RegularTransaction"
                 state_benefits:
                   type: array
-                  description: One or more state benefits received by the applicant
-                    and categorized by name
+                  description: Benefits paid by the state to the applicant. One item
+                    per type of benefit
                   items:
                     "$ref": "#/components/schemas/StateBenefit"
                 vehicles:
@@ -1606,120 +2343,176 @@ paths:
                     "$ref": "#/components/schemas/Vehicle"
                 employment_details:
                   type: array
-                  description: One or more employment details
+                  description: 'Employments, with pay info supplied in the ''how much,
+                    how often'' pattern. (Compare with: ''employment_income'')'
                   items:
                     "$ref": "#/components/schemas/EmploymentDetails"
                 self_employment_details:
                   type: array
-                  description: One or more self employment details
+                  description: Self employments, with pay info supplied in the 'how
+                    much, how often' pattern
                   items:
                     "$ref": "#/components/schemas/SelfEmployment"
                 partner:
                   type: object
                   required:
                   - partner
-                  description: Full information about an applicant's partner
+                  additionalProperties: false
+                  description: 'Partner of the applicant''s financial and personal
+                    info. Definition of ''partner'' that should included in the means
+                    test is described in the Lord Chancellor''s guidance - certificated:
+                    ''3.1 Individual and partner'', controlled: ''4.2 Aggregation
+                    of Means''.'
                   example:
                     partner:
                       date_of_birth: '1992-07-22'
                       employed: true
+                    cash_transactions:
+                      income:
+                      - category: property_or_lodger
+                        payments:
+                        - date: '2022-01-01'
+                          amount: 7
+                          client_id: '05459c0f'
+                        - date: '2022-02-01'
+                          amount: 5
+                          client_id: 10318f7b
+                        - date: '2022-03-01'
+                          amount: 5
+                          client_id: 5cf62a12
+                      outgoings:
+                      - category: legal_aid
+                        payments:
+                        - date: '2022-02-01'
+                          amount: 8
+                          client_id: 0fb3daa93e5711-a620-4743-9f0c-05459c
+                        - date: '2022-03-01'
+                          amount: 9
+                          client_id: 10318f7b-289a-4fa5-a986-fc6f499fecd0
+                        - date: '2022-04-01'
+                          amount: 8
+                          client_id: 5cf62a12-c92b-4cc1-b8ca-eeb4efbcce21
+                    outgoings:
+                    - name: child_care
+                      payments:
+                      - client_id: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                        payment_date: '2022-04-22'
+                        amount: 20
+                    - name: rent_or_mortgage
+                      payments:
+                      - client_id: '05459c0f-a620-4743-9f0c-b3daa93e5711'
+                        payment_date: '2022-03-22'
+                        housing_cost_type: rent
+                        amount: 10
                     irregular_incomes:
                     - income_type: student_loan
                       frequency: annual
                       amount: 101.01
                     employments:
-                    - name: A
-                      client_id: B
+                    - name: Dish washing
+                      client_id: Gino's
                       payments:
-                      - client_id: C
-                        date: '1992-07-22'
-                        gross: 101.01
-                        benefits_in_kind: 0
-                        tax: -11
-                        national_insurance: -3
+                      - client_id: March 23 payroll
+                        date: '2022-03-22'
+                        gross: 80
+                        benefits_in_kind: 5
+                        tax: 15
+                        national_insurance: 0
+                    employment_details:
+                    - income:
+                        receiving_only_statutory_sick_or_maternity_pay: true
+                        frequency: monthly
+                        gross: 500
+                        benefits_in_kind: 13
+                        tax: -9
+                        national_insurance: -4
+                    self_employment_details:
+                    - income:
+                        frequency: monthly
+                        gross: 22
+                        tax: -3
+                        national_insurance: -1
                     regular_transactions:
                     - category: benefits
                       operation: credit
                       frequency: three_monthly
-                      amount: 101.01
+                      amount: 75
                     state_benefits:
-                    - name: D
+                    - name: Disability Benefit
                       payments:
-                      - client_id: E
-                        date: '1992-07-22'
-                        amount: 101.01
+                      - client_id: 12A
+                        date: '2022-03-22'
+                        amount: 100
                         flags:
                           multi_benefit: false
                     additional_properties:
-                    - value: 500000.01
-                      outstanding_mortgage: 999.99
-                      percentage_owned: 100
+                    - value: 50000
+                      outstanding_mortgage: 0
+                      percentage_owned: 5
                       shared_with_housing_assoc: false
                       subject_matter_of_dispute: false
                     capitals:
                       bank_accounts:
-                      - value: 1.01
-                        description: F
+                      - value: 100
+                        description: Barclays
                         subject_matter_of_dispute: false
                       non_liquid_capital:
-                      - value: 1.01
-                        description: G
+                      - value: 200
+                        description: Bond
                         subject_matter_of_dispute: false
                     vehicles:
-                    - value: 5000
+                    - value: 18000
                       loan_amount_outstanding: 1000
-                      date_of_purchase: '2017-01-23'
+                      date_of_purchase: '2021-01-23'
                       in_regular_use: true
                       subject_matter_of_dispute: false
+                    dependants:
+                    - date_of_birth: '1983-08-08'
+                      in_full_time_education: false
+                      relationship: adult_relative
+                      monthly_income: 48.63
+                      assets_value: 0
+                    - date_of_birth: '1982-02-03'
+                      in_full_time_education: false
+                      relationship: adult_relative
+                      monthly_income: 800
+                      assets_value: 0
                   properties:
                     partner:
                       type: object
-                      description: The partner of the applicant
+                      description: Partner's personal info
                       required:
                       - date_of_birth
-                      - employed
+                      additionalProperties: false
                       properties:
                         date_of_birth:
                           type: string
                           format: date
                           example: '1992-07-22'
-                          description: Applicant's partner's date of birth
+                          description: Partner's date of birth
                         employed:
                           type: boolean
-                          example: true
-                          description: Applicant's partner is employed
+                          description: Deprecated - employment is now determined by
+                            presence of gross employment income
+                          deprecated: true
+                    cash_transactions:
+                      "$ref": "#/components/schemas/CashTransactions"
                     outgoings:
-                      type: array
+                      "$ref": "#/components/schemas/OutgoingsList"
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
-                      type: array
-                      required:
-                      - name
-                      - client_id
-                      - payments
-                      description: One or more employment income details
-                      items:
-                        type: object
-                        description: Employment income detail
-                        properties:
-                          name:
-                            type: string
-                            description: Identifying name for this employment - e.g.
-                              employer's name
-                          client_id:
-                            type: string
-                            description: Client supplied id to identify the employment
-                          payments:
-                            "$ref": "#/components/schemas/EmploymentPaymentList"
+                      "$ref": "#/components/schemas/v6/Employments"
                     employment_details:
                       type: array
-                      description: One or more employment details for partner
+                      description: 'Employments, with pay info supplied in the ''how
+                        much, how often'' pattern, for partner. (Compare with: ''employments'')'
                       items:
                         "$ref": "#/components/schemas/EmploymentDetails"
                     self_employment_details:
                       type: array
-                      description: One or more self employment details for partner
+                      description: Self employments, with pay info supplied in the
+                        'how much, how often' pattern, for partner
                       items:
                         "$ref": "#/components/schemas/SelfEmployment"
                     regular_transactions:
@@ -1735,8 +2528,8 @@ paths:
                         "$ref": "#/components/schemas/StateBenefit"
                     additional_properties:
                       type: array
-                      description: One or more additional properties owned by the
-                        applicant's partner
+                      description: Additional properties owned by the partner - i.e.
+                        excluding those already listed for the applicant
                       items:
                         "$ref": "#/components/schemas/Property"
                     capitals:
@@ -1747,10 +2540,9 @@ paths:
                       items:
                         "$ref": "#/components/schemas/Vehicle"
                     dependants:
-                      type: array
-                      description: One or more dependants details
-                      items:
-                        "$ref": "#/components/schemas/Dependant"
+                      "$ref": "#/components/schemas/v6/Dependants"
+                    other_incomes:
+                      "$ref": "#/components/schemas/OtherIncomes"
                 explicit_remarks:
                   "$ref": "#/components/schemas/ExplicitRemarks"
         required: true

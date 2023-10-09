@@ -5,11 +5,6 @@ class GrossIncomeSummary < ApplicationRecord
   has_many :regular_transactions, dependent: :destroy
   has_many :irregular_income_payments, dependent: :destroy
   has_many :cash_transaction_categories, dependent: :destroy
-  has_many :eligibilities,
-           class_name: "Eligibility::GrossIncome",
-           inverse_of: :gross_income_summary,
-           foreign_key: :parent_id,
-           dependent: :destroy
 
   has_many :student_loan_payments, -> { student_loan }, class_name: "IrregularIncomePayment"
   has_many :unspecified_source_payments, -> { unspecified_source }, class_name: "IrregularIncomePayment"
@@ -20,17 +15,5 @@ class GrossIncomeSummary < ApplicationRecord
 
   def cash_transactions(operation, category)
     cash_transaction_categories.where(operation:, name: category).flat_map(&:cash_transactions)
-  end
-
-  def summarized_assessment_result
-    Utilities::ResultSummarizer.call(eligibilities.map(&:assessment_result))
-  end
-
-  def eligible?
-    summarized_assessment_result.in? %i[eligible partially_eligible]
-  end
-
-  def ineligible?
-    !eligible?
   end
 end

@@ -1,55 +1,42 @@
 module Calculators
   class PensionerCapitalDisregardCalculator
-    def initialize(submission_date:, date_of_birth:, total_disposable_income:, receives_qualifying_benefit:)
-      @submission_date = submission_date
-      @date_of_birth = date_of_birth
-      @total_disposable_income = total_disposable_income
-      @receives_qualifying_benefit = receives_qualifying_benefit
-    end
+    class << self
+      def passported_value(submission_date:, date_of_birth:)
+        if pensioner?(submission_date:, date_of_birth:)
+          thresholds(submission_date, :passported)
+        else
+          0
+        end
+      end
 
-    def value
-      return 0 unless pensioner?
+      def non_passported_value(submission_date:, date_of_birth:, total_disposable_income:)
+        if pensioner?(submission_date:, date_of_birth:)
+          income = total_disposable_income.to_f
+          monthly_income_bands = thresholds(submission_date, :monthly_income_values)
+          value_band_key = monthly_income_bands.keys.detect { |lower, upper| income.between?(lower, upper) }
+          monthly_income_bands.fetch(value_band_key)
+        else
+          0
+        end
+      end
 
-      passported? ? passported_value : non_passported_value
-    end
+    private
 
-    def thresholds
-      @thresholds ||= Threshold.value_for(:pensioner_capital_disregard, at: @submission_date)
-    end
+      def pensioner?(submission_date:, date_of_birth:)
+        if thresholds(submission_date, :minimum_age_in_years) == "state_pension_age"
+          submission_date > Calculators::StatePensionDateCalculator.state_pension_date(date_of_birth:)
+        else
+          earliest_dob_for_pensioner(submission_date) >= date_of_birth
+        end
+      end
 
-  private
+      def earliest_dob_for_pensioner(submission_date)
+        submission_date - thresholds(submission_date, :minimum_age_in_years).years
+      end
 
-    def pensioner?
-      earliest_dob_for_pensioner >= person_dob
-    end
-
-    def earliest_dob_for_pensioner
-      @submission_date - minimum_pensioner_age.years
-    end
-
-    def minimum_pensioner_age
-      thresholds[:minimum_age_in_years]
-    end
-
-    def person_dob
-      @date_of_birth
-    end
-
-    def passported?
-      @receives_qualifying_benefit
-    end
-
-    def non_passported_value
-      income = @total_disposable_income.to_f
-      thresholds[:monthly_income_values].each { |value_bands, banding| return banding if income_threshold_applies(income, value_bands) }
-    end
-
-    def passported_value
-      thresholds[:non_passported]
-    end
-
-    def income_threshold_applies(income, key_array)
-      (key_array.count.eql?(1) && income >= key_array[0]) || (income >= key_array[0] && income <= key_array[1])
+      def thresholds(submission_date, key)
+        Threshold.value_for(:pensioner_capital_disregard, at: submission_date).fetch(key)
+      end
     end
   end
 end

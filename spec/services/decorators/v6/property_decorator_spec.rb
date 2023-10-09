@@ -15,18 +15,20 @@ module Decorators
         end
 
         context "property_exists" do
-          let(:record) do
-            create :property,
-                   value: 785_900.0,
-                   outstanding_mortgage: 454_533.64,
-                   percentage_owned: 100.0,
-                   main_home: true,
-                   shared_with_housing_assoc: false
+          let(:main_home) do
+            build :property,
+                  value: 785_900.0,
+                  outstanding_mortgage: 454_533.64,
+                  percentage_owned: 100.0,
+                  main_home: true,
+                  shared_with_housing_assoc: false,
+                  subject_matter_of_dispute: false
           end
           let(:property) do
             assessed_properties = Assessors::PropertyAssessor.call(
               submission_date: Date.current,
-              properties: [record],
+              main_home:,
+              additional_properties: [],
               level_of_help: "certificated",
               smod_cap: 100_000,
             )
@@ -47,6 +49,7 @@ module Decorators
               main_home_equity_disregard: 100_000,
               assessed_equity: 207_789.36,
               smod_allowance: 0,
+              subject_matter_of_dispute: false,
             }
             expect(json_hash).to eq expected_hash
           end

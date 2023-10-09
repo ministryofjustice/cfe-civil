@@ -1,87 +1,103 @@
 class CapitalCollatorAndAssessor
   class << self
-    def call(assessment:, vehicles:, date_of_birth:, receives_qualifying_benefit:)
-      pensioner_capital_disregard = pensioner_capital_disregard(submission_date: assessment.submission_date, date_of_birth:, receives_qualifying_benefit:,
-                                                                total_disposable_income: assessment.applicant_disposable_income_summary.total_disposable_income)
-      applicant_subtotals = collate_applicant_capital(assessment, pensioner_capital_disregard:, vehicles:)
-      combined_assessed_capital = applicant_subtotals.assessed_capital
-      capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
-      CapitalSubtotals.new(
+    def call(proceeding_types:, submission_date:, level_of_help:, capitals_data:, date_of_birth:, total_disposable_income:)
+      applicant_subtotals = collate_applicant_capital(
+        submission_date:,
+        level_of_help:,
+        pensioner_capital_disregard: Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth:),
+        capitals_data:,
+      )
+
+      Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
-        capital_contribution:,
-        combined_assessed_capital:,
+        proceeding_types:,
+        level_of_help:,
+        submission_date:,
       )
     end
 
-    def partner(assessment:, vehicles:, partner_vehicles:, date_of_birth:, partner_date_of_birth:, receives_qualifying_benefit:)
-      total_disposable_income = assessment.applicant_disposable_income_summary.total_disposable_income +
-        assessment.partner_disposable_income_summary.total_disposable_income
+    def passported(proceeding_types:, submission_date:, level_of_help:, capitals_data:, date_of_birth:)
+      applicant_subtotals = collate_applicant_capital(
+        submission_date:,
+        level_of_help:,
+        pensioner_capital_disregard: Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth:),
+        capitals_data:,
+      )
 
-      pensioner_capital_disregard = partner_pensioner_capital_disregard(submission_date: assessment.submission_date, date_of_birth:, partner_date_of_birth:,
-                                                                        receives_qualifying_benefit:, total_disposable_income:)
-      applicant_subtotals = collate_applicant_capital(assessment, pensioner_capital_disregard:, vehicles:)
-      partner_subtotals = collate_partner_capital(assessment,
-                                                  pensioner_capital_disregard: pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
-                                                  vehicles: partner_vehicles)
-      combined_assessed_capital = applicant_subtotals.assessed_capital + partner_subtotals.assessed_capital
-      capital_contribution = Assessors::CapitalAssessor.call(assessment.applicant_capital_summary, combined_assessed_capital)
-      CapitalSubtotals.new(
+      Capital::Subtotals.new(
+        applicant_capital_subtotals: applicant_subtotals,
+        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
+        proceeding_types:,
+        level_of_help:,
+        submission_date:,
+      )
+    end
+
+    def partner(proceeding_types:, submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:,
+                total_disposable_income:)
+      applicant_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth:)
+      partner_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth: partner_date_of_birth)
+
+      applicant_subtotals = collate_applicant_capital(submission_date:,
+                                                      level_of_help:,
+                                                      pensioner_capital_disregard: [applicant_value, partner_value].max,
+                                                      capitals_data:)
+      partner_subtotals = collate_partner_capital(submission_date:,
+                                                  level_of_help:,
+                                                  pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
+                                                  capitals_data: partner_capitals_data)
+      Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
-        capital_contribution:,
-        combined_assessed_capital:,
+        proceeding_types:,
+        level_of_help:,
+        submission_date:,
+      )
+    end
+
+    def partner_passported(proceeding_types:, submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:)
+      applicant_value = Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth:)
+      partner_value = Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth: partner_date_of_birth)
+
+      applicant_subtotals = collate_applicant_capital(submission_date:,
+                                                      level_of_help:,
+                                                      pensioner_capital_disregard: [applicant_value, partner_value].max,
+                                                      capitals_data:)
+      partner_subtotals = collate_partner_capital(submission_date:,
+                                                  level_of_help:,
+                                                  pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
+                                                  capitals_data: partner_capitals_data)
+      Capital::Subtotals.new(
+        applicant_capital_subtotals: applicant_subtotals,
+        partner_capital_subtotals: partner_subtotals,
+        proceeding_types:,
+        level_of_help:,
+        submission_date:,
       )
     end
 
   private
 
-    def collate_applicant_capital(assessment, pensioner_capital_disregard:, vehicles:)
+    def collate_applicant_capital(submission_date:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
       Collators::CapitalCollator.call(
-        vehicles:,
-        submission_date: assessment.submission_date,
-        capital_summary: assessment.applicant_capital_summary,
-        maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(assessment.submission_date),
+        capitals_data:,
+        submission_date:,
+        maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(submission_date),
         pensioner_capital_disregard:,
-        level_of_help: assessment.level_of_help,
+        level_of_help:,
       )
     end
 
-    def collate_partner_capital(assessment, pensioner_capital_disregard:, vehicles:)
+    def collate_partner_capital(submission_date:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
       Collators::CapitalCollator.call(
-        vehicles:,
-        submission_date: assessment.submission_date,
-        capital_summary: assessment.partner_capital_summary,
+        capitals_data:,
+        submission_date:,
         pensioner_capital_disregard:,
         # partner assets cannot be considered as a subject matter of dispute
         maximum_subject_matter_of_dispute_disregard: 0,
-        level_of_help: assessment.level_of_help,
+        level_of_help:,
       )
-    end
-
-    def pensioner_capital_disregard(submission_date:, date_of_birth:, receives_qualifying_benefit:, total_disposable_income:)
-      Calculators::PensionerCapitalDisregardCalculator.new(
-        submission_date:,
-        receives_qualifying_benefit:,
-        total_disposable_income:,
-        date_of_birth:,
-      ).value
-    end
-
-    def partner_pensioner_capital_disregard(submission_date:, date_of_birth:, partner_date_of_birth:, receives_qualifying_benefit:, total_disposable_income:)
-      applicant_value = Calculators::PensionerCapitalDisregardCalculator.new(
-        submission_date:,
-        receives_qualifying_benefit:,
-        total_disposable_income:,
-        date_of_birth:,
-      )
-      partner_value = Calculators::PensionerCapitalDisregardCalculator.new(
-        submission_date:,
-        receives_qualifying_benefit:,
-        total_disposable_income:,
-        date_of_birth: partner_date_of_birth,
-      )
-      [applicant_value, partner_value].map(&:value).max
     end
 
     def maximum_subject_matter_of_dispute_disregard(submission_date)

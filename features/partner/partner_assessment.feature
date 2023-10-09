@@ -27,6 +27,7 @@ Feature:
       | main_home_equity_disregard |      0.0 |
       | transaction_allowance      |   4500.0 |
       | assessed_equity            |      0.0 |
+      | subject_matter_of_dispute  |   true   |
     And I should see the following "partner property" details for the partner:
       | attribute                  | value     |
       | value                      | 170000.0  |
@@ -35,6 +36,7 @@ Feature:
       | shared_with_housing_assoc  | false     |
       | assessed_equity            | 64900.0   |
       | net_value                  | 64900.0   |
+      | subject_matter_of_dispute  |   false   |
     And I should see the following overall summary:
       | attribute                    | value                 |
       | assessment_result            | contribution_required |
@@ -106,9 +108,9 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
     And I am using version 6 of the API
     And I add the following housing benefit details for the applicant:
       | client_id |     date     |  amount |
-      |     C     |  2022-07-22  | 500.0   |
-      |     C     |  2022-08-22  | 500.0   |
-      |     C     |  2022-09-22  | 500.0   |
+      |     C     |  2021-07-22  | 500.0   |
+      |     C     |  2021-08-22  | 500.0   |
+      |     C     |  2021-09-22  | 500.0   |
     And I add the following regular_transaction details for the partner:
       | operation | category         | frequency | amount |
       | debit     | rent_or_mortgage | monthly   | 600.0  |

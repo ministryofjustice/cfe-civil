@@ -1,0 +1,80 @@
+---
+# MTR (Means Test Review) config file - start date TBD
+gross_income_upper: 2912.50
+infinite_gross_income_upper: 999_999_999_999
+gross_income:
+  dependant_over_14_increase_percent: 50
+  dependant_under_14_increase_percent: 30
+disposable_income_lower_certificated: 622
+disposable_income_lower_controlled: 946
+disposable_income_upper: 946
+capital_lower_certificated: 7_000
+capital_upper: 11_000
+
+partner_allowance: 211.32
+lone_parent_allowance: 315.0
+
+pensioner_capital_disregard:
+  minimum_age_in_years: "state_pension_age"
+  passported: 100_000
+  non_passported: 100_000
+  # capital to disregard if monthly disposable income (excluding income derived from capital) is below these figures
+  monthly_income_values:
+    [-.inf, 206.99]: 100_000
+    [207.0, 414.99]: 65_000
+    [415.0, 621.99]: 35_000
+    [622.0, .inf]: 0
+property_notional_sale_costs_percentage: 3.0
+property_maximum_mortgage_allowance: 999_999_999_999
+property_disregard:
+  main_home: 185_000.0
+  additional_property: 0.0
+vehicle_disregard: 15_000
+vehicle_out_of_scope_months: 36
+
+dependant_allowances:
+  child_under_14: 211.00
+  child_under_15: 448.00
+  child_aged_15: 448.00
+  child_16_and_over: 448.00
+  adult: 448.00
+  adult_capital_threshold: 8_000
+
+single_monthly_housing_costs_cap: 999_999_999_999
+
+# The 'base' values in this table represent the total payable inside the
+# previous lower bands i.e. base for band_b is 730 - 622 * 40%, and band_c is 838 - 730 * 60% + band_b base value
+# The bands are equally spaced (at the moment) so band_c's figure is exactly 50% of 838 - 622
+disposable_income_contribution_bands:
+  bands:
+    band_zero:
+      threshold: -.inf
+      percentage: 0.0
+      disregard: 0.0
+      base: 0
+    band_a:
+      threshold: 622.0
+      percentage: 40.0
+      disregard: 622.0
+      base: 0
+    band_b:
+      threshold: 730.0
+      percentage: 60.0
+      disregard: 730.0
+      base: 43.2
+    band_c:
+      threshold: 838.0
+      percentage: 80.0
+      disregard: 838.0
+      base: 108
+    band_z:
+      threshold: 946.0
+      percentage: 0
+      disregard: 946.0
+      base: 194.4
+  minimum_contribution: 20.0
+
+fixed_employment_allowance: 66.0
+employment_income_variance: 60.0
+subject_matter_of_dispute_disregard: 999_999_999_999
+pension_contribution_cap: 5

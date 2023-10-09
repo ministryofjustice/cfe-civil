@@ -1,11 +1,13 @@
 module Decorators
   module V6
     class ApplicantCapitalResultDecorator < CapitalResultDecorator
-      def initialize(summary:, applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:, combined_assessed_capital:)
+      def initialize(summary:, applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:,
+                     combined_assessed_capital:, eligibilities:)
         super(summary, applicant_capital_subtotals)
         @capital_contribution = capital_contribution
         @combined_assessed_capital = combined_assessed_capital
         @partner_capital_subtotals = partner_capital_subtotals
+        @eligibilities = eligibilities
       end
 
       def as_json
@@ -28,7 +30,7 @@ module Decorators
       end
 
       def proceeding_types
-        ProceedingTypesResultDecorator.new(@summary.eligibilities, @summary.assessment.proceeding_types).as_json
+        ProceedingTypesResultDecorator.new(@eligibilities).as_json
       end
 
       def combined_assessed_capital

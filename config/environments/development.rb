@@ -16,6 +16,8 @@ Rails.application.configure do
 
   # Do not eager load code on boot.
   config.eager_load = false
+  # This speeds up development env by 20%, useful if testing with request_rerunner
+  # config.log_level = :info
 
   # Show full error reports.
   config.consider_all_requests_local = true

@@ -39,15 +39,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_disposable_income_summary_and_eligibilities do
-      after(:create) do |assessment|
-        dis = create(:disposable_income_summary, assessment:)
-        assessment.proceeding_type_codes.each do |ptc|
-          create :disposable_income_eligibility, disposable_income_summary: dis, proceeding_type_code: ptc
-        end
-      end
-    end
-
     trait :with_capital_summary do
       after(:create) do |assessment|
         create :capital_summary, assessment:
@@ -69,15 +60,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_gross_income_summary_and_eligibilities do
-      after(:create) do |assessment|
-        gis = create(:gross_income_summary, assessment:)
-        assessment.proceeding_type_codes.each do |ptc|
-          create :gross_income_eligibility, gross_income_summary: gis, proceeding_type_code: ptc
-        end
-      end
-    end
-
     trait :with_gross_income_summary_and_records do
       after(:create) do |assessment|
         create :gross_income_summary, :with_all_records, assessment:
@@ -86,47 +68,21 @@ FactoryBot.define do
 
     trait :with_gross_income_summary_and_employment do
       after(:create) do |assessment|
-        create :gross_income_summary, :with_employment, assessment:
+        create :gross_income_summary, assessment:
       end
     end
 
     trait :with_everything do
       after(:create) do |assessment|
         create(:gross_income_summary, :with_everything, assessment:)
-        create(:disposable_income_summary, :with_everything, assessment:)
-        create :capital_summary, :with_everything, assessment:
+        create(:disposable_income_summary, assessment:)
+        create :capital_summary, assessment:
       end
     end
 
     trait :passported do
       after(:create) do |assessment|
-        create :capital_summary, :with_everything, :with_eligibilities, assessment:
-      end
-    end
-
-    trait :with_eligibilities do
-      after(:create) do |assessment|
-        if assessment.applicant_capital_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_capital_summary.eligibilities << create(:capital_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
-        if assessment.applicant_gross_income_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_gross_income_summary.eligibilities << create(:gross_income_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
-        if assessment.applicant_disposable_income_summary
-          assessment.proceeding_type_codes.each do |ptc|
-            assessment.applicant_disposable_income_summary.eligibilities << create(:disposable_income_eligibility, proceeding_type_code: ptc)
-          end
-        end
-
-        assessment.proceeding_type_codes.each do |ptc|
-          assessment.eligibilities << create(:assessment_eligibility, proceeding_type_code: ptc)
-        end
+        create :capital_summary, :with_eligibilities, assessment:
       end
     end
   end

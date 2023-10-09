@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
+ActiveRecord::Schema[7.0].define(version: 2023_09_28_101033) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -21,20 +21,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
     t.date "created_at", null: false
     t.date "updated_at", null: false
     t.date "submission_date", null: false
-    t.string "assessment_result", default: "pending", null: false
     t.text "remarks"
     t.string "version"
     t.integer "level_of_help", default: 0, null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
-  end
-
-  create_table "capital_items", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "capital_summary_id"
-    t.string "type", null: false
-    t.string "description", null: false
-    t.decimal "value", default: "0.0", null: false
-    t.boolean "subject_matter_of_dispute"
-    t.index ["capital_summary_id"], name: "index_capital_items_on_capital_summary_id"
   end
 
   create_table "capital_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -61,61 +51,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
 
   create_table "disposable_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id", null: false
-    t.decimal "gross_housing_costs", default: "0.0", null: false
-    t.decimal "total_outgoings_and_allowances", default: "0.0", null: false
-    t.decimal "total_disposable_income", default: "0.0", null: false
-    t.decimal "lower_threshold", default: "0.0", null: false
-    t.decimal "upper_threshold", default: "0.0", null: false
-    t.string "assessment_result", default: "pending", null: false
-    t.decimal "net_housing_costs", default: "0.0"
-    t.decimal "housing_benefit", default: "0.0"
-    t.decimal "income_contribution", default: "0.0"
-    t.decimal "child_care_all_sources", default: "0.0"
-    t.decimal "maintenance_out_all_sources", default: "0.0"
-    t.decimal "rent_or_mortgage_all_sources", default: "0.0"
-    t.decimal "legal_aid_all_sources", default: "0.0"
-    t.decimal "child_care_bank", default: "0.0"
-    t.decimal "maintenance_out_bank", default: "0.0"
-    t.decimal "rent_or_mortgage_bank", default: "0.0"
-    t.decimal "legal_aid_bank", default: "0.0"
-    t.decimal "child_care_cash", default: "0.0"
-    t.decimal "maintenance_out_cash", default: "0.0"
-    t.decimal "rent_or_mortgage_cash", default: "0.0"
-    t.decimal "legal_aid_cash", default: "0.0"
     t.string "type", default: "ApplicantDisposableIncomeSummary"
-    t.decimal "combined_total_disposable_income"
-    t.decimal "combined_total_outgoings_and_allowances"
     t.index ["assessment_id"], name: "index_disposable_income_summaries_on_assessment_id"
-  end
-
-  create_table "eligibilities", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "parent_id", null: false
-    t.string "type"
-    t.string "proceeding_type_code", null: false
-    t.decimal "lower_threshold"
-    t.decimal "upper_threshold"
-    t.string "assessment_result", default: "pending", null: false
-    t.index ["parent_id", "type", "proceeding_type_code"], name: "eligibilities_unique_type_ptc", unique: true
-  end
-
-  create_table "employment_payments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "employment_id"
-    t.date "date", null: false
-    t.decimal "gross_income", default: "0.0", null: false
-    t.decimal "benefits_in_kind", default: "0.0", null: false
-    t.decimal "tax", default: "0.0", null: false
-    t.decimal "national_insurance", default: "0.0", null: false
-    t.string "client_id", null: false
-    t.index ["employment_id"], name: "index_employment_payments_on_employment_id"
-  end
-
-  create_table "employments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.string "name"
-    t.string "client_id", null: false
-    t.string "type", default: "ApplicantEmployment"
-    t.boolean "receiving_only_statutory_sick_or_maternity_pay", default: false
-    t.index ["assessment_id"], name: "index_employments_on_assessment_id"
   end
 
   create_table "explicit_remarks", force: :cascade do |t|
@@ -154,36 +91,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
     t.index ["gross_income_summary_id"], name: "index_other_income_sources_on_gross_income_summary_id"
   end
 
-  create_table "outgoings", force: :cascade do |t|
-    t.uuid "disposable_income_summary_id", null: false
-    t.string "type", null: false
-    t.date "payment_date", null: false
-    t.decimal "amount", null: false
-    t.string "housing_cost_type"
-    t.string "client_id"
-    t.index ["disposable_income_summary_id"], name: "index_outgoings_on_disposable_income_summary_id"
-  end
-
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
-    t.string "client_involvement_type", null: false
+    t.string "client_involvement_type"
     t.decimal "gross_income_upper_threshold"
     t.decimal "disposable_income_upper_threshold"
     t.decimal "capital_upper_threshold"
     t.index ["assessment_id", "ccms_code"], name: "index_proceeding_types_on_assessment_id_and_ccms_code", unique: true
     t.index ["assessment_id"], name: "index_proceeding_types_on_assessment_id"
-  end
-
-  create_table "properties", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.decimal "value"
-    t.decimal "outstanding_mortgage"
-    t.decimal "percentage_owned"
-    t.boolean "main_home"
-    t.boolean "shared_with_housing_assoc"
-    t.uuid "capital_summary_id"
-    t.boolean "subject_matter_of_dispute"
-    t.index ["capital_summary_id"], name: "index_properties_on_capital_summary_id"
   end
 
   create_table "regular_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -198,10 +114,10 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
   create_table "request_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "http_status", null: false
     t.decimal "duration", null: false
-    t.json "request"
-    t.json "response"
-    t.date "created_at"
-    t.string "user_agent"
+    t.jsonb "request", null: false
+    t.jsonb "response", null: false
+    t.date "created_at", null: false
+    t.string "user_agent", null: false
   end
 
   create_table "state_benefit_payments", force: :cascade do |t|
@@ -231,20 +147,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_29_124618) do
     t.index ["state_benefit_type_id"], name: "index_state_benefits_on_state_benefit_type_id"
   end
 
-  add_foreign_key "capital_items", "capital_summaries"
   add_foreign_key "capital_summaries", "assessments"
   add_foreign_key "cash_transaction_categories", "gross_income_summaries"
   add_foreign_key "cash_transactions", "cash_transaction_categories"
   add_foreign_key "disposable_income_summaries", "assessments"
-  add_foreign_key "employment_payments", "employments"
-  add_foreign_key "employments", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "irregular_income_payments", "gross_income_summaries"
   add_foreign_key "other_income_payments", "other_income_sources"
   add_foreign_key "other_income_sources", "gross_income_summaries"
-  add_foreign_key "outgoings", "disposable_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
-  add_foreign_key "properties", "capital_summaries"
   add_foreign_key "regular_transactions", "gross_income_summaries"
   add_foreign_key "state_benefit_payments", "state_benefits"
   add_foreign_key "state_benefits", "gross_income_summaries"

@@ -22,16 +22,16 @@ module Assessors
     Disregard = Data.define(:result, :applied)
 
     class << self
-      def call(submission_date:, properties:, level_of_help:, smod_cap:)
+      def call(submission_date:, main_home:, level_of_help:, smod_cap:, additional_properties:)
         remaining_mortgage_allowance ||= Threshold.value_for(:property_maximum_mortgage_allowance, at: submission_date)
 
-        (properties.select(&:main_home) + properties.reject(&:main_home)).map do |property|
+        ([main_home.presence].compact + additional_properties).map do |property|
           allowable_outstanding_mortgage = calculate_outstanding_mortgage(property, remaining_mortgage_allowance)
           remaining_mortgage_allowance -= allowable_outstanding_mortgage
 
           transaction_allowance_cap = property_transaction_allowance_cap(property, level_of_help, submission_date)
           equity = property.value - allowable_outstanding_mortgage
-          transaction_allowance = Utilities::NumberUtilities.negative_to_zero [equity, transaction_allowance_cap].min
+          transaction_allowance = Utilities::NumberUtilities.positive_or_zero [equity, transaction_allowance_cap].min
           net_value = equity - transaction_allowance
           net_equity = calculate_net_equity(property, net_value)
 
@@ -60,7 +60,7 @@ module Assessors
     private
 
       def apply_disregard(equity, disregard)
-        equity_after_disregard = Utilities::NumberUtilities.negative_to_zero equity - disregard
+        equity_after_disregard = Utilities::NumberUtilities.positive_or_zero equity - disregard
         Disregard.new(result: equity_after_disregard, applied: equity - equity_after_disregard)
       end
 

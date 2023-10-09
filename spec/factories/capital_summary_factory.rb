@@ -30,15 +30,6 @@ FactoryBot.define do
       assessed_capital { Faker::Number.between(from: 11_000, to: 30_000).round(2) }
     end
 
-    trait :with_everything do
-      after(:create) do |record|
-        create :non_liquid_capital_item, capital_summary: record
-        create :liquid_capital_item, capital_summary: record
-        create :property, :main_home, capital_summary: record
-        create :property, :additional_property, capital_summary: record
-      end
-    end
-
     trait :with_eligibilities do
       after(:create) do |rec|
         rec.assessment.proceeding_type_codes.each do |ptc|

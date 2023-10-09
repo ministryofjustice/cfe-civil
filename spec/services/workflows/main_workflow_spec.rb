@@ -9,7 +9,25 @@ module Workflows
              :with_everything,
              proceedings: proceedings_hash
     end
-    let(:calculation_output) { instance_double(CalculationOutput, capital_subtotals: instance_double(CapitalSubtotals, combined_assessed_capital: 0)) }
+    let(:calculation_output) do
+      instance_double(CalculationOutput,
+                      disposable_income_eligibilities: [
+                        Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.first, assessment_result: "eligible",
+                                                          upper_threshold: 27, lower_threshold: 14),
+                        Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "eligible",
+                                                          upper_threshold: 27, lower_threshold: 14),
+                      ],
+                      gross_income_subtotals: GrossIncome::Unassessed.new(assessment.proceeding_types),
+                      applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
+                      capital_subtotals: instance_double(Capital::Subtotals,
+                                                         combined_assessed_capital: 0,
+                                                         summarized_assessment_result: :eligible,
+                                                         eligibilities: [
+                                                           Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.first,
+                                                                                    assessment_result: "contribution_required",
+                                                                                    upper_threshold: 6000, lower_threshold: 3000),
+                                                         ]))
+    end
     let(:person_blank) { nil }
 
     before do
@@ -21,7 +39,6 @@ module Workflows
 
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
         described_class.call(assessment:,
                              applicant: build(:person_data, details: applicant),
                              partner: nil)
@@ -33,7 +50,6 @@ module Workflows
         it "does not call a workflow" do
           expect(PassportedWorkflow).not_to receive(:call)
           expect(NonPassportedWorkflow).not_to receive(:call)
-          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: true, receives_qualifying_benefit: false)
           described_class.call(assessment:,
                                applicant: build(:person_data, details: applicant),
                                partner: nil)
@@ -52,16 +68,19 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Assessors::MainAssessor).to receive(:call)
-          allow(PassportedWorkflow).to receive(:call).with(assessment:, vehicles: [],
+          allow(Summarizers::MainSummarizer).to receive(:call)
+          allow(PassportedWorkflow).to receive(:call).with(proceeding_types: assessment.proceeding_types,
+                                                           capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                                                           non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
-                                                           receives_qualifying_benefit: true).and_return(calculation_output)
+                                                           submission_date: assessment.submission_date,
+                                                           level_of_help: assessment.level_of_help,
+                                                           receives_asylum_support: false).and_return(calculation_output)
           workflow_call
         end
 
-        it "calls MainAssessor" do
+        it "calls MainSummarizer" do
           allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-          expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: true)
           workflow_call
         end
       end
@@ -82,11 +101,17 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Assessors::MainAssessor).to receive(:call)
-          expect(PassportedWorkflow).to receive(:partner).with(assessment:, vehicles: [], partner_vehicles: [],
+          allow(Summarizers::MainSummarizer).to receive(:call).and_return(OpenStruct.new(assessment_result: :ineligible))
+          expect(PassportedWorkflow).to receive(:partner).with(proceeding_types: assessment.proceeding_types,
+                                                               capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                                                               non_liquid_capital_items: [], main_home: {}, additional_properties: []),
+                                                               partner_capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                                                                       non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
-                                                               receives_qualifying_benefit: true).and_call_original
+                                                               level_of_help: assessment.level_of_help,
+                                                               submission_date: assessment.submission_date,
+                                                               receives_asylum_support: false).and_call_original
           workflow_call
         end
       end
@@ -102,14 +127,13 @@ module Workflows
       end
 
       it "calls NonPassportedWorkflow" do
-        allow(Assessors::MainAssessor).to receive(:call)
+        allow(Summarizers::MainSummarizer).to receive(:call)
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
         workflow_call
       end
 
-      it "calls MainAssessor" do
+      it "calls MainSummarizer" do
         allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-        expect(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
         workflow_call
       end
     end
@@ -121,7 +145,6 @@ module Workflows
                :with_capital_summary,
                :with_gross_income_summary,
                :with_disposable_income_summary,
-               :with_eligibilities,
                proceedings: proceedings_hash,
                version: "6"
       end
@@ -137,31 +160,30 @@ module Workflows
         it "Populates proceeding types with thresholds" do
           expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
 
-          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_asylum_support: false, receives_qualifying_benefit: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+          allow(Summarizers::MainSummarizer).to receive(:call)
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
-                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       child_care_bank: 0,
+                                                                       liquid_capital_items: [],
+                                                                       outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       capital_summary: assessment.applicant_capital_summary,
-                                                                       assessed_capital: 0)
+                                                                       assessed_capital: 0).and_call_original
 
           workflow_call
         end
 
         it "creates the eligibility records" do
-          expect(Creators::EligibilitiesCreator).to receive(:call).with(assessment:, client_dependants: [], partner_dependants: [])
-
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
-          allow(Assessors::MainAssessor).to receive(:call).with(assessment:, receives_qualifying_benefit: false, receives_asylum_support: false)
-          allow(RemarkGenerators::Orchestrator).to receive(:call).with(assessment:, employments: assessment.employments,
+          allow(Summarizers::MainSummarizer).to receive(:call)
+          allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
-                                                                       disposable_income_summary: assessment.applicant_disposable_income_summary,
+                                                                       child_care_bank: 0,
+                                                                       liquid_capital_items: [],
+                                                                       outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       capital_summary: assessment.applicant_capital_summary,
-                                                                       assessed_capital: 0)
+                                                                       assessed_capital: 0).and_call_original
 
           workflow_call
         end

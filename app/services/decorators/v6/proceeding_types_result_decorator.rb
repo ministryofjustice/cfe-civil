@@ -1,26 +1,25 @@
 module Decorators
   module V6
     class ProceedingTypesResultDecorator
-      def initialize(eligibilities, proceeding_types)
-        @eligibilities = eligibilities
-        @proceeding_types = proceeding_types
+      def initialize(results)
+        @results = results
       end
 
       def as_json
-        @proceeding_types.order(:ccms_code).map { |proceeding_type| pt_result(proceeding_type) }
+        @results.sort_by { |r| r.proceeding_type.ccms_code }.map { |elig| pt_result(elig) }
       end
 
     private
 
-      def pt_result(proceeding_type)
-        elig = @eligibilities.find_by(proceeding_type_code: proceeding_type.ccms_code)
+      def pt_result(result)
         {
-          ccms_code: proceeding_type.ccms_code,
-          client_involvement_type: proceeding_type.client_involvement_type,
-          upper_threshold: elig.upper_threshold.to_f,
-          lower_threshold: elig.lower_threshold.to_f,
-          result: elig.assessment_result,
-        }
+          ccms_code: result.proceeding_type.ccms_code,
+          upper_threshold: result.upper_threshold.to_f,
+          lower_threshold: result.lower_threshold.to_f,
+          result: result.assessment_result,
+        }.tap do |hash|
+          hash[:client_involvement_type] = result.proceeding_type.client_involvement_type if result.proceeding_type.client_involvement_type.present?
+        end
       end
     end
   end

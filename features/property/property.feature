@@ -20,6 +20,7 @@ Feature:
       | net_equity                 |  22750.0 |
       | main_home_equity_disregard |  22750.0 |
       | assessed_equity            |      0.0 |
+      | subject_matter_of_dispute  |   false  |
     And I should see the following "capital summary" details:
       | attribute                  | value    |
       | total_property             |      0.0 |

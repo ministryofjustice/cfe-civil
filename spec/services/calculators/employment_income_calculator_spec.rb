@@ -3,7 +3,7 @@ require "rails_helper"
 module Calculators
   RSpec.describe EmploymentIncomeCalculator, :vcr do
     let(:assessment) { create :assessment, applicant_gross_income_summary: build(:gross_income_summary) }
-    let(:employment1) { OpenStruct.new(actively_working?: actively_working) }
+    let(:employment1) { OpenStruct.new(entitles_employment_allowance?: entitles_employment_allowance) }
     let(:gross) { BigDecimal(rand(2022.35...3096.52), 2) }
     let(:tax) { (gross * 0.23).round(2) * -1 }
     let(:ni_cont) { (gross * 0.052).round(2) * -1 }
@@ -17,7 +17,7 @@ module Calculators
     let(:expected_benefits_in_kind) { benefits_in_kind + benefits_in_kind }
     let(:expected_tax) { tax + tax }
     let(:expected_national_insurance) { ni_cont + ni_cont }
-    let(:actively_working) { true }
+    let(:entitles_employment_allowance) { true }
 
     describe "fixed income allowance" do
       context "at least one employment record exists" do
@@ -27,7 +27,7 @@ module Calculators
         end
 
         context "if applicant is not in work" do
-          let(:actively_working) { false }
+          let(:entitles_employment_allowance) { false }
 
           it "ignores fixed employment allowance" do
             expect(described_class.call(submission_date: assessment.submission_date,

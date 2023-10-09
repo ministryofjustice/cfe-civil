@@ -1,0 +1,42 @@
+# This Deployment is for helping developers access the postgres database.
+#
+# This Deployment runs a "port-forward-pod" which forwards localhost:5432 to rds-host:5432.
+# This allows the developer to run "kubectl port-forward" to that pod.
+# The result is that the developer has a port forward from their localhost:port to rds-host:5432
+#
+# More info:
+# * [Cloud Platform - Accessing your RDS database](https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/rds-external-access.html)
+# * [Eligibility Platform - Database access](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4415946946/Database+access)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: port-forward-postgres
+  labels:
+    app: port-forward-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: port-forward-postgres
+  template:
+    metadata:
+      labels:
+        app: port-forward-postgres
+    spec:
+      containers:
+        - name: port-forward-postgres
+          image: ministryofjustice/port-forward
+          ports:
+            - name: http
+              containerPort: 5432
+              protocol: TCP
+          env:
+            - name: REMOTE_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: rds-postgresql-instance-output
+                  key: rds_instance_address
+            - name: LOCAL_PORT
+              value: "5432"
+            - name: REMOTE_PORT
+              value: "5432"

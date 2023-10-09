@@ -1,43 +1,38 @@
 require "rails_helper"
 
 module Calculators
-  RSpec.describe HousingCostsCalculator do
+  RSpec.describe HousingCostsCalculator, :calls_bank_holiday do
+    let(:housing_benefit_type) { create :state_benefit_type, label: "housing_benefit" }
+
     subject(:calculator) do
-      described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
-                          person: instance_double(PersonWrapper, single?: true,
-                                                                 dependants: build_list(:dependant, children, :child_relative, submission_date: assessment.submission_date)),
-                          submission_date: assessment.submission_date,
-                          gross_income_summary: assessment.applicant_gross_income_summary)
+      described_class.call(housing_cost_outgoings:,
+                           housing_costs_cap_applies: children.zero?,
+                           submission_date: assessment.submission_date,
+                           gross_income_summary: assessment.applicant_gross_income_summary)
     end
 
-    context "when using outgoings and state_benefits", :calls_bank_holiday do
-      let(:current_date) { Date.new(2022, 6, 6) }
+    context "when using outgoings and state_benefits" do
+      let(:submission_date) { Date.new(2022, 6, 6) }
       let(:assessment) do
-        create :assessment, :with_gross_income_summary_and_records,
+        create :assessment, :with_gross_income_summary,
                :with_disposable_income_summary,
-               submission_date: current_date
+               submission_date:
       end
-      let(:rent_or_mortgage_category) { assessment.applicant_gross_income_summary.cash_transaction_categories.detect { |cat| cat.name == "rent_or_mortgage" } }
       let(:rent_or_mortgage_transactions) { rent_or_mortgage_category.cash_transactions.order(:date) }
-      let(:monthly_cash_housing) { rent_or_mortgage_transactions.average(:amount).round(2).to_d }
-      let(:children) { 0 }
+      let(:rent_or_mortgage_category) { create(:rent_or_mortgage_transaction_category, gross_income_summary: assessment.applicant_gross_income_summary) }
 
-      before do
-        [current_date - 2.months, current_date - 1.month, current_date].each do |date|
-          create :housing_cost_outgoing,
-                 disposable_income_summary: assessment.applicant_disposable_income_summary,
-                 payment_date: date,
-                 amount: housing_cost_amount,
-                 housing_cost_type:
+      let(:housing_cost_outgoings) do
+        [submission_date - 2.months, submission_date - 1.month, submission_date].map do |date|
+          build :housing_cost_outgoing,
+                payment_date: date,
+                amount: housing_cost_amount,
+                housing_cost_type:
         end
-
-        calculator
-        assessment.applicant_disposable_income_summary.reload
-        @assessment = assessment
       end
 
       context "when applicant has no dependants" do
         let(:housing_cost_amount) { 1200.00 }
+        let(:children) { 0 }
 
         context "and does not receive housing benefit" do
           context "with board and lodging" do
@@ -45,18 +40,24 @@ module Calculators
             let(:housing_cost_amount) { 1500.00 }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("750.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(gross_housing_costs: 750.00,
+                                    monthly_housing_benefit: 0.0,
+                                    net_housing_costs: 545.00) # Cap applied
             end
 
             context "when 50% of monthly bank outgoings are below the cap but overall above it when including cash payments" do
+              before do
+                create(:cash_transaction, cash_transaction_category: rent_or_mortgage_category, amount: 20)
+              end
+
               let(:housing_cost_amount) { 1088.00 }
 
-              it "returns the gross cost as net" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("544.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              it "caps the net costs" do
+                expect(calculator)
+                  .to have_attributes(gross_housing_costs: 564.00,
+                                      monthly_housing_benefit: 0.0,
+                                      net_housing_costs: 545.00) # Cap applied
               end
             end
 
@@ -64,9 +65,12 @@ module Calculators
               let(:housing_cost_amount) { 888.0 }
 
               it "returns the gross cost as net" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("444.0") + monthly_cash_housing # all variables are always decimals
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq (BigDecimal("444.0") + monthly_cash_housing).to_f # net_housing_costs is always a float
+                expect(calculator)
+                  .to have_attributes(
+                    gross_housing_costs: 444.0,
+                    monthly_housing_benefit: 0.0,
+                    net_housing_costs: 444.0,
+                  )
               end
             end
           end
@@ -75,18 +79,24 @@ module Calculators
             let(:housing_cost_type) { "rent" }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.0,
+                  monthly_housing_benefit: 0.0,
+                  net_housing_costs: 545.0, # Cap applied
+                )
             end
 
             context "when net cost is below housing cap" do
               let(:housing_cost_amount) { 420.00 }
 
               it "returns the net cost" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("420.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq 420.00 + monthly_cash_housing
+                expect(calculator)
+                  .to have_attributes(
+                    gross_housing_costs: 420.0,
+                    monthly_housing_benefit: 0.0,
+                    net_housing_costs: 420.0,
+                  )
               end
             end
           end
@@ -95,18 +105,24 @@ module Calculators
             let(:housing_cost_type) { "mortgage" }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.0,
+                  monthly_housing_benefit: 0.0,
+                  net_housing_costs: 545.0, # Cap applied
+                )
             end
 
             context "when net cost is below housing cap" do
               let(:housing_cost_amount) { 420.00 }
 
               it "returns the net cost" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("420.00") + monthly_cash_housing # all variables are always decimals
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq (BigDecimal("420.00") + monthly_cash_housing).to_f # net_housing_costs is always a float
+                expect(calculator)
+                  .to have_attributes(
+                    gross_housing_costs: 420.0,
+                    monthly_housing_benefit: 0.0,
+                    net_housing_costs: 420.0,
+                  )
               end
             end
           end
@@ -115,7 +131,11 @@ module Calculators
         context "and receives housing benefit as a state_benefit" do
           let(:housing_benefit_amount) { 500.00 }
 
-          before { create_housing_benefit_payments(housing_benefit_amount) }
+          before do
+            create :state_benefit, :with_monthly_payments,
+                   payment_amount: housing_benefit_amount,
+                   gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type
+          end
 
           context "with board and lodging" do
             let(:housing_cost_type) { "board_and_lodging" }
@@ -123,9 +143,12 @@ module Calculators
             let(:housing_benefit_amount) { 100.00 }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("750.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 100.00
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 750.0,
+                  monthly_housing_benefit: 100.0,
+                  net_housing_costs: 545.0, # Cap applied
+                )
             end
           end
 
@@ -133,9 +156,12 @@ module Calculators
             let(:housing_cost_type) { "rent" }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 500.0
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.0,
+                  monthly_housing_benefit: 500.0,
+                  net_housing_costs: 545.0, # Cap applied
+                )
             end
 
             context "when net cost is below housing cap" do
@@ -143,9 +169,12 @@ module Calculators
               let(:housing_benefit_amount) { 600.00 }
 
               it "returns gross less housing benefits" do
-                expect(calculator.gross_housing_costs).to eq 1000.00 + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 600.0
-                expect(calculator.net_housing_costs).to eq 400.00 + monthly_cash_housing
+                expect(calculator)
+                  .to have_attributes(
+                    gross_housing_costs: 1000.0,
+                    monthly_housing_benefit: 600.0,
+                    net_housing_costs: 400.0,
+                  )
               end
             end
           end
@@ -154,9 +183,12 @@ module Calculators
             let(:housing_cost_type) { "mortgage" }
 
             it "caps the return" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 500.00
-              expect(calculator.net_housing_costs).to eq 545.00 # Cap applied
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.0,
+                  monthly_housing_benefit: 500.0,
+                  net_housing_costs: 545.0, # Cap applied
+                )
             end
 
             context "when net amount will be below the cap" do
@@ -164,9 +196,12 @@ module Calculators
               let(:housing_benefit_amount) { 200.00 }
 
               it "returns net as gross_cost minus housing_benefit" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("600.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 200.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("400.00") + monthly_cash_housing
+                expect(calculator)
+                  .to have_attributes(
+                    gross_housing_costs: 600.0,
+                    monthly_housing_benefit: 200.0,
+                    net_housing_costs: 400.0,
+                  )
               end
             end
           end
@@ -174,28 +209,20 @@ module Calculators
       end
 
       context "when applicant has dependants" do
-        let(:housing_cost_amount) { 1200.00 }
         let(:children) { 1 }
+        let(:housing_cost_amount) { 1200.00 }
 
         context "with no housing benefit" do
           context "board and lodging" do
             let(:housing_cost_type) { "board_and_lodging" }
-            let(:housing_cost_amount) { 1500.00 }
 
             it "records half the monthly housing cost" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("750.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq BigDecimal("750.00") + monthly_cash_housing
-            end
-
-            context "when net cost is below housing cap" do
-              let(:housing_cost_amount) { 900.00 }
-
-              it "returns half the monthly housing cost" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("450.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("450.00") + monthly_cash_housing
-              end
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 600.00,
+                  monthly_housing_benefit: 0.0,
+                  net_housing_costs: 600.00,
+                )
             end
           end
 
@@ -203,19 +230,12 @@ module Calculators
             let(:housing_cost_type) { "rent" }
 
             it "records the full monthly housing costs" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-            end
-
-            context "when net cost is below housing cap" do
-              let(:housing_cost_amount) { 520.00 }
-
-              it "returns the net cost" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("520.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("520.00") + monthly_cash_housing
-              end
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.00,
+                  monthly_housing_benefit: 0.0,
+                  net_housing_costs: 1200.00,
+                )
             end
           end
 
@@ -223,39 +243,41 @@ module Calculators
             let(:housing_cost_type) { "mortgage" }
 
             it "records the full monthly housing costs" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 0.0
-              expect(calculator.net_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-            end
-
-            context "when net cost is below housing cap" do
-              let(:housing_cost_amount) { 520.00 }
-
-              it "returns the gross cost as net" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("520.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 0.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("520.00") + monthly_cash_housing
-              end
+              expect(calculator)
+                .to have_attributes(
+                  gross_housing_costs: 1200.00,
+                  monthly_housing_benefit: 0.0,
+                  net_housing_costs: 1200.00,
+                )
             end
           end
         end
 
-        context "with a different housing benefit frequency" do
+        context "with weekly housing benefit" do
           let(:housing_benefit_amount) { 500.00 }
           let(:housing_cost_type) { "rent" }
+          let(:state_benefit) { create :state_benefit, gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type }
 
-          before { create_housing_benefit_payments(housing_benefit_amount, dates: [4.weeks.ago, 3.weeks.ago, 2.weeks.ago, 1.week.ago, Date.current]) }
+          before do
+            [submission_date - 4.weeks, submission_date - 3.weeks, submission_date - 2.weeks, submission_date - 1.week, submission_date].each do |pay_date|
+              create :state_benefit_payment, state_benefit:, amount: housing_benefit_amount, payment_date: pay_date
+            end
+          end
 
           it "records the full monthly housing costs" do
-            expect(calculator.gross_housing_costs - monthly_cash_housing).to eq(1200.00)
-            expect(calculator.monthly_housing_benefit).to eq 833.33
+            expect(calculator).to have_attributes(gross_housing_costs: 1200.00,
+                                                  monthly_housing_benefit: 833.33)
           end
         end
 
         context "with housing benefit as a state_benefit" do
           let(:housing_benefit_amount) { 500.00 }
 
-          before { create_housing_benefit_payments(housing_benefit_amount) }
+          before do
+            create :state_benefit, :with_monthly_payments,
+                   payment_amount: housing_benefit_amount,
+                   gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type
+          end
 
           context "board and lodging" do
             let(:housing_cost_type) { "board_and_lodging" }
@@ -263,21 +285,10 @@ module Calculators
             let(:housing_benefit_amount) { 100.00 }
 
             it "records half the monthly outgoing less the housing benefit" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("600.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 100.000
-              expect(calculator.net_housing_costs).to eq((housing_cost_amount.to_d + monthly_cash_housing - housing_benefit_amount.to_d) / 2)
-            end
-          end
-
-          context "board and lodging different values" do
-            let(:housing_cost_type) { "board_and_lodging" }
-            let(:housing_cost_amount) { 1500.00 }
-            let(:housing_benefit_amount) { 100.00 }
-
-            it "records half the housing cost less the housing benefit" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("750.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 100.00
-              expect(calculator.net_housing_costs).to eq((housing_cost_amount.to_d + monthly_cash_housing - housing_benefit_amount.to_d) / 2)
+              expect(calculator)
+                .to have_attributes(gross_housing_costs: 600.00,
+                                    monthly_housing_benefit: 100.000,
+                                    net_housing_costs: (housing_cost_amount.to_d - housing_benefit_amount.to_d) / 2)
             end
           end
 
@@ -285,20 +296,10 @@ module Calculators
             let(:housing_cost_type) { "rent" }
 
             it "records the full monthly housing costs" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 500.00
-              expect(calculator.net_housing_costs).to eq BigDecimal("700.00") + monthly_cash_housing
-            end
-
-            context "when net cost is below housing cap" do
-              let(:housing_cost_amount) { 600.00 }
-              let(:housing_benefit_amount) { 200.00 }
-
-              it "returns net as gross_cost minus housing_benefit" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("600.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 200.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("400.00") + monthly_cash_housing
-              end
+              expect(calculator)
+                .to have_attributes(gross_housing_costs: 1200.00,
+                                    monthly_housing_benefit: 500.00,
+                                    net_housing_costs: 700.00)
             end
           end
 
@@ -306,33 +307,22 @@ module Calculators
             let(:housing_cost_type) { "mortgage" }
 
             it "records the full housing costs less the housing benefit" do
-              expect(calculator.gross_housing_costs).to eq BigDecimal("1200.00") + monthly_cash_housing
-              expect(calculator.monthly_housing_benefit).to eq 500.00
-              expect(calculator.net_housing_costs).to eq BigDecimal("700.00") + monthly_cash_housing
-            end
-
-            context "when net cost is below housing cap" do
-              let(:housing_cost_amount) { 600.00 }
-              let(:housing_benefit_amount) { 200.00 }
-
-              it "returns net as gross_cost minus housing_benefit" do
-                expect(calculator.gross_housing_costs).to eq BigDecimal("600.00") + monthly_cash_housing
-                expect(calculator.monthly_housing_benefit).to eq 200.0
-                expect(calculator.net_housing_costs).to eq BigDecimal("400.00") + monthly_cash_housing
-              end
+              expect(calculator)
+                .to have_attributes(gross_housing_costs: 1200.00,
+                                    monthly_housing_benefit: 500.0,
+                                    net_housing_costs: 700.00)
             end
           end
         end
       end
     end
 
-    context "when using regular_transactions", :calls_bank_holiday do
+    context "when using regular_transactions" do
       let(:instance) do
-        described_class.new(housing_cost_outgoings: assessment.applicant_disposable_income_summary.housing_cost_outgoings,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
-                            person: instance_double(PersonWrapper, single?: true,
-                                                                   dependants:),
-                            submission_date: assessment.submission_date)
+        described_class.call(housing_cost_outgoings:,
+                             gross_income_summary: assessment.applicant_gross_income_summary,
+                             housing_costs_cap_applies: dependants.none?,
+                             submission_date: assessment.submission_date)
       end
       let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
       let(:dates) { [Date.current, 1.month.ago, 2.months.ago] }
@@ -342,25 +332,27 @@ module Calculators
 
         context "with no housing costs" do
           let(:dependants) { [] }
+          let(:housing_cost_outgoings) { [] }
 
           it { is_expected.to eq 0 }
         end
 
         context "with all forms of housing costs" do
           let(:dependants) { [] }
+          let(:housing_cost_outgoings) do
+            # add monthly equivalent bank transactions of 111.11
+            build_list(:housing_cost_outgoing, 1, payment_date: dates[0], amount: 333.33)
+          end
 
           before do
-            # add monthly equivalent bank transactions of 111.11
-            create(:housing_cost_outgoing, disposable_income_summary: assessment.applicant_disposable_income_summary, payment_date: dates[0], amount: 333.33)
-
             # add average cash transactions of 111.11
-            rent_or_mortgage = create(:cash_transaction_category, name: "rent_or_mortgage", operation: "debit", gross_income_summary: assessment.applicant_gross_income_summary)
+            rent_or_mortgage = create(:rent_or_mortgage_transaction_category, gross_income_summary: assessment.applicant_gross_income_summary)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[0], amount: 111.11)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[1], amount: 111.11)
             create(:cash_transaction, cash_transaction_category: rent_or_mortgage, date: dates[2], amount: 111.11)
 
             # add monthly equivalent regular transaction of 333.33
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "three_monthly", amount: 1000.00)
+            create(:housing_cost, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "three_monthly", amount: 1000.00)
           end
 
           # NOTE: expected API use cases should not add both bank and regular transactions
@@ -372,17 +364,19 @@ module Calculators
 
       describe "#monthly_housing_benefit" do
         subject(:monthly_housing_benefit) { instance.monthly_housing_benefit }
+        let(:housing_cost_outgoings) { [] }
 
         context "with state_benefits of housing_benefit type" do
           let(:dependants) { [] }
 
           before do
-            housing_benefit = create(:state_benefit,
-                                     gross_income_summary: assessment.applicant_gross_income_summary,
-                                     state_benefit_type: build(:state_benefit_type, label: "housing_benefit"))
-
-            create(:state_benefit_payment, state_benefit: housing_benefit, amount: 222.22, payment_date: dates[0])
-            create(:state_benefit_payment, state_benefit: housing_benefit, amount: 222.22, payment_date: dates[2])
+            create(:state_benefit,
+                   state_benefit_type: build(:state_benefit_type, label: "housing_benefit"),
+                   gross_income_summary: assessment.applicant_gross_income_summary,
+                   state_benefit_payments: [
+                     build(:state_benefit_payment, amount: 222.22, payment_date: dates[0]),
+                     build(:state_benefit_payment, amount: 222.22, payment_date: dates[2]),
+                   ])
           end
 
           it "returns monthly equivalent" do
@@ -394,7 +388,7 @@ module Calculators
           let(:dependants) { [] }
 
           before do
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "three_monthly", amount: 1000.00)
+            create(:housing_benefit_regular, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "three_monthly", amount: 1000.00)
           end
 
           it "returns monthly equivalent" do
@@ -405,20 +399,21 @@ module Calculators
 
       describe "#net_housing_costs" do
         subject(:net_housing_costs) { instance.net_housing_costs }
+        let(:housing_cost_outgoings) { [] }
 
         context "when single, with no dependants" do
           let(:dependants) { [] }
 
           it "returns gross housing cost less benefits" do
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
+            create(:housing_cost, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 1000.00)
+            create(:housing_benefit_regular, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 500.00)
 
             expect(net_housing_costs).to eq 500.00
           end
 
           it "implements a cap" do
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
+            create(:housing_cost, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 1000.00)
+            create(:housing_benefit_regular, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 400.00)
 
             expect(net_housing_costs).to eq 545.00
           end
@@ -428,8 +423,8 @@ module Calculators
           let(:dependants) { build_list(:dependant, 1, :child_relative, submission_date: assessment.submission_date) }
 
           it "returns gross housing cost less benefits" do
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 500.00)
+            create(:housing_cost, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 1000.00)
+            create(:housing_benefit_regular, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 500.00)
 
             expect(net_housing_costs).to eq 500.00
           end
@@ -442,22 +437,13 @@ module Calculators
           let(:dependants) { build_list(:dependant, 1, :child_relative, submission_date: assessment.submission_date) }
 
           it "returns gross housing without a cap" do
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 1000.00)
-            create(:regular_transaction, gross_income_summary: assessment.applicant_gross_income_summary, operation: "credit", category: "housing_benefit", frequency: "monthly", amount: 400.00)
+            create(:housing_cost, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 1000.00)
+            create(:housing_benefit_regular, gross_income_summary: assessment.applicant_gross_income_summary, frequency: "monthly", amount: 400.00)
 
             expect(net_housing_costs).to eq 600.00
           end
         end
       end
-    end
-
-    def create_housing_benefit_payments(amount, dates: [2.months.ago, 1.month.ago, Date.current])
-      housing_benefit_type = create :state_benefit_type, label: "housing_benefit"
-      state_benefit = create :state_benefit, gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type
-      dates.each do |pay_date|
-        create :state_benefit_payment, state_benefit:, amount:, payment_date: pay_date
-      end
-      assessment.applicant_gross_income_summary.reload
     end
   end
 end

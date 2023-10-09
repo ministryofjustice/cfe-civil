@@ -33,12 +33,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:employment_income]
-            Creators::EmploymentsCreator.call(employment_collection: assessment.employments,
-                                              employments_params: { employment_income: params[:employment_income] })
-          end
-        },
-        lambda { |assessment, params|
           if params[:irregular_incomes]
             Creators::IrregularIncomeCreator.call(irregular_income_params: params[:irregular_incomes],
                                                   gross_income_summary: assessment.applicant_gross_income_summary)
@@ -57,29 +51,11 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:capitals]
-            Creators::CapitalsCreator.call(capital_params: params[:capitals],
-                                           capital_summary: assessment.applicant_capital_summary)
-          end
-        },
-        lambda { |assessment, params|
           if params[:regular_transactions]
             Creators::RegularTransactionsCreator.call(
               gross_income_summary: assessment.applicant_gross_income_summary,
               regular_transaction_params: { regular_transactions: params[:regular_transactions] },
             )
-          end
-        },
-        lambda { |assessment, params|
-          if params[:outgoings]
-            Creators::OutgoingsCreator.call(disposable_income_summary: assessment.applicant_disposable_income_summary,
-                                            outgoings_params: { outgoings: params[:outgoings] })
-          end
-        },
-        lambda { |assessment, params|
-          if params[:properties]
-            Creators::PropertiesCreator.call(capital_summary: assessment.applicant_capital_summary,
-                                             properties_params: { properties: params[:properties] })
           end
         },
         lambda { |assessment, params|

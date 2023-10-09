@@ -6,13 +6,13 @@ module Decorators
       let(:proceeding_types) { [%w[DA003 A], %w[DA005 Z], %w[SE013 W]] }
       let(:assessment) { create :assessment, proceedings: proceeding_types }
 
-      before do
-        assessment.proceeding_types.each do |pt|
-          create :assessment_eligibility, assessment:, proceeding_type_code: pt.ccms_code, assessment_result: "eligible"
+      let(:results) do
+        assessment.proceeding_types.map do |pt|
+          Eligibility::Assessment.new proceeding_type: pt, assessment_result: "eligible"
         end
       end
 
-      subject(:decorator) { described_class.new(assessment.eligibilities, assessment.proceeding_types).as_json }
+      subject(:decorator) { described_class.new(results).as_json }
 
       describe "#as_json" do
         it "returns an array with three elements" do

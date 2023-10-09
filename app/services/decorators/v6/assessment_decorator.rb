@@ -28,7 +28,7 @@ module Decorators
           client_reference_id: assessment.client_reference_id,
           submission_date: assessment.submission_date,
           level_of_help: assessment.level_of_help,
-          applicant: ApplicantDecorator.new(@applicant.details),
+          applicant: applicant_decorator_class.new(@applicant.details),
           gross_income:,
           disposable_income: DisposableIncomeDecorator.new(
             summary: assessment.applicant_disposable_income_summary,
@@ -37,7 +37,7 @@ module Decorators
           ),
           capital: CapitalDecorator.new(assessment.applicant_capital_summary,
                                         @calculation_output.capital_subtotals.applicant_capital_subtotals),
-          remarks: RemarksDecorator.new(assessment.remarks, assessment),
+          remarks: RemarksDecorator.new(assessment.remarks, @calculation_output.assessment_result),
         }
         if @partner.present?
           details.merge(partner_gross_income:, partner_disposable_income:, partner_capital:)
@@ -46,15 +46,19 @@ module Decorators
         end
       end
 
+      def applicant_decorator_class
+        ApplicantDecorator
+      end
+
       def gross_income
         GrossIncomeDecorator.new(assessment.applicant_gross_income_summary,
-                                 assessment.employments,
+                                 @applicant.employments,
                                  @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals)
       end
 
       def partner_gross_income
         GrossIncomeDecorator.new(assessment.partner_gross_income_summary,
-                                 assessment.partner_employments,
+                                 @partner.employments,
                                  @calculation_output.gross_income_subtotals.partner_gross_income_subtotals)
       end
 

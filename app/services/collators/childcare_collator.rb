@@ -1,14 +1,14 @@
 module Collators
   class ChildcareCollator
-    Result = Data.define(:cash, :bank)
+    Result = Data.define(:cash, :bank) do
+      def self.blank
+        new(cash: 0, bank: 0)
+      end
+    end
 
     class << self
-      def call(cash_transactions:, childcare_outgoings:, eligible_for_childcare:)
-        if eligible_for_childcare
-          Result.new(bank: child_care_bank(childcare_outgoings), cash: child_care_cash(cash_transactions))
-        else
-          Result.new(bank: 0, cash: 0)
-        end
+      def call(cash_transactions:, childcare_outgoings:)
+        Result.new(bank: child_care_bank(childcare_outgoings), cash: child_care_cash(cash_transactions))
       end
 
     private
@@ -18,7 +18,7 @@ module Collators
       end
 
       def child_care_cash(cash_transactions)
-        Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
+        Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
     end
   end

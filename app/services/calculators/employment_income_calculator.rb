@@ -1,18 +1,18 @@
 module Calculators
   class EmploymentIncomeCalculator
-    EmploymentResult = Data.define(:employment, :result)
+    EmploymentResult = Data.define(:employments, :result)
     Result = Data.define(:fixed_employment_allowance)
 
     class << self
       def call(submission_date:, employment:)
-        EmploymentResult.new(employment:,
+        EmploymentResult.new(employments: [employment],
                              result: Result.new(fixed_employment_allowance: allowance(employment, submission_date)))
       end
 
     private
 
       def allowance(employment, submission_date)
-        if employment.actively_working?
+        if employment.entitles_employment_allowance?
           fixed_employment_allowance submission_date
         else
           0.0

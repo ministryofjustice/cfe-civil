@@ -1,2 +1,0 @@
-class NonLiquidCapitalItem < CapitalItem
-end

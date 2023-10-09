@@ -6,15 +6,6 @@ module Collators
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
 
-    before do
-      assessment.proceeding_type_codes.each do |ptc|
-        create :gross_income_eligibility,
-               gross_income_summary:,
-               proceeding_type_code: ptc,
-               assessment_result: "pending"
-      end
-    end
-
     describe ".call" do
       subject(:collator) do
         described_class.call assessment:,
@@ -152,9 +143,7 @@ module Collators
           let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
-            assessment.employments.map do |_e|
-              OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, actively_working?: true)
-            end
+            [OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, monthly_prisoner_levy: -20, entitles_employment_allowance?: true)]
           end
 
           it "has a total gross employed income" do
@@ -162,10 +151,7 @@ module Collators
           end
 
           it "returns employment_income_subtotals" do
-            expect(collator.employment_income_subtotals.employment_income_deductions).to eq(-645)
-            expect(collator.employment_income_subtotals.tax).to eq(-495)
-            expect(collator.employment_income_subtotals.national_insurance).to eq(-150)
-            expect(collator.employment_income_subtotals.fixed_employment_allowance).to eq(-45)
+            expect(collator.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, prisoner_levy: -20, fixed_employment_allowance: -45)
           end
         end
       end

@@ -19,7 +19,7 @@ module Collators
                               Calculators::EmploymentIncomeCalculator.call(submission_date:,
                                                                            employment: employments.first)
                             else
-                              Calculators::MultipleEmploymentsCalculator.call(submission_date)
+                              Calculators::MultipleEmploymentsCalculator.call(submission_date:, employments:)
                             end
         self_employment_results = self_employments.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
         employment_details_results = employment_details.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
@@ -54,35 +54,32 @@ module Collators
         bank = if category == :benefits
                  Calculators::StateBenefitsCalculator.call(gross_income_summary.state_benefits)
                else
-                 categorised_bank_transactions(gross_income_summary)[category]
+                 categorised_bank_transactions(gross_income_summary, category)
                end
 
         cash_transactions = gross_income_summary.cash_transactions(:credit, category)
-        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(cash_transactions)
-        regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(gross_income_summary:, operation: :credit, category:)
+        cash = Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
+        regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(
+          gross_income_summary.regular_transactions.with_operation_and_category(:credit, category),
+        )
         GrossIncomeCategorySubtotals.new(
           category:,
           bank:,
           cash:,
           regular:,
-        ).freeze
+        )
       end
 
-      def categorised_bank_transactions(gross_income_summary)
-        result = Hash.new(0.0)
-        gross_income_summary.other_income_sources.each do |source|
-          monthly_income = Calculators::MonthlyEquivalentCalculator.call(
-            collection: source.other_income_payments,
-          )
-
-          # TODO: Stop persisting this
-          source.update!(monthly_income:)
-
-          formatted = BigDecimal(monthly_income, Float::DIG)
-          result[source.name.to_sym] = formatted
+      def categorised_bank_transactions(gross_income_summary, category)
+        source = gross_income_summary.other_income_sources.detect { _1.name.to_sym == category }
+        if source.present?
+          Calculators::MonthlyEquivalentCalculator.call(collection: source.other_income_payments).tap do |monthly_income|
+            # TODO: Stop persisting this
+            source.update!(monthly_income:)
+          end
+        else
+          0
         end
-
-        result
       end
     end
   end

@@ -2,54 +2,64 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        populate_eligibility_records(assessment:, dependants: applicant.dependants, partner_dependants: partner&.dependants || [])
+        populate_eligibility_records(assessment:)
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
-                               blank_calculation_result(applicant:,
-                                                        partner:,
-                                                        applicant_properties: assessment.applicant_capital_summary.properties,
-                                                        partner_properties: assessment.partner_capital_summary&.properties || [])
+                               blank_calculation_result(proceeding_types: assessment.proceeding_types,
+                                                        submission_date: assessment.submission_date,
+                                                        level_of_help: assessment.level_of_help,
+                                                        applicant_capitals: applicant.capitals_data,
+                                                        partner_capitals: partner&.capitals_data,
+                                                        receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                                        receives_asylum_support: applicant.details.receives_asylum_support)
                              elsif applicant.details.receives_qualifying_benefit?
                                if partner.present?
-                                 PassportedWorkflow.partner(assessment:, vehicles: applicant.vehicles,
-                                                            partner_vehicles: partner.vehicles,
+                                 PassportedWorkflow.partner(proceeding_types: assessment.proceeding_types,
+                                                            capitals_data: applicant.capitals_data,
+                                                            partner_capitals_data: partner.capitals_data,
                                                             date_of_birth: applicant.details.date_of_birth,
+                                                            level_of_help: assessment.level_of_help,
+                                                            submission_date: assessment.submission_date,
                                                             partner_date_of_birth: partner.details.date_of_birth,
-                                                            receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                                                            receives_asylum_support: applicant.details.receives_asylum_support)
                                else
-                                 PassportedWorkflow.call(assessment:, vehicles: applicant.vehicles,
+                                 PassportedWorkflow.call(proceeding_types: assessment.proceeding_types,
+                                                         capitals_data: applicant.capitals_data,
                                                          date_of_birth: applicant.details.date_of_birth,
-                                                         receives_qualifying_benefit: applicant.details.receives_qualifying_benefit)
+                                                         submission_date: assessment.submission_date,
+                                                         level_of_help: assessment.level_of_help,
+                                                         receives_asylum_support: applicant.details.receives_asylum_support)
                                end
                              else
                                NonPassportedWorkflow.call(assessment:, applicant:, partner:)
                              end
         # we can take the lower threshold from the first eligibility records as they are all the same
-        lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
+        # lower_capital_threshold = assessment.applicant_capital_summary.eligibilities.first.lower_threshold
+        lower_capital_threshold = calculation_output.capital_subtotals.eligibilities.first.lower_threshold
 
-        RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.employments,
-                                            gross_income_summary: assessment.applicant_gross_income_summary,
-                                            disposable_income_summary: assessment.applicant_disposable_income_summary,
-                                            capital_summary: assessment.applicant_capital_summary,
-                                            lower_capital_threshold:,
-                                            assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+        new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
+                                                          gross_income_summary: assessment.applicant_gross_income_summary,
+                                                          outgoings: applicant.outgoings,
+                                                          liquid_capital_items: applicant.capitals_data.liquid_capital_items,
+                                                          lower_capital_threshold:,
+                                                          child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
+                                                          assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         if partner.present?
-          RemarkGenerators::Orchestrator.call(assessment:, employments: assessment.partner_employments,
-                                              gross_income_summary: assessment.partner_gross_income_summary,
-                                              disposable_income_summary: assessment.partner_disposable_income_summary,
-                                              capital_summary: assessment.partner_capital_summary,
-                                              lower_capital_threshold:,
-                                              assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
+          new_remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
+                                                             gross_income_summary: assessment.partner_gross_income_summary,
+                                                             outgoings: partner.outgoings,
+                                                             liquid_capital_items: partner.capitals_data.liquid_capital_items,
+                                                             lower_capital_threshold:,
+                                                             child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
+                                                             assessed_capital: calculation_output.capital_subtotals.combined_assessed_capital)
         end
-        Assessors::MainAssessor.call(assessment:, receives_qualifying_benefit: applicant.details.receives_qualifying_benefit?,
-                                     receives_asylum_support: applicant.details.receives_asylum_support)
+        assessment.add_remarks!(new_remarks)
         calculation_output
       end
 
     private
 
-      def populate_eligibility_records(assessment:, dependants:, partner_dependants:)
+      def populate_eligibility_records(assessment:)
         Utilities::ProceedingTypeThresholdPopulator.call(assessment)
-        Creators::EligibilitiesCreator.call(assessment:, client_dependants: dependants, partner_dependants:)
       end
 
       def no_means_assessment_needed?(proceeding_types, applicant)
@@ -57,8 +67,14 @@ module Workflows
           applicant.receives_asylum_support
       end
 
-      def blank_calculation_result(applicant:, partner:, applicant_properties:, partner_properties:)
-        CalculationOutput.new(capital_subtotals: CapitalSubtotals.unassessed(applicant:, partner:, applicant_properties:, partner_properties:))
+      def blank_calculation_result(proceeding_types:, applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
+                                   receives_qualifying_benefit:, receives_asylum_support:)
+        CalculationOutput.new(
+          proceeding_types:, receives_qualifying_benefit:, receives_asylum_support:,
+          gross_income_subtotals: GrossIncome::Unassessed.new(proceeding_types),
+          disposable_income_subtotals: DisposableIncome::Unassessed.new(proceeding_types:, level_of_help:, submission_date:),
+          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:, proceeding_types:)
+        )
       end
     end
   end

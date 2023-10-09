@@ -6,7 +6,7 @@ module Decorators
       describe "#as_json" do
         subject(:decorator) { described_class.new(record).as_json }
 
-        let(:record) { create :liquid_capital_item, value: 1283.66, description: "Ming vase" }
+        let(:record) { build :liquid_capital_item, value: 1283.66, description: "Ming vase" }
 
         it "returns expected hash" do
           expected_hash = {

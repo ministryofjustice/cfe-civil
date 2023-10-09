@@ -68,6 +68,7 @@ Feature:
             | main_home_equity_disregard |  94000.0 |
             | transaction_allowance      | 6000.0   |
             | assessed_equity            | 0.0      |
+            | subject_matter_of_dispute  |   true   |
         And I should see the following "vehicle" details:
             | attribute       | value   |
             | value           | 18000.0 |

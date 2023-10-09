@@ -1,9 +1,9 @@
 module Decorators
   module V6
     class RemarksDecorator
-      def initialize(record, assessment)
+      def initialize(record, assessment_result)
         @record = record
-        @assessment = assessment
+        @assessment_result = assessment_result
       end
 
       def as_json
@@ -13,7 +13,7 @@ module Decorators
     private
 
       def contribution_required?
-        @assessment.assessment_result == "contribution_required"
+        @assessment_result == "contribution_required"
       end
     end
   end

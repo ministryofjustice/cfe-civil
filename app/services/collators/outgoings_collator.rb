@@ -1,38 +1,64 @@
 module Collators
   class OutgoingsCollator
-    Result = Data.define(:dependant_allowance_under_16, :dependant_allowance_over_16)
+    Result = Data.define(:dependant_allowance, :child_care, :housing_costs, :legal_aid_bank, :maintenance_out_bank, :lone_parent_allowance, :pension_contribution) do
+      def self.blank
+        new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
+            child_care: ChildcareCollator::Result.blank,
+            legal_aid_bank: 0,
+            maintenance_out_bank: 0,
+            housing_costs: HousingCostsCollator::Result.blank,
+            lone_parent_allowance: 0,
+            pension_contribution: Calculators::PensionContributionCalculator::Result.blank)
+      end
+    end
 
     class << self
-      def call(submission_date:, person:, gross_income_summary:, disposable_income_summary:, eligible_for_childcare:, allow_negative_net:)
-        child_care = Collators::ChildcareCollator.call(cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
-                                                       childcare_outgoings: disposable_income_summary.childcare_outgoings,
-                                                       eligible_for_childcare:)
-        # TODO: Return these values instead of persisting them
-        disposable_income_summary.update!(child_care_bank: child_care.bank, child_care_cash: child_care.cash)
+      def call(submission_date:, person:, gross_income_summary:,
+               outgoings:,
+               eligible_for_childcare:, allow_negative_net:, total_gross_income:)
+        child_care = if eligible_for_childcare
+                       Collators::ChildcareCollator.call(
+                         cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
+                         childcare_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::Childcare) },
+                       )
+                     else
+                       Collators::ChildcareCollator::Result.blank
+                     end
 
         dependant_allowance = Collators::DependantsAllowanceCollator.call(dependants: person.dependants,
                                                                           submission_date:)
 
-        maintenance_out_bank = Collators::MaintenanceCollator.call(disposable_income_summary.maintenance_outgoings)
-        # TODO: return this value instead of persisting it
-        disposable_income_summary.update!(maintenance_out_bank:)
+        lone_parent_allowance = if person.single?
+                                  Calculators::LoneParentAllowanceCalculator.call(dependants: person.dependants, submission_date:)
+                                else
+                                  0
+                                end
 
-        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: disposable_income_summary.housing_cost_outgoings,
+        maintenance_out_bank = Collators::MaintenanceCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::Maintenance) })
+
+        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::HousingCost) },
                                                              gross_income_summary:,
                                                              person:,
                                                              submission_date:,
                                                              allow_negative_net:)
-        disposable_income_summary.update! housing_benefit: housing_costs.housing_benefit,
-                                          gross_housing_costs: housing_costs.gross_housing_costs,
-                                          rent_or_mortgage_bank: housing_costs.gross_housing_costs_bank,
-                                          net_housing_costs: housing_costs.net_housing_costs
 
-        legal_aid_bank = Collators::LegalAidCollator.call(disposable_income_summary.legal_aid_outgoings)
-        # TODO: return this instead of persisting it
-        disposable_income_summary.update!(legal_aid_bank:)
+        legal_aid_bank = Collators::LegalAidCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::LegalAid) })
 
-        Result.new(dependant_allowance_under_16: dependant_allowance.under_16,
-                   dependant_allowance_over_16: dependant_allowance.over_16)
+        pension_contribution = Calculators::PensionContributionCalculator.call(
+          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PensionContribution) },
+          cash_transactions: gross_income_summary.cash_transactions(:debit, :pension_contribution),
+          regular_transactions: gross_income_summary.regular_transactions.pension_contributions,
+          total_gross_income:,
+          submission_date:,
+        )
+
+        Result.new(dependant_allowance:,
+                   child_care:,
+                   housing_costs:,
+                   legal_aid_bank:,
+                   maintenance_out_bank:,
+                   lone_parent_allowance:,
+                   pension_contribution:)
       end
     end
   end

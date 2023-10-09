@@ -24,10 +24,11 @@ unless ENV["NOCOVERAGE"]
     add_filter "lib/integration_helpers"
     add_filter "app/mailers/exception_alert_mailer.rb"
     add_filter "app/lib/exception_notifier/templated_notifier.rb"
+    add_filter "app/services/request_rerunner.rb"
 
     enable_coverage :branch
     primary_coverage :branch
-    minimum_coverage branch: 98.02, line: 99.92
+    minimum_coverage branch: 98.82, line: 99.92
   end
 end
 

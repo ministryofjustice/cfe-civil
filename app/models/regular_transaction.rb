@@ -6,6 +6,8 @@ class RegularTransaction < ApplicationRecord
   validates :operation, inclusion: { in: %w[credit debit],
                                      message: "%<value>s is not a valid operation" }
 
+  scope :pension_contributions, -> { where(category: "pension_contribution", operation: "debit") }
+
   validates :category, inclusion: {
     in: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES,
     message: "is not a valid credit category: %<value>s",
@@ -19,6 +21,10 @@ class RegularTransaction < ApplicationRecord
   validates :frequency, inclusion: {
     in: CFEConstants::VALID_REGULAR_TRANSACTION_FREQUENCIES.map(&:to_s),
     message: "is not a valid frequency: %<value>s",
+  }
+
+  scope :with_operation_and_category, lambda { |operation, category|
+    where(operation:, category:)
   }
 
   def credit?

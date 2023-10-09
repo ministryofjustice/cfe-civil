@@ -9,6 +9,8 @@ class PersonGrossIncomeSubtotals
 
   StateBenefitData = Data.define(:state_benefit_name, :monthly_value, :exclude_from_gross_income?)
 
+  attr_reader :employment_income_subtotals
+
   def initialize(
     gross_income_summary:,
     regular_income_categories:,
@@ -19,8 +21,6 @@ class PersonGrossIncomeSubtotals
     @employment_income_subtotals = employment_income_subtotals
   end
 
-  attr_reader :employment_income_subtotals
-
   def state_benefits
     @gross_income_summary.state_benefits.map do |sb|
       StateBenefitData.new state_benefit_name: sb.state_benefit_name,
@@ -30,7 +30,7 @@ class PersonGrossIncomeSubtotals
   end
 
   def total_gross_income
-    employment_income_subtotals.gross_employment_income + employment_income_subtotals.benefits_in_kind +
+    @employment_income_subtotals.gross_employment_income + @employment_income_subtotals.benefits_in_kind +
       @regular_income_categories.sum(&:all_sources) +
       monthly_student_loan +
       monthly_unspecified_source
@@ -49,6 +49,15 @@ class PersonGrossIncomeSubtotals
 
   def monthly_unspecified_source
     @gross_income_summary.unspecified_source_payments.sum { monthly_equivalent_amount(_1) }
+  end
+
+  def is_student?
+    # GUIDANCE quote:
+    # 'Where the individual or their partner is assessed as receiving a wage or
+    # salary from employment, or an income from self-employment, or studyrelated income (i.e. student loan, student grant or other income received
+    # from a person who is not their partner or relative for the purpose of
+    # supporting the individual’s course of study)'
+    @gross_income_summary.student_loan_payments.any?
   end
 
 private

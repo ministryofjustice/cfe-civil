@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Decorators
   module V6
-    RSpec.describe DisposableIncomeResultDecorator, :vcr do
+    RSpec.describe ApplicantDisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do
         create :assessment, :with_gross_income_summary, proceedings: proceeding_hash,
@@ -10,16 +10,7 @@ module Decorators
       end
       let(:summary) do
         create :disposable_income_summary,
-               assessment:,
-               gross_housing_costs: 990.42,
-               housing_benefit: 440.21,
-               net_housing_costs: 550.21,
-               maintenance_out_all_sources: 330.21,
-               total_outgoings_and_allowances: 660.21,
-               total_disposable_income: 732.55,
-               income_contribution: 75,
-               combined_total_disposable_income: 900.0,
-               combined_total_outgoings_and_allowances: 400.32
+               assessment:
       end
       let(:codes) { pt_results.keys }
       let(:pt_results) do
@@ -48,6 +39,7 @@ module Decorators
               fixed_employment_deduction: -45.0,
               gross_income: 0.0,
               national_insurance: 0.0,
+              prisoner_levy: 0.0,
               net_employment_income: -45.0,
               tax: 0.0,
             },
@@ -85,6 +77,7 @@ module Decorators
           combined_total_disposable_income: 900.0,
           combined_total_outgoings_and_allowances: 400.32,
           partner_allowance: 191.41,
+          lone_parent_allowance: 315.0,
         }
       end
 
@@ -95,6 +88,7 @@ module Decorators
                         net_employment_income: -45.0,
                         gross_employment_income: 0.0,
                         national_insurance: 0.0,
+                        prisoner_levy: 0.0,
                         tax: 0.0)
       end
 
@@ -103,26 +97,26 @@ module Decorators
       let(:income_contribution) { 75 }
 
       subject(:decorator) do
-        described_class
-          .new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
-               disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
-                                                            partner_allowance: 191.41,
-                                                            dependant_allowance_under_16: 28.34,
-                                                            dependant_allowance_over_16: 98.12,
-                                                            dependant_allowance: 220.21)).as_json
-      end
-
-      before do
-        pt_results.each do |ptc, details|
-          lower_threshold, upper_threshold, result = details
-
-          create :disposable_income_eligibility,
-                 disposable_income_summary: summary,
-                 proceeding_type_code: ptc,
-                 upper_threshold:,
-                 lower_threshold:,
-                 assessment_result: result
-        end
+        described_class.new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
+                            income_contribution: 75,
+                            disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
+                                                                         partner_allowance: 191.41,
+                                                                         lone_parent_allowance: 315.0,
+                                                                         dependant_allowance_under_16: 28.34,
+                                                                         dependant_allowance_over_16: 98.12,
+                                                                         dependant_allowance: 220.21,
+                                                                         gross_housing_costs: 990.42,
+                                                                         total_outgoings_and_allowances: 660.21,
+                                                                         total_disposable_income: 732.55,
+                                                                         housing_benefit: 440.21,
+                                                                         net_housing_costs: 550.21,
+                                                                         maintenance_out_all_sources: 330.21),
+                            combined_total_disposable_income: 900.0,
+                            eligibilities: Creators::DisposableIncomeEligibilityCreator.call(submission_date: assessment.submission_date,
+                                                                                             level_of_help: assessment.level_of_help,
+                                                                                             total_disposable_income: 900.0,
+                                                                                             proceeding_types: assessment.proceeding_types),
+                            combined_total_outgoings_and_allowances: 400.32).as_json
       end
 
       describe "#as_json" do

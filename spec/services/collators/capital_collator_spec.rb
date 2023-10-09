@@ -11,24 +11,25 @@ module Collators
     let(:smod_value) { 0 }
     let(:level_of_help) { "controlled" }
     let(:vehicles) { [] }
+    let(:liquid_capital_items) { [] }
+    let(:non_liquid_capital_items) { [] }
+    let(:main_home) { {} }
+    let(:additional_properties) { [] }
 
     describe "#call" do
       subject(:collator) do
         described_class.call submission_date: assessment.submission_date,
-                             capital_summary: assessment.applicant_capital_summary,
-                             vehicles:,
+                             capitals_data: CapitalsData.new(vehicles:, liquid_capital_items:, non_liquid_capital_items:, main_home:, additional_properties:),
                              pensioner_capital_disregard: pcd_value,
                              maximum_subject_matter_of_dispute_disregard: smod_value,
                              level_of_help:
       end
 
       context "liquid capital" do
-        before do
-          capital_summary
-            .liquid_capital_items
-            .build([
-              attributes_for(:liquid_capital_item, value: 145.83),
-            ])
+        let(:liquid_capital_items) do
+          [
+            build(:liquid_capital_item, value: 145.83),
+          ]
         end
 
         it "calls LiquidCapitalAssessment and updates capital summary with the result" do
@@ -37,8 +38,8 @@ module Collators
       end
 
       context "property_assessment" do
-        before do
-          create :property, :main_home, capital_summary: assessment.applicant_capital_summary
+        let(:main_home) do
+          build(:property, main_home: true)
         end
 
         it "instantiates and calls the Property Assessment service" do
@@ -50,6 +51,18 @@ module Collators
 
       context "with a main home and an additional property" do
         let(:smod_value) { 60_000 }
+        let(:non_liquid_capital_items) do
+          [
+            build(:non_liquid_capital_item, subject_matter_of_dispute: true, value: 3_000),
+            build(:non_liquid_capital_item, subject_matter_of_dispute: false, value: 8_000),
+          ]
+        end
+        let(:liquid_capital_items) do
+          [
+            build(:liquid_capital_item, subject_matter_of_dispute: true, value: 4_000),
+            build(:liquid_capital_item, subject_matter_of_dispute: false, value: 12_000),
+          ]
+        end
         let(:vehicles) do
           [
             build(:vehicle, subject_matter_of_dispute: true, value: 15_000, in_regular_use: false),
@@ -57,26 +70,14 @@ module Collators
           ]
         end
 
-        before do
-          capital_summary
-            .properties
-            .build([
-              attributes_for(:property, main_home: true, subject_matter_of_dispute: true,
-                                        value: 280_000, outstanding_mortgage: 50_000),
-              attributes_for(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
-            ])
-          capital_summary
-            .non_liquid_capital_items
-            .build([
-              attributes_for(:non_liquid_capital_item, subject_matter_of_dispute: true, value: 3_000),
-              attributes_for(:non_liquid_capital_item, subject_matter_of_dispute: false, value: 8_000),
-            ])
-          capital_summary
-            .liquid_capital_items
-            .build([
-              attributes_for(:liquid_capital_item, subject_matter_of_dispute: true, value: 4_000),
-              attributes_for(:liquid_capital_item, subject_matter_of_dispute: false, value: 12_000),
-            ])
+        let(:main_home) do
+          build(:property, main_home: true, subject_matter_of_dispute: true, value: 280_000, outstanding_mortgage: 50_000)
+        end
+
+        let(:additional_properties) do
+          [
+            build(:property, main_home: false, value: 250_000, outstanding_mortgage: 243_000),
+          ]
         end
 
         it "produces total non disputed and total disputed (minus SMOD) assets" do
@@ -99,12 +100,10 @@ module Collators
       end
 
       context "non_liquid_capital_assessment" do
-        before do
-          capital_summary
-            .non_liquid_capital_items
-            .build([
-              attributes_for(:non_liquid_capital_item, value: 500),
-            ])
+        let(:non_liquid_capital_items) do
+          [
+            build(:non_liquid_capital_item, value: 500),
+          ]
         end
 
         it "instantiates and calls NonLiquidCapitalAssessment" do
@@ -114,28 +113,24 @@ module Collators
 
       context "summarization of result_fields" do
         let(:pcd_value) { 100_000 }
+        let(:liquid_capital_items) do
+          [
+            build(:liquid_capital_item, value: 145.83),
+          ]
+        end
+        let(:non_liquid_capital_items) do
+          [
+            build(:non_liquid_capital_item, value: 500),
+          ]
+        end
         let(:vehicles) do
           [
             build(:vehicle, value: 2_500, in_regular_use: false),
           ]
         end
 
-        before do
-          capital_summary
-            .properties
-            .build([
-              attributes_for(:property, :main_home),
-            ])
-          capital_summary
-            .liquid_capital_items
-            .build([
-              attributes_for(:liquid_capital_item, value: 145.83),
-            ])
-          capital_summary
-            .non_liquid_capital_items
-            .build([
-              attributes_for(:non_liquid_capital_item, value: 500),
-            ])
+        let(:main_home) do
+          build(:property, main_home: true)
         end
 
         it "summarizes the results it gets from the subservices" do

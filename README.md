@@ -172,30 +172,48 @@ Try this simple test, to ensure it's working:
 $ curl http://127.0.0.1:3000/healthcheck
 {"checks":{"database":true}}
 ```
-## Generation of API documentation using Rswag
+## Swagger - API schema & documentation generation
 
-See [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md) for initial setup and/or modifications.
+Rswag is used for generating Swagger API schemas and documentation. The sections below describe how these can be modified and managed, using filenames from a recent version of the main "assessments" API as examples.
 
-The `swagger` folder in the root directory has one `swagger.yaml` within a version number folder - e.g. `swagger/v4/swagger.yaml`. This file is what defines the swagger ui page displayed at `/api-docs`. This file is generated using rswag's rake task - `rake rswag:specs:swaggerize`.
+### Source files
 
-The `swagger.yaml` file that is generated is defined by a combination of "global" settings in `spec/swagger_helper.rb` and indivual spec files that are, by our convention, stored in `spec/requests/swagger_docs/<version>/*.spec.rb`.
+* spec/swagger_helper.rb - config
+* app/lib/swagger_docs.rb - components which are used across multiple versions
+* spec/requests/swagger_docs/v7/full_assessment_spec.rb
 
-You can generate a new endpoint spec file using:
-```sh
-rails generate rspec:swagger MyController
-```
+### Generation
 
-You can update an existing endpoint by modifying it's spec and then running:
+The schemas are generated using rswag's rake task:
+
 ```sh
 rake rswag:specs:swaggerize
 ```
 
+### Generated schema
+
+The schema is used to validate requests to the API, and are displayed in the Swagger docs UI served at `/api-docs`.
+
+* swagger/v7/swagger.yaml
+
+### RSwag administration
+
+New endpoints can be created with:
+```sh
+rails generate rspec:swagger MyController
+```
+
+Rswag setup: [Rswag readme](https://github.com/rswag/rswag/blob/master/README.md)
+
 ## Threshold configuration files
 
-**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
-
 Files holding details of all thresholds values used in calculating eligibility are stored in `config/thresholds`.
+
 The file `values.yml` details the start dates for each set of thresholds, and the name of the file from which they should be read.
+
+### Test threshold data
+
+**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
 
 If a file has the key `test_only` with a value of true, then that file will only be read if the
 `USE_TEST_THRESHOLD_DATA` environment variable is set to true.  This is the default for staging and UAT, and it is
@@ -349,6 +367,23 @@ on a local machine
 4) Run the rake task `rake replay`: this will read the `tmp/api_payloads.yml` file and
    replay the original API calls and payloads enabling you to re-create the conditions.
 
+## Re-running request logs through the local environment
+
+1) Set environment variables pointing to staging or production database
+   (to get the request_logs that will be rerun), as in:
+   https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4415946946/Database+access
+
+2) Make sure the local database has had rake db:seed run on it, otherwise most requests will error
+
+3) RAILS_ENV=remote_database SECRET_KEY_BASE=anything rake rerun:requests
+
+This currently takes around 1 hour to run with 7300 requests from staging
+The output format of the diffs is 4 fields:
+
+a) +/-/~ addition, removal, change
+b) fieldname
+c) old value (only for change and removal)
+d) new value (only for change and addition)
 
 # Deployment
 
