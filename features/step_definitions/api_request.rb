@@ -58,11 +58,23 @@ Given("A domestic abuse case") do
 end
 
 Given("A first tier immigration case") do
+  @assessment_data[:level_of_help] = "controlled"
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
 Given("A first tier asylum case") do
-  @proceeding_type_data = { "proceeding_types": [{ ccms_code: "IA031", client_involvement_type: "A" }] }
+  @assessment_data[:level_of_help] = "controlled"
+  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
+end
+
+Given("An Upper Tribunal immigration case") do
+  @assessment_data[:level_of_help] = "certificated"
+  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
+end
+
+Given("An Upper Tribunal asylum case") do
+  @assessment_data[:level_of_help] = "certificated"
+  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
 Given("I am using version {int} of the API") do |int|
