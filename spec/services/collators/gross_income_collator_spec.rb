@@ -143,7 +143,7 @@ module Collators
           let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
-            [OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, monthly_prisoner_levy: -20, entitles_employment_allowance?: true)]
+            [OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, monthly_prisoner_levy: -20, monthly_student_debt_repayment: -50, entitles_employment_allowance?: true)]
           end
 
           it "has a total gross employed income" do
@@ -151,7 +151,7 @@ module Collators
           end
 
           it "returns employment_income_subtotals" do
-            expect(collator.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, prisoner_levy: -20, fixed_employment_allowance: -45)
+            expect(collator.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, prisoner_levy: -20, student_debt_repayment: -50, fixed_employment_allowance: -45)
           end
         end
       end

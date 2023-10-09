@@ -20,6 +20,7 @@ module Calculators
                                               tax: payment.tax,
                                               national_insurance: payment.national_insurance,
                                               prisoner_levy: payment.prisoner_levy,
+                                              student_debt_repayment: payment.student_debt_repayment,
                                               client_id: payment.client_id,
                                               benefits_in_kind: payment.benefits_in_kind
 

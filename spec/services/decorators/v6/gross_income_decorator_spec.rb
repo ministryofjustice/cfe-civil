@@ -54,6 +54,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -63,6 +64,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -72,6 +74,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
               ],
@@ -86,6 +89,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -95,6 +99,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
                 {
@@ -104,6 +109,7 @@ module Decorators
                   tax: -495.0,
                   national_insurance: -150.0,
                   prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
                   net_employment_income: 878.87,
                 },
               ],

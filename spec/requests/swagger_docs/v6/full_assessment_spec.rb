@@ -266,6 +266,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     tax: -104.10,
                     national_insurance: -18.66,
                     prisoner_levy: -20.00,
+                    student_debt_repayment: -50.00,
                   },
                   {
                     client_id: "employment-1-payment-2",
@@ -275,6 +276,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     tax: -104.10,
                     national_insurance: -18.66,
                     prisoner_levy: -20.00,
+                    student_debt_repayment: -50.00,
                   },
                 ],
               },
@@ -290,6 +292,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     tax: 14.10,
                     national_insurance: 3.66,
                     prisoner_levy: 20.00,
+                    student_debt_repayment: 50.00,
                   },
                   {
                     client_id: "employment-2-payment-2",
@@ -299,6 +302,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     tax: -104.10,
                     national_insurance: -18.66,
                     prisoner_levy: -20.00,
+                    student_debt_repayment: -50.00,
                   },
                   {
                     client_id: "employment-2-payment-3",
@@ -308,6 +312,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                     tax: -104.10,
                     national_insurance: -18.66,
                     prisoner_levy: -20.00,
+                    student_debt_repayment: -50.00,
                   },
                 ],
               },

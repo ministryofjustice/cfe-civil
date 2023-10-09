@@ -25,6 +25,7 @@ module Calculators
           monthly_gross_income: send(calculation, payments, :gross_income_monthly_equiv),
           monthly_national_insurance: send(calculation, payments, :national_insurance_monthly_equiv),
           monthly_prisoner_levy: send(calculation, payments, :prisoner_levy_monthly_equiv),
+          monthly_student_debt_repayment: send(calculation, payments, :student_debt_repayment_monthly_equiv),
           monthly_tax: send(calculation, payments, :tax_monthly_equiv),
           monthly_benefits_in_kind: send(calculation, payments, :benefits_in_kind_monthly_equiv),
         }

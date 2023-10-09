@@ -172,6 +172,7 @@ module V6
             tax: payment[:tax],
             national_insurance: payment[:national_insurance],
             prisoner_levy: payment.fetch(:prisoner_levy, 0.0),
+            student_debt_repayment: payment.fetch(:student_debt_repayment, 0.0),
             client_id: payment[:client_id],
           ).freeze
         end

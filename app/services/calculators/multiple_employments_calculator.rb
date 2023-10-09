@@ -11,7 +11,8 @@ module Calculators
                                        employment_payments: e.employment_payments,
                                        monthly_tax: 0,
                                        monthly_national_insurance: 0,
-                                       monthly_prisoner_levy: 0)
+                                       monthly_prisoner_levy: 0,
+                                       monthly_student_debt_repayment: 0)
           end,
           result: EmploymentIncomeCalculator::Result.new(fixed_employment_allowance: fixed_employment_allowance(submission_date)),
         )
@@ -20,7 +21,7 @@ module Calculators
     private
 
       DummyEmploymentFigures = Data.define(:monthly_gross_income, :monthly_benefits_in_kind, :monthly_tax,
-                                           :monthly_national_insurance, :monthly_prisoner_levy, :employment_name, :employment_payments) do
+                                           :monthly_national_insurance, :monthly_prisoner_levy, :monthly_student_debt_repayment, :employment_name, :employment_payments) do
         def entitles_employment_allowance?
           true
         end

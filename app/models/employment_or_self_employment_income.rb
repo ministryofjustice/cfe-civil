@@ -9,6 +9,7 @@ class EmploymentOrSelfEmploymentIncome
   attribute :gross, :decimal
   attribute :frequency, :string
   attribute :prisoner_levy, :decimal, default: 0.0
+  attribute :student_debt_repayment, :decimal, default: 0.0
 
   def entitles_childcare_allowance?
     entitles_employment_allowance? && gross.positive?
