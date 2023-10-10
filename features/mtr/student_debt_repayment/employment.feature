@@ -1,11 +1,11 @@
 Feature:
-    "Employment"
+    "Employment (Deduct student debt repayments)"
 
     Scenario: The client is employed, and receiving a student debt repayment
         Given I am using version 6 of the API
         And I create an assessment with the following details:
             | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-01-10 |
+            | submission_date     | 2525-01-10 |
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
