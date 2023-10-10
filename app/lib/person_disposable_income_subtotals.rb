@@ -68,11 +68,11 @@ class PersonDisposableIncomeSubtotals
   end
 
   def rent_or_mortgage_cash
-    @disposable.rent_or_mortgage_cash
+    @outgoings.housing_costs.gross_housing_costs_cash
   end
 
   def rent_or_mortgage_all_sources
-    rent_or_mortgage_bank + rent_or_mortgage_cash + @regular.rent_or_mortgage_regular
+    rent_or_mortgage_bank + rent_or_mortgage_cash + @outgoings.housing_costs.gross_housing_costs_regular
   end
 
   def legal_aid_bank

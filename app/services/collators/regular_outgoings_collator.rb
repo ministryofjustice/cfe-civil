@@ -11,9 +11,9 @@
 #
 module Collators
   class RegularOutgoingsCollator
-    Result = Data.define(:child_care_regular, :rent_or_mortgage_regular, :legal_aid_regular, :maintenance_out_regular) do
+    Result = Data.define(:child_care_regular, :legal_aid_regular, :maintenance_out_regular) do
       def self.blank
-        new(child_care_regular: 0, rent_or_mortgage_regular: 0, legal_aid_regular: 0, maintenance_out_regular: 0)
+        new(child_care_regular: 0, legal_aid_regular: 0, maintenance_out_regular: 0)
       end
     end
 
@@ -26,7 +26,6 @@ module Collators
                                    end
 
         Result.new(child_care_regular: childcare_monthly_amount,
-                   rent_or_mortgage_regular: regular_amount_for(gross_income_summary, :rent_or_mortgage),
                    legal_aid_regular: regular_amount_for(gross_income_summary, :legal_aid),
                    maintenance_out_regular: regular_amount_for(gross_income_summary, :maintenance_out))
       end

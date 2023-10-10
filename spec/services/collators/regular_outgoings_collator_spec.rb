@@ -74,21 +74,6 @@ RSpec.describe Collators::RegularOutgoingsCollator do
       end
     end
 
-    # ** see above for reason
-    context "with monthly regular transactions of :rent_or_mortgage" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "rent_or_mortgage", frequency: "monthly", amount: 222.22)
-      end
-
-      it "increments #rent_or_mortgage_all_sources data" do
-        expect(collator).to have_attributes(
-          rent_or_mortgage_regular: 222.22,
-          legal_aid_regular: 0.00,
-          maintenance_out_regular: 0.0,
-        )
-      end
-    end
-
     context "with monthly regular transaction of :child_care" do
       before do
         create(:regular_transaction,
