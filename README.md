@@ -1,5 +1,5 @@
 [![CircleCI](https://circleci.com/gh/ministryofjustice/cfe-civil.svg?style=shield)](https://circleci.com/gh/ministryofjustice/cfe-civil/tree/main)
-[![repo standards badge](https://img.shields.io/endpoint?labelColor=231f20&color=005ea5&style=for-the-badge&label=MoJ%20Repository%20Standards&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fendpoint%2Fcfe-civil&logo=github)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/cfe-civil)
+[![repo standards badge](https://img.shields.io/endpoint?style=flat&labelColor=grey&label=MoJ%20Repository%20Standards&url=https%3A%2F%2Foperations-engineering-reports.cloud-platform.service.justice.gov.uk%2Fapi%2Fv1%2Fcompliant_public_repositories%2Fendpoint%2Fcfe-civil&logo=github)](https://operations-engineering-reports.cloud-platform.service.justice.gov.uk/public-report/cfe-civil)
 
 # Check Financial Eligibility - Civil (CFE-Civil)
 
