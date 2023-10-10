@@ -1,5 +1,5 @@
 Feature:
-  "Self Employment"
+  "Self Employment (Deduct student debt repayments)"
 
   Scenario: The single client is self-employed and receiving a student debt repayment
     Given I am undertaking a controlled assessment
