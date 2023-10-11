@@ -1,20 +1,28 @@
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
+ARG RUBY_VERSION=3.2.2
+
+FROM ruby:$RUBY_VERSION-alpine3.18 as base
+# Chose alpine for the lower image size (lower attack surface and start-up speed):
+# ruby:3.2.2-alpine3.18 is 80MB
+# ruby:3.2.2-slim is 205MB (debian-based)
+
 #
-# Build stage: Gem compilation
+# Throw-away build stage to reduce size of final image
 #
-FROM ruby:3.2.2-alpine3.17 as builder
+FROM base as build
 
 ENV RAILS_ENV production
 
 RUN set -ex
 
+# Install packages needed to build gems
 RUN apk --no-cache add build-base \
                        postgresql-dev
 
+# Install application gems
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
-
 RUN gem update --system
-# Gems installed (includes compilation)
 RUN bundle config --local without test:development && \
     bundle install && \
     # remove gem cache
@@ -22,21 +30,21 @@ RUN bundle config --local without test:development && \
     # fix permissions for security - the 'os' gem was found to be world writable
     chmod -R o-w /usr/local/bundle
 
-#
-# Build stage: Assemble final image
-#
-FROM ruby:3.2.2-alpine3.17
+# Final stage for app image
+FROM base
+
+# Install packages needed for deployment
 RUN apk --no-cache add postgresql-client
 
-COPY --from=builder /usr/local/bundle/ /usr/local/bundle/
+COPY --from=build /usr/local/bundle/ /usr/local/bundle/
 COPY . /myapp
 
 WORKDIR /myapp
 
-EXPOSE 3000
-
-RUN adduser --disabled-password apply -u 1001
-RUN chown -R apply:apply /myapp
+# Run and own only the runtime files as a non-root user for security
+RUN adduser --disabled-password rails && \
+    chown -R rails:rails /myapp
+USER rails:rails
 
 # expect ping environment variables
 ARG BUILD_DATE
@@ -49,6 +57,6 @@ ENV APP_BRANCH=${APP_BRANCH}
 # allow public files to be served
 ENV RAILS_SERVE_STATIC_FILES true
 
-USER 1001
-
+# Rails entrypoint (can be overwritten at runtime)
 CMD ["docker/run"]
+EXPOSE 3000
