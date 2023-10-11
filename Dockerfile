@@ -42,9 +42,10 @@ COPY . /myapp
 WORKDIR /myapp
 
 # Run and own only the runtime files as a non-root user for security
-RUN adduser --disabled-password rails && \
+RUN adduser --disabled-password rails -u 1001 && \
     chown -R rails:rails /myapp
-USER rails:rails
+# (Numeric user needs to be used to show that it's non-root)
+USER 1001
 
 # expect ping environment variables
 ARG BUILD_DATE
