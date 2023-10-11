@@ -6,7 +6,7 @@ module V6
 
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                    params: full_assessment_params, version:)
+                                                    params: full_assessment_params)
       if create.success?
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
@@ -50,7 +50,7 @@ module V6
                                                             applicant:,
                                                             partner: nil)
         end
-        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:).as_json
+        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:).as_json
       else
         render_unprocessable(create.errors)
       end

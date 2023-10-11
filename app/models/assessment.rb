@@ -4,7 +4,6 @@ class Assessment < ApplicationRecord
   validates :remote_ip,
             :submission_date,
             presence: true
-  validates :version, inclusion: { in: CFEConstants::VALID_ASSESSMENT_VERSIONS, message: "not valid in Accept header" }
 
   # Just in case we get multiple POSTs to partner endpoint
   has_many :capital_summaries, dependent: :destroy

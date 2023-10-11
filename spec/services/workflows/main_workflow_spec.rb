@@ -145,8 +145,7 @@ module Workflows
                :with_capital_summary,
                :with_gross_income_summary,
                :with_disposable_income_summary,
-               proceedings: proceedings_hash,
-               version: "6"
+               proceedings: proceedings_hash
       end
       let(:applicant) { build :applicant, :without_qualifying_benefits }
 

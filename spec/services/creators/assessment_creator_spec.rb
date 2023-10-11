@@ -19,11 +19,10 @@ module Creators
       }
     end
 
-    subject(:creator) { described_class.call(remote_ip:, assessment_params:, version:) }
+    subject(:creator) { described_class.call(remote_ip:, assessment_params:) }
 
     context "version 6" do
       let(:assessment_params) { raw_post_v6 }
-      let(:version) { "6" }
 
       context "valid request" do
         it "is successful" do
@@ -37,7 +36,6 @@ module Creators
         it "populates the assessment record with expected values" do
           creator
           assessment = Assessment.first
-          expect(assessment.version).to eq "6"
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(assessment.proceeding_type_codes).to eq []
           expect(assessment.level_of_help).to eq "certificated"
@@ -55,7 +53,6 @@ module Creators
 
     context "when version 6" do
       let(:assessment_params) { raw_post_v6 }
-      let(:version) { "6" }
 
       context "valid request" do
         it "is successful" do
@@ -69,7 +66,6 @@ module Creators
         it "populates the assessment record with expected values" do
           creator
           assessment = Assessment.first
-          expect(assessment.version).to eq "6"
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(assessment.proceeding_type_codes).to eq []
         end
