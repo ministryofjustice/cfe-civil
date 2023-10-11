@@ -209,8 +209,8 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                      submission_date: { type: :string, format: :date, example: "2022-07-22" },
                      level_of_help: {
                        type: :string,
-                       enum: Assessment.levels_of_help.keys,
-                       example: Assessment.levels_of_help.keys.first,
+                       enum: Assessment::LEVELS_OF_HELP,
+                       example: Assessment::LEVELS_OF_HELP.first,
                        description: "The level of representation required by the client",
                      },
                      applicant: { "$ref": components[:applicant_result] },

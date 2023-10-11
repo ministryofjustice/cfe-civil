@@ -397,8 +397,8 @@ class SwaggerDocs
               },
               level_of_help: {
                 type: :string,
-                enum: Assessment.levels_of_help.keys,
-                example: Assessment.levels_of_help.keys.first,
+                enum: Assessment::LEVELS_OF_HELP,
+                example: Assessment::LEVELS_OF_HELP.first,
                 description: "The level of help required by the client. Defaults to 'certificated'",
               },
             },

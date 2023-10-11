@@ -1,6 +1,10 @@
 class Assessment < ApplicationRecord
   serialize :remarks
 
+  LEVELS_OF_HELP = %w[certificated controlled].freeze
+
+  attr_accessor :level_of_help
+
   validates :remote_ip,
             :submission_date,
             presence: true
@@ -21,8 +25,6 @@ class Assessment < ApplicationRecord
   has_many :explicit_remarks, dependent: :destroy
   has_many :proceeding_types,
            dependent: :destroy
-
-  enum :level_of_help, { certificated: 0, controlled: 1 }
 
   # Always instantiate a new Remarks object from a nil value
   def remarks

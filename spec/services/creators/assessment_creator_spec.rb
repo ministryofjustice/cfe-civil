@@ -4,27 +4,19 @@ module Creators
   RSpec.describe AssessmentCreator do
     let(:remote_ip) { "127.0.0.1" }
 
-    let(:raw_post_v6) do
+    let(:raw_post) do
       {
         client_reference_id: "psr-123",
         submission_date: "2019-06-06",
-      }
-    end
-
-    let(:raw_post_controlled) do
-      {
-        client_reference_id: "psr-123",
-        submission_date: "2019-06-06",
-        level_of_help: "controlled",
       }
     end
 
     subject(:creator) { described_class.call(remote_ip:, assessment_params:) }
 
     context "version 6" do
-      let(:assessment_params) { raw_post_v6 }
+      let(:assessment_params) { raw_post }
 
-      context "valid request" do
+      context "valid request when level of representation is missing" do
         it "is successful" do
           expect(creator.success?).to eq true
         end
@@ -38,7 +30,7 @@ module Creators
           assessment = Assessment.first
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(assessment.proceeding_type_codes).to eq []
-          expect(assessment.level_of_help).to eq "certificated"
+          expect(creator.assessment.level_of_help).to eq "certificated"
         end
 
         it "creates a CapitalSummary record" do
@@ -49,33 +41,26 @@ module Creators
           expect(creator.errors).to be_empty
         end
       end
-    end
 
-    context "when version 6" do
-      let(:assessment_params) { raw_post_v6 }
+      context "valid request when level of representation is specified" do
+        let(:assessment_params) { raw_post.merge(level_of_help:) }
 
-      context "valid request" do
-        it "is successful" do
-          expect(creator.success?).to eq true
+        context "controlled" do
+          let(:level_of_help) { "controlled" }
+
+          it "sets the level appropriately" do
+            expect(creator.success?).to eq true
+            expect(creator.assessment.level_of_help).to eq "controlled"
+          end
         end
 
-        it "creates an Assessment record" do
-          expect { creator }.to change(Assessment, :count).by(1)
-        end
+        context "certificated" do
+          let(:level_of_help) { "certificated" }
 
-        it "populates the assessment record with expected values" do
-          creator
-          assessment = Assessment.first
-          expect(assessment.remote_ip).to eq "127.0.0.1"
-          expect(assessment.proceeding_type_codes).to eq []
-        end
-
-        it "creates a CapitalSummary record" do
-          expect { creator }.to change(CapitalSummary, :count).by(1)
-        end
-
-        it "has no errors" do
-          expect(creator.errors).to be_empty
+          it "sets the level appropriately" do
+            expect(creator.success?).to eq true
+            expect(creator.assessment.level_of_help).to eq "certificated"
+          end
         end
       end
 
@@ -92,15 +77,6 @@ module Creators
 
         it "has errors" do
           expect(creator.errors).to include("Remote ip can't be blank")
-        end
-      end
-
-      context "when level of representation is specified" do
-        let(:assessment_params) { raw_post_controlled }
-
-        it "sets the level appropriately" do
-          expect(creator.success?).to eq true
-          expect(Assessment.first.level_of_help).to eq "controlled"
         end
       end
     end
