@@ -5,6 +5,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "income contribution" => "result_summary.overall_result.income_contribution",
     "disposable_income_summary" => "result_summary.disposable_income",
     "disposable income" => "assessment.disposable_income",
+    "gross income" => "result_summary.gross_income",
     "disposable_income_all_sources" => "assessment.disposable_income.monthly_equivalents.all_sources",
     "disposable_income_bank_transactions" => "assessment.disposable_income.monthly_equivalents.bank_transactions",
     "disposable_income_cash_transactions" => "assessment.disposable_income.monthly_equivalents.cash_transactions",

@@ -8,7 +8,7 @@ module Calculators
         # if the outgoing amount is of type 'board_and_lodging'
         gross_housing_costs_bank = gross_housing_costs_bank(housing_cost_outgoings)
 
-        # we may have to halve the other amounts too - they don't have a 'housing cost type' associated with them, but we do a 'best effort'
+        # the other amounts have to be halved as well - they don't have a 'housing cost type' associated with them, but we do a 'best effort'
         # and assume that they are all of the same type if the 'outgoings' are all board_and_lodging type
         if should_halve_full_cost_minus_benefits?(housing_cost_outgoings, monthly_housing_benefit)
           gross_housing_costs_regular_transactions = gross_housing_costs_regular_transactions(gross_income_summary) / 2
@@ -20,9 +20,15 @@ module Calculators
 
         gross_housing_costs = gross_housing_costs_bank + gross_housing_costs_regular_transactions + gross_housing_costs_cash
 
+        housing_benefit = if housing_benefit_in_gross_income?(submission_date)
+                            0
+                          else
+                            monthly_housing_benefit
+                          end
+
         Result.new gross_housing_costs:,
                    net_housing_costs: net_housing_costs(submission_date:, housing_costs_cap_applies:,
-                                                        monthly_housing_benefit:, gross_housing_costs:),
+                                                        monthly_housing_benefit: housing_benefit, gross_housing_costs:),
                    gross_housing_costs_bank:,
                    gross_housing_costs_cash:,
                    gross_housing_costs_regular: gross_housing_costs_regular_transactions
@@ -67,6 +73,11 @@ module Calculators
 
       def single_monthly_housing_costs_cap(submission_date)
         Threshold.value_for(:single_monthly_housing_costs_cap, at: submission_date)
+      end
+
+      # are housing benefits part of gross income (post MTR) or disposable income (before)
+      def housing_benefit_in_gross_income?(submission_date)
+        Threshold.value_for(:housing_benefit_in_gross_income, at: submission_date).present?
       end
     end
   end

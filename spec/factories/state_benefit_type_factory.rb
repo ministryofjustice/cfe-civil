@@ -38,5 +38,10 @@ FactoryBot.define do
       exclude_from_gross_income { false }
       dwp_code { "CHB" }
     end
+
+    trait :housing_benefit do
+      label { "housing_benefit" }
+      exclude_from_gross_income { true }
+    end
   end
 end

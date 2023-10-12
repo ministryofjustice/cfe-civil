@@ -78,3 +78,4 @@ fixed_employment_allowance: 66.0
 employment_income_variance: 60.0
 subject_matter_of_dispute_disregard: 999_999_999_999
 pension_contribution_cap: 5
+housing_benefit_in_gross_income: true
