@@ -65,14 +65,6 @@ Given("A first tier asylum case") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
-Given("An Upper Tribunal immigration case") do
-  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
-end
-
-Given("An Upper Tribunal asylum case") do
-  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
-end
-
 Given("I am using version {int} of the API") do |int|
   @api_version = int
   @capitals_data = {}
