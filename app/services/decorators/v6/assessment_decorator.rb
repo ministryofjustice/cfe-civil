@@ -3,16 +3,17 @@ module Decorators
     class AssessmentDecorator
       attr_reader :assessment
 
-      def initialize(assessment:, calculation_output:, applicant:, partner:)
+      def initialize(assessment:, calculation_output:, applicant:, partner:, version:)
         @assessment = assessment
         @calculation_output = calculation_output
         @applicant = applicant
         @partner = partner
+        @version = version
       end
 
       def as_json
         {
-          version: assessment.version,
+          version: @version,
           timestamp: Time.current,
           success: true,
           result_summary: ResultSummaryDecorator.new(assessment, @calculation_output, @partner.present?).as_json,

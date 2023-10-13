@@ -10,7 +10,6 @@ RSpec.describe Assessment, type: :model do
         client_reference_id: "client-ref-1",
         submission_date: Date.current,
         remote_ip: "127.0.0.1",
-        version: "6",
       }
     end
 
@@ -26,7 +25,6 @@ RSpec.describe Assessment, type: :model do
       {
         client_reference_id: "client-ref-1",
         submission_date: Date.current,
-        version: "6",
       }
     end
 

@@ -9,6 +9,7 @@ module Decorators
                :with_disposable_income_summary,
                :with_capital_summary
       end
+      let(:version) { "6" }
       let(:calculation_output) do
         instance_double(CalculationOutput,
                         gross_income_subtotals: instance_double(GrossIncome::Subtotals,
@@ -48,7 +49,8 @@ module Decorators
         subject(:decorator) do
           described_class.new(assessment: assessment.reload, calculation_output:,
                               applicant:,
-                              partner:).as_json
+                              partner:,
+                              version:).as_json
         end
         let(:applicant) { build(:person_data, details: build(:applicant)) }
         let(:partner) { nil }

@@ -7,13 +7,12 @@ module Creators
     end
 
     class << self
-      def call(remote_ip:, assessment_params:, version:)
+      def call(remote_ip:, assessment_params:)
         assessment_hash =
           {
             client_reference_id: assessment_params[:client_reference_id],
             submission_date: Date.parse(assessment_params[:submission_date]),
             level_of_help: assessment_params[:level_of_help] || "certificated",
-            version:,
             remote_ip:,
           }
 

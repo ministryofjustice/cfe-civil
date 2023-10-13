@@ -1,10 +1,13 @@
 class Assessment < ApplicationRecord
   serialize :remarks
 
+  LEVELS_OF_HELP = %w[certificated controlled].freeze
+
+  attr_accessor :level_of_help
+
   validates :remote_ip,
             :submission_date,
             presence: true
-  validates :version, inclusion: { in: CFEConstants::VALID_ASSESSMENT_VERSIONS, message: "not valid in Accept header" }
 
   # Just in case we get multiple POSTs to partner endpoint
   has_many :capital_summaries, dependent: :destroy
@@ -22,8 +25,6 @@ class Assessment < ApplicationRecord
   has_many :explicit_remarks, dependent: :destroy
   has_many :proceeding_types,
            dependent: :destroy
-
-  enum :level_of_help, { certificated: 0, controlled: 1 }
 
   # Always instantiate a new Remarks object from a nil value
   def remarks
