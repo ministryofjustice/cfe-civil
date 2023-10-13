@@ -62,7 +62,7 @@ Given("A first tier immigration case") do
 end
 
 Given("A first tier asylum case") do
-  @proceeding_type_data = { "proceeding_types": [{ ccms_code: "IA031", client_involvement_type: "A" }] }
+  @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
 Given("I am using version {int} of the API") do |int|
