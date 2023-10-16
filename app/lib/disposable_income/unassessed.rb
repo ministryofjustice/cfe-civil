@@ -12,6 +12,10 @@ module DisposableIncome
                                                               submission_date: @submission_date
     end
 
+    def combined_total_disposable_income
+      0
+    end
+
     def income_contribution
       0
     end
