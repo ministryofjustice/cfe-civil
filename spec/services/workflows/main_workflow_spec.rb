@@ -164,6 +164,7 @@ module Workflows
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
+                                                                       state_benefits: [],
                                                                        liquid_capital_items: [],
                                                                        outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
@@ -180,6 +181,7 @@ module Workflows
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
                                                                        liquid_capital_items: [],
+                                                                       state_benefits: [],
                                                                        outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
                                                                        assessed_capital: 0).and_call_original

@@ -4,10 +4,6 @@ class StateBenefitType < ApplicationRecord
   validates :category, inclusion: { in: (%w[carer_disability low_income other uncategorised] + [nil]),
                                     message: "Invalid category" }
 
-  def self.housing_benefit
-    find_by(label: "housing_benefit")
-  end
-
   def self.as_cfe_json
     all.map(&:as_cfe_json)
   end

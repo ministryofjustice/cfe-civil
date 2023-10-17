@@ -104,7 +104,7 @@ class PersonDisposableIncomeSubtotals
   end
 
   def housing_benefit
-    @outgoings.housing_costs.housing_benefit
+    @outgoings.housing_benefit
   end
 
   def gross_housing_costs

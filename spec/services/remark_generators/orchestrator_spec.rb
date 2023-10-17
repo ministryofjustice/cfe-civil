@@ -3,7 +3,11 @@ require "rails_helper"
 module RemarkGenerators
   RSpec.describe Orchestrator, :calls_bank_holiday do
     let(:assessment) { create :assessment }
-    let(:state_benefits) { assessment.applicant_gross_income_summary.state_benefits }
+    let(:state_benefits) do
+      [StateBenefit.new(state_benefit_payments: build_list(:state_benefit_payment, 1),
+                        state_benefit_name: "anything",
+                        exclude_from_gross_income: false)]
+    end
     let(:state_benefit_payments) { state_benefits.first.state_benefit_payments }
     let(:other_income_sources) { assessment.applicant_gross_income_summary.other_income_sources }
     let(:other_income_payments) { other_income_sources.first.other_income_payments }
@@ -40,6 +44,7 @@ module RemarkGenerators
       expect(ResidualBalanceChecker).to receive(:call).with(liquid_capital_items, 0, 100).and_call_original
 
       described_class.call(liquid_capital_items:,
+                           state_benefits:,
                            lower_capital_threshold: 100,
                            child_care_bank: 0,
                            outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,

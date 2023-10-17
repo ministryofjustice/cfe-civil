@@ -9,6 +9,7 @@ module Collators
     describe ".call" do
       subject(:collator) do
         described_class.call assessment:,
+                             state_benefits: [],
                              submission_date: assessment.submission_date,
                              employments:,
                              gross_income_summary: assessment.applicant_gross_income_summary,

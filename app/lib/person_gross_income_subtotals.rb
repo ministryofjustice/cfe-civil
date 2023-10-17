@@ -3,7 +3,8 @@ class PersonGrossIncomeSubtotals
     def blank
       new gross_income_summary: GrossIncomeSummary.new,
           regular_income_categories: [],
-          employment_income_subtotals: EmploymentIncomeSubtotals.blank
+          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+          state_benefits: []
     end
   end
 
@@ -14,15 +15,17 @@ class PersonGrossIncomeSubtotals
   def initialize(
     gross_income_summary:,
     regular_income_categories:,
-    employment_income_subtotals:
+    employment_income_subtotals:,
+    state_benefits:
   )
     @gross_income_summary = gross_income_summary
     @regular_income_categories = regular_income_categories
     @employment_income_subtotals = employment_income_subtotals
+    @state_benefits = state_benefits
   end
 
   def state_benefits
-    @gross_income_summary.state_benefits.map do |sb|
+    @state_benefits.map do |sb|
       StateBenefitData.new state_benefit_name: sb.state_benefit_name,
                            monthly_value: Calculators::MonthlyEquivalentCalculator.call(collection: sb.state_benefit_payments),
                            exclude_from_gross_income?: sb.exclude_from_gross_income?

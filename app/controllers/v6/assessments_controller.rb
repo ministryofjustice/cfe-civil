@@ -105,7 +105,31 @@ module V6
                      employments: parse_employment_income(employments),
                      capitals_data:,
                      outgoings:,
-                     dependants: dependants.map(&:freeze))
+                     dependants: dependants.map(&:freeze),
+                     state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
+    end
+
+    def parse_state_benefits(state_benefits_params)
+      state_benefits_params.map do |p|
+        payments = p[:payments].map do |payment|
+          StateBenefitPayment.new(
+            payment_date: payment[:date],
+            amount: payment[:amount],
+            client_id: payment[:client_id],
+            flags: generate_flags(payment),
+          )
+        end
+        benefit_type = StateBenefitType.find_by(label: p[:name]) || StateBenefitType.find_by(label: "other")
+        StateBenefit.new(state_benefit_payments: payments,
+                         state_benefit_name: p[:name],
+                         exclude_from_gross_income: benefit_type.exclude_from_gross_income)
+      end
+    end
+
+    def generate_flags(hash)
+      return false if hash[:flags].blank?
+
+      hash[:flags].map { |k, v| k if v.eql?(true) }.compact
     end
 
     def parse_outgoings(outgoings_params)

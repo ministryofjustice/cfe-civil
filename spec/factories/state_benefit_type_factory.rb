@@ -3,8 +3,8 @@ FactoryBot.define do
     sequence :label do |n|
       "benefit_type_#{n + 100}"
     end
-    # the name passed in is the same as the label in the state benefit type table except for seeded data
-    name { label }
+    # make the name different so that it closer matches the seeded data
+    name { label.titleize }
     sequence :dwp_code do |n|
       [nil, "#{('A'..'Z').to_a.sample(2).join}#{n}"].sample
     end

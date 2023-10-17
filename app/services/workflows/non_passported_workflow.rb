@@ -11,6 +11,7 @@ module Workflows
                                                       employments: applicant.employments,
                                                       gross_income_summary: assessment.applicant_gross_income_summary,
                                                       self_employments: applicant_self_employments,
+                                                      state_benefits: applicant.state_benefits,
                                                       employment_details: applicant_employment_details)
 
         gross_income_subtotals = if partner.present?
@@ -18,6 +19,7 @@ module Workflows
                                    partner_employment_details = convert_employment_details(partner.employment_details)
                                    partner_gross_income = collate_gross_income(assessment:,
                                                                                employments: partner.employments,
+                                                                               state_benefits: partner.state_benefits,
                                                                                gross_income_summary: assessment.partner_gross_income_summary,
                                                                                self_employments: partner_self_employments,
                                                                                employment_details: partner_employment_details)
@@ -170,14 +172,15 @@ module Workflows
         end
       end
 
-      def collate_gross_income(assessment:, employments:, gross_income_summary:, self_employments:, employment_details:)
+      def collate_gross_income(assessment:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
         converted_employments = convert_employment_payments(assessment, employments, assessment.submission_date)
         Collators::GrossIncomeCollator.call(assessment:,
                                             submission_date: assessment.submission_date,
                                             self_employments:,
                                             employment_details:,
                                             employments: converted_employments,
-                                            gross_income_summary:)
+                                            gross_income_summary:,
+                                            state_benefits:)
       end
 
       def collate_and_assess_gross_income(self_employments:, partner_self_employments:,
@@ -211,6 +214,7 @@ module Workflows
                                                                 gross_income_summary: assessment.applicant_gross_income_summary.freeze,
                                                                 outgoings: applicant_person_data.outgoings,
                                                                 eligible_for_childcare:,
+                                                                state_benefits: applicant_person_data.state_benefits,
                                                                 total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
                                                                 allow_negative_net: true)
         partner_outgoings = Collators::OutgoingsCollator.call(submission_date: assessment.submission_date,
@@ -218,6 +222,7 @@ module Workflows
                                                               gross_income_summary: assessment.partner_gross_income_summary.freeze,
                                                               outgoings: partner_person_data.outgoings,
                                                               eligible_for_childcare:,
+                                                              state_benefits: partner_person_data.state_benefits,
                                                               total_gross_income: gross_income_subtotals.partner_gross_income_subtotals.total_gross_income,
                                                               allow_negative_net: true)
 
@@ -262,6 +267,7 @@ module Workflows
                                                       gross_income_summary: assessment.applicant_gross_income_summary.freeze,
                                                       outgoings: applicant_person_data.outgoings,
                                                       eligible_for_childcare:,
+                                                      state_benefits: applicant_person_data.state_benefits,
                                                       total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
                                                       allow_negative_net: false)
         disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: assessment.applicant_gross_income_summary.freeze)

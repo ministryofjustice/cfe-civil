@@ -8,15 +8,20 @@ module Calculators
     Benefits = Data.define(:state_benefits_regular, :state_benefits_bank)
 
     class << self
-      def benefits(gross_income_summary:, submission_date:)
+      def benefits(gross_income_summary:, submission_date:, state_benefits:)
         Benefits.new state_benefits_regular: state_benefits_regular(gross_income_summary, submission_date),
-                     state_benefits_bank: state_benefits_bank(gross_income_summary, submission_date)
+                     state_benefits_bank: state_benefits_bank(submission_date:, state_benefits:)
+      end
+
+      # are housing benefits part of gross income (post MTR) or disposable income (before)
+      def housing_benefit_in_gross_income?(submission_date)
+        Threshold.value_for(:housing_benefit_in_gross_income, at: submission_date).present?
       end
 
     private
 
       def state_benefits_regular(gross_income_summary, submission_date)
-        transactions = if housing_benefit_gross?(submission_date)
+        transactions = if housing_benefit_in_gross_income?(submission_date)
                          gross_income_summary.regular_transactions.with_operation_and_category(:credit, :benefits) +
                            gross_income_summary.regular_transactions.with_operation_and_category(:credit, :housing_benefit)
                        else
@@ -25,19 +30,14 @@ module Calculators
         MonthlyRegularTransactionAmountCalculator.call(transactions)
       end
 
-      def state_benefits_bank(gross_income_summary, submission_date)
-        state_benefits = gross_income_summary.state_benefits.reject(&:exclude_from_gross_income)
-        state_benefit_totals = state_benefits.sum { |sb| MonthlyEquivalentCalculator.call(collection: sb.state_benefit_payments) }
-        if housing_benefit_gross?(submission_date)
-          state_benefit_totals + MonthlyEquivalentCalculator.call(collection: gross_income_summary.housing_benefit_payments)
+      def state_benefits_bank(submission_date:, state_benefits:)
+        benefits = state_benefits.reject(&:exclude_from_gross_income)
+        state_benefit_totals = benefits.sum { |sb| MonthlyEquivalentCalculator.call(collection: sb.state_benefit_payments) }
+        if housing_benefit_in_gross_income?(submission_date)
+          state_benefit_totals + MonthlyEquivalentCalculator.call(collection: state_benefits.select(&:housing_benefit?).flat_map(&:state_benefit_payments))
         else
           state_benefit_totals
         end
-      end
-
-      # are housing benefits part of gross income (post MTR) or disposable income (before)
-      def housing_benefit_gross?(submission_date)
-        Threshold.value_for(:housing_benefit_in_gross_income, at: submission_date).present?
       end
     end
   end

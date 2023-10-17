@@ -19,6 +19,7 @@ module Decorators
       let(:subtotals) do
         PersonGrossIncomeSubtotals.new(
           gross_income_summary: summary,
+          state_benefits:,
           employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
                                                        payment_based_employments: [
                                                          OpenStruct.new(employment_name: employment1.name, employment_payments: employment1.employment_payments),
@@ -166,9 +167,11 @@ module Decorators
       end
 
       describe "#as_json", :calls_bank_holiday do
-        before do
-          create(:state_benefit, :with_monthly_payments, state_benefit_type: universal_credit, gross_income_summary: summary, payment_amount: 979.33)
-          create(:state_benefit, :with_monthly_payments, state_benefit_type: child_benefit, gross_income_summary: summary, payment_amount: 343.27)
+        let(:state_benefits) do
+          [
+            build(:state_benefit, state_benefit_name: universal_credit.name, state_benefit_payments: build_list(:state_benefit_payment, 3, amount: 979.33)),
+            build(:state_benefit, state_benefit_name: child_benefit.name, state_benefit_payments: build_list(:state_benefit_payment, 3, amount: 343.27)),
+          ]
         end
 
         subject(:decorator) do

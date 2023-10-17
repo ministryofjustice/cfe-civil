@@ -164,11 +164,10 @@ module Calculators
           context "with weekly housing benefit" do
             let(:housing_benefit_amount) { 500.00 }
             let(:housing_cost_type) { "rent" }
-            let(:state_benefit) { create :state_benefit, gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type }
 
-            before do
-              [submission_date - 4.weeks, submission_date - 3.weeks, submission_date - 2.weeks, submission_date - 1.week, submission_date].each do |pay_date|
-                create :state_benefit_payment, state_benefit:, amount: housing_benefit_amount, payment_date: pay_date
+            let(:housing_benefit_payments) do
+              [submission_date - 4.weeks, submission_date - 3.weeks, submission_date - 2.weeks, submission_date - 1.week, submission_date].map do |pay_date|
+                build :state_benefit_payment, amount: housing_benefit_amount, payment_date: pay_date
               end
             end
 
@@ -207,6 +206,9 @@ module Calculators
 
       context "after MTR, housing benefit in gross income" do
         let(:submission_date) { Date.new(2525, 6, 6) }
+        let(:housing_benefit_payments) do
+          [build(:state_benefit_payment, payment_amount: housing_benefit_amount)]
+        end
 
         let(:housing_benefit_amount) { 500.00 }
         let(:housing_cost_amount) { 1200.00 }
@@ -217,12 +219,6 @@ module Calculators
           travel_to submission_date
           example.run
           travel_back
-        end
-
-        before do
-          create :state_benefit, :with_monthly_payments,
-                 payment_amount: housing_benefit_amount,
-                 gross_income_summary: assessment.applicant_gross_income_summary, state_benefit_type: housing_benefit_type
         end
 
         context "mortgage" do

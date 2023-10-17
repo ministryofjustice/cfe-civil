@@ -3,7 +3,6 @@ FactoryBot.define do
     association :assessment
     trait :with_everything do
       after(:create) do |gross_income_summary|
-        create :state_benefit, :with_monthly_payments, gross_income_summary: gross_income_summary
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary
       end
     end
@@ -28,7 +27,6 @@ FactoryBot.define do
         rent_or_mortgage_in_cash = create :cash_transaction_category, name: "rent_or_mortgage", operation: "debit", gross_income_summary: gross_income_summary
         legal_aid_in_cash = create :cash_transaction_category, name: "legal_aid", operation: "debit", gross_income_summary: gross_income_summary
 
-        create :state_benefit, :with_monthly_payments, gross_income_summary: gross_income_summary
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "friends_or_family", monthly_income: 100
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "maintenance_in", monthly_income: 200
         create :other_income_source, :with_monthly_payments, gross_income_summary: gross_income_summary, name: "property_or_lodger", monthly_income: 300

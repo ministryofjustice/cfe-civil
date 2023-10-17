@@ -70,8 +70,6 @@ RSpec.describe CullStaleAssessmentsService do
       OtherIncomeSource,
       ProceedingType,
       RegularTransaction,
-      StateBenefitPayment,
-      StateBenefit,
     ]
   end
 
