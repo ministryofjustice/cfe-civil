@@ -14,7 +14,7 @@ Feature:
       | attribute                        | value  |
       | dependant_allowance_under_16     | 659.0  |
       | dependant_allowance_over_16      | 448.0  |
-      | lone_parent_allowance            | 315.0  |
+      | lone_parent_allowance            | 313.6  |
 
   Scenario: Single without dependants
     Given I am undertaking a certificated assessment
