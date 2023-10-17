@@ -133,6 +133,7 @@ RSpec.describe Threshold do
         expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 999_999_999_999
         expect(described_class.value_for(:disposable_income_lower_controlled, at: submission_date)).to eq 946
         expect(described_class.value_for(:disposable_income_upper, at: submission_date)).to eq 946
+        expect(described_class.value_for(:gross_income_lower_controlled, at: submission_date)).to eq 946
       end
     end
 
@@ -145,6 +146,7 @@ RSpec.describe Threshold do
         expect(described_class.value_for(:subject_matter_of_dispute_disregard, at: submission_date)).to eq 100_000.0
         expect(described_class.value_for(:disposable_income_lower_controlled, at: submission_date)).to eq 733
         expect(described_class.value_for(:disposable_income_upper, at: submission_date)).to eq 733
+        expect(described_class.value_for(:gross_income_lower_controlled, at: submission_date)).to be_nil
       end
     end
   end
