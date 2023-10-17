@@ -2,7 +2,6 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        populate_eligibility_records(assessment:)
         calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
                                blank_calculation_result(proceeding_types: assessment.proceeding_types,
                                                         submission_date: assessment.submission_date,
@@ -59,10 +58,6 @@ module Workflows
       end
 
     private
-
-      def populate_eligibility_records(assessment:)
-        Utilities::ProceedingTypeThresholdPopulator.call(assessment)
-      end
 
       def no_means_assessment_needed?(proceeding_types, applicant)
         proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } &&
