@@ -98,12 +98,7 @@ module Workflows
         co = described_class.call(assessment:,
                                   applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                   partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
-        # Summarizers::MainSummarizer.call(proceeding_types: assessment.proceeding_types,
-        #                                  receives_qualifying_benefit: false, receives_asylum_support: false,
-        #                                  gross_income_eligibilities: co.gross_income_subtotals.eligibilities,
-        #                                  disposable_income_eligibilities: co.disposable_income_eligibilities,
-        #                                  capital_eligibilities: co.capital_subtotals.eligibilities)
-        co.calculation_output.assessment_result
+        co.calculation_output.summarized_assessment_result(assessment.proceeding_types)
       end
 
       context "with controlled work" do

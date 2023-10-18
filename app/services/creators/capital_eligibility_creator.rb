@@ -12,6 +12,13 @@ module Creators
         end
       end
 
+      def assessment_results(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
+        results = proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, level_of_help:, submission_date:) }.map do |e|
+          [e.proceeding_type, assessed_result(assessed_capital:, lower_threshold: e.lower_threshold, upper_threshold: e.upper_threshold)]
+        end
+        results.to_h
+      end
+
       def unassessed(proceeding_types:, level_of_help:, submission_date:)
         proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, level_of_help:, submission_date:) }.map do |e|
           Eligibility::Capital.new(

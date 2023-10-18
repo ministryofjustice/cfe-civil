@@ -17,11 +17,10 @@ module Workflows
                         Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "eligible",
                                                           upper_threshold: 27, lower_threshold: 14),
                       ],
-                      gross_income_subtotals: GrossIncome::Unassessed.new(assessment.proceeding_types),
+                      gross_income_subtotals: GrossIncome::Unassessed.new,
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
                       capital_subtotals: instance_double(Capital::Subtotals,
                                                          combined_assessed_capital: 0,
-                                                         summarized_assessment_result: :eligible,
                                                          eligibilities: [
                                                            Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.first,
                                                                                     assessment_result: "contribution_required",
@@ -69,9 +68,7 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Summarizers::MainSummarizer).to receive(:call)
-          allow(PassportedWorkflow).to receive(:call).with(proceeding_types: assessment.proceeding_types,
-                                                           capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+          allow(PassportedWorkflow).to receive(:call).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                            non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
                                                            submission_date: assessment.submission_date,
@@ -102,9 +99,7 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(Summarizers::MainSummarizer).to receive(:call).and_return(OpenStruct.new(assessment_result: :ineligible))
-          expect(PassportedWorkflow).to receive(:partner).with(proceeding_types: assessment.proceeding_types,
-                                                               capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+          expect(PassportedWorkflow).to receive(:partner).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                                non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                                partner_capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                                        non_liquid_capital_items: [], main_home: {}, additional_properties: []),
@@ -128,12 +123,6 @@ module Workflows
       end
 
       it "calls NonPassportedWorkflow" do
-        allow(Summarizers::MainSummarizer).to receive(:call)
-        allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
-        workflow_call
-      end
-
-      it "calls MainSummarizer" do
         allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
         workflow_call
       end
@@ -159,7 +148,6 @@ module Workflows
       context "with proceeding types" do
         it "Populates proceeding types with thresholds" do
           allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
-          allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -175,7 +163,6 @@ module Workflows
         it "creates the eligibility records" do
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
           allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
-          allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,

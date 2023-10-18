@@ -1,6 +1,6 @@
 class CapitalCollatorAndAssessor
   class << self
-    def call(proceeding_types:, submission_date:, level_of_help:, capitals_data:, date_of_birth:, total_disposable_income:)
+    def call(submission_date:, level_of_help:, capitals_data:, date_of_birth:, total_disposable_income:)
       applicant_subtotals = collate_applicant_capital(
         submission_date:,
         level_of_help:,
@@ -11,13 +11,12 @@ class CapitalCollatorAndAssessor
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
-        proceeding_types:,
         level_of_help:,
         submission_date:,
       )
     end
 
-    def passported(proceeding_types:, submission_date:, level_of_help:, capitals_data:, date_of_birth:)
+    def passported(submission_date:, level_of_help:, capitals_data:, date_of_birth:)
       applicant_subtotals = collate_applicant_capital(
         submission_date:,
         level_of_help:,
@@ -28,13 +27,12 @@ class CapitalCollatorAndAssessor
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
-        proceeding_types:,
         level_of_help:,
         submission_date:,
       )
     end
 
-    def partner(proceeding_types:, submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:,
+    def partner(submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:,
                 total_disposable_income:)
       applicant_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth:)
       partner_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth: partner_date_of_birth)
@@ -50,13 +48,12 @@ class CapitalCollatorAndAssessor
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
-        proceeding_types:,
         level_of_help:,
         submission_date:,
       )
     end
 
-    def partner_passported(proceeding_types:, submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:)
+    def partner_passported(submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:)
       applicant_value = Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth:)
       partner_value = Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth: partner_date_of_birth)
 
@@ -71,7 +68,6 @@ class CapitalCollatorAndAssessor
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
-        proceeding_types:,
         level_of_help:,
         submission_date:,
       )

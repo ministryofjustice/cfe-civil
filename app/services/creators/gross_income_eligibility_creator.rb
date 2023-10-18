@@ -2,27 +2,43 @@ module Creators
   class GrossIncomeEligibilityCreator
     class << self
       def call(dependants:, proceeding_types:, submission_date:, total_gross_income:)
-        proceeding_types.map { |proceeding_type| create_eligibility(submission_date:, dependants:, proceeding_type:, total_gross_income:) }.map(&:freeze)
+        proceeding_types.map do |proceeding_type|
+          upper_threshold = upper_threshold(submission_date:, dependants:, proceeding_type:)
+          result = result_from_threshold(total_gross_income:, upper_threshold:)
+
+          Eligibility::GrossIncome.new(
+            proceeding_type:,
+            upper_threshold:,
+            assessment_result: result,
+          ).freeze
+        end
+      end
+
+      def assessment_results(dependants:, proceeding_types:, submission_date:, total_gross_income:)
+        pairs = proceeding_types.map do |proceeding_type|
+          upper_threshold = upper_threshold(submission_date:, dependants:, proceeding_type:)
+          result = result_from_threshold(total_gross_income:, upper_threshold:)
+          [proceeding_type, result]
+        end
+        pairs.to_h
       end
 
     private
 
-      def create_eligibility(dependants:, proceeding_type:, submission_date:, total_gross_income:)
-        dependant_increase_starts_after = thresholds(submission_date)[:dependant_increase_starts_after]
-        upper_threshold = if proceeding_type.gross_income_upper_threshold == 999_999_999_999
-                            proceeding_type.gross_income_upper_threshold
-                          elsif dependant_increase_starts_after.present?
-                            proceeding_type.gross_income_upper_threshold +
-                              dependant_increase(countable_child_dependants: number_of_child_dependants(dependants) - dependant_increase_starts_after, submission_date:)
-                          else
-                            proceeding_type.gross_income_upper_threshold * (1 + (dependant_percentage_increase(dependants:, submission_date:) / 100.0))
-                          end
+      def result_from_threshold(total_gross_income:, upper_threshold:)
+        total_gross_income < upper_threshold ? "eligible" : "ineligible"
+      end
 
-        Eligibility::GrossIncome.new(
-          proceeding_type:,
-          upper_threshold:,
-          assessment_result: (total_gross_income < upper_threshold ? "eligible" : "ineligible"),
-        )
+      def upper_threshold(dependants:, proceeding_type:, submission_date:)
+        dependant_increase_starts_after = thresholds(submission_date)[:dependant_increase_starts_after]
+        if proceeding_type.gross_income_upper_threshold == 999_999_999_999
+          proceeding_type.gross_income_upper_threshold
+        elsif dependant_increase_starts_after.present?
+          proceeding_type.gross_income_upper_threshold +
+            dependant_increase(countable_child_dependants: number_of_child_dependants(dependants) - dependant_increase_starts_after, submission_date:)
+        else
+          proceeding_type.gross_income_upper_threshold * (1 + (dependant_percentage_increase(dependants:, submission_date:) / 100.0))
+        end
       end
 
       def dependant_percentage_increase(dependants:, submission_date:)

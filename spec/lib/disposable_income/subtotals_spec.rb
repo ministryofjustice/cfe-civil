@@ -14,7 +14,6 @@ module DisposableIncome
           regular: Collators::RegularOutgoingsCollator::Result.blank,
           disposable: Collators::DisposableIncomeCollator::Result.blank,
         ),
-        proceeding_types: assessment.proceeding_types,
         submission_date: assessment.submission_date,
         level_of_help: assessment.level_of_help,
       )
@@ -22,7 +21,7 @@ module DisposableIncome
 
     context "when income contribution under £20" do
       it "returns eligible" do
-        expect(subtotals.summarized_assessment_result).to eq(:eligible)
+        expect(subtotals.summarized_assessment_result(assessment.proceeding_types)).to eq(:eligible)
       end
     end
   end

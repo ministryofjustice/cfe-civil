@@ -8,8 +8,20 @@ module Creators
                                             lower_threshold: e.lower_threshold,
                                             assessment_result: assessment_result(lower_threshold: e.lower_threshold,
                                                                                  upper_threshold: e.upper_threshold,
-                                                                                 total_disposable_income:))
+                                                                                 total_disposable_income:,
+                                                                                 submission_date:))
         end
+      end
+
+      def assessment_results(proceeding_types:, submission_date:, level_of_help:, total_disposable_income:)
+        results = proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, submission_date:, level_of_help:) }.map do |e|
+          result = assessment_result(lower_threshold: e.lower_threshold,
+                                     upper_threshold: e.upper_threshold,
+                                     total_disposable_income:,
+                                     submission_date:)
+          [e.proceeding_type, result]
+        end
+        results.to_h
       end
 
       def unassessed(proceeding_types:, level_of_help:, submission_date:)
@@ -44,11 +56,16 @@ module Creators
         end
       end
 
-      def assessment_result(lower_threshold:, upper_threshold:, total_disposable_income:)
+      def assessment_result(lower_threshold:, upper_threshold:, total_disposable_income:, submission_date:)
         if total_disposable_income <= lower_threshold
           "eligible"
         elsif total_disposable_income <= upper_threshold
-          "contribution_required"
+          contribution = Calculators::IncomeContributionCalculator.call(total_disposable_income, submission_date)
+          if contribution.zero?
+            "eligible"
+          else
+            "contribution_required"
+          end
         else
           "ineligible"
         end
