@@ -14,7 +14,13 @@ module Calculators
     private
 
       def lone_parent_allowance(submission_date)
-        Threshold.value_for(:lone_parent_allowance, at: submission_date) || 0
+        lpa_section = Threshold.value_for(:lone_parent_allowance, at: submission_date)
+        if lpa_section
+          dependant_allowances = Threshold.value_for(:dependant_allowances, at: submission_date)
+          (dependant_allowances[:adult] * (lpa_section[:percentage_of_adult_dependent_allowance] / 100.0)).round(2)
+        else
+          0
+        end
       end
     end
   end
