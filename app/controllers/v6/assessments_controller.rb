@@ -8,6 +8,8 @@ module V6
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
       if create.success?
+        Utilities::ProceedingTypeThresholdPopulator.call(create.assessment)
+
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
 
@@ -45,10 +47,12 @@ module V6
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner:)
+          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner:, calculation_output:)
         else
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner: nil)
+          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner: nil, calculation_output:)
         end
         render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:).as_json
       else
