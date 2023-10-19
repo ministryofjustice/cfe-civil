@@ -93,14 +93,6 @@ module Calculators
           expect(calculator).to eq 0.4 * (730 - 622) + 0.6 * (838 - 730) + 24
         end
       end
-
-      context "income £30 over band z threshold" do
-        let(:income) { 976 }
-
-        it "returns the maximum value" do
-          expect(calculator).to eq 0.4 * (730 - 622) + 0.6 * (838 - 730) + 0.8 * (946 - 838)
-        end
-      end
     end
   end
 end

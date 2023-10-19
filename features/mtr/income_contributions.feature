@@ -70,7 +70,7 @@ Feature:
       | attribute               | value   |
       | total_disposable_income |  976.0  |
 
-  Scenario: Above Band C Domestic abuse case
+  Scenario: Above Band C Domestic abuse case - contributions continue at 80%
     Given I am undertaking a certificated assessment
     And A domestic abuse case
     And A submission date of "2525-12-31"
@@ -83,5 +83,5 @@ Feature:
     And I should see the following "disposable_income_summary" details:
       | attribute               | value   |
       | total_disposable_income |  976.0  |
-      | income_contribution     |  194.4  |
+      | income_contribution     |  218.4  |
 

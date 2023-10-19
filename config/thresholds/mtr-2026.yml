@@ -68,11 +68,6 @@ disposable_income_contribution_bands:
       percentage: 80.0
       disregard: 838.0
       base: 108
-    band_z:
-      threshold: 946.0
-      percentage: 0
-      disregard: 946.0
-      base: 194.4
   minimum_contribution: 20.0
 
 fixed_employment_allowance: 66.0
