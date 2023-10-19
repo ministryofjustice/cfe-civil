@@ -45,10 +45,12 @@ module V6
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner:)
+          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner:, calculation_output:)
         else
           calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner: nil)
+          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner: nil, calculation_output:)
         end
         render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:).as_json
       else
