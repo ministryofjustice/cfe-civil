@@ -8,6 +8,8 @@ module V6
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
       if create.success?
+        Utilities::ProceedingTypeThresholdPopulator.call(create.assessment)
+
         applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
         render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
 
