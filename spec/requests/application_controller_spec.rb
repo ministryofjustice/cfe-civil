@@ -32,7 +32,7 @@ RSpec.describe ApplicationController, type: :request do
     end
   end
 
-  context "raising an error" do
+  context "raising an error", :errors do
     it "returns standard error response" do
       expected_response = {
         success: false,

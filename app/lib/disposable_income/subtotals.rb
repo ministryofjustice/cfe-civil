@@ -7,11 +7,7 @@ module DisposableIncome
     end
 
     def summarized_assessment_result
-      if contribution_required? && income_contribution.zero?
-        :eligible
-      else
-        Utilities::ResultSummarizer.call(disposable_eligibilities.map(&:assessment_result))
-      end
+      Utilities::ResultSummarizer.call(disposable_eligibilities.map(&:assessment_result))
     end
 
     def ineligible?
@@ -19,12 +15,10 @@ module DisposableIncome
     end
 
     def eligibilities
-      disposable_eligibilities.map do |e|
-        Eligibility::DisposableIncome.new(proceeding_type: e.proceeding_type,
-                                          upper_threshold: e.upper_threshold,
-                                          lower_threshold: e.lower_threshold,
-                                          assessment_result: summarized_assessment_result)
-      end
+      Creators::DisposableIncomeEligibilityCreator.call(proceeding_types: @proceeding_types,
+                                                        submission_date: @submission_date,
+                                                        level_of_help: @level_of_help,
+                                                        total_disposable_income: combined_total_disposable_income)
     end
 
     def income_contribution

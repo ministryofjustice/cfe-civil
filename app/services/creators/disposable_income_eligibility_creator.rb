@@ -8,7 +8,8 @@ module Creators
                                             lower_threshold: e.lower_threshold,
                                             assessment_result: assessment_result(lower_threshold: e.lower_threshold,
                                                                                  upper_threshold: e.upper_threshold,
-                                                                                 total_disposable_income:))
+                                                                                 total_disposable_income:,
+                                                                                 submission_date:))
         end
       end
 
@@ -44,11 +45,16 @@ module Creators
         end
       end
 
-      def assessment_result(lower_threshold:, upper_threshold:, total_disposable_income:)
+      def assessment_result(lower_threshold:, upper_threshold:, total_disposable_income:, submission_date:)
         if total_disposable_income <= lower_threshold
           "eligible"
         elsif total_disposable_income <= upper_threshold
-          "contribution_required"
+          contribution = Calculators::IncomeContributionCalculator.call(total_disposable_income, submission_date)
+          if contribution.zero?
+            "eligible"
+          else
+            "contribution_required"
+          end
         else
           "ineligible"
         end
