@@ -55,7 +55,7 @@ module Workflows
 
       subject(:calculation_output) do
         assessment.reload
-        described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant)
+        described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant).calculation_output
       end
 
       before do
@@ -98,12 +98,12 @@ module Workflows
         co = described_class.call(assessment:,
                                   applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
                                   partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
-        Summarizers::MainSummarizer.call(proceeding_types: assessment.proceeding_types,
-                                         receives_qualifying_benefit: false, receives_asylum_support: false,
-                                         gross_income_eligibilities: co.gross_income_subtotals.eligibilities,
-                                         disposable_income_eligibilities: co.disposable_income_eligibilities,
-                                         capital_eligibilities: co.capital_subtotals.eligibilities)
-        co.assessment_result
+        # Summarizers::MainSummarizer.call(proceeding_types: assessment.proceeding_types,
+        #                                  receives_qualifying_benefit: false, receives_asylum_support: false,
+        #                                  gross_income_eligibilities: co.gross_income_subtotals.eligibilities,
+        #                                  disposable_income_eligibilities: co.disposable_income_eligibilities,
+        #                                  capital_eligibilities: co.capital_subtotals.eligibilities)
+        co.calculation_output.assessment_result
       end
 
       context "with controlled work" do
@@ -116,7 +116,7 @@ module Workflows
             assessment.reload
             described_class.call(assessment:,
                                  applicant: build(:person_data, details: build(:applicant), self_employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
-                                 partner:)
+                                 partner:).calculation_output
           end
           let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
 

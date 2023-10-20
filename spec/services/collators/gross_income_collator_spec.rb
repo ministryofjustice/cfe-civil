@@ -8,8 +8,7 @@ module Collators
 
     describe ".call" do
       subject(:collator) do
-        described_class.call assessment:,
-                             state_benefits: [],
+        described_class.call state_benefits: [],
                              submission_date: assessment.submission_date,
                              employments:,
                              gross_income_summary: assessment.applicant_gross_income_summary,
@@ -23,7 +22,7 @@ module Collators
         context "monthly_other_income" do
           context "there are no other income records" do
             it "set monthly other income to zero" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_unspecified_source).to eq 0.0
               expect(response.monthly_student_loan).to eq 0.0
             end
@@ -43,7 +42,7 @@ module Collators
             end
 
             it "updates the gross income record with categorised monthly incomes" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_regular_incomes(:all_sources, :benefits)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :maintenance_in)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :pension)).to be_zero
@@ -57,7 +56,7 @@ module Collators
         context "monthly_student_loan" do
           context "there are no irregular income payments" do
             it "set monthly student loan to zero" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_student_loan).to eq 0.0
             end
           end
@@ -66,7 +65,7 @@ module Collators
             before { create :irregular_income_payment, gross_income_summary:, amount: 12_000 }
 
             it "updates the gross income record with categorised monthly incomes" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_regular_incomes(:all_sources, :benefits)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :maintenance_in)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :pension)).to be_zero
@@ -79,7 +78,7 @@ module Collators
         context "monthly_unspecified_source" do
           context "there are no irregular income payments" do
             it "set monthly income from unspecified sources to zero" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_unspecified_source).to eq 0.0
             end
           end
@@ -94,7 +93,7 @@ module Collators
             end
 
             it "updates the gross income record with categorised monthly incomes" do
-              response = collator
+              response = collator.person_gross_income_subtotals
               expect(response.monthly_regular_incomes(:all_sources, :benefits)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :maintenance_in)).to be_zero
               expect(response.monthly_regular_incomes(:all_sources, :pension)).to be_zero
@@ -108,7 +107,7 @@ module Collators
           let(:assessment) { create :assessment, :with_gross_income_summary_and_records }
 
           it "updates with totals for all categories based on bank and cash transactions" do
-            response = collator
+            response = collator.person_gross_income_subtotals
             expect(response.monthly_regular_incomes(:all_sources, :benefits)).to eq(
               response.monthly_regular_incomes(:cash, :benefits) + response.monthly_regular_incomes(:bank, :benefits),
             )
@@ -127,7 +126,7 @@ module Collators
           end
 
           it "has a total gross income based on all sources and monthly student loan" do
-            response = collator
+            response = collator.person_gross_income_subtotals
             all_sources_total = response.monthly_regular_incomes(:all_sources, :benefits) +
               response.monthly_regular_incomes(:all_sources, :friends_or_family) +
               response.monthly_regular_incomes(:all_sources, :maintenance_in) +
@@ -148,11 +147,11 @@ module Collators
           end
 
           it "has a total gross employed income" do
-            expect(collator.employment_income_subtotals.gross_employment_income).to eq 1500
+            expect(collator.person_gross_income_subtotals.employment_income_subtotals.gross_employment_income).to eq 1500
           end
 
           it "returns employment_income_subtotals" do
-            expect(collator.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, prisoner_levy: -20, student_debt_repayment: -50, fixed_employment_allowance: -45)
+            expect(collator.person_gross_income_subtotals.employment_income_subtotals).to have_attributes(tax: -495, national_insurance: -150, prisoner_levy: -20, student_debt_repayment: -50, fixed_employment_allowance: -45)
           end
         end
       end
