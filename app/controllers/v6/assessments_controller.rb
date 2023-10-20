@@ -27,33 +27,31 @@ module V6
                                 applicant_outgoings)
 
         partner_params = full_assessment_params[:partner]
-        if partner_params.present?
-          partner_dependants = dependants partner_params, create.assessment.submission_date
-          render_unprocessable(dependant_errors(partner_dependants)) && return if partner_dependants.reject(&:valid?).any?
+        calculation_output = if partner_params.present?
+                               partner_dependants = dependants partner_params, create.assessment.submission_date
+                               render_unprocessable(dependant_errors(partner_dependants)) && return if partner_dependants.reject(&:valid?).any?
 
-          partner_model = Applicant.new(partner_params.fetch(:partner, {}))
-          render_unprocessable(partner_model.errors.full_messages) && return unless partner_model.valid?
+                               partner_model = Applicant.new(partner_params.fetch(:partner, {}))
+                               render_unprocessable(partner_model.errors.full_messages) && return unless partner_model.valid?
 
-          partner_outgoings = parse_outgoings(partner_params.fetch(:outgoings, []))
-          render_unprocessable(dependant_errors(partner_outgoings)) && return if partner_outgoings.reject(&:valid?).any?
+                               partner_outgoings = parse_outgoings(partner_params.fetch(:outgoings, []))
+                               render_unprocessable(dependant_errors(partner_outgoings)) && return if partner_outgoings.reject(&:valid?).any?
 
-          partner = person_data(partner_params,
-                                partner_dependants,
-                                partner_model,
-                                nil,
-                                partner_params.fetch(:additional_properties, []),
-                                partner_outgoings)
+                               partner = person_data(partner_params,
+                                                     partner_dependants,
+                                                     partner_model,
+                                                     nil,
+                                                     partner_params.fetch(:additional_properties, []),
+                                                     partner_outgoings)
 
-          calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
+                               Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner:)
-          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner:, calculation_output:)
-        else
-          calculation_output = Workflows::MainWorkflow.call(assessment: create.assessment,
+                             else
+                               Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner: nil)
-          Creators::RemarksCreator.call(assessment: create.assessment, applicant:, partner: nil, calculation_output:)
-        end
+                             end
         render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:).as_json
       else
         render_unprocessable(create.errors)

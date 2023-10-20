@@ -1,10 +1,16 @@
 module Collators
   class GrossIncomeCollator
+    Result = Data.define(:remarks, :person_gross_income_subtotals)
+
     class << self
-      def call(assessment:, submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
+      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
         employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
 
-        add_remarks(assessment:, employments:) if employments.count > 1
+        remarks = if employments.count > 1
+                    [RemarksData.new(type: :employment, issue: :multiple_employments, ids: employments.map(&:client_id))]
+                  else
+                    []
+                  end
 
         regular_income_categories = income_categories.map do |category|
           if category == :benefits
@@ -14,12 +20,14 @@ module Collators
           end
         end
 
-        PersonGrossIncomeSubtotals.new(
+        person_gross_income_subtotals = PersonGrossIncomeSubtotals.new(
           gross_income_summary:,
           regular_income_categories:,
           employment_income_subtotals:,
           state_benefits:,
         )
+
+        Result.new(person_gross_income_subtotals:, remarks:)
       end
 
     private
@@ -39,12 +47,6 @@ module Collators
         EmploymentIncomeSubtotals.new(employment_result:,
                                       employment_details_results:,
                                       self_employment_results:)
-      end
-
-      def add_remarks(assessment:, employments:)
-        my_remarks = assessment.remarks
-        my_remarks.add(:employment, :multiple_employments, employments.map(&:client_id))
-        assessment.update!(remarks: my_remarks)
       end
 
       def income_categories

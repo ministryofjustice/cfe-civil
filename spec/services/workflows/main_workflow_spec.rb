@@ -28,6 +28,7 @@ module Workflows
                                                                                     upper_threshold: 6000, lower_threshold: 3000),
                                                          ]))
     end
+    let(:non_passported_result) { instance_double(NonPassportedWorkflow::Result, calculation_output:, remarks: []) }
     let(:person_blank) { nil }
 
     before do
@@ -128,12 +129,12 @@ module Workflows
 
       it "calls NonPassportedWorkflow" do
         allow(Summarizers::MainSummarizer).to receive(:call)
-        allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
+        allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
         workflow_call
       end
 
       it "calls MainSummarizer" do
-        allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
+        allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
         workflow_call
       end
     end
@@ -157,9 +158,7 @@ module Workflows
 
       context "with proceeding types" do
         it "Populates proceeding types with thresholds" do
-          # expect(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
-
-          allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
           allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
@@ -175,7 +174,7 @@ module Workflows
 
         it "creates the eligibility records" do
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).and_return(calculation_output)
+          allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
           allow(Summarizers::MainSummarizer).to receive(:call)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
