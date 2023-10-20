@@ -1,16 +1,20 @@
 module GrossIncome
   class Unassessed < Base
-    def initialize(proceeding_types)
+    def initialize
       super applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
-            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
-            self_employments: [],
-            partner_self_employments: [],
-            dependants: [],
-            proceeding_types:
+            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank
     end
 
-    def eligibilities
-      @proceeding_types.map do |proceeding_type|
+    def combined_monthly_gross_income
+      0
+    end
+
+    def assessment_results(proceeding_types)
+      proceeding_types.index_with { "pending" }
+    end
+
+    def eligibilities(proceeding_types)
+      proceeding_types.map do |proceeding_type|
         Eligibility::GrossIncome.new(
           proceeding_type:,
           upper_threshold: proceeding_type.gross_income_upper_threshold,

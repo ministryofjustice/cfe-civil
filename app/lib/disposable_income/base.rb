@@ -3,10 +3,9 @@ module DisposableIncome
     attr_reader :partner_disposable_income_subtotals, :applicant_disposable_income_subtotals
 
     def initialize(partner_disposable_income_subtotals:, applicant_disposable_income_subtotals:,
-                   proceeding_types:, level_of_help:, submission_date:)
+                   level_of_help:, submission_date:)
       @partner_disposable_income_subtotals = partner_disposable_income_subtotals
       @applicant_disposable_income_subtotals = applicant_disposable_income_subtotals
-      @proceeding_types = proceeding_types
       @level_of_help = level_of_help
       @submission_date = submission_date
     end

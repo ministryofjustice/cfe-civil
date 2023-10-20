@@ -11,23 +11,19 @@ module Summarizers
     end
 
     subject(:summarizer) do
-      described_class.call(proceeding_types: assessment.proceeding_types, receives_qualifying_benefit: false, receives_asylum_support: false,
-                           gross_income_eligibilities: [
-                             Eligibility::GrossIncome.new(proceeding_type: assessment.proceeding_types.first, assessment_result: "eligible", upper_threshold: 27),
-                             Eligibility::GrossIncome.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "eligible", upper_threshold: 27),
-                           ],
-                           disposable_income_eligibilities: [
-                             Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.first, assessment_result: "ineligible",
-                                                               upper_threshold: 27, lower_threshold: 14),
-                             Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "ineligible",
-                                                               upper_threshold: 27, lower_threshold: 14),
-                           ],
-                           capital_eligibilities: [
-                             Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.first, assessment_result: "contribution_required",
-                                                      upper_threshold: 27, lower_threshold: 14),
-                             Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "contribution_required",
-                                                      upper_threshold: 27, lower_threshold: 14),
-                           ])
+      described_class.assessment_results(proceeding_types: assessment.proceeding_types, receives_qualifying_benefit: false, receives_asylum_support: false,
+                                         gross_income_assessment_results: {
+                                           assessment.proceeding_types.first => "eligible",
+                                           assessment.proceeding_types.last => "eligible",
+                                         },
+                                         disposable_income_assessment_results: {
+                                           assessment.proceeding_types.first => "ineligible",
+                                           assessment.proceeding_types.last => "ineligible",
+                                         },
+                                         capital_assessment_results: {
+                                           assessment.proceeding_types.first => "contribution_required",
+                                           assessment.proceeding_types.last => "contribution_required",
+                                         })
     end
 
     context "AssessmentProceedingTypeSummarizer" do
@@ -62,8 +58,7 @@ module Summarizers
       end
 
       it "calls the Results summarizer to return the assessment result" do
-        expect(Utilities::ResultSummarizer).to receive(:call).with(%w[eligible ineligible]).and_call_original
-        expect(summarizer.assessment_result).to eq "partially_eligible"
+        expect(summarizer.values).to eq %w[eligible ineligible]
       end
     end
   end

@@ -8,12 +8,13 @@ Feature:
     And I add outgoing details for "rent_or_mortgage" of 1234 per month
     When I retrieve the final assessment
     Then I should see the following overall summary:
-      | attribute                    | value    |
-      | assessment_result            | eligible |
+      | attribute                   | value     |
+      | assessment_result           | eligible  |
+      | disposable_lower_threshold  |  622.0    |
     And I should see the following "disposable_income_summary" details:
-      | attribute               | value   |
-      | total_disposable_income |  652.0  |
-      | income_contribution     |  0.0    |
+      | attribute                   |  value   |
+      | total_disposable_income     |  652.0   |
+      | income_contribution         |    0.0   |
 
   Scenario: A bit more above the contribution threshold
     Given I am undertaking a certificated assessment

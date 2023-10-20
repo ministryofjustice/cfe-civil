@@ -80,7 +80,7 @@ module V6
         end
       end
 
-      context "with an invalid submission date" do
+      context "with an invalid submission date", :errors do
         let(:current_date) { "frobulate" }
         let(:params) { {} }
 

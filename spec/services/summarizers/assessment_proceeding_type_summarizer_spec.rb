@@ -13,7 +13,6 @@ module Summarizers
     let(:receives_qualifying_benefit) { false }
     let(:receives_asylum_support) { false }
     let(:ptc) { "DA003" }
-    # let(:capital_eligibility) { assessment.applicant_capital_summary.eligibilities.find_by(proceeding_type_code: ptc) }
     let(:assessment_eligibility) { assessment.eligibilities.find_by(proceeding_type_code: ptc) }
 
     describe ".call" do

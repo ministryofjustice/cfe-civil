@@ -55,16 +55,20 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(eligibilities: eligibility_records,
-                            person_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
-                                                                                          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                                          regular_income_categories: [],
-                                                                                          state_benefits: []),
-                            combined_monthly_gross_income: 0).as_json
+        described_class.new(proceeding_types: ptc_results.keys,
+                            gross_income_subtotals: instance_double(
+                              GrossIncome::Subtotals,
+                              eligibilities: eligibility_records,
+                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
+                                                                                               employment_income_subtotals: EmploymentIncomeSubtotals.blank,
+                                                                                               regular_income_categories: [],
+                                                                                               state_benefits: []),
+                              combined_monthly_gross_income: 0,
+                            ))
       end
 
       it "generates the expected hash" do
-        expect(decorator).to eq expected_hash
+        expect(decorator.as_json).to eq expected_hash
       end
     end
   end

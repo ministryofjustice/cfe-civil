@@ -22,6 +22,10 @@ Feature:
       | attribute                      | value    |
       | assessment_result              | eligible |
       | gross_income_upper_threshold_0 | 2912.5   |
+      | disposable_lower_threshold     | 622.0    |
+    And I should see the following "disposable_income_summary" details:
+      | attribute                      | value    |
+      | total_disposable_income        |   634.0  |
 
   Scenario: Below lower disposable threshold after MTR
     Given I am undertaking a certificated assessment

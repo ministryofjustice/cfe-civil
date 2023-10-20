@@ -8,7 +8,7 @@ module Decorators
 
       let(:results) do
         assessment.proceeding_types.map do |pt|
-          Eligibility::Assessment.new proceeding_type: pt, assessment_result: "eligible"
+          Eligibility::GrossIncome.new proceeding_type: pt, assessment_result: "eligible", upper_threshold: 27
         end
       end
 
@@ -25,21 +25,21 @@ module Decorators
           {
             ccms_code: "DA003",
             client_involvement_type: "A",
-            upper_threshold: 0.0,
+            upper_threshold: 27.0,
             lower_threshold: 0.0,
             result: "eligible",
           },
           {
             ccms_code: "DA005",
             client_involvement_type: "Z",
-            upper_threshold: 0.0,
+            upper_threshold: 27.0,
             lower_threshold: 0.0,
             result: "eligible",
           },
           {
             ccms_code: "SE013",
             client_involvement_type: "W",
-            upper_threshold: 0.0,
+            upper_threshold: 27.0,
             lower_threshold: 0.0,
             result: "eligible",
           },
