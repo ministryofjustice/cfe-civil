@@ -46,18 +46,17 @@ module Workflows
                                                         lower_capital_threshold:,
                                                         child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                         assessed_capital:)
-          assessment.add_remarks!(remarks)
           if partner.present?
-            partner_remarks = RemarkGenerators::Orchestrator.call(employments: partner.employments,
-                                                                  gross_income_summary: assessment.partner_gross_income_summary,
-                                                                  outgoings: partner.outgoings,
-                                                                  liquid_capital_items: partner.capitals_data.liquid_capital_items,
-                                                                  lower_capital_threshold:,
-                                                                  state_benefits: partner.state_benefits,
-                                                                  child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
-                                                                  assessed_capital:)
-            assessment.add_remarks!(partner_remarks)
+            remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
+                                                           gross_income_summary: assessment.partner_gross_income_summary,
+                                                           outgoings: partner.outgoings,
+                                                           liquid_capital_items: partner.capitals_data.liquid_capital_items,
+                                                           lower_capital_threshold:,
+                                                           state_benefits: partner.state_benefits,
+                                                           child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
+                                                           assessed_capital:)
           end
+          assessment.add_remarks!(remarks)
         end
       end
 
