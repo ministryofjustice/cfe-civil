@@ -18,6 +18,7 @@ module GrossIncome
         Eligibility::GrossIncome.new(
           proceeding_type:,
           upper_threshold: proceeding_type.gross_income_upper_threshold,
+          lower_threshold: nil,
           assessment_result: "pending",
         )
       end

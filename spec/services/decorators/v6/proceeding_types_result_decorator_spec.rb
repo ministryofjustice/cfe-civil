@@ -8,7 +8,7 @@ module Decorators
 
       let(:results) do
         assessment.proceeding_types.map do |pt|
-          Eligibility::GrossIncome.new proceeding_type: pt, assessment_result: "eligible", upper_threshold: 27
+          Eligibility::GrossIncome.new proceeding_type: pt, assessment_result: "eligible", upper_threshold: 27, lower_threshold: nil
         end
       end
 

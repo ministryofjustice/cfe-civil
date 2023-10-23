@@ -6,6 +6,7 @@ module Creators
     let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
     let(:proceeding_types) { assessment.proceeding_types }
     let(:submission_date) { assessment.submission_date.to_date }
+    let(:level_of_help) { assessment.level_of_help }
 
     before do
       ::Utilities::ProceedingTypeThresholdPopulator.call(assessment)
@@ -14,7 +15,7 @@ module Creators
     subject(:creator) do
       described_class.call(dependants:,
                            proceeding_types:,
-                           submission_date:, total_gross_income: 0).index_by { |h| h.proceeding_type.ccms_code }
+                           submission_date:, total_gross_income: 0, level_of_help:).index_by { |h| h.proceeding_type.ccms_code }
     end
 
     context "without MTR" do
@@ -31,7 +32,7 @@ module Creators
           expect(creator.fetch("DA002"))
             .to have_attributes(
               upper_threshold: 999_999_999_999,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
 
@@ -39,7 +40,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -54,7 +55,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -67,7 +68,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0 + expected_uplift,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -89,7 +90,7 @@ module Creators
         expect(creator.fetch("SE013"))
           .to have_attributes(
             upper_threshold: 2912.50 * 3.6,
-            lower_threshold: nil,
+            lower_threshold: 0.0,
           )
       end
 
@@ -97,7 +98,7 @@ module Creators
         expect(creator.fetch("DA002"))
           .to have_attributes(
             upper_threshold: 999_999_999_999,
-            lower_threshold: nil,
+            lower_threshold: 0.0,
           )
       end
     end

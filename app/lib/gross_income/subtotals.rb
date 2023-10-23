@@ -32,7 +32,8 @@ module GrossIncome
       Creators::GrossIncomeEligibilityCreator.call dependants: @dependants,
                                                    proceeding_types:,
                                                    submission_date: @submission_date,
-                                                   total_gross_income: combined_monthly_gross_income
+                                                   total_gross_income: combined_monthly_gross_income,
+                                                   level_of_help: @level_of_help
     end
 
   private

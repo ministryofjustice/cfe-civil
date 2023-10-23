@@ -1,14 +1,16 @@
 module Creators
   class GrossIncomeEligibilityCreator
     class << self
-      def call(dependants:, proceeding_types:, submission_date:, total_gross_income:)
+      def call(dependants:, proceeding_types:, submission_date:, total_gross_income:, level_of_help:)
         proceeding_types.map do |proceeding_type|
           upper_threshold = upper_threshold(submission_date:, dependants:, proceeding_type:)
+          lower_threshold = lower_threshold(level_of_help:, submission_date:)
           result = result_from_threshold(total_gross_income:, upper_threshold:)
 
           Eligibility::GrossIncome.new(
             proceeding_type:,
             upper_threshold:,
+            lower_threshold:,
             assessment_result: result,
           ).freeze
         end
@@ -27,6 +29,14 @@ module Creators
 
       def result_from_threshold(total_gross_income:, upper_threshold:)
         total_gross_income < upper_threshold ? "eligible" : "ineligible"
+      end
+
+      def lower_threshold(level_of_help:, submission_date:)
+        if level_of_help == "controlled"
+          Threshold.value_for(:gross_income_lower_controlled, at: submission_date)
+        else
+          0.0
+        end
       end
 
       def upper_threshold(dependants:, proceeding_type:, submission_date:)

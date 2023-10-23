@@ -7,7 +7,7 @@ module Decorators
       let(:eligibility_records) do
         ptc_results.map do |ptc, thresh_and_result|
           threshold, result = thresh_and_result
-          Eligibility::GrossIncome.new upper_threshold: threshold, assessment_result: result, proceeding_type: ptc
+          Eligibility::GrossIncome.new upper_threshold: threshold, lower_threshold: nil, assessment_result: result, proceeding_type: ptc
         end
       end
       let(:ptc_results) do
