@@ -13,6 +13,12 @@ module Workflows
                                                      receives_asylum_support: applicant.details.receives_asylum_support,
                                                      disposable_income_subtotals: unassessed_disposable_income(assessment:),
                                                      capital_subtotals: unassessed_capital)
+                             elsif gross_income_subtotals.gross.below_the_lower_controlled_threshold?
+                               CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross,
+                                                     disposable_income_subtotals: unassessed_disposable_income(assessment:),
+                                                     capital_subtotals: unassessed_capital,
+                                                     receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+                                                     receives_asylum_support: applicant.details.receives_asylum_support)
                              else
                                disposable_income_subtotals = get_disposable_income_subtotals(assessment:, applicant:, partner:, gross_income_subtotals: gross_income_subtotals.gross)
                                if disposable_income_subtotals.ineligible? assessment.proceeding_types
@@ -70,12 +76,14 @@ module Workflows
           gross = collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                                   partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
                                                   submission_date: assessment.submission_date,
+                                                  level_of_help: assessment.level_of_help,
                                                   dependants: applicant.dependants + (partner.dependants || []))
           GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks + partner_gross_income.remarks
         else
           gross = collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                                   partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
                                                   submission_date: assessment.submission_date,
+                                                  level_of_help: assessment.level_of_help,
                                                   dependants: applicant.dependants)
           GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks
         end
@@ -195,13 +203,14 @@ module Workflows
       end
 
       def collate_and_assess_gross_income(applicant_gross_income_subtotals:, partner_gross_income_subtotals:,
-                                          dependants:, submission_date:)
+                                          dependants:, submission_date:, level_of_help:)
 
         GrossIncome::Subtotals.new(
           applicant_gross_income_subtotals:,
           partner_gross_income_subtotals:,
           dependants:,
           submission_date:,
+          level_of_help:,
         )
       end
 

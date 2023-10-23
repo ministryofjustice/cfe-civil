@@ -1,10 +1,11 @@
 module GrossIncome
   class Subtotals < Base
     def initialize(applicant_gross_income_subtotals:, partner_gross_income_subtotals:,
-                   dependants:, submission_date:)
+                   dependants:, submission_date:, level_of_help:)
       super(applicant_gross_income_subtotals:, partner_gross_income_subtotals:)
 
       @submission_date = submission_date
+      @level_of_help = level_of_help
       @dependants = dependants
     end
 
@@ -14,6 +15,10 @@ module GrossIncome
 
     def ineligible?(proceeding_types)
       !eligible? proceeding_types
+    end
+
+    def below_the_lower_controlled_threshold?
+      @level_of_help == "controlled" && (combined_monthly_gross_income < (Threshold.value_for(:gross_income_lower_controlled, at: @submission_date) || 0))
     end
 
     def assessment_results(proceeding_types)
