@@ -2,7 +2,7 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        calculation_output = if no_means_assessment_needed?(assessment.proceeding_types, applicant.details)
+        calculation_output = if no_means_assessment_needed?(proceeding_types: assessment.proceeding_types, applicant:, submission_date: assessment.submission_date)
                                blank_calculation_result(submission_date: assessment.submission_date,
                                                         level_of_help: assessment.level_of_help,
                                                         applicant_capitals: applicant.capitals_data,
@@ -59,9 +59,17 @@ module Workflows
 
     private
 
-      def no_means_assessment_needed?(proceeding_types, applicant)
-        proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } &&
-          applicant.receives_asylum_support
+      def no_means_assessment_needed?(proceeding_types:, applicant:, submission_date:)
+        # skip proceeding types check if applicant receives asylum support after MTR go-live date
+        if asylum_support_is_non_means_tested?(submission_date)
+          applicant.details.receives_asylum_support
+        else
+          proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && applicant.details.receives_asylum_support
+        end
+      end
+
+      def asylum_support_is_non_means_tested?(submission_date)
+        !!Threshold.value_for(:asylum_support_is_non_means_tested, at: submission_date)
       end
 
       def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
