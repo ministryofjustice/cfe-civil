@@ -1367,6 +1367,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                   bank_transactions: {
@@ -1378,6 +1379,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                   cash_transactions: {
@@ -1389,6 +1391,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                 },
