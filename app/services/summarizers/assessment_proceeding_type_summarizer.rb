@@ -46,8 +46,6 @@ module Summarizers
 
       def disposble_income_assessment(gross_income_assessment_result, disposable_income_result, capital_result)
         case disposable_income_result.to_s
-        when "pending"
-          raise AssessmentError, "Assessment not complete: Disposable Income assessment still pending"
         when "ineligible"
           "ineligible"
         else
@@ -56,8 +54,6 @@ module Summarizers
       end
 
       def capital_assessment(gross_income_assessment_result, disposable_income_result, capital_result)
-        raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result.to_s == "pending"
-
         if capital_result.to_s == "ineligible"
           "ineligible"
         elsif "contribution_required".in?(combined_result(gross_income_assessment_result, disposable_income_result, capital_result))
