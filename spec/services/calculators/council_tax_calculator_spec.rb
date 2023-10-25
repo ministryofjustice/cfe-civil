@@ -23,7 +23,7 @@ RSpec.describe Calculators::CouncilTaxCalculator do
       create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: 200)
     end
 
-    it "has the pension contribution value" do
+    it "has the council tax value" do
       expect(council_tax).to have_attributes(bank: 100, cash: 200, regular: 300, all_sources: 600)
     end
   end
