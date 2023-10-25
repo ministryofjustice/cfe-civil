@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Calculators::CouncilTaxCalculator do
+RSpec.describe Calculators::CouncilTaxCalculator, :calls_bank_holiday do
   let(:assessment) do
     create(:assessment, :with_disposable_income_summary, :with_gross_income_summary, submission_date: Date.new(2525, 4, 20))
   end
