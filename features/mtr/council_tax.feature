@@ -16,6 +16,10 @@ Feature:
     Then I should see the following "disposable_income_cash_transactions" details:
       | attribute                 | value  |
       | council_tax               | 100.0  |
+    Then I should see the following "disposable_income_summary" details:
+      | attribute                        | value  |
+      | total_outgoings_and_allowances   | 166.0  |
+      | total_disposable_income          | 1034.0  |
 
   Scenario: The client is employed, council tax is submitted as Outgoings
     Given I am undertaking a certificated assessment
@@ -32,6 +36,11 @@ Feature:
     Then I should see the following "disposable_income_cash_transactions" details:
       | attribute                 | value  |
       | council_tax               | 0.0    |
+    Then I should see the following "disposable_income_summary" details:
+      | attribute                        | value  |
+      | total_outgoings_and_allowances   | 166.0  |
+      | total_disposable_income          | 1034.0  |
+
 
   Scenario: The client is employed, council tax is submitted as Regular transactions
     Given I am undertaking a certificated assessment
@@ -48,3 +57,7 @@ Feature:
     Then I should see the following "disposable_income_cash_transactions" details:
       | attribute                 | value  |
       | council_tax               | 0.0    |
+    Then I should see the following "disposable_income_summary" details:
+      | attribute                        | value  |
+      | total_outgoings_and_allowances   | 166.0  |
+      | total_disposable_income          | 1034.0  |
