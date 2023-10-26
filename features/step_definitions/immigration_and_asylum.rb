@@ -32,6 +32,13 @@ Given("I am undertaking first tier controlled immigration assessment") do
   @api_version = 6
 end
 
+Given("I am undertaking first tier controlled asylum assessment") do
+  @assessment_data = AssessmentData.assessment(level_of_help: "controlled")
+  @applicant_data = AssessmentData.applicant
+  @proceeding_type_data = AssessmentData.proceeding_types(ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE)
+  @api_version = 6
+end
+
 Given("I am undertaking upper tribunal certificated immigration assessment") do
   @assessment_data = AssessmentData.assessment(level_of_help: "certificated")
   @applicant_data = AssessmentData.applicant
