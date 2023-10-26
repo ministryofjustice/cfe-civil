@@ -133,15 +133,16 @@ Given("I add the following outgoing details for {string} in the current assessme
   @outgoings_data = { "outgoings": ["name": string, "payments": table.hashes.map { cast_values(_1) }] }
 end
 
-Given("I add outgoing details for {string} of {int} per month") do |string, monthly_amount|
+Given("I add outgoing details for {string} of {int} per month") do |outgoing_type, monthly_amount|
   dates = %w[2021-05-10 2021-04-10 2021-03-10]
 
-  payments = dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
-  if string == "rent_or_mortgage"
-    payments = payments.map { |p| p.merge(housing_cost_type: "rent") }
-  end
+  payments = if outgoing_type == "rent_or_mortgage"
+               dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount, housing_cost_type: "rent" } }
+             else
+               dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
+             end
 
-  @outgoings_data = { outgoings: [name: string,
+  @outgoings_data = { outgoings: [name: outgoing_type,
                                   payments:] }
 end
 
@@ -185,6 +186,22 @@ Given("I add employment income of {int} per month") do |monthly_income|
   @employments << { "name": "A",
                     "client_id": "B",
                     "payments": payments }
+end
+
+Given("I add partner employment income of {int} per month") do |monthly_income|
+  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
+    {
+      client_id: "client_id",
+      date:,
+      gross: monthly_income,
+      benefits_in_kind: 0,
+      tax: 0.00,
+      national_insurance: 0.0,
+    }
+  end
+  @partner_employments = [{ "name": "A",
+                            "client_id": "B",
+                            "payments": payments }]
 end
 
 Given("I add {string} outgoings of {int} per month") do |name, amount|
