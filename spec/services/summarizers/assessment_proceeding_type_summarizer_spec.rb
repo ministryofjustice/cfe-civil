@@ -7,9 +7,9 @@ module Summarizers
              :with_capital_summary,
              :with_gross_income_summary,
              :with_disposable_income_summary,
-             :with_eligibilities,
              proceedings: [[ptc, "A"]]
     end
+    let(:submission_date) { assessment.submission_date }
     let(:receives_qualifying_benefit) { false }
     let(:receives_asylum_support) { false }
     let(:ptc) { "DA003" }
@@ -60,7 +60,7 @@ module Summarizers
             let(:ptc) { "IM030" }
 
             it "returns eligible for immigration/asylum proceeding type codes" do
-              expect(described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+              expect(described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
                                           gross_income_assessment_result: "pending", disposable_income_result: "pending", capital_assessment_result: "pending"))
                 .to eq "eligible"
             end
@@ -206,7 +206,7 @@ module Summarizers
       end
 
       def setup_and_test_error(gross_income_result, disposable_income_result, capital_summary_result)
-        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
                              gross_income_assessment_result: transform_result(gross_income_result),
                              disposable_income_result: transform_result(disposable_income_result),
                              capital_assessment_result: transform_result(capital_summary_result))
@@ -215,7 +215,7 @@ module Summarizers
       end
 
       def setup_and_test_result(gross_income_result, disposable_income_result, capital_summary_result)
-        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:,
+        described_class.call(proceeding_type_code: ptc, receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
                              gross_income_assessment_result: transform_result(gross_income_result),
                              disposable_income_result: transform_result(disposable_income_result),
                              capital_assessment_result: transform_result(capital_summary_result))

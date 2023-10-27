@@ -9,9 +9,10 @@ module Summarizers
              :with_disposable_income_summary,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
     end
+    let(:submission_date) { assessment.submission_date }
 
     subject(:summarizer) do
-      described_class.assessment_results(proceeding_types: assessment.proceeding_types, receives_qualifying_benefit: false, receives_asylum_support: false,
+      described_class.assessment_results(proceeding_types: assessment.proceeding_types, receives_qualifying_benefit: false, receives_asylum_support: false, submission_date:,
                                          gross_income_assessment_results: {
                                            assessment.proceeding_types.first => "eligible",
                                            assessment.proceeding_types.last => "eligible",
@@ -30,11 +31,11 @@ module Summarizers
       it "calls AssessmentProceedingTypeSummarizer for each proceeding type code" do
         expect(Summarizers::AssessmentProceedingTypeSummarizer)
           .to receive(:call)
-                .with(proceeding_type_code: "DA003", receives_qualifying_benefit: false, receives_asylum_support: false,
+                .with(proceeding_type_code: "DA003", receives_qualifying_benefit: false, receives_asylum_support: false, submission_date:,
                       gross_income_assessment_result: "eligible", disposable_income_result: "ineligible",
                       capital_assessment_result: "contribution_required").and_call_original
         expect(Summarizers::AssessmentProceedingTypeSummarizer)
-          .to receive(:call).with(proceeding_type_code: "SE014", receives_qualifying_benefit: false, receives_asylum_support: false,
+          .to receive(:call).with(proceeding_type_code: "SE014", receives_qualifying_benefit: false, receives_asylum_support: false, submission_date:,
                                   gross_income_assessment_result: "eligible", disposable_income_result: "ineligible",
                                   capital_assessment_result: "contribution_required").and_call_original
         summarizer
@@ -46,13 +47,13 @@ module Summarizers
         allow(Summarizers::AssessmentProceedingTypeSummarizer)
           .to receive(:call)
                 .with(proceeding_type_code: "DA003",
-                      receives_qualifying_benefit: false, receives_asylum_support: false,
+                      receives_qualifying_benefit: false, receives_asylum_support: false, submission_date:,
                       gross_income_assessment_result: "eligible",
                       capital_assessment_result: "contribution_required",
                       disposable_income_result: "ineligible").and_return("eligible")
         allow(Summarizers::AssessmentProceedingTypeSummarizer)
           .to receive(:call)
-                .with(proceeding_type_code: "SE014", receives_qualifying_benefit: false, receives_asylum_support: false,
+                .with(proceeding_type_code: "SE014", receives_qualifying_benefit: false, receives_asylum_support: false, submission_date:,
                       gross_income_assessment_result: "eligible", disposable_income_result: "ineligible",
                       capital_assessment_result: "contribution_required").and_return("ineligible")
       end

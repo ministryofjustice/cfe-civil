@@ -11,6 +11,7 @@ module Workflows
                                CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross,
                                                      receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
                                                      receives_asylum_support: applicant.details.receives_asylum_support,
+                                                     submission_date: assessment.submission_date,
                                                      disposable_income_subtotals: unassessed_disposable_income(assessment:),
                                                      capital_subtotals: unassessed_capital)
                              else
@@ -20,12 +21,14 @@ module Workflows
                                                        disposable_income_subtotals:,
                                                        capital_subtotals: unassessed_capital,
                                                        receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                       receives_asylum_support: applicant.details.receives_asylum_support)
+                                                       receives_asylum_support: applicant.details.receives_asylum_support,
+                                                       submission_date: assessment.submission_date)
                                else
                                  capital_subtotals = get_capital_subtotals(assessment:, applicant:, partner:, disposable_income_subtotals:)
                                  CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
                                                        receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                       receives_asylum_support: applicant.details.receives_asylum_support)
+                                                       receives_asylum_support: applicant.details.receives_asylum_support,
+                                                       submission_date: assessment.submission_date)
                                end
                              end
 

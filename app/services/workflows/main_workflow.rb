@@ -2,7 +2,7 @@ module Workflows
   class MainWorkflow
     class << self
       def call(assessment:, applicant:, partner:)
-        calculation_output = if non_means_tested?(proceeding_types: assessment.proceeding_types, applicant:, submission_date: assessment.submission_date)
+        calculation_output = if non_means_tested?(proceeding_type_codes: assessment.proceeding_types.pluck(:ccms_code), receives_asylum_support: applicant.details.receives_asylum_support, submission_date: assessment.submission_date)
                                blank_calculation_result(submission_date: assessment.submission_date,
                                                         level_of_help: assessment.level_of_help,
                                                         applicant_capitals: applicant.capitals_data,
@@ -59,12 +59,12 @@ module Workflows
 
     private
 
-      def non_means_tested?(proceeding_types:, applicant:, submission_date:)
+      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:)
         # skip proceeding types check if applicant receives asylum support after MTR go-live date
         if asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
-          applicant.details.receives_asylum_support
+          receives_asylum_support
         else
-          proceeding_types.all? { _1.ccms_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && applicant.details.receives_asylum_support
+          proceeding_type_codes.map(&:to_sym).all? { _1.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && receives_asylum_support
         end
       end
 
@@ -75,7 +75,7 @@ module Workflows
       def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
                                    receives_qualifying_benefit:, receives_asylum_support:)
         CalculationOutput.new(
-          receives_qualifying_benefit:, receives_asylum_support:,
+          receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
           gross_income_subtotals: GrossIncome::Unassessed.new,
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
           capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:)
