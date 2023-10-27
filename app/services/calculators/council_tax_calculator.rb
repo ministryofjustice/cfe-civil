@@ -11,8 +11,8 @@ module Calculators
     end
 
     class << self
-      def call(outgoings:, cash_transactions:, regular_transactions:)
-        if (outgoings + cash_transactions + regular_transactions).any?
+      def call(outgoings:, cash_transactions:, regular_transactions:, submission_date:)
+        if council_tax_enabled?(submission_date) && (outgoings + cash_transactions + regular_transactions).any?
           monthly_bank = Calculators::MonthlyEquivalentCalculator.call(collection: outgoings)
           monthly_cash = Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
           monthly_regular = Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions)
@@ -20,6 +20,10 @@ module Calculators
         else
           Result.blank
         end
+      end
+
+      def council_tax_enabled?(submission_date)
+        !!Threshold.value_for(:council_tax_enabled, at: submission_date)
       end
     end
   end

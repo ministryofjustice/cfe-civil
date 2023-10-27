@@ -63,6 +63,7 @@ module Collators
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
           cash_transactions: gross_income_summary.cash_transactions(:debit, :council_tax),
           regular_transactions: gross_income_summary.regular_transactions.council_tax_payments,
+          submission_date:,
         )
 
         Result.new(dependant_allowance:,

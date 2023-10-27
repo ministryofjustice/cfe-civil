@@ -71,10 +71,6 @@ module V6
               category: "pension_contribution",
               payments: cash_transactions(87.54),
             },
-            {
-              category: "council_tax",
-              payments: cash_transactions(100.0),
-            },
           ],
         }
       end
@@ -668,11 +664,7 @@ module V6
                { category: "pension_contribution",
                  payments: [{ date: month2.to_s, amount: 87.54, client_id: redacted_message },
                             { date: month3.to_s, amount: 87.54, client_id: redacted_message },
-                            { date: month1.to_s, amount: 87.54, client_id: redacted_message }] },
-               { category: "council_tax",
-                 payments: [{ date: month2.to_s, amount: 100.0, client_id: redacted_message },
-                            { date: month3.to_s, amount: 100.0, client_id: redacted_message },
-                            { date: month1.to_s, amount: 100.0, client_id: redacted_message }] }],
+                            { date: month1.to_s, amount: 87.54, client_id: redacted_message }] }],
             )
         end
 
@@ -691,9 +683,9 @@ module V6
           expect(assessment.dig(:disposable_income, :monthly_equivalents))
             .to eq(
               {
-                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 100.0 },
+                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0 },
                 bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0, pension_contribution: 0.0, council_tax: 0.0 },
-                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 100.0 },
+                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0 },
               },
             )
         end
@@ -1522,7 +1514,7 @@ module V6
                 .to eq({
                   result: "contribution_required",
                   capital_contribution: 19_636.86,
-                  income_contribution: 1494.65,
+                  income_contribution: 1564.65,
                 })
             end
           end
@@ -1568,8 +1560,8 @@ module V6
                 housing_benefit: 0.0,
                 net_housing_costs: 204.7,
                 maintenance_allowance: 589.07,
-                total_outgoings_and_allowances: 2375.59,
-                total_disposable_income: 1608.335,
+                total_outgoings_and_allowances: 2275.59,
+                total_disposable_income: 1708.335,
                 employment_income: {
                   gross_income: 846.0,
                   benefits_in_kind: 16.6,
@@ -1830,7 +1822,7 @@ module V6
                     maintenance_out: 589.07,
                     legal_aid: 51.16,
                     pension_contribution: 0.0,
-                    council_tax: 100.0,
+                    council_tax: 0.0,
                   },
                   bank_transactions: {
                     child_care: 9.71,
@@ -1846,7 +1838,7 @@ module V6
                     maintenance_out: 256.0,
                     legal_aid: 44.54,
                     pension_contribution: 0.0,
-                    council_tax: 100.0,
+                    council_tax: 0.0,
                   },
                 },
                 childcare_allowance: 339.98,
