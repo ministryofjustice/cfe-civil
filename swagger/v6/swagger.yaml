@@ -179,7 +179,7 @@ components:
           - name
           - payments
           additionalProperties: false
-          description: Outgoing payments detail. Name 'council_tax' is not calculated
+          description: Outgoing payments detail. Name [council_tax, priority_debt_repayment] is not calculated
             before MTR
           properties:
             name:
@@ -190,6 +190,7 @@ components:
               - legal_aid
               - pension_contribution
               - council_tax
+              - priority_debt_repayment
               description: Type of outgoing
               example: child_care
             payments:
@@ -395,8 +396,7 @@ components:
             - payments
             properties:
               category:
-                description: The category of the outgoing transaction. Category 'council_tax'
-                  is not calculated before MTR
+                description: The category of the outgoing transaction. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
                 type: string
                 enum:
                 - child_care
@@ -405,6 +405,7 @@ components:
                 - legal_aid
                 - pension_contribution
                 - council_tax
+                - priority_debt_repayment
               payments:
                 description: The payments of the outgoing transaction
                 type: array
@@ -581,8 +582,7 @@ components:
         costs, should be excluded.</p><p>Detailed guidance TBD</p>
     RegularTransaction:
       type: object
-      description: Regular transaction detail. Category 'council_tax' is not calculated
-        before MTR
+      description: Regular transaction detail. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
       required:
       - category
       - operation
@@ -605,6 +605,7 @@ components:
           - legal_aid
           - pension_contribution
           - council_tax
+          - priority_debt_repayment
           description: 'Identifying category for this regular transaction<p>Do not
             include “disregarded payments” - those which should be excluded from the
             gross income and disposable income calculations, as described in the Lord
@@ -1368,6 +1369,8 @@ components:
                   type: number
                 council_tax:
                   type: number
+                priority_debt_repayment:
+                  type: number
             bank_transactions:
               type: object
               additionalProperties: false
@@ -1384,6 +1387,8 @@ components:
                   type: number
                 council_tax:
                   type: number
+                priority_debt_repayment:
+                  type: number
             cash_transactions:
               type: object
               additionalProperties: false
@@ -1399,6 +1404,8 @@ components:
                 pension_contribution:
                   type: number
                 council_tax:
+                  type: number
+                priority_debt_repayment:
                   type: number
         childcare_allowance:
           type: number

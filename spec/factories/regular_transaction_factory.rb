@@ -25,5 +25,10 @@ FactoryBot.define do
       category { "council_tax" }
       operation { "debit" }
     end
+
+    trait :priority_debt_repayment do
+      category { "priority_debt_repayment" }
+      operation { "debit" }
+    end
   end
 end

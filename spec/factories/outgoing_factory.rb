@@ -29,4 +29,9 @@ FactoryBot.define do
     payment_date { Faker::Date.backward(days: 14) }
     amount { Faker::Number.decimal(l_digits: 3, r_digits: 2) }
   end
+
+  factory :priority_debt_repayment_outgoing, class: "Outgoings::PriorityDebtRepayment" do
+    payment_date { Faker::Date.backward(days: 14) }
+    amount { Faker::Number.decimal(l_digits: 3, r_digits: 2) }
+  end
 end

@@ -36,6 +36,7 @@ module CFEConstants
     legal_aid: Outgoings::LegalAid,
     pension_contribution: Outgoings::PensionContribution,
     council_tax: Outgoings::CouncilTax,
+    priority_debt_repayment: Outgoings::PriorityDebtRepayment,
   }.freeze
   VALID_OUTGOING_CATEGORIES = OUTGOING_KLASSES.keys.map(&:to_s).freeze
   NON_HOUSING_OUTGOING_CATEGORIES = OUTGOING_KLASSES.except(:rent_or_mortgage).keys.map(&:to_s).freeze
