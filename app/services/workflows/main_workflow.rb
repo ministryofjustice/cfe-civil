@@ -1,6 +1,8 @@
 module Workflows
   class MainWorkflow
     class << self
+      include AssessmentEligibility
+
       def call(assessment:, applicant:, partner:)
         calculation_output = if non_means_tested?(proceeding_type_codes: assessment.proceeding_types.pluck(:ccms_code), receives_asylum_support: applicant.details.receives_asylum_support, submission_date: assessment.submission_date)
                                blank_calculation_result(submission_date: assessment.submission_date,
@@ -58,19 +60,6 @@ module Workflows
       end
 
     private
-
-      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:)
-        # skip proceeding types check if applicant receives asylum support after MTR go-live date
-        if asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
-          receives_asylum_support
-        else
-          proceeding_type_codes.map(&:to_sym).all? { _1.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && receives_asylum_support
-        end
-      end
-
-      def asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
-        !!Threshold.value_for(:asylum_support_is_non_means_tested_for_all_matter_types, at: submission_date)
-      end
 
       def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
                                    receives_qualifying_benefit:, receives_asylum_support:)

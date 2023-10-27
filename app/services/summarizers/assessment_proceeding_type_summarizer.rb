@@ -8,6 +8,8 @@ module Summarizers
     class AssessmentError < StandardError; end
 
     class << self
+      include AssessmentEligibility
+
       def call(proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
                gross_income_assessment_result:, disposable_income_result:, capital_assessment_result:)
         if non_means_tested?(proceeding_type_codes: [proceeding_type_code], receives_asylum_support:, submission_date:)
@@ -20,19 +22,6 @@ module Summarizers
       end
 
     private
-
-      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:)
-        # skip proceeding types check if applicant receives asylum support after MTR go-live date
-        if asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
-          receives_asylum_support
-        else
-          proceeding_type_codes.map(&:to_sym).all? { _1.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && receives_asylum_support
-        end
-      end
-
-      def asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
-        !!Threshold.value_for(:asylum_support_is_non_means_tested_for_all_matter_types, at: submission_date)
-      end
 
       def this_is_an_immigration_or_asylum_case?(proceeding_type_code)
         proceeding_type_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
