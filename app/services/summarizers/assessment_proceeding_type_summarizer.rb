@@ -23,10 +23,6 @@ module Summarizers
 
     private
 
-      def this_is_an_immigration_or_asylum_case?(proceeding_type_code)
-        proceeding_type_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
-      end
-
       def passported_assessment(gross_income_assessment_result, disposable_income_result, capital_result)
         raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result.to_s == "pending"
         raise AssessmentError, "Invalid assessment status: for passported applicant" if disposable_income_result.to_s != "pending"
