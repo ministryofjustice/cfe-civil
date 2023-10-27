@@ -58,7 +58,7 @@ module Summarizers
       end
 
       it "calls the Results summarizer to return the assessment result" do
-        expect(summarizer.values).to eq %w[eligible ineligible]
+        expect(summarizer.values).to match_array %w[eligible ineligible]
       end
     end
   end
