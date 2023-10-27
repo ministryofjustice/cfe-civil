@@ -60,7 +60,6 @@ module Collators
           submission_date:,
         )
 
-
         council_tax = Calculators::CouncilTaxCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
           cash_transactions: gross_income_summary.cash_transactions_by_operation_and_name(:debit, :council_tax),
