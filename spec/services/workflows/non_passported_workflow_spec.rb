@@ -6,7 +6,7 @@ module Workflows
       create :assessment, :with_capital_summary, :with_disposable_income_summary,
              :with_gross_income_summary,
              submission_date: Date.new(2022, 6, 7),
-             proceedings: proceeding_types.map { |p| [p, "A"] }, level_of_help:
+             proceedings: proceeding_type_codes.map { |p| [p, "A"] }, level_of_help:
     end
     let(:partner) { nil }
     let(:applicant) { build(:applicant, employed:, dependants:) }
@@ -38,7 +38,7 @@ module Workflows
       let(:disposable_income_upper_threshold) { 5000 }
       let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 4000) }
       let(:applicant) { build :applicant }
-      let(:proceeding_types) { %w[SE003] }
+      let(:proceeding_type_codes) { %w[SE003] }
       let(:level_of_help) { "certificated" }
       let(:self_employments) do
         [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
@@ -91,17 +91,25 @@ module Workflows
     describe "#call", :calls_bank_holiday do
       let(:gross_income_upper_threshold) { 9_999_999_999 }
       let(:disposable_income_upper_threshold) { 9_999_999_999 }
-      let(:proceeding_types) { %w[SE003] }
+      let(:proceeding_type_codes) { %w[SE003] }
 
       subject(:assessment_result) do
         assessment.reload
         co = described_class.call(assessment:,
-                                  applicant: build(:person_data, details: applicant, dependants:, employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
-                                  partner: partner.present? ? build(:person_data, details: partner, employments: partner_employments, capitals_data: build(:capitals_data, main_home: partner_main_home, additional_properties: partner_additional_properties)) : nil)
-        co.calculation_output.summarized_assessment_result(proceeding_types: assessment.proceeding_types,
-                                                           submission_date: assessment.submission_date,
-                                                           receives_qualifying_benefit: applicant.receives_qualifying_benefit,
-                                                           receives_asylum_support: applicant.receives_asylum_support)
+                                  applicant: build(:person_data, details: applicant, dependants:, employments:,
+                                                                 capitals_data: build(:capitals_data, main_home:, additional_properties:)),
+                                  partner: if partner.present?
+                                             build(:person_data, details: partner, employments: partner_employments,
+                                                                 capitals_data: build(:capitals_data, main_home: partner_main_home,
+                                                                                                      additional_properties: partner_additional_properties))
+                                           end).calculation_output
+        EligibilityResults.new(proceeding_types: assessment.proceeding_types,
+                               submission_date: assessment.submission_date,
+                               receives_qualifying_benefit: applicant.receives_qualifying_benefit,
+                               receives_asylum_support: applicant.receives_asylum_support,
+                               gross_income_assessment_results: co.gross_income_subtotals.assessment_results(assessment.proceeding_types),
+                               disposable_income_assessment_results: co.disposable_income_assessment_results(assessment.proceeding_types),
+                               capital_assessment_results: co.capital_subtotals.assessment_results(assessment.proceeding_types)).summarized_assessment_result
       end
 
       context "with controlled work" do
@@ -233,7 +241,7 @@ module Workflows
           end
 
           context "with a first-tier immigration case" do
-            let(:proceeding_types) { [CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE] }
+            let(:proceeding_type_codes) { [CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE] }
 
             context "with 8k capital" do
               let(:property_value) { 8_000 }
@@ -365,7 +373,7 @@ module Workflows
           context "with housing costs" do
             let(:employed) { true }
             let(:dependants) { [] }
-            let(:proceeding_types) { %w[DA001] }
+            let(:proceeding_type_codes) { %w[DA001] }
             let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 3_000) }
 
             before do

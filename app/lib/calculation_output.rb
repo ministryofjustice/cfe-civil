@@ -14,17 +14,7 @@ class CalculationOutput
     @disposable_income_subtotals.eligibilities proceeding_types
   end
 
-  def assessment_results(proceeding_types:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:)
-    @assessment_results ||= Summarizers::MainSummarizer.assessment_results(proceeding_types:,
-                                                                           receives_qualifying_benefit:,
-                                                                           receives_asylum_support:,
-                                                                           submission_date:,
-                                                                           gross_income_assessment_results: @gross_income_subtotals.assessment_results(proceeding_types),
-                                                                           disposable_income_assessment_results: @disposable_income_subtotals.assessment_results(proceeding_types),
-                                                                           capital_assessment_results: @capital_subtotals.assessment_results(proceeding_types))
-  end
-
-  def summarized_assessment_result(proceeding_types:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:)
-    Utilities::ResultSummarizer.call(assessment_results(proceeding_types:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:).values).to_s
+  def disposable_income_assessment_results(proceeding_types)
+    @disposable_income_subtotals.assessment_results proceeding_types
   end
 end

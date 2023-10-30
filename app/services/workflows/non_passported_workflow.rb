@@ -61,16 +61,16 @@ module Workflows
                                                       self_employments: partner_self_employments,
                                                       employment_details: partner_employment_details)
 
-          gross = collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
-                                                  partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
-                                                  submission_date: assessment.submission_date,
-                                                  dependants: applicant.dependants + (partner.dependants || []))
+          gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
+                                             partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
+                                             dependants: applicant.dependants + partner.dependants,
+                                             submission_date: assessment.submission_date)
           GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks + partner_gross_income.remarks
         else
-          gross = collate_and_assess_gross_income(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
-                                                  partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
-                                                  submission_date: assessment.submission_date,
-                                                  dependants: applicant.dependants)
+          gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
+                                             partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
+                                             dependants: applicant.dependants,
+                                             submission_date: assessment.submission_date)
           GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks
         end
       end
@@ -186,17 +186,6 @@ module Workflows
                                                            state_benefits:)
         Collators::GrossIncomeCollator::Result.new person_gross_income_subtotals: gross_result.person_gross_income_subtotals,
                                                    remarks: gross_result.remarks + converted_employments_and_remarks.remarks
-      end
-
-      def collate_and_assess_gross_income(applicant_gross_income_subtotals:, partner_gross_income_subtotals:,
-                                          dependants:, submission_date:)
-
-        GrossIncome::Subtotals.new(
-          applicant_gross_income_subtotals:,
-          partner_gross_income_subtotals:,
-          dependants:,
-          submission_date:,
-        )
       end
 
       # local define to pass back disposable subtotals

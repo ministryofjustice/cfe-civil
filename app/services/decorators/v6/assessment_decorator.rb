@@ -3,12 +3,13 @@ module Decorators
     class AssessmentDecorator
       attr_reader :assessment
 
-      def initialize(assessment:, calculation_output:, applicant:, partner:, version:)
+      def initialize(assessment:, calculation_output:, applicant:, partner:, version:, eligibility_result:)
         @assessment = assessment
         @calculation_output = calculation_output
         @applicant = applicant
         @partner = partner
         @version = version
+        @eligibility_result = eligibility_result
       end
 
       def as_json
@@ -17,9 +18,7 @@ module Decorators
           timestamp: Time.current,
           success: true,
           result_summary: ResultSummaryDecorator.new(assessment:, calculation_output: @calculation_output,
-                                                     receives_asylum_support: @applicant.details.receives_asylum_support,
-                                                     receives_qualifying_benefit: @applicant.details.receives_qualifying_benefit,
-                                                     submission_date: assessment.submission_date,
+                                                     eligibility_result: @eligibility_result,
                                                      partner_present: @partner.present?).as_json,
           assessment: assessment_details.transform_values(&:as_json),
         }
@@ -28,10 +27,10 @@ module Decorators
     private
 
       def assessment_details
-        summarized_assessment_result = @calculation_output.summarized_assessment_result(proceeding_types: assessment.proceeding_types,
-                                                                                        submission_date: assessment.submission_date,
-                                                                                        receives_asylum_support: @applicant.details.receives_asylum_support,
-                                                                                        receives_qualifying_benefit: @applicant.details.receives_qualifying_benefit)
+        # summarized_assessment_result = @calculation_output.summarized_assessment_result(proceeding_types: assessment.proceeding_types,
+        #                                                                                 submission_date: assessment.submission_date,
+        #                                                                                 receives_asylum_support: @applicant.details.receives_asylum_support,
+        #                                                                                 receives_qualifying_benefit: @applicant.details.receives_qualifying_benefit)
         details = {
           id: assessment.id,
           client_reference_id: assessment.client_reference_id,
@@ -46,7 +45,7 @@ module Decorators
           ),
           capital: CapitalDecorator.new(assessment.applicant_capital_summary,
                                         @calculation_output.capital_subtotals.applicant_capital_subtotals),
-          remarks: RemarksDecorator.new(assessment.remarks, summarized_assessment_result),
+          remarks: RemarksDecorator.new(assessment.remarks, @eligibility_result.summarized_assessment_result),
         }
         if @partner.present?
           details.merge(partner_gross_income:, partner_disposable_income:, partner_capital:)

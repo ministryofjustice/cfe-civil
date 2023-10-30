@@ -32,10 +32,8 @@ module Decorators
                                                                   end,
                                                                 ),
                                                                 eligibilities: []),
-                        summarized_assessment_result: "eligible",
                         income_contribution: 0,
                         disposable_income_eligibilities: [],
-                        assessment_results: [],
                         combined_total_disposable_income: 0,
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
@@ -45,12 +43,18 @@ module Decorators
                                                                    level_of_help: assessment.level_of_help,
                                                                    submission_date: assessment.submission_date))
       end
+      let(:eligibility_result) do
+        instance_double(EligibilityResults,
+                        summarized_assessment_result: "eligible",
+                        assessment_results: [])
+      end
 
       describe "#as_json" do
         subject(:decorator) do
           described_class.new(assessment: assessment.reload, calculation_output:,
                               applicant:,
                               partner:,
+                              eligibility_result:,
                               version:).as_json
         end
         let(:applicant) { build(:person_data, details: build(:applicant)) }
