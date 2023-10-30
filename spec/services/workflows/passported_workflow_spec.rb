@@ -21,8 +21,7 @@ module Workflows
         described_class.call(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: [], main_home: nil, additional_properties: []),
                              date_of_birth: applicant.date_of_birth,
                              submission_date: assessment.submission_date,
-                             level_of_help: assessment.level_of_help,
-                             receives_asylum_support: applicant.receives_asylum_support)
+                             level_of_help: assessment.level_of_help)
       end
 
       it "calls Capital collator and return some data" do

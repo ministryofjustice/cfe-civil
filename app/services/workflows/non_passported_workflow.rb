@@ -9,9 +9,6 @@ module Workflows
 
         calculation_output = if gross_income_subtotals.gross.ineligible? assessment.proceeding_types
                                CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross,
-                                                     receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                     receives_asylum_support: applicant.details.receives_asylum_support,
-                                                     submission_date: assessment.submission_date,
                                                      disposable_income_subtotals: unassessed_disposable_income(assessment:),
                                                      capital_subtotals: unassessed_capital)
                              else
@@ -19,16 +16,10 @@ module Workflows
                                if disposable_income_subtotals.ineligible? assessment.proceeding_types
                                  CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross,
                                                        disposable_income_subtotals:,
-                                                       capital_subtotals: unassessed_capital,
-                                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                       receives_asylum_support: applicant.details.receives_asylum_support,
-                                                       submission_date: assessment.submission_date)
+                                                       capital_subtotals: unassessed_capital)
                                else
                                  capital_subtotals = get_capital_subtotals(assessment:, applicant:, partner:, disposable_income_subtotals:)
-                                 CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
-                                                       receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                       receives_asylum_support: applicant.details.receives_asylum_support,
-                                                       submission_date: assessment.submission_date)
+                                 CalculationOutput.new(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:)
                                end
                              end
 
