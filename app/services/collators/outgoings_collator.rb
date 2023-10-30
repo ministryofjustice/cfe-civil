@@ -1,7 +1,7 @@
 module Collators
   class OutgoingsCollator
     Result = Data.define(:dependant_allowance, :child_care, :housing_costs, :legal_aid_bank, :maintenance_out_bank,
-                         :lone_parent_allowance, :pension_contribution, :housing_benefit) do
+                         :lone_parent_allowance, :pension_contribution, :housing_benefit, :council_tax) do
       def self.blank
         new(dependant_allowance: DependantsAllowanceCollator::Result.blank,
             child_care: ChildcareCollator::Result.blank,
@@ -10,7 +10,8 @@ module Collators
             housing_costs: HousingCostsCollator::Result.blank,
             lone_parent_allowance: 0,
             housing_benefit: 0,
-            pension_contribution: Calculators::PensionContributionCalculator::Result.blank)
+            pension_contribution: Calculators::PensionContributionCalculator::Result.blank,
+            council_tax: Calculators::CouncilTaxCalculator::Result.blank)
       end
     end
 
@@ -58,6 +59,13 @@ module Collators
           submission_date:,
         )
 
+        council_tax = Calculators::CouncilTaxCalculator.call(
+          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
+          cash_transactions: gross_income_summary.cash_transactions(:debit, :council_tax),
+          regular_transactions: gross_income_summary.regular_transactions.council_tax_payments,
+          submission_date:,
+        )
+
         Result.new(dependant_allowance:,
                    child_care:,
                    housing_costs:,
@@ -65,7 +73,8 @@ module Collators
                    housing_benefit:,
                    maintenance_out_bank:,
                    lone_parent_allowance:,
-                   pension_contribution:)
+                   pension_contribution:,
+                   council_tax:)
       end
     end
   end

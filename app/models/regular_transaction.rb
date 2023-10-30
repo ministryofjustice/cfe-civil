@@ -7,6 +7,7 @@ class RegularTransaction < ApplicationRecord
                                      message: "%<value>s is not a valid operation" }
 
   scope :pension_contributions, -> { where(category: "pension_contribution", operation: "debit") }
+  scope :council_tax_payments, -> { where(category: "council_tax", operation: "debit") }
 
   validates :category, inclusion: {
     in: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES,

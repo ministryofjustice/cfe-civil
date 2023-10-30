@@ -292,7 +292,7 @@ class SwaggerDocs
                   type: :object,
                   required: %i[name payments],
                   additionalProperties: false,
-                  description: "Outgoing payments detail",
+                  description: "Outgoing payments detail. Name 'council_tax' is not calculated before MTR",
                   properties: {
                     name: {
                       type: :string,
@@ -459,7 +459,7 @@ class SwaggerDocs
                   required: %i[category payments],
                   properties: {
                     category: {
-                      description: "The category of the outgoing transaction",
+                      description: "The category of the outgoing transaction. Category 'council_tax' is not calculated before MTR",
                       type: :string,
                       enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
                     },
@@ -621,7 +621,7 @@ class SwaggerDocs
           },
           RegularTransaction: {
             type: :object,
-            description: "regular transaction detail",
+            description: "Regular transaction detail. Category 'council_tax' is not calculated before MTR",
             required: %i[category operation frequency amount],
             additionalProperties: false,
             properties: {
@@ -1367,6 +1367,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                   bank_transactions: {
@@ -1378,6 +1379,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                   cash_transactions: {
@@ -1389,6 +1391,7 @@ class SwaggerDocs
                       maintenance_out: { type: :number },
                       legal_aid: { type: :number },
                       pension_contribution: { type: :number },
+                      council_tax: { type: :number },
                     },
                   },
                 },

@@ -20,5 +20,10 @@ FactoryBot.define do
       category { "housing_benefit" }
       operation { "credit" }
     end
+
+    trait :council_tax do
+      category { "council_tax" }
+      operation { "debit" }
+    end
   end
 end
