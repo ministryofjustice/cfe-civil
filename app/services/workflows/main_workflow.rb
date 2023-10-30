@@ -8,9 +8,7 @@ module Workflows
                                blank_calculation_result(submission_date: assessment.submission_date,
                                                         level_of_help: assessment.level_of_help,
                                                         applicant_capitals: applicant.capitals_data,
-                                                        partner_capitals: partner&.capitals_data,
-                                                        receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-                                                        receives_asylum_support: applicant.details.receives_asylum_support)
+                                                        partner_capitals: partner&.capitals_data)
                              elsif applicant.details.receives_qualifying_benefit?
                                if partner.present?
                                  PassportedWorkflow.partner(capitals_data: applicant.capitals_data,
@@ -18,14 +16,12 @@ module Workflows
                                                             date_of_birth: applicant.details.date_of_birth,
                                                             level_of_help: assessment.level_of_help,
                                                             submission_date: assessment.submission_date,
-                                                            partner_date_of_birth: partner.details.date_of_birth,
-                                                            receives_asylum_support: applicant.details.receives_asylum_support)
+                                                            partner_date_of_birth: partner.details.date_of_birth)
                                else
                                  PassportedWorkflow.call(capitals_data: applicant.capitals_data,
                                                          date_of_birth: applicant.details.date_of_birth,
                                                          submission_date: assessment.submission_date,
-                                                         level_of_help: assessment.level_of_help,
-                                                         receives_asylum_support: applicant.details.receives_asylum_support)
+                                                         level_of_help: assessment.level_of_help)
                                end
                              else
                                result = NonPassportedWorkflow.call(assessment:, applicant:, partner:)
@@ -61,13 +57,11 @@ module Workflows
 
     private
 
-      def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:,
-                                   receives_qualifying_benefit:, receives_asylum_support:)
+      def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:)
         CalculationOutput.new(
-          receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
           gross_income_subtotals: GrossIncome::Unassessed.new,
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:)
+          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:),
         )
       end
     end

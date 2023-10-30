@@ -3,17 +3,23 @@ module Decorators
     class ResultSummaryDecorator
       attr_reader :assessment
 
-      def initialize(assessment, calculation_output, partner_present)
+      def initialize(assessment:, calculation_output:, partner_present:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:)
         @assessment = assessment
         @calculation_output = calculation_output
         @partner_present = partner_present
+        @receives_qualifying_benefit = receives_qualifying_benefit
+        @receives_asylum_support =   receives_asylum_support
+        @submission_date = submission_date
       end
 
       def as_json
         capital_contribution = @calculation_output.capital_subtotals.capital_contribution(assessment.proceeding_types).to_f
         income_contribution = @calculation_output.income_contribution(assessment.proceeding_types)
 
-        assessment_results = @calculation_output.assessment_results(assessment.proceeding_types).map do |proceeding_type, result|
+        assessment_results = @calculation_output.assessment_results(proceeding_types: assessment.proceeding_types,
+                                                                    submission_date: @submission_date,
+                                                                    receives_qualifying_benefit: @receives_qualifying_benefit,
+                                                                    receives_asylum_support: @receives_asylum_support).map do |proceeding_type, result|
           {
             ccms_code: proceeding_type.ccms_code,
             upper_threshold: 0.0,
@@ -26,7 +32,10 @@ module Decorators
 
         details = {
           overall_result: {
-            result: @calculation_output.summarized_assessment_result(assessment.proceeding_types),
+            result: @calculation_output.summarized_assessment_result(proceeding_types: assessment.proceeding_types,
+                                                                     submission_date: @submission_date,
+                                                                     receives_qualifying_benefit: @receives_qualifying_benefit,
+                                                                     receives_asylum_support: @receives_asylum_support),
             capital_contribution:,
             income_contribution:,
             proceeding_types: assessment_results.as_json,

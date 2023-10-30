@@ -90,8 +90,7 @@ module Workflows
                                                                                            non_liquid_capital_items: [], main_home: {}, additional_properties: []),
                                                            date_of_birth: applicant.date_of_birth,
                                                            submission_date: assessment.submission_date,
-                                                           level_of_help: assessment.level_of_help,
-                                                           receives_asylum_support: false).and_return(calculation_output)
+                                                           level_of_help: assessment.level_of_help).and_return(calculation_output)
           workflow_call
         end
 
@@ -124,8 +123,7 @@ module Workflows
                                                                partner_date_of_birth: partner.date_of_birth,
                                                                date_of_birth: applicant.date_of_birth,
                                                                level_of_help: assessment.level_of_help,
-                                                               submission_date: assessment.submission_date,
-                                                               receives_asylum_support: false).and_call_original
+                                                               submission_date: assessment.submission_date).and_call_original
           workflow_call
         end
       end
