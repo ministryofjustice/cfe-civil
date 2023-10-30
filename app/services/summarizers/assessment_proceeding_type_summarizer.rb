@@ -8,9 +8,11 @@ module Summarizers
     class AssessmentError < StandardError; end
 
     class << self
-      def call(proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:,
+      include AssessmentEligibility
+
+      def call(proceeding_type_code:, receives_qualifying_benefit:, receives_asylum_support:, submission_date:,
                gross_income_assessment_result:, disposable_income_result:, capital_assessment_result:)
-        if this_is_an_immigration_or_asylum_case?(proceeding_type_code) && receives_asylum_support
+        if non_means_tested?(proceeding_type_codes: [proceeding_type_code], receives_asylum_support:, submission_date:)
           "eligible"
         elsif receives_qualifying_benefit
           passported_assessment gross_income_assessment_result, disposable_income_result, capital_assessment_result
@@ -20,10 +22,6 @@ module Summarizers
       end
 
     private
-
-      def this_is_an_immigration_or_asylum_case?(proceeding_type_code)
-        proceeding_type_code.to_sym.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES)
-      end
 
       def passported_assessment(gross_income_assessment_result, disposable_income_result, capital_result)
         raise AssessmentError, "Assessment not complete: Capital assessment still pending" if capital_result.to_s == "pending"

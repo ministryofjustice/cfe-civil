@@ -45,14 +45,32 @@ module Workflows
       end
 
       context "for immigration/asylum proceeding types" do
-        let(:proceedings_hash) { [%w[IM030 A]] }
+        context "before MTR changes, require proceeding type check" do
+          let(:proceedings_hash) { [%w[IM030 A]] }
 
-        it "does not call a workflow" do
-          expect(PassportedWorkflow).not_to receive(:call)
-          expect(NonPassportedWorkflow).not_to receive(:call)
-          described_class.call(assessment:,
-                               applicant: build(:person_data, details: applicant),
-                               partner: nil)
+          it "does not call a workflow" do
+            expect(PassportedWorkflow).not_to receive(:call)
+            expect(NonPassportedWorkflow).not_to receive(:call)
+            described_class.call(assessment:,
+                                 applicant: build(:person_data, details: applicant),
+                                 partner: nil)
+          end
+        end
+
+        context "after MTR changes, skip proceeding type check" do
+          around do |example|
+            travel_to Date.new(2525, 4, 20)
+            example.run
+            travel_back
+          end
+
+          it "does not call a workflow" do
+            expect(PassportedWorkflow).not_to receive(:call)
+            expect(NonPassportedWorkflow).not_to receive(:call)
+            described_class.call(assessment:,
+                                 applicant: build(:person_data, details: applicant),
+                                 partner: nil)
+          end
         end
       end
     end

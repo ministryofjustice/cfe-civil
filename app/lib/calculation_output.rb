@@ -5,23 +5,26 @@ class CalculationOutput
   # The receives_qualifying_benefit:, receives_asylum_support: parameters are temporary whilst we refactor
   # the eligibilities objects. Once this is complete these parameters should be able to be be removed
   def initialize(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:,
-                 receives_qualifying_benefit:, receives_asylum_support:)
+                 receives_qualifying_benefit:, receives_asylum_support:, submission_date:)
     @gross_income_subtotals = gross_income_subtotals
     @disposable_income_subtotals = disposable_income_subtotals
     @capital_subtotals = capital_subtotals
     @receives_qualifying_benefit = receives_qualifying_benefit
     @receives_asylum_support = receives_asylum_support
+    @submission_date = submission_date
   end
 
-  attr_reader :capital_subtotals, :gross_income_subtotals, :receives_qualifying_benefit, :receives_asylum_support
+  attr_reader :capital_subtotals, :gross_income_subtotals, :receives_qualifying_benefit, :receives_asylum_support, :submission_date
 
   def disposable_income_eligibilities(proceeding_types)
     @disposable_income_subtotals.eligibilities proceeding_types
   end
 
   def assessment_results(proceeding_types)
-    @assessment_results ||= Summarizers::MainSummarizer.assessment_results(proceeding_types:, receives_qualifying_benefit:,
+    @assessment_results ||= Summarizers::MainSummarizer.assessment_results(proceeding_types:,
+                                                                           receives_qualifying_benefit:,
                                                                            receives_asylum_support:,
+                                                                           submission_date:,
                                                                            gross_income_assessment_results: @gross_income_subtotals.assessment_results(proceeding_types),
                                                                            disposable_income_assessment_results: @disposable_income_subtotals.assessment_results(proceeding_types),
                                                                            capital_assessment_results: @capital_subtotals.assessment_results(proceeding_types))

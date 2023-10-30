@@ -51,4 +51,5 @@ Given("I am undertaking upper tribunal certificated asylum assessment") do
   @applicant_data = AssessmentData.applicant
   @proceeding_type_data = AssessmentData.proceeding_types(ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE)
   @api_version = 6
+  @employments = []
 end

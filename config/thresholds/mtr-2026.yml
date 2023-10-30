@@ -76,3 +76,4 @@ subject_matter_of_dispute_disregard: 999_999_999_999
 pension_contribution_cap: 5
 housing_benefit_in_gross_income: true
 council_tax_enabled: true
+asylum_support_is_non_means_tested_for_all_matter_types: true
