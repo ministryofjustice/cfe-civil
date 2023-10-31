@@ -8,8 +8,4 @@ class GrossIncomeSummary < ApplicationRecord
 
   has_many :student_loan_payments, -> { student_loan }, class_name: "IrregularIncomePayment"
   has_many :unspecified_source_payments, -> { unspecified_source }, class_name: "IrregularIncomePayment"
-
-  def cash_transactions_by_operation_and_name(operation, category)
-    cash_transaction_categories.where(operation:, name: category).flat_map(&:cash_transactions)
-  end
 end
