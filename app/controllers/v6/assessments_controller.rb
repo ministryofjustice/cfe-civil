@@ -31,7 +31,18 @@ module V6
                                                             applicant:,
                                                             partner: nil)
                              end
-        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:).as_json
+        proceeding_types = create.assessment.proceeding_types
+        eligibility_result = EligibilityResults.new(
+          proceeding_types:,
+          receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
+          receives_asylum_support: applicant.details.receives_asylum_support,
+          submission_date: create.assessment.submission_date,
+          gross_income_assessment_results: calculation_output.gross_income_subtotals.assessment_results(proceeding_types),
+          disposable_income_assessment_results: calculation_output.disposable_income_assessment_results(proceeding_types),
+          capital_assessment_results: calculation_output.capital_subtotals.assessment_results(proceeding_types),
+        )
+
+        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:, eligibility_result:).as_json
       else
         render_unprocessable(create.errors)
       end

@@ -2,29 +2,32 @@ module Creators
   class GrossIncomeEligibilityCreator
     class << self
       def call(dependants:, proceeding_types:, submission_date:, total_gross_income:)
-        proceeding_types.map do |proceeding_type|
-          upper_threshold = upper_threshold(submission_date:, dependants:, proceeding_type:)
-          result = result_from_threshold(total_gross_income:, upper_threshold:)
-
+        upper_thresholds(dependants:, proceeding_types:, submission_date:).map do |proceeding_type, upper_threshold|
           Eligibility::GrossIncome.new(
             proceeding_type:,
             upper_threshold:,
-            assessment_result: result,
+            assessment_result: result_from_threshold(total_gross_income:, upper_threshold:),
           ).freeze
         end
       end
 
       def assessment_results(dependants:, proceeding_types:, submission_date:, total_gross_income:)
-        pairs = proceeding_types.map do |proceeding_type|
-          upper_threshold = upper_threshold(submission_date:, dependants:, proceeding_type:)
-          result = result_from_threshold(total_gross_income:, upper_threshold:)
-          [proceeding_type, result]
+        upper_thresholds(dependants:, proceeding_types:, submission_date:).transform_values do |upper_threshold|
+          result_from_threshold(total_gross_income:, upper_threshold:)
         end
-        pairs.to_h
       end
 
     private
 
+      def upper_thresholds(dependants:, proceeding_types:, submission_date:)
+        pairs = proceeding_types.map do |proceeding_type|
+          [proceeding_type, upper_threshold(submission_date:, dependants:, proceeding_type:)]
+        end
+        pairs.to_h
+      end
+
+      # There is no 'lower threshold' for gross income calculations -
+      # it doesn't make sense to calculate a contribution based on gross anyway
       def result_from_threshold(total_gross_income:, upper_threshold:)
         total_gross_income < upper_threshold ? "eligible" : "ineligible"
       end
