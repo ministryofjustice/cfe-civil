@@ -2,7 +2,7 @@ require "rails_helper"
 
 module RemarkGenerators
   RSpec.describe Orchestrator, :calls_bank_holiday do
-    let(:submission_date) { Time.zone.today }
+    let(:submission_date) { Date.new(2023, 4, 20) }
     let(:assessment) { create :assessment, submission_date: }
     let(:state_benefits) do
       [StateBenefit.new(state_benefit_payments: build_list(:state_benefit_payment, 1),
@@ -54,8 +54,6 @@ module RemarkGenerators
     end
 
     context "pre MTR" do
-      let(:submission_date) { Date.new(2023, 4, 20) }
-
       it "calls PaymentChecker" do
         expect(PaymentChecker).not_to receive(:call).and_call_original
         described_class.call(liquid_capital_items:,

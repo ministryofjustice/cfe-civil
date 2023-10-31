@@ -1833,7 +1833,6 @@ module V6
                     pension_contribution: 0.0,
                     council_tax: 0.0,
                     priority_debt_repayment: 0.0,
-
                   },
                   cash_transactions: {
                     child_care: 257.0,
