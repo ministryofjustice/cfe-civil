@@ -27,7 +27,7 @@ module RemarkGenerators
       end
     end
 
-    context "without payments" do
+    context "without payment data" do
       let(:outgoings) { [] }
 
       it "returns no remarks" do

@@ -20,6 +20,9 @@ Feature:
       | attribute                        | value  |
       | total_outgoings_and_allowances   |  45.0  |
       | total_disposable_income          | 1155.0 |
+    And I should see the following remarks indicating caseworker referral
+      | type                             | issue          |
+      | priority_debt                    | priority_debt  |
 
   Scenario: The client is employed, Priority Debt Repayment is submitted as Cash transactions (After MTR)
     Given I am undertaking a certificated assessment
@@ -63,6 +66,9 @@ Feature:
       | attribute                        | value  |
       | total_outgoings_and_allowances   |  45.0  |
       | total_disposable_income          | 1155.0 |
+    And I should see the following remarks indicating caseworker referral
+      | type                             | issue          |
+      | priority_debt                    | priority_debt  |
 
   Scenario: The client is employed, Priority Debt Repayment is submitted as Outgoings (After MTR)
     Given I am undertaking a certificated assessment
@@ -107,6 +113,9 @@ Feature:
       | attribute                        | value  |
       | total_outgoings_and_allowances   |  45.0  |
       | total_disposable_income          | 1155.0 |
+    And I should see the following remarks indicating caseworker referral
+      | type                             | issue          |
+      | priority_debt                    | priority_debt  |
 
   Scenario: The client is employed, Priority Debt Repayment is submitted as Regular transactions (After MTR)
     Given I am undertaking a certificated assessment
