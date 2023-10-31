@@ -2,7 +2,8 @@ require "rails_helper"
 
 module RemarkGenerators
   RSpec.describe Orchestrator, :calls_bank_holiday do
-    let(:assessment) { create :assessment }
+    let(:submission_date) { Time.zone.today }
+    let(:assessment) { create :assessment, submission_date: }
     let(:state_benefits) do
       [StateBenefit.new(state_benefit_payments: build_list(:state_benefit_payment, 1),
                         state_benefit_name: "anything",
@@ -50,6 +51,36 @@ module RemarkGenerators
                            outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                            employments:,
                            gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
+    end
+
+    context "pre MTR" do
+      let(:submission_date) { Date.new(2023, 4, 20) }
+
+      it "calls PaymentChecker" do
+        expect(PaymentChecker).not_to receive(:call).and_call_original
+        described_class.call(liquid_capital_items:,
+                             state_benefits:,
+                             lower_capital_threshold: 100,
+                             child_care_bank: 0,
+                             outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
+                             employments:,
+                             gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
+      end
+    end
+
+    context "post MTR" do
+      let(:submission_date) { Date.new(2525, 4, 20) }
+
+      it "skip call to PaymentChecker" do
+        expect(PaymentChecker).to receive(:call).and_call_original
+        described_class.call(liquid_capital_items:,
+                             state_benefits:,
+                             lower_capital_threshold: 100,
+                             child_care_bank: 0,
+                             outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
+                             employments:,
+                             gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
+      end
     end
   end
 end
