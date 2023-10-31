@@ -1,17 +1,17 @@
 ---
 openapi: 3.0.1
 info:
-  title: API v6
+  title: API v7
   description: |-
     # CFE-Civil - Check Financial Eligibility for Civil legal aid
 
     ## Usage:
-      - Calculate eligibility by POSTing a payload to `/v6/assessments`
+      - Calculate eligibility by POSTing a payload to `/v7/assessments`
       - Add assessment components, such as applicant, capitals and properties in the payload
   contact:
     name: Github repository
     url: https://github.com/ministryofjustice/cfe-civil
-  version: v6
+  version: v7
 components:
   schemas:
     currency:
@@ -179,8 +179,8 @@ components:
           - name
           - payments
           additionalProperties: false
-          description: Outgoing payments detail. Name [council_tax, priority_debt_repayment] is not calculated
-            before MTR
+          description: Outgoing payments detail. 'priority_debt_repayment' and 'council_tax'
+            are not calculated before MTR
           properties:
             name:
               type: string
@@ -396,7 +396,8 @@ components:
             - payments
             properties:
               category:
-                description: The category of the outgoing transaction. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
+                description: The category of the outgoing transaction. 'priority_debt_repayment'
+                  and 'council_tax' are not calculated before MTR
                 type: string
                 enum:
                 - child_care
@@ -582,7 +583,8 @@ components:
         costs, should be excluded.</p><p>Detailed guidance TBD</p>
     RegularTransaction:
       type: object
-      description: Regular transaction detail. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
+      description: Regular transaction detail. 'priority_debt_repayment' and 'council_tax'
+        are not calculated before MTR
       required:
       - category
       - operation
@@ -2185,7 +2187,7 @@ components:
               example: 0
           additionalProperties: false
 paths:
-  "/v6/assessments":
+  "/v7/assessments":
     post:
       summary: create
       tags:
@@ -2209,21 +2211,21 @@ paths:
                 properties:
                   result_summary:
                     type: object
+                    additionalProperties: false
                     required:
                     - overall_result
                     - gross_income
                     - disposable_income
                     - capital
-                    additionalProperties: false
                     properties:
                       overall_result:
                         type: object
+                        additionalProperties: false
                         required:
                         - result
                         - capital_contribution
                         - income_contribution
                         - proceeding_types
-                        additionalProperties: false
                         properties:
                           result:
                             "$ref": "#/components/schemas/OverallResult"
@@ -2232,16 +2234,16 @@ paths:
                           capital_contribution:
                             "$ref": "#/components/schemas/CapitalContribution"
                           proceeding_types:
-                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+                            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
                       gross_income:
                         type: object
+                        additionalProperties: false
                         description: gross_income calculation for partner, with some
                           combined totals where appropriate
                         required:
                         - total_gross_income
                         - combined_total_gross_income
                         - proceeding_types
-                        additionalProperties: false
                         properties:
                           total_gross_income:
                             type: number
@@ -2254,12 +2256,12 @@ paths:
                             description: Calculated monthly total gross income for
                               applicant and partner
                           proceeding_types:
-                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+                            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
                       partner_gross_income:
                         type: object
+                        additionalProperties: false
                         required:
                         - total_gross_income
-                        additionalProperties: false
                         properties:
                           total_gross_income:
                             type: number
@@ -2267,11 +2269,11 @@ paths:
                             description: Calculated monthly total gross income for
                               partner
                       disposable_income:
-                        "$ref": "#/components/schemas/v6/ApplicantDisposableIncome"
+                        "$ref": "#/components/schemas/v7/ApplicantDisposableIncome"
                       partner_disposable_income:
                         "$ref": "#/components/schemas/DisposableIncome"
                       capital:
-                        "$ref": "#/components/schemas/v6/ApplicantCapitalResult"
+                        "$ref": "#/components/schemas/v7/ApplicantCapitalResult"
                       partner_capital:
                         "$ref": "#/components/schemas/CapitalResult"
                   assessment:
@@ -2314,7 +2316,7 @@ paths:
                   version:
                     type: string
                     enum:
-                    - '6'
+                    - '7'
                     description: Version of the API used in the request
                   success:
                     type: boolean
@@ -2335,17 +2337,17 @@ paths:
                 assessment:
                   "$ref": "#/components/schemas/Assessment"
                 applicant:
-                  "$ref": "#/components/schemas/v6/Applicant"
+                  "$ref": "#/components/schemas/v7/Applicant"
                 proceeding_types:
-                  "$ref": "#/components/schemas/v6/ProceedingTypes"
+                  "$ref": "#/components/schemas/v7/ProceedingTypes"
                 capitals:
                   "$ref": "#/components/schemas/Capitals"
                 cash_transactions:
                   "$ref": "#/components/schemas/CashTransactions"
                 dependants:
-                  "$ref": "#/components/schemas/v6/Dependants"
+                  "$ref": "#/components/schemas/v7/Dependants"
                 employment_income:
-                  "$ref": "#/components/schemas/v6/Employments"
+                  "$ref": "#/components/schemas/v7/Employments"
                 irregular_incomes:
                   type: object
                   description: A set of irregular income payments
@@ -2385,8 +2387,8 @@ paths:
                     "$ref": "#/components/schemas/RegularTransaction"
                 state_benefits:
                   type: array
-                  description: Benefits paid by the state to the applicant. One item
-                    per type of benefit
+                  description: One or more state benefits received by the applicant
+                    and categorized by name
                   items:
                     "$ref": "#/components/schemas/StateBenefit"
                 vehicles:
@@ -2396,21 +2398,19 @@ paths:
                     "$ref": "#/components/schemas/Vehicle"
                 employment_details:
                   type: array
-                  description: 'Employments, with pay info supplied in the ''how much,
-                    how often'' pattern. (Compare with: ''employment_income'')'
+                  description: Employments, with pay info supplied in the 'how much,
+                    how often' pattern
                   items:
                     "$ref": "#/components/schemas/EmploymentDetails"
                 self_employment_details:
                   type: array
-                  description: Self employments, with pay info supplied in the 'how
-                    much, how often' pattern
+                  description: One or more self employment details
                   items:
                     "$ref": "#/components/schemas/SelfEmployment"
                 partner:
                   type: object
                   required:
                   - partner
-                  additionalProperties: false
                   description: 'Partner of the applicant''s financial and personal
                     info. Definition of ''partner'' that should included in the means
                     test is described in the Lord Chancellor''s guidance - certificated:
@@ -2530,6 +2530,7 @@ paths:
                       relationship: adult_relative
                       monthly_income: 800
                       assets_value: 0
+                  additionalProperties: false
                   properties:
                     partner:
                       type: object
@@ -2543,23 +2544,18 @@ paths:
                           format: date
                           example: '1992-07-22'
                           description: Partner's date of birth
-                        employed:
-                          type: boolean
-                          description: Deprecated - employment is now determined by
-                            presence of gross employment income
-                          deprecated: true
                     cash_transactions:
                       "$ref": "#/components/schemas/CashTransactions"
                     outgoings:
-                      "$ref": "#/components/schemas/OutgoingsList"
+                      type: array
                     irregular_incomes:
                       "$ref": "#/components/schemas/IrregularIncomePayments"
                     employments:
-                      "$ref": "#/components/schemas/v6/Employments"
+                      "$ref": "#/components/schemas/v7/Employments"
                     employment_details:
                       type: array
-                      description: 'Employments, with pay info supplied in the ''how
-                        much, how often'' pattern, for partner. (Compare with: ''employments'')'
+                      description: Employments, with pay info supplied in the 'how
+                        much, how often' pattern, for partner
                       items:
                         "$ref": "#/components/schemas/EmploymentDetails"
                     self_employment_details:
@@ -2593,9 +2589,7 @@ paths:
                       items:
                         "$ref": "#/components/schemas/Vehicle"
                     dependants:
-                      "$ref": "#/components/schemas/v6/Dependants"
-                    other_incomes:
-                      "$ref": "#/components/schemas/OtherIncomes"
+                      "$ref": "#/components/schemas/v7/Dependants"
                 explicit_remarks:
                   "$ref": "#/components/schemas/ExplicitRemarks"
         required: true

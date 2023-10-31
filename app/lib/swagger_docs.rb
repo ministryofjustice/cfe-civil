@@ -292,7 +292,7 @@ class SwaggerDocs
                   type: :object,
                   required: %i[name payments],
                   additionalProperties: false,
-                  description: "Outgoing payments detail. Name [priority_debt_repayment, council_tax] is not calculated before MTR",
+                  description: "Outgoing payments detail. 'priority_debt_repayment' and 'council_tax' are not calculated before MTR",
                   properties: {
                     name: {
                       type: :string,
@@ -459,7 +459,7 @@ class SwaggerDocs
                   required: %i[category payments],
                   properties: {
                     category: {
-                      description: "The category of the outgoing transaction. Category [priority_debt_repayment, council_tax] is not calculated before MTR",
+                      description: "The category of the outgoing transaction. 'priority_debt_repayment' and 'council_tax' are not calculated before MTR",
                       type: :string,
                       enum: CFEConstants::VALID_OUTGOING_CATEGORIES,
                     },
@@ -621,7 +621,7 @@ class SwaggerDocs
           },
           RegularTransaction: {
             type: :object,
-            description: "Regular transaction detail. Category [council_tax, priority_debt_repayment] is not calculated before MTR",
+            description: "Regular transaction detail. 'priority_debt_repayment' and 'council_tax' are not calculated before MTR",
             required: %i[category operation frequency amount],
             additionalProperties: false,
             properties: {

@@ -179,8 +179,8 @@ components:
           - name
           - payments
           additionalProperties: false
-          description: Outgoing payments detail. Name [council_tax, priority_debt_repayment] is not calculated
-            before MTR
+          description: Outgoing payments detail. 'priority_debt_repayment' and 'council_tax'
+            are not calculated before MTR
           properties:
             name:
               type: string
@@ -396,7 +396,8 @@ components:
             - payments
             properties:
               category:
-                description: The category of the outgoing transaction. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
+                description: The category of the outgoing transaction. 'priority_debt_repayment'
+                  and 'council_tax' are not calculated before MTR
                 type: string
                 enum:
                 - child_care
@@ -582,7 +583,8 @@ components:
         costs, should be excluded.</p><p>Detailed guidance TBD</p>
     RegularTransaction:
       type: object
-      description: Regular transaction detail. Categories [council_tax, priority_debt_repayment] are not calculated before MTR
+      description: Regular transaction detail. 'priority_debt_repayment' and 'council_tax'
+        are not calculated before MTR
       required:
       - category
       - operation

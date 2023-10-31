@@ -63,8 +63,9 @@ module Collators
 
         council_tax = Calculators::CouncilTaxCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
-          cash_transactions: gross_income_summary.cash_transactions(:debit, :council_tax),
+          cash_transactions: gross_income_summary.cash_transactions_by_operation_and_name(:debit, :council_tax),
           regular_transactions: gross_income_summary.regular_transactions.council_tax_payments,
+          submission_date:,
         )
 
         priority_debt_repayment = Calculators::PriorityDebtRepaymentCalculator.call(
