@@ -3,24 +3,33 @@ module RemarkGenerators
     class << self
       def call(employments:, outgoings:, child_care_bank:, gross_income_summary:,
                assessed_capital:, lower_capital_threshold:, liquid_capital_items:, state_benefits:)
-        check_amount_variations(state_benefits:,
-                                other_income_sources: gross_income_summary.other_income_sources,
-                                outgoings:,
-                                child_care_bank:) +
-          check_frequencies(employments:,
-                            other_income_sources: gross_income_summary.other_income_sources,
-                            state_benefits:,
-                            child_care_bank:,
-                            outgoings:) +
-          check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold) +
-          check_flags(state_benefits) +
-          check_payments(cash_transactions: gross_income_summary.cash_transactions, regular_transactions: gross_income_summary.regular_transactions, outgoings:)
+
+        remarks_data = []
+        remarks_data << check_amount_variations(state_benefits:,
+                                                other_income_sources: gross_income_summary.other_income_sources,
+                                                outgoings:,
+                                                child_care_bank:)
+        remarks_data << check_frequencies(employments:,
+                                          other_income_sources: gross_income_summary.other_income_sources,
+                                          state_benefits:,
+                                          child_care_bank:,
+                                          outgoings:)
+        remarks_data << check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold)
+        remarks_data << check_flags(state_benefits)
+        if priority_debt_repayment_enabled?(gross_income_summary.assessment.submission_date)
+          remarks_data << check_payments(cash_transactions: gross_income_summary.cash_transactions, regular_transactions: gross_income_summary.regular_transactions, outgoings:)
+        end
+        remarks_data.flatten
       end
 
     private
 
       def check_payments(cash_transactions:, regular_transactions:, outgoings:)
         PaymentChecker.call(cash_transactions:, regular_transactions:, outgoings:)
+      end
+
+      def priority_debt_repayment_enabled?(submission_date)
+        !!Threshold.value_for(:priority_debt_repayment_enabled, at: submission_date)
       end
 
       def check_amount_variations(state_benefits:, other_income_sources:, outgoings:, child_care_bank:)
