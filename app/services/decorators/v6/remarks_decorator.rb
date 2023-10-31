@@ -13,7 +13,7 @@ module Decorators
     private
 
       def contribution_required?
-        @assessment_result == "contribution_required"
+        @assessment_result.to_s == "contribution_required"
       end
     end
   end

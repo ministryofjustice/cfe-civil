@@ -49,13 +49,16 @@ module Workflows
       let(:additional_properties) { [] }
       let(:person_applicant) do
         build(:person_data, details: applicant,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
                             capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
       end
       let(:partner_applicant) { person_applicant }
 
       subject(:calculation_output) do
         assessment.reload
-        described_class.call(assessment:, applicant: person_applicant, partner: partner_applicant).calculation_output
+        described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                     proceeding_types: assessment.proceeding_types,
+                                     applicant: person_applicant, partner: partner_applicant).calculation_output
       end
 
       before do
@@ -92,24 +95,40 @@ module Workflows
       let(:gross_income_upper_threshold) { 9_999_999_999 }
       let(:disposable_income_upper_threshold) { 9_999_999_999 }
       let(:proceeding_type_codes) { %w[SE003] }
+      let(:applicant_data) do
+        build(:person_data, details: applicant,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
+                            dependants:, employments:,
+                            capitals_data: build(:capitals_data, main_home:, additional_properties:))
+      end
 
       subject(:assessment_result) do
         assessment.reload
-        co = described_class.call(assessment:,
-                                  applicant: build(:person_data, details: applicant, dependants:, employments:,
-                                                                 capitals_data: build(:capitals_data, main_home:, additional_properties:)),
-                                  partner: if partner.present?
-                                             build(:person_data, details: partner, employments: partner_employments,
-                                                                 capitals_data: build(:capitals_data, main_home: partner_main_home,
-                                                                                                      additional_properties: partner_additional_properties))
-                                           end).calculation_output
-        EligibilityResults.new(proceeding_types: assessment.proceeding_types,
-                               submission_date: assessment.submission_date,
-                               receives_qualifying_benefit: applicant.receives_qualifying_benefit,
-                               receives_asylum_support: applicant.receives_asylum_support,
-                               gross_income_assessment_results: co.gross_income_subtotals.assessment_results(assessment.proceeding_types),
-                               disposable_income_assessment_results: co.disposable_income_assessment_results(assessment.proceeding_types),
-                               capital_assessment_results: co.capital_subtotals.assessment_results(assessment.proceeding_types)).summarized_assessment_result
+        co = if partner.present?
+               partner_data = build(:person_data, details: partner, employments: partner_employments,
+                                                  gross_income_summary: assessment.partner_gross_income_summary,
+                                                  capitals_data: build(:capitals_data, main_home: partner_main_home,
+                                                                                       additional_properties: partner_additional_properties))
+
+               described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                            proceeding_types: assessment.proceeding_types,
+                                            applicant: applicant_data,
+                                            partner: partner_data).calculation_output
+               EligibilityResults.with_partner(proceeding_types: assessment.proceeding_types,
+                                               submission_date: assessment.submission_date,
+                                               applicant: applicant_data,
+                                               partner: partner_data,
+                                               level_of_help: assessment.level_of_help)
+             else
+               described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                               proceeding_types: assessment.proceeding_types,
+                                               applicant: applicant_data).calculation_output
+               EligibilityResults.without_partner(proceeding_types: assessment.proceeding_types,
+                                                  submission_date: assessment.submission_date,
+                                                  applicant: applicant_data,
+                                                  level_of_help: assessment.level_of_help)
+             end
+        co.summarized_assessment_result
       end
 
       context "with controlled work" do
@@ -120,9 +139,12 @@ module Workflows
           let(:applicant) { build :applicant }
           let(:calculation_output) do
             assessment.reload
-            described_class.call(assessment:,
-                                 applicant: build(:person_data, details: build(:applicant), self_employments:, capitals_data: build(:capitals_data, main_home:, additional_properties:)),
-                                 partner:).calculation_output
+            described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                            proceeding_types: assessment.proceeding_types,
+                                            applicant: build(:person_data, details: build(:applicant),
+                                                                           gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                           self_employments:,
+                                                                           capitals_data: build(:capitals_data, main_home:, additional_properties:))).calculation_output
           end
           let(:employment_income_subtotals) { calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals }
 

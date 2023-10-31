@@ -1,14 +1,16 @@
 module Capital
   class Unassessed < Base
-    def initialize(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:)
+    def initialize(applicant_capitals:, submission_date:, level_of_help:)
       super(
-        applicant_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant_capitals.vehicles),
-                                                                       properties: unassessed_properties(applicant_capitals.properties)),
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(partner_capitals&.vehicles),
-                                                                     properties: unassessed_properties(partner_capitals&.properties)),
-        submission_date:,
-        level_of_help:
+        PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant_capitals.vehicles),
+                                          properties: unassessed_properties(applicant_capitals.properties)),
       )
+      @level_of_help = level_of_help
+      @submission_date = submission_date
+    end
+
+    def partner_capital_subtotals
+      PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
     end
 
     def eligibilities(proceeding_types)
@@ -23,10 +25,6 @@ module Capital
 
     def capital_contribution(_proceeding_types)
       0
-    end
-
-    def assessment_results(proceeding_types)
-      proceeding_types.index_with { "pending" }
     end
 
   private

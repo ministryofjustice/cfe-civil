@@ -59,7 +59,8 @@ module Decorators
                             gross_income_subtotals: instance_double(
                               GrossIncome::Subtotals,
                               eligibilities: eligibility_records,
-                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(gross_income_summary: summary,
+                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(student_loan_payments: summary.student_loan_payments,
+                                                                                               unspecified_source_payments: summary.unspecified_source_payments,
                                                                                                employment_income_subtotals: EmploymentIncomeSubtotals.blank,
                                                                                                regular_income_categories: [],
                                                                                                state_benefits: []),

@@ -20,6 +20,7 @@ module Workflows
                       gross_income_subtotals: GrossIncome::Unassessed.new,
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
                       capital_subtotals: instance_double(Capital::Subtotals,
+                                                         summarized_assessment_result: :eligible,
                                                          combined_assessed_capital: 0,
                                                          eligibilities: [
                                                            Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.first,
@@ -39,9 +40,9 @@ module Workflows
 
       it "calls normal workflows by default" do
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
-        described_class.call(assessment:,
-                             applicant: build(:person_data, details: applicant),
-                             partner: nil)
+        described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                        proceeding_types: assessment.proceeding_types,
+                                        applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
       end
 
       context "for immigration/asylum proceeding types" do
@@ -50,10 +51,13 @@ module Workflows
 
           it "does not call a workflow" do
             expect(PassportedWorkflow).not_to receive(:call)
-            expect(NonPassportedWorkflow).not_to receive(:call)
-            described_class.call(assessment:,
-                                 applicant: build(:person_data, details: applicant),
-                                 partner: nil)
+            expect(NonPassportedWorkflow).not_to receive(:with_partner)
+            expect(NonPassportedWorkflow).not_to receive(:without_partner)
+            described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                            proceeding_types: assessment.proceeding_types,
+                                            applicant: build(:person_data,
+                                                             gross_income_summary: assessment.applicant_gross_income_summary,
+                                                             details: applicant))
           end
         end
 
@@ -66,10 +70,11 @@ module Workflows
 
           it "does not call a workflow" do
             expect(PassportedWorkflow).not_to receive(:call)
-            expect(NonPassportedWorkflow).not_to receive(:call)
-            described_class.call(assessment:,
-                                 applicant: build(:person_data, details: applicant),
-                                 partner: nil)
+            expect(NonPassportedWorkflow).not_to receive(:without_partner)
+            described_class.without_partner(proceeding_types: assessment.proceeding_types, level_of_help: assessment.level_of_help,
+                                            submission_date: assessment.submission_date,
+                                            applicant: build(:person_data, details: applicant,
+                                                                           gross_income_summary: assessment.applicant_gross_income_summary))
           end
         end
       end
@@ -80,9 +85,10 @@ module Workflows
 
       context "without partner" do
         subject(:workflow_call) do
-          described_class.call(assessment:,
-                               applicant: build(:person_data, details: applicant),
-                               partner: nil)
+          described_class.without_partner(submission_date: assessment.submission_date,
+                                          level_of_help: assessment.level_of_help,
+                                          proceeding_types: assessment.proceeding_types,
+                                          applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
         end
 
         it "calls PassportedWorkflow" do
@@ -104,9 +110,10 @@ module Workflows
         let(:partner) { build(:applicant) }
 
         subject(:workflow_call) do
-          described_class.call(assessment:,
-                               applicant: build(:person_data, details: applicant),
-                               partner: build(:person_data, details: partner))
+          described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                       proceeding_types: assessment.proceeding_types,
+                                       applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary),
+                                       partner: build(:person_data, details: partner, gross_income_summary: assessment.partner_gross_income_summary))
         end
 
         before do
@@ -133,13 +140,13 @@ module Workflows
       let(:applicant) { build(:applicant, :without_qualifying_benefits) }
 
       subject(:workflow_call) do
-        described_class.call(assessment:,
-                             applicant: build(:person_data, details: applicant),
-                             partner: nil)
+        described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                        proceeding_types: assessment.proceeding_types,
+                                        applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
       end
 
       it "calls NonPassportedWorkflow" do
-        allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
+        allow(NonPassportedWorkflow).to receive(:without_partner).and_return(non_passported_result)
         workflow_call
       end
     end
@@ -156,14 +163,15 @@ module Workflows
       let(:applicant) { build :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
-        described_class.call(assessment:,
-                             applicant: build(:person_data, details: applicant),
-                             partner: nil)
+        described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                        proceeding_types: assessment.proceeding_types,
+                                        applicant: build(:person_data, details: applicant,
+                                                                       gross_income_summary: assessment.applicant_gross_income_summary))
       end
 
       context "with proceeding types" do
         it "Populates proceeding types with thresholds" do
-          allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
+          allow(NonPassportedWorkflow).to receive(:without_partner).and_return(non_passported_result)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
@@ -181,7 +189,7 @@ module Workflows
 
         it "creates the eligibility records" do
           allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
-          allow(NonPassportedWorkflow).to receive(:call).and_return(non_passported_result)
+          allow(NonPassportedWorkflow).to receive(:without_partner).and_return(non_passported_result)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,
                                                                        child_care_bank: 0,
