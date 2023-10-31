@@ -114,7 +114,7 @@ class PersonDisposableIncomeSubtotals
   def council_tax_regular
     @outgoings.council_tax.regular
   end
-  
+
   def priority_debt_repayment_all_sources
     @outgoings.priority_debt_repayment.all_sources
   end
