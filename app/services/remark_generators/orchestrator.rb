@@ -2,7 +2,7 @@ module RemarkGenerators
   class Orchestrator
     class << self
       def call(employments:, outgoings:, child_care_bank:, gross_income_summary:,
-               assessed_capital:, lower_capital_threshold:, liquid_capital_items:, state_benefits:)
+               assessed_capital:, lower_capital_threshold:, liquid_capital_items:, state_benefits:, submission_date:)
 
         remarks_data = []
         remarks_data << check_amount_variations(state_benefits:,
@@ -16,7 +16,7 @@ module RemarkGenerators
                                           outgoings:)
         remarks_data << check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold)
         remarks_data << check_flags(state_benefits)
-        if priority_debt_repayment_enabled?(gross_income_summary.assessment.submission_date)
+        if priority_debt_repayment_enabled?(submission_date)
           remarks_data << check_payments(cash_transactions: gross_income_summary.cash_transactions, regular_transactions: gross_income_summary.regular_transactions, outgoings:)
         end
         remarks_data.flatten

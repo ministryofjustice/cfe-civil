@@ -171,7 +171,8 @@ module Workflows
                                                                        liquid_capital_items: [],
                                                                        outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       assessed_capital: 0).and_call_original
+                                                                       assessed_capital: 0,
+                                                                       submission_date: assessment.submission_date).and_call_original
 
           workflow_call
         end
@@ -186,7 +187,8 @@ module Workflows
                                                                        state_benefits: [],
                                                                        outgoings: [],
                                                                        gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       assessed_capital: 0).and_call_original
+                                                                       assessed_capital: 0,
+                                                                       submission_date: assessment.submission_date).and_call_original
 
           workflow_call
         end
