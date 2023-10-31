@@ -50,7 +50,11 @@ module RemarkGenerators
                            child_care_bank: 0,
                            outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                            employments:,
-                           gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0, submission_date: )
+                           other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                           cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                           regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                           assessed_capital: 0,
+                           submission_date:)
     end
 
     context "pre MTR" do
@@ -62,7 +66,11 @@ module RemarkGenerators
                              child_care_bank: 0,
                              outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                              employments:,
-                             gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0, submission_date:)
+                             other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                             cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                             regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                             assessed_capital: 0,
+                             submission_date:)
       end
     end
 
@@ -77,7 +85,11 @@ module RemarkGenerators
                              child_care_bank: 0,
                              outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                              employments:,
-                             gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0, submission_date:)
+                             other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                             cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                             regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                             assessed_capital: 0,
+                             submission_date:)
       end
     end
   end
