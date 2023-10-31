@@ -1,6 +1,7 @@
 ---
 # MTR (Means Test Review) config file - start date TBD
 gross_income_upper: 2912.50
+gross_income_lower_controlled: 946
 infinite_gross_income_upper: 999_999_999_999
 gross_income:
   dependant_over_14_increase_percent: 50

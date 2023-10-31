@@ -6,7 +6,7 @@ module Workflows
                                                                   date_of_birth:)
         CalculationOutput.new(capital_subtotals:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(submission_date:, level_of_help:),
-                              gross_income_subtotals: GrossIncome::Unassessed.new)
+                              gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
       end
 
       def partner(capitals_data:, partner_capitals_data:, date_of_birth:,
@@ -16,7 +16,7 @@ module Workflows
                                                                           partner_date_of_birth:, submission_date:, level_of_help:)
         CalculationOutput.new(capital_subtotals:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(submission_date:, level_of_help:),
-                              gross_income_subtotals: GrossIncome::Unassessed.new)
+                              gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
       end
     end
   end

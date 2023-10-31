@@ -14,10 +14,12 @@ module Creators
     subject(:creator) do
       described_class.call(dependants:,
                            proceeding_types:,
-                           submission_date:, total_gross_income: 0).index_by { |h| h.proceeding_type.ccms_code }
+                           submission_date:, total_gross_income: 0, level_of_help:).index_by { |h| h.proceeding_type.ccms_code }
     end
 
     context "without MTR" do
+      let(:level_of_help) { assessment.level_of_help }
+
       around do |example|
         travel_to Date.new(2021, 4, 20)
         example.run
@@ -31,7 +33,7 @@ module Creators
           expect(creator.fetch("DA002"))
             .to have_attributes(
               upper_threshold: 999_999_999_999,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
 
@@ -39,7 +41,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -54,7 +56,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -67,7 +69,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0 + expected_uplift,
-              lower_threshold: nil,
+              lower_threshold: 0.0,
             )
         end
       end
@@ -80,25 +82,42 @@ module Creators
         travel_back
       end
 
-      let(:dependants) do
-        build_list(:dependant, 2, :child_relative, date_of_birth: submission_date - 12.years, submission_date:) +
-          build_list(:dependant, 4, :adult_relative, date_of_birth: submission_date - 15.years, submission_date:)
+      context "with certificated work" do
+        let(:level_of_help) { "certificated" }
+
+        let(:dependants) do
+          build_list(:dependant, 2, :child_relative, date_of_birth: submission_date - 12.years, submission_date:) +
+            build_list(:dependant, 4, :adult_relative, date_of_birth: submission_date - 15.years, submission_date:)
+        end
+
+        it "creates a record with the uplifted threshold" do
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: 2912.50 * 3.6,
+              lower_threshold: 0.0,
+            )
+        end
+
+        it "does not uplift the waived threshold" do
+          expect(creator.fetch("DA002"))
+            .to have_attributes(
+              upper_threshold: 999_999_999_999,
+              lower_threshold: 0.0,
+            )
+        end
       end
 
-      it "creates a record with the uplifted threshold" do
-        expect(creator.fetch("SE013"))
-          .to have_attributes(
-            upper_threshold: 2912.50 * 3.6,
-            lower_threshold: nil,
-          )
-      end
+      context "with controlled work" do
+        let(:level_of_help) { "controlled" }
+        let(:dependants) { [] }
 
-      it "does not uplift the waived threshold" do
-        expect(creator.fetch("DA002"))
-          .to have_attributes(
-            upper_threshold: 999_999_999_999,
-            lower_threshold: nil,
-          )
+        it "has the correct lower threshold" do
+          expect(creator.fetch("SE013"))
+            .to have_attributes(
+              upper_threshold: 2912.50,
+              lower_threshold: 946.0,
+            )
+        end
       end
     end
   end

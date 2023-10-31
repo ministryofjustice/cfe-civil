@@ -1,11 +1,14 @@
 module Creators
   class GrossIncomeEligibilityCreator
     class << self
-      def call(dependants:, proceeding_types:, submission_date:, total_gross_income:)
+      # The 'lower threshold' here has a different meaning from the other 2 (which are contribution thresholds)
+      # This one allows controlled work to skip the capital and disposable tests if the gross is below a specific figure
+      def call(dependants:, proceeding_types:, submission_date:, total_gross_income:, level_of_help:)
         upper_thresholds(dependants:, proceeding_types:, submission_date:).map do |proceeding_type, upper_threshold|
           Eligibility::GrossIncome.new(
             proceeding_type:,
             upper_threshold:,
+            lower_threshold: lower_threshold(submission_date:, level_of_help:),
             assessment_result: result_from_threshold(total_gross_income:, upper_threshold:),
           ).freeze
         end
@@ -14,6 +17,14 @@ module Creators
       def assessment_results(dependants:, proceeding_types:, submission_date:, total_gross_income:)
         upper_thresholds(dependants:, proceeding_types:, submission_date:).transform_values do |upper_threshold|
           result_from_threshold(total_gross_income:, upper_threshold:)
+        end
+      end
+
+      def lower_threshold(level_of_help:, submission_date:)
+        if level_of_help == "controlled"
+          Threshold.value_for(:gross_income_lower_controlled, at: submission_date) || 0.0
+        else
+          0.0
         end
       end
 
