@@ -10,40 +10,19 @@ module V6
       if create.success?
         Utilities::ProceedingTypeThresholdPopulator.call(create.assessment)
 
-        applicant_dependants = dependants full_assessment_params, create.assessment.submission_date
-        render_unprocessable(dependant_errors(applicant_dependants)) && return if applicant_dependants.reject(&:valid?).any?
-
-        applicant_model = Applicant.new(full_assessment_params.fetch(:applicant, {}))
-        render_unprocessable(applicant_model.errors.full_messages) && return unless applicant_model.valid?
-
-        applicant_outgoings = parse_outgoings(full_assessment_params.fetch(:outgoings, []))
-        render_unprocessable(dependant_errors(applicant_outgoings)) && return if applicant_outgoings.reject(&:valid?).any?
-
-        applicant = person_data(full_assessment_params,
-                                applicant_dependants,
-                                applicant_model,
-                                full_assessment_params.fetch(:properties, {})[:main_home],
-                                full_assessment_params.fetch(:properties, {}).fetch(:additional_properties, []),
-                                applicant_outgoings)
+        applicant = person_data(input_params: full_assessment_params,
+                                model_params: full_assessment_params.fetch(:applicant, {}),
+                                additional_properties_params: full_assessment_params.fetch(:properties, {}),
+                                main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
+                                submission_date: create.assessment.submission_date) || return
 
         partner_params = full_assessment_params[:partner]
         calculation_output = if partner_params.present?
-                               partner_dependants = dependants partner_params, create.assessment.submission_date
-                               render_unprocessable(dependant_errors(partner_dependants)) && return if partner_dependants.reject(&:valid?).any?
-
-                               partner_model = Applicant.new(partner_params.fetch(:partner, {}))
-                               render_unprocessable(partner_model.errors.full_messages) && return unless partner_model.valid?
-
-                               partner_outgoings = parse_outgoings(partner_params.fetch(:outgoings, []))
-                               render_unprocessable(dependant_errors(partner_outgoings)) && return if partner_outgoings.reject(&:valid?).any?
-
-                               partner = person_data(partner_params,
-                                                     partner_dependants,
-                                                     partner_model,
-                                                     nil,
-                                                     partner_params.fetch(:additional_properties, []),
-                                                     partner_outgoings)
-
+                               partner = person_data(input_params: partner_params,
+                                                     model_params: partner_params.fetch(:partner, {}),
+                                                     main_home_params: nil,
+                                                     additional_properties_params: partner_params,
+                                                     submission_date: create.assessment.submission_date) || return
                                Workflows::MainWorkflow.call(assessment: create.assessment,
                                                             applicant:,
                                                             partner:)
@@ -64,7 +43,7 @@ module V6
       Decorators::V6::AssessmentDecorator
     end
 
-    def dependants(input_params, submission_date)
+    def parse_dependants(input_params, submission_date)
       dependant_params = input_params.fetch(:dependants, [])
       dependant_params.map do |params|
         updated_params = convert_monthly_income_params(params)
@@ -92,22 +71,33 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params, dependants, applicant, main_home, additional_properties, outgoings)
+    def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:)
+      dependant_models = parse_dependants input_params, submission_date
+      render_unprocessable(dependant_errors(dependant_models)) && return if dependant_models.reject(&:valid?).any?
+
+      person_model = Applicant.new(model_params)
+      render_unprocessable(person_model.errors.full_messages) && return unless person_model.valid?
+
+      outgoings = parse_outgoings(input_params.fetch(:outgoings, []))
+      render_unprocessable(dependant_errors(outgoings)) && return if outgoings.reject(&:valid?).any?
+
+      additional_properties = additional_properties_params.fetch(:additional_properties, [])
+
       capitals = input_params.fetch(:capitals, {})
       capitals_data = CapitalsData.new(vehicles: parse_vehicles(input_params.fetch(:vehicles, [])),
-                                       main_home: main_home.present? ? parse_main_home(main_home) : nil,
+                                       main_home: main_home_params.present? ? parse_main_home(main_home_params) : nil,
                                        additional_properties: parse_additional_properties(additional_properties),
                                        liquid_capital_items: parse_capitals(capitals.fetch(:bank_accounts, [])),
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
 
       employments = input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])
-      PersonData.new(details: applicant.freeze,
+      PersonData.new(details: person_model.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
                      employments: parse_employment_income(employments),
                      capitals_data:,
                      outgoings:,
-                     dependants: dependants.map(&:freeze),
+                     dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
     end
 
