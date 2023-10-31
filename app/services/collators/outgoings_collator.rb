@@ -23,7 +23,7 @@ module Collators
                total_gross_income:, state_benefits:)
         child_care = if eligible_for_childcare
                        Collators::ChildcareCollator.call(
-                         cash_transactions: gross_income_summary.cash_transactions(:debit, :child_care),
+                         cash_transactions: gross_income_summary.cash_transactions_by_operation_and_name(:debit, :child_care),
                          childcare_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::Childcare) },
                        )
                      else
@@ -54,7 +54,7 @@ module Collators
 
         pension_contribution = Calculators::PensionContributionCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PensionContribution) },
-          cash_transactions: gross_income_summary.cash_transactions(:debit, :pension_contribution),
+          cash_transactions: gross_income_summary.cash_transactions_by_operation_and_name(:debit, :pension_contribution),
           regular_transactions: gross_income_summary.regular_transactions.pension_contributions,
           total_gross_income:,
           submission_date:,
@@ -69,8 +69,8 @@ module Collators
 
         priority_debt_repayment = Calculators::PriorityDebtRepaymentCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PriorityDebtRepayment) },
-          cash_transactions: gross_income_summary.cash_transactions(:debit, :priority_debt_repayment),
-          regular_transactions: gross_income_summary.regular_transactions.priority_debt_repayments,
+          cash_transactions: gross_income_summary.cash_transactions_by_operation_and_name(:debit, :priority_debt_repayment),
+          regular_transactions: gross_income_summary.regular_transactions.with_operation_and_category("debit", "priority_debt_repayment"),
           submission_date:,
         )
 

@@ -13,10 +13,15 @@ module RemarkGenerators
                             child_care_bank:,
                             outgoings:) +
           check_residual_balances(liquid_capital_items, assessed_capital, lower_capital_threshold) +
-          check_flags(state_benefits)
+          check_flags(state_benefits) +
+          check_payments(cash_transactions: gross_income_summary.cash_transactions, regular_transactions: gross_income_summary.regular_transactions, outgoings:)
       end
 
     private
+
+      def check_payments(cash_transactions:, regular_transactions:, outgoings:)
+        PaymentChecker.call(cash_transactions:, regular_transactions:, outgoings:)
+      end
 
       def check_amount_variations(state_benefits:, other_income_sources:, outgoings:, child_care_bank:)
         check_state_benefit_variations(state_benefits:, child_care_bank:) +
