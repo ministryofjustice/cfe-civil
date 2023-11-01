@@ -63,7 +63,7 @@ module RemarkGenerators
     end
 
     context "pre MTR" do
-      it "return RemarksData array without priority_debt remark" do
+      it "does not return priority_debt remark" do
         expect(orchestrator).not_to include(RemarksData.new(type: :priority_debt, issue: :priority_debt, ids: []))
       end
     end
@@ -71,7 +71,7 @@ module RemarkGenerators
     context "post MTR" do
       let(:submission_date) { Date.new(2525, 4, 20) }
 
-      it "return RemarksData array with priority_debt remark" do
+      it "returns priority_debt remark" do
         expect(orchestrator).to include(RemarksData.new(type: :priority_debt, issue: :priority_debt, ids: []))
       end
     end

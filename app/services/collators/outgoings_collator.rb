@@ -54,7 +54,7 @@ module Collators
 
         pension_contribution = Calculators::PensionContributionCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PensionContribution) },
-          cash_transactions: gross_income_summary.cash_transactions.by_operation_and_category(:debit, :pension_contribution),
+          cash_transactions: gross_income_summary.cash_transactions.pension_contributions,
           regular_transactions: gross_income_summary.regular_transactions.pension_contributions,
           total_gross_income:,
           submission_date:,
@@ -62,15 +62,15 @@ module Collators
 
         council_tax = Calculators::CouncilTaxCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
-          cash_transactions: gross_income_summary.cash_transactions.by_operation_and_category(:debit, :council_tax),
+          cash_transactions: gross_income_summary.cash_transactions.council_tax_payments,
           regular_transactions: gross_income_summary.regular_transactions.council_tax_payments,
           submission_date:,
         )
 
         priority_debt_repayment = Calculators::PriorityDebtRepaymentCalculator.call(
           outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PriorityDebtRepayment) },
-          cash_transactions: gross_income_summary.cash_transactions.by_operation_and_category(:debit, :priority_debt_repayment),
-          regular_transactions: gross_income_summary.regular_transactions.with_operation_and_category("debit", "priority_debt_repayment"),
+          cash_transactions: gross_income_summary.cash_transactions.priority_debt_repayments,
+          regular_transactions: gross_income_summary.regular_transactions.priority_debt_repayments,
           submission_date:,
         )
 

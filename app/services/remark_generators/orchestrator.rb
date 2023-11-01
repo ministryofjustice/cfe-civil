@@ -19,7 +19,7 @@ module RemarkGenerators
         if priority_debt_repayment_enabled?(submission_date)
           remarks_data << check_payments(cash_transactions:, regular_transactions:, outgoings:)
         end
-        remarks_data.flatten.compact
+        remarks_data.flatten
       end
 
     private
