@@ -1,7 +1,7 @@
 require "rails_helper"
 
 module V7
-  RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
+  RSpec.describe AssessmentsController, :calls_bank_holiday, :calls_lfa, type: :request do
     describe "POST /create" do
       let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
       let(:date_of_birth) { "1992-07-22" }

@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_doc: "v6/swagger.yaml" do
+RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :request, swagger_doc: "v6/swagger.yaml" do
   path "/v6/assessments" do
     let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
 

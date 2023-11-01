@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank_holiday do
+RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank_holiday, :calls_lfa do
   let(:client_id) { "uuid or any unique string" }
 
   before do

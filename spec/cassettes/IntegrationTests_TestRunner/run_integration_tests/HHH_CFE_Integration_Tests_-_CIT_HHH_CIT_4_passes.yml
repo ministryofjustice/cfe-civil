@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"fb761afc-04c2-463d-9bf6-f7e08ffc21fc","proceedings":[{"ccms_code":"DA001","client_involvement_type":"D"},{"ccms_code":"SE013","client_involvement_type":"D"}]}'
+    headers:
+      User-Agent:
+      - Faraday v1.10.3
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 02 Nov 2023 07:39:23 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '460'
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Accept, Origin
+      Etag:
+      - W/"d4c3c48db661b71c68d9e3d0e348e150"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - 5a31a1f91af3b1c66aa130dec04658d6
+      X-Runtime:
+      - '0.014704'
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"fb761afc-04c2-463d-9bf6-f7e08ffc21fc","success":true,"proceedings":[{"ccms_code":"DA001","full_s8_only":false,"matter_type":"Domestic
+        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"D"},{"ccms_code":"SE013","full_s8_only":false,"matter_type":"Children
+        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"D"}]}'
+  recorded_at: Thu, 02 Nov 2023 07:39:23 GMT
+recorded_with: VCR 6.2.0

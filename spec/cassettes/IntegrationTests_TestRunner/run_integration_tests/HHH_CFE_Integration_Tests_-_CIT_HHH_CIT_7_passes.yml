@@ -1,0 +1,59 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"e494e66e-07a1-4d84-9c46-648c3d9b6d77","proceedings":[{"ccms_code":"SE013","client_involvement_type":"W"},{"ccms_code":"SE014","client_involvement_type":"W"}]}'
+    headers:
+      User-Agent:
+      - Faraday v1.10.3
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Thu, 02 Nov 2023 07:39:47 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '466'
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Accept, Origin
+      Etag:
+      - W/"a01ac904cf630c1240cb5852b08d4fb4"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - bc71509146e33c0d7dda7c771779e04d
+      X-Runtime:
+      - '0.017541'
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"e494e66e-07a1-4d84-9c46-648c3d9b6d77","success":true,"proceedings":[{"ccms_code":"SE013","full_s8_only":false,"matter_type":"Children
+        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"W"},{"ccms_code":"SE014","full_s8_only":false,"matter_type":"Children
+        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"W"}]}'
+  recorded_at: Thu, 02 Nov 2023 07:39:47 GMT
+recorded_with: VCR 6.2.0

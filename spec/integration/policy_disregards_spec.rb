@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Eligible Full Assessment with policy disregard remarks", :calls_bank_holiday do
+RSpec.describe "Eligible Full Assessment with policy disregard remarks", :calls_bank_holiday, :calls_lfa do
   let(:client_id) { "uuid or any unique string" }
 
   before do

@@ -84,6 +84,15 @@ RSpec.configure do |config|
     stub_request(:get, "https://www.gov.uk/bank-holidays.json")
       .to_return(body: file_fixture("bank-holidays.json").read)
   end
+
+  config.before(:each, :calls_lfa) do
+    codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES -
+      [CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE, CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE]
+    proceeding_types = codes.map { build(:proceeding_type, client_involvement_type: "A", ccms_code: _1) }
+
+    allow(LegalFrameworkAPI::ThresholdWaivers)
+      .to receive(:call).and_return(LegalFrameworkAPI::MockThresholdWaivers.call(proceeding_types))
+  end
 end
 
 require "webmock/rspec"
