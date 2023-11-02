@@ -36,6 +36,7 @@ module Decorators
           legal_aid: @disposable_income_subtotals.__send__("legal_aid_#{source}").to_f,
           pension_contribution: @disposable_income_subtotals.__send__("pension_contribution_#{source}").to_f,
           council_tax: @disposable_income_subtotals.__send__("council_tax_#{source}").to_f,
+          priority_debt_repayment: @disposable_income_subtotals.__send__("priority_debt_repayment_#{source}").to_f,
         }
       end
 

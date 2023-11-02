@@ -170,8 +170,11 @@ module Workflows
                                                                        state_benefits: [],
                                                                        liquid_capital_items: [],
                                                                        outgoings: [],
-                                                                       gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       assessed_capital: 0).and_call_original
+                                                                       other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                                       cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                                       regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                                       assessed_capital: 0,
+                                                                       submission_date: assessment.submission_date).and_call_original
 
           workflow_call
         end
@@ -185,8 +188,11 @@ module Workflows
                                                                        liquid_capital_items: [],
                                                                        state_benefits: [],
                                                                        outgoings: [],
-                                                                       gross_income_summary: assessment.applicant_gross_income_summary,
-                                                                       assessed_capital: 0).and_call_original
+                                                                       other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                                       cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                                       regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                                       assessed_capital: 0,
+                                                                       submission_date: assessment.submission_date).and_call_original
 
           workflow_call
         end

@@ -683,9 +683,9 @@ module V6
           expect(assessment.dig(:disposable_income, :monthly_equivalents))
             .to eq(
               {
-                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0 },
-                bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0, pension_contribution: 0.0, council_tax: 0.0 },
-                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0 },
+                all_sources: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 },
+                bank_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 },
+                cash_transactions: { child_care: 257.0, rent_or_mortgage: 87.54, maintenance_out: 256.0, legal_aid: 44.54, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 },
               },
             )
         end
@@ -1804,9 +1804,9 @@ module V6
 
           it "has disposable income" do
             expect(assessment.fetch(:disposable_income)).to eq(
-              { monthly_equivalents: { all_sources: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62, pension_contribution: 0.0, council_tax: 0.0 },
-                                       bank_transactions: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62, pension_contribution: 0.0, council_tax: 0.0 },
-                                       cash_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0, pension_contribution: 0.0, council_tax: 0.0 } },
+              { monthly_equivalents: { all_sources: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 },
+                                       bank_transactions: { child_care: 9.71, rent_or_mortgage: 117.16, maintenance_out: 333.07, legal_aid: 6.62, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 },
+                                       cash_transactions: { child_care: 0.0, rent_or_mortgage: 0.0, maintenance_out: 0.0, legal_aid: 0.0, pension_contribution: 0.0, council_tax: 0.0, priority_debt_repayment: 0.0 } },
                 childcare_allowance: 9.71,
                 deductions: { dependants_allowance: 0.0, disregarded_state_benefits: 1033.44 } },
             )
@@ -1823,6 +1823,7 @@ module V6
                     legal_aid: 51.16,
                     pension_contribution: 0.0,
                     council_tax: 0.0,
+                    priority_debt_repayment: 0.0,
                   },
                   bank_transactions: {
                     child_care: 9.71,
@@ -1831,6 +1832,7 @@ module V6
                     legal_aid: 6.62,
                     pension_contribution: 0.0,
                     council_tax: 0.0,
+                    priority_debt_repayment: 0.0,
                   },
                   cash_transactions: {
                     child_care: 257.0,
@@ -1839,6 +1841,7 @@ module V6
                     legal_aid: 44.54,
                     pension_contribution: 0.0,
                     council_tax: 0.0,
+                    priority_debt_repayment: 0.0,
                   },
                 },
                 childcare_allowance: 339.98,

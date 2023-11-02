@@ -2,7 +2,8 @@ require "rails_helper"
 
 module RemarkGenerators
   RSpec.describe Orchestrator, :calls_bank_holiday do
-    let(:assessment) { create :assessment }
+    let(:submission_date) { Date.new(2023, 4, 20) }
+    let(:assessment) { create :assessment, submission_date: }
     let(:state_benefits) do
       [StateBenefit.new(state_benefit_payments: build_list(:state_benefit_payment, 1),
                         state_benefit_name: "anything",
@@ -18,11 +19,26 @@ module RemarkGenerators
     let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date) }
     let(:employment_payments) { employments.first.employment_payments }
     let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
+    let(:gross_income_summary) { create(:gross_income_summary, :with_everything, assessment:) }
 
     before do
       create(:disposable_income_summary, assessment:)
-      create(:gross_income_summary, :with_everything, assessment:)
       create(:capital_summary, assessment:)
+      create_list(:regular_transaction, 1, :priority_debt_repayment, amount: 300, frequency: "monthly", gross_income_summary:)
+    end
+
+    subject(:orchestrator) do
+      described_class.call(liquid_capital_items:,
+                           state_benefits:,
+                           lower_capital_threshold: 100,
+                           child_care_bank: 0,
+                           outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
+                           employments:,
+                           other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                           cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                           regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                           assessed_capital: 0,
+                           submission_date:)
     end
 
     it "calls the checkers with each collection" do
@@ -43,13 +59,21 @@ module RemarkGenerators
 
       expect(ResidualBalanceChecker).to receive(:call).with(liquid_capital_items, 0, 100).and_call_original
 
-      described_class.call(liquid_capital_items:,
-                           state_benefits:,
-                           lower_capital_threshold: 100,
-                           child_care_bank: 0,
-                           outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
-                           employments:,
-                           gross_income_summary: assessment.applicant_gross_income_summary, assessed_capital: 0)
+      orchestrator
+    end
+
+    context "pre MTR" do
+      it "does not return priority_debt remark" do
+        expect(orchestrator).not_to include(RemarksData.new(type: :priority_debt, issue: :priority_debt, ids: []))
+      end
+    end
+
+    context "post MTR" do
+      let(:submission_date) { Date.new(2525, 4, 20) }
+
+      it "returns priority_debt remark" do
+        expect(orchestrator).to include(RemarksData.new(type: :priority_debt, issue: :priority_debt, ids: []))
+      end
     end
   end
 end

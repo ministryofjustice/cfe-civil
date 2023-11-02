@@ -17,6 +17,7 @@ class Remarks
     employment_tax
     employment_nic
     employment
+    priority_debt
   ].freeze
   VALID_REMARK_ISSUES = %i[
     unknown_frequency
@@ -25,6 +26,7 @@ class Remarks
     multi_benefit
     multiple_employments
     refunds
+    priority_debt
   ].freeze
 
   def initialize(assessment_id)

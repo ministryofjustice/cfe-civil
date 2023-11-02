@@ -8,6 +8,7 @@ class RegularTransaction < ApplicationRecord
 
   scope :pension_contributions, -> { where(category: "pension_contribution", operation: "debit") }
   scope :council_tax_payments, -> { where(category: "council_tax", operation: "debit") }
+  scope :priority_debt_repayments, -> { where(category: "priority_debt_repayment", operation: "debit") }
 
   validates :category, inclusion: {
     in: CFEConstants::VALID_REGULAR_INCOME_CATEGORIES,

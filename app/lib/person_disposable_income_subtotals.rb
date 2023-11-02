@@ -115,6 +115,22 @@ class PersonDisposableIncomeSubtotals
     @outgoings.council_tax.regular
   end
 
+  def priority_debt_repayment_all_sources
+    @outgoings.priority_debt_repayment.all_sources
+  end
+
+  def priority_debt_repayment_bank
+    @outgoings.priority_debt_repayment.bank
+  end
+
+  def priority_debt_repayment_cash
+    @outgoings.priority_debt_repayment.cash
+  end
+
+  def priority_debt_repayment_regular
+    @outgoings.priority_debt_repayment.regular
+  end
+
   def legal_aid_all_sources
     legal_aid_bank + legal_aid_cash + @regular.legal_aid_regular
   end
@@ -146,16 +162,16 @@ class PersonDisposableIncomeSubtotals
 private
 
   def monthly_cash_transactions_total
-    [maintenance_out_cash, child_care_cash, legal_aid_cash, pension_contribution_cash, council_tax_cash].sum
+    [maintenance_out_cash, child_care_cash, legal_aid_cash, pension_contribution_cash, council_tax_cash, priority_debt_repayment_cash].sum
   end
 
   def monthly_bank_transactions_total
-    [@outgoings.child_care.bank, @outgoings.maintenance_out_bank, @outgoings.legal_aid_bank, pension_contribution_bank, council_tax_bank].sum
+    [@outgoings.child_care.bank, @outgoings.maintenance_out_bank, @outgoings.legal_aid_bank, pension_contribution_bank, council_tax_bank, priority_debt_repayment_bank].sum
   end
 
   # ** :rent_or_mortgage has already been added to totals by the
   # HousingCostCollator/HousingCostCalculator and DisposableIncomeCollator :(
   def monthly_regular_outgoings_total
-    [@regular.legal_aid_regular, @regular.child_care_regular, @regular.maintenance_out_regular, pension_contribution_regular, council_tax_regular].sum
+    [@regular.legal_aid_regular, @regular.child_care_regular, @regular.maintenance_out_regular, pension_contribution_regular, council_tax_regular, priority_debt_repayment_regular].sum
   end
 end
