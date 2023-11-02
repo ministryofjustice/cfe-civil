@@ -9,7 +9,7 @@ class ApplicationController < ActionController::API
     end
   end
 
-  handle_api_errors(serializer: ErrorSerializer, error_reporter: :sentry)
+  handle_api_errors(serializer: ErrorSerializer, error_reporter: :sentry) if Rails.configuration.x.error_handling_enabled
 
   ActiveSupport::Notifications.subscribe "process_action.action_controller" do |*args|
     event = ActiveSupport::Notifications::Event.new(*args)

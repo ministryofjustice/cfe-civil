@@ -84,6 +84,12 @@ module V6
         let(:current_date) { "frobulate" }
         let(:params) { {} }
 
+        around do |example|
+          Rails.configuration.x.error_handling_enabled = true
+          example.run
+          Rails.configuration.x.error_handling_enabled = false
+        end
+
         it "returns an error" do
           expect(parsed_response[:errors]).to include(%r{Date::Error: invalid date})
         end

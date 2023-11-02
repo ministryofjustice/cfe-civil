@@ -33,6 +33,12 @@ RSpec.describe ApplicationController, type: :request do
   end
 
   context "raising an error", :errors do
+    around do |example|
+      Rails.configuration.x.error_handling_enabled = true
+      example.run
+      Rails.configuration.x.error_handling_enabled = false
+    end
+
     it "returns standard error response" do
       expected_response = {
         success: false,
