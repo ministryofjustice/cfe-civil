@@ -149,6 +149,18 @@
       "subject_matter_of_dispute": false
     }
   ],
+  "other_incomes": [
+    {
+      "source": "benefits",
+      "payments": [
+        {
+          "date": "2023-05-07",
+          "amount": 16,
+          "client_id": "b3daa93e5711-a620-4743-9f0c-05459c0f"
+        }
+      ]
+    }
+  ],
   "capitals": {
     "bank_accounts": [
       {
