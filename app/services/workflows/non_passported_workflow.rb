@@ -10,7 +10,7 @@ module Workflows
                                                                 partner_capitals: partner.capitals_data,
                                                                 submission_date:,
                                                                 level_of_help:)
-        gross_income_subtotals = get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:)
+        gross_income_subtotals = get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals_with_partner(applicant:, partner:, gross_income_subtotals: gross_income_subtotals.gross,
                                                                                    submission_date:, level_of_help:)
         capital_subtotals = CapitalCollatorAndAssessor.partner submission_date:,
@@ -30,7 +30,7 @@ module Workflows
         unassessed_capital = Capital::Unassessed.new(applicant_capitals: applicant.capitals_data,
                                                      submission_date:,
                                                      level_of_help:)
-        gross_income_subtotals = get_gross_income_subtotals(applicant:, submission_date:)
+        gross_income_subtotals = get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals(applicant:, gross_income_subtotals: gross_income_subtotals.gross, level_of_help:, submission_date:)
         capital_subtotals = CapitalCollatorAndAssessor.call submission_date:,
                                                             level_of_help:,
@@ -53,6 +53,11 @@ module Workflows
                                                                                                                    submission_date:),
                                                      capital_subtotals: unassessed_capital)
           InternalResult.new(calculation_output:, assessment_result: :ineligible)
+        elsif gross_income_subtotals.below_the_lower_controlled_threshold?
+          calculation_output = CalculationOutput.new(gross_income_subtotals:,
+                                                     disposable_income_subtotals:,
+                                                     capital_subtotals: unassessed_capital)
+          InternalResult.new(calculation_output:, assessment_result: :eligible)
         elsif disposable_income_subtotals.ineligible? proceeding_types
           calculation_output = CalculationOutput.new(gross_income_subtotals:,
                                                      disposable_income_subtotals:,
@@ -83,7 +88,7 @@ module Workflows
 
       GrossIncomeSubtotals = Data.define(:gross, :remarks)
 
-      def get_gross_income_subtotals(applicant:, submission_date:)
+      def get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
         applicant_self_employments = convert_employment_details(applicant.self_employments)
         applicant_employment_details = convert_employment_details(applicant.employment_details)
         applicant_gross_income = collate_gross_income(submission_date:,
@@ -96,11 +101,11 @@ module Workflows
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
                                            dependants: applicant.dependants,
-                                           submission_date:)
+                                           submission_date:, level_of_help:)
         GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks
       end
 
-      def get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:)
+      def get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
         applicant_self_employments = convert_employment_details(applicant.self_employments)
         applicant_employment_details = convert_employment_details(applicant.employment_details)
         applicant_gross_income = collate_gross_income(submission_date:,
@@ -122,7 +127,7 @@ module Workflows
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
                                            dependants: applicant.dependants + partner.dependants,
-                                           submission_date:)
+                                           submission_date:, level_of_help:)
         GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks + partner_gross_income.remarks
       end
 

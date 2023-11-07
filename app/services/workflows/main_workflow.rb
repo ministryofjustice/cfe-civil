@@ -61,7 +61,7 @@ module Workflows
 
       def blank_calculation_result(applicant_capitals:, level_of_help:, submission_date:)
         calculation_output = CalculationOutput.new(
-          gross_income_subtotals: GrossIncome::Unassessed.new,
+          gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
           capital_subtotals: Capital::Unassessed.new(applicant_capitals:, submission_date:, level_of_help:),
         )
@@ -70,7 +70,7 @@ module Workflows
 
       def blank_calculation_result_with_partner(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:)
         calculation_output = CalculationOutput.new(
-          gross_income_subtotals: GrossIncome::Unassessed.new,
+          gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
           capital_subtotals: Capital::UnassessedWithPartner.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:),
         )
