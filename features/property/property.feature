@@ -4,7 +4,6 @@ Feature:
   Scenario: A property where the main home equity is smaller than the capped disregard figure
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
-    And I am using version 6 of the API
     And I add the following main property details for the current assessment:
       | value                      | 150000 |
       | outstanding_mortgage       | 100000 |

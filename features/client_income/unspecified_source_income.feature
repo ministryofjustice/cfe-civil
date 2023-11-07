@@ -2,9 +2,8 @@ Feature:
     "I have income from unspecified sources to declare in my assessment"
 
     Scenario: Test that the correct output is produced for the following set of data.
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | submission_date     | 2022-05-10 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2022-05-10"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |

@@ -2,10 +2,8 @@ Feature:
     "Statutory pay"
 
     Scenario: The client is receiving statutory sick pay only
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-01-10 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2023-01-10"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -25,10 +23,8 @@ Feature:
             | fixed_employment_deduction | 0.0      |
 
     Scenario: The client is receiving statutory sick pay only but has entered childcare costs
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-07-06 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2023-07-26"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -57,10 +53,8 @@ Feature:
             | childcare_allowance            | 0.0        |
 
     Scenario: The client is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-07-06 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2023-07-06"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -87,10 +81,8 @@ Feature:
             | childcare_allowance            | 0.0        |
 
     Scenario: The partner is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-07-06 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2023-07-06"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |

@@ -3,7 +3,6 @@ Feature:
 
   Scenario: The client is employed, child care submitted as outgoings, gross income > 0
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 500.00   |   0  |  0                  |
@@ -22,7 +21,6 @@ Feature:
 
   Scenario: The client is employed, child care submitted as outgoings, gross income = 0
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 0        |   0  |  0                  |
