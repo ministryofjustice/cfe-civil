@@ -2,29 +2,28 @@ module Creators
   class CapitalEligibilityCreator
     class << self
       def call(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
-        proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, level_of_help:, submission_date:) }.map do |e|
+        thresholds_for(proceeding_types:, submission_date:, level_of_help:).map do |proceeding_type, threshold|
           Eligibility::Capital.new(
-            proceeding_type: e.proceeding_type,
-            upper_threshold: e.upper_threshold,
-            lower_threshold: e.lower_threshold,
-            assessment_result: assessed_result(assessed_capital:, lower_threshold: e.lower_threshold, upper_threshold: e.upper_threshold),
+            proceeding_type:,
+            upper_threshold: threshold.upper_threshold,
+            lower_threshold: threshold.lower_threshold,
+            assessment_result: assessed_result(assessed_capital:, lower_threshold: threshold.lower_threshold, upper_threshold: threshold.upper_threshold),
           )
         end
       end
 
       def assessment_results(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
-        results = proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, level_of_help:, submission_date:) }.map do |e|
-          [e.proceeding_type, assessed_result(assessed_capital:, lower_threshold: e.lower_threshold, upper_threshold: e.upper_threshold)]
+        thresholds_for(proceeding_types:, submission_date:, level_of_help:).transform_values do |threshold|
+          assessed_result(assessed_capital:, lower_threshold: threshold.lower_threshold, upper_threshold: threshold.upper_threshold)
         end
-        results.to_h
       end
 
       def unassessed(proceeding_types:, level_of_help:, submission_date:)
-        proceeding_types.map { |proceeding_type| create_eligibility(proceeding_type:, level_of_help:, submission_date:) }.map do |e|
+        thresholds_for(proceeding_types:, submission_date:, level_of_help:).map do |proceeding_type, threshold|
           Eligibility::Capital.new(
-            proceeding_type: e.proceeding_type,
-            upper_threshold: e.upper_threshold,
-            lower_threshold: e.lower_threshold,
+            proceeding_type:,
+            upper_threshold: threshold.upper_threshold,
+            lower_threshold: threshold.lower_threshold,
             assessment_result: "pending",
           )
         end
@@ -32,17 +31,19 @@ module Creators
 
     private
 
-      CapitalEligibility = Data.define(:proceeding_type, :lower_threshold, :upper_threshold)
+      UpperLowerThreshold = Data.define :upper_threshold, :lower_threshold
 
-      def create_eligibility(proceeding_type:, level_of_help:, submission_date:)
-        if level_of_help == "controlled"
-          controlled_eligibility(proceeding_type:, submission_date:)
-        else
-          certificated_eligibility(proceeding_type:, submission_date:)
+      def thresholds_for(proceeding_types:, submission_date:, level_of_help:)
+        proceeding_types.index_with do |proceeding_type|
+          if level_of_help == "controlled"
+            controlled_thresholds(proceeding_type:, submission_date:)
+          else
+            certificated_thresholds(proceeding_type:, submission_date:)
+          end
         end
       end
 
-      def controlled_eligibility(proceeding_type:, submission_date:)
+      def controlled_thresholds(proceeding_type:, submission_date:)
         controlled_immigration_threshold = Threshold.value_for(:capital_immigration_first_tier_tribunal_controlled, at: submission_date)
 
         threshold = if controlled_immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
@@ -50,36 +51,22 @@ module Creators
                     else
                       proceeding_type.capital_upper_threshold
                     end
-        CapitalEligibility.new(
-          proceeding_type:,
-          upper_threshold: threshold,
-          lower_threshold: threshold,
-        )
+        UpperLowerThreshold.new(upper_threshold: threshold, lower_threshold: threshold)
       end
 
-      def certificated_eligibility(proceeding_type:, submission_date:)
+      def certificated_thresholds(proceeding_type:, submission_date:)
         immigration_threshold = Threshold.value_for(:capital_immigration_upper_tribunal_certificated, at: submission_date)
-        asylum_threshold = Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: submission_date)
         if immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
-          CapitalEligibility.new(
-            proceeding_type:,
-            upper_threshold: immigration_threshold,
-            lower_threshold: immigration_threshold,
-          )
-        elsif asylum_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
-          CapitalEligibility.new(
-            proceeding_type:,
-            upper_threshold: asylum_threshold,
-            lower_threshold: asylum_threshold,
-          )
+          UpperLowerThreshold.new(upper_threshold: immigration_threshold, lower_threshold: immigration_threshold)
         else
-          upper_threshold = proceeding_type.capital_upper_threshold
-          lower_threshold = Threshold.value_for(:capital_lower_certificated, at: submission_date)
-          CapitalEligibility.new(
-            proceeding_type:,
-            upper_threshold:,
-            lower_threshold:,
-          )
+          asylum_threshold = Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: submission_date)
+          if asylum_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
+            UpperLowerThreshold.new(upper_threshold: asylum_threshold, lower_threshold: asylum_threshold)
+          else
+            upper_threshold = proceeding_type.capital_upper_threshold
+            lower_threshold = Threshold.value_for(:capital_lower_certificated, at: submission_date)
+            UpperLowerThreshold.new(upper_threshold:, lower_threshold:)
+          end
         end
       end
 

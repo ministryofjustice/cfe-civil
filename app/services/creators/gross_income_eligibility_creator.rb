@@ -20,10 +20,7 @@ module Creators
     private
 
       def upper_thresholds(dependants:, proceeding_types:, submission_date:)
-        pairs = proceeding_types.map do |proceeding_type|
-          [proceeding_type, upper_threshold(submission_date:, dependants:, proceeding_type:)]
-        end
-        pairs.to_h
+        proceeding_types.index_with { upper_threshold(submission_date:, dependants:, proceeding_type: _1) }
       end
 
       # There is no 'lower threshold' for gross income calculations -
