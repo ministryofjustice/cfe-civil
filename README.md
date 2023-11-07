@@ -235,7 +235,7 @@ For the purpose of each type of test, see: [CFE-Civil Test pyramid](https://docs
 
 ### End to End (E2E) tests
 
-The E2E tests perform user journeys using CCQ's web interface, using both CCQ and CFE-Civil running together. This helps us spot real-world incompitibilities between CCQ's requests and what CFE-Civil accepts.
+The E2E tests perform user journeys using CCQ's web interface, using both CCQ and CFE-Civil running together. This helps us spot real-world incompatibilities between CCQ's requests and what CFE-Civil accepts.
 
 The test cases are defined in the CCQ repo: https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid/tree/main/spec/end_to_end
 
