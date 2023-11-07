@@ -10,7 +10,6 @@ class CapitalCollatorAndAssessor
 
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
         level_of_help:,
         submission_date:,
       )
@@ -26,7 +25,6 @@ class CapitalCollatorAndAssessor
 
       Capital::Subtotals.new(
         applicant_capital_subtotals: applicant_subtotals,
-        partner_capital_subtotals: PersonCapitalSubtotals.unassessed(vehicles: [], properties: []),
         level_of_help:,
         submission_date:,
       )
@@ -45,7 +43,7 @@ class CapitalCollatorAndAssessor
                                                   level_of_help:,
                                                   pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                   capitals_data: partner_capitals_data)
-      Capital::Subtotals.new(
+      Capital::SubtotalsWithPartner.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
         level_of_help:,
@@ -65,7 +63,7 @@ class CapitalCollatorAndAssessor
                                                   level_of_help:,
                                                   pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                   capitals_data: partner_capitals_data)
-      Capital::Subtotals.new(
+      Capital::SubtotalsWithPartner.new(
         applicant_capital_subtotals: applicant_subtotals,
         partner_capital_subtotals: partner_subtotals,
         level_of_help:,

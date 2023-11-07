@@ -1,74 +1,80 @@
 module Workflows
   class MainWorkflow
+    Result = Data.define(:calculation_output, :remarks, :assessment_result)
+
     class << self
-      include AssessmentEligibility
+      def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
+        call(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
+      end
 
-      def call(assessment:, applicant:, partner:)
-        calculation_output = if non_means_tested?(proceeding_type_codes: assessment.proceeding_types.pluck(:ccms_code), receives_asylum_support: applicant.details.receives_asylum_support, submission_date: assessment.submission_date)
-                               blank_calculation_result(submission_date: assessment.submission_date,
-                                                        level_of_help: assessment.level_of_help,
-                                                        applicant_capitals: applicant.capitals_data,
-                                                        partner_capitals: partner&.capitals_data)
-                             elsif applicant.details.receives_qualifying_benefit?
-                               if partner.present?
-                                 PassportedWorkflow.partner(capitals_data: applicant.capitals_data,
-                                                            partner_capitals_data: partner.capitals_data,
-                                                            date_of_birth: applicant.details.date_of_birth,
-                                                            level_of_help: assessment.level_of_help,
-                                                            submission_date: assessment.submission_date,
-                                                            partner_date_of_birth: partner.details.date_of_birth)
-                               else
-                                 PassportedWorkflow.call(capitals_data: applicant.capitals_data,
-                                                         date_of_birth: applicant.details.date_of_birth,
-                                                         submission_date: assessment.submission_date,
-                                                         level_of_help: assessment.level_of_help)
-                               end
-                             else
-                               result = NonPassportedWorkflow.call(assessment:, applicant:, partner:)
-                               assessment.add_remarks! result.remarks
-                               result.calculation_output
-                             end
-        calculation_output.tap do
-          # we can take the lower threshold from the first eligibility records as they are all the same
-          lower_capital_threshold = calculation_output.capital_subtotals.eligibilities(assessment.proceeding_types).first.lower_threshold
-          assessed_capital = calculation_output.capital_subtotals.combined_assessed_capital
-
-          remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
-                                                        other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
-                                                        outgoings: applicant.outgoings,
-                                                        cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                                                        regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
-                                                        liquid_capital_items: applicant.capitals_data.liquid_capital_items,
-                                                        state_benefits: applicant.state_benefits,
-                                                        lower_capital_threshold:,
-                                                        child_care_bank: calculation_output.applicant_disposable_income_subtotals.child_care_bank,
-                                                        assessed_capital:,
-                                                        submission_date: assessment.submission_date)
-          if partner.present?
-            remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
-                                                           other_income_sources: assessment.partner_gross_income_summary.other_income_sources,
-                                                           outgoings: partner.outgoings,
-                                                           cash_transactions: assessment.partner_gross_income_summary.cash_transactions,
-                                                           regular_transactions: assessment.partner_gross_income_summary.regular_transactions,
-                                                           liquid_capital_items: partner.capitals_data.liquid_capital_items,
-                                                           lower_capital_threshold:,
-                                                           state_benefits: partner.state_benefits,
-                                                           child_care_bank: calculation_output.partner_disposable_income_subtotals.child_care_bank,
-                                                           assessed_capital:,
-                                                           submission_date: assessment.submission_date)
-          end
-          assessment.add_remarks!(remarks)
-        end
+      def without_partner(applicant:, proceeding_types:, level_of_help:, submission_date:)
+        call(applicant:, partner: nil, proceeding_types:, level_of_help:, submission_date:)
       end
 
     private
 
-      def blank_calculation_result(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:)
-        CalculationOutput.new(
+      def call(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
+        if non_means_tested?(proceeding_type_codes: proceeding_types.pluck(:ccms_code),
+                             receives_asylum_support: applicant.details.receives_asylum_support, submission_date:)
+          if partner.present?
+            blank_calculation_result_with_partner(submission_date:,
+                                                  level_of_help:,
+                                                  applicant_capitals: applicant.capitals_data,
+                                                  partner_capitals: partner.capitals_data)
+          else
+            blank_calculation_result(submission_date:, level_of_help:, applicant_capitals: applicant.capitals_data)
+          end
+        elsif applicant.details.receives_qualifying_benefit?
+          calculation_output = if partner.present?
+                                 PassportedWorkflow.partner(capitals_data: applicant.capitals_data,
+                                                            partner_capitals_data: partner.capitals_data,
+                                                            submission_date:,
+                                                            level_of_help:,
+                                                            date_of_birth: applicant.details.date_of_birth,
+                                                            partner_date_of_birth: partner.details.date_of_birth)
+                               else
+                                 PassportedWorkflow.call(capitals_data: applicant.capitals_data,
+                                                         submission_date:,
+                                                         level_of_help:,
+                                                         date_of_birth: applicant.details.date_of_birth)
+                               end
+          Result.new calculation_output:, remarks: [], assessment_result: calculation_output.capital_subtotals.summarized_assessment_result(proceeding_types)
+        elsif partner.present?
+          NonPassportedWorkflow.with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
+        else
+          NonPassportedWorkflow.without_partner(applicant:, proceeding_types:, level_of_help:, submission_date:)
+        end
+      end
+
+      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:)
+        # skip proceeding types check if applicant receives asylum support after MTR go-live date
+        if asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
+          receives_asylum_support
+        else
+          proceeding_type_codes.map(&:to_sym).all? { _1.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && receives_asylum_support
+        end
+      end
+
+      def asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
+        !!Threshold.value_for(:asylum_support_is_non_means_tested_for_all_matter_types, at: submission_date)
+      end
+
+      def blank_calculation_result(applicant_capitals:, level_of_help:, submission_date:)
+        calculation_output = CalculationOutput.new(
           gross_income_subtotals: GrossIncome::Unassessed.new,
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:),
+          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, submission_date:, level_of_help:),
         )
+        Result.new calculation_output:, remarks: [], assessment_result: :eligible
+      end
+
+      def blank_calculation_result_with_partner(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:)
+        calculation_output = CalculationOutput.new(
+          gross_income_subtotals: GrossIncome::Unassessed.new,
+          disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
+          capital_subtotals: Capital::UnassessedWithPartner.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:),
+        )
+        Result.new calculation_output:, remarks: [], assessment_result: :eligible
       end
     end
   end

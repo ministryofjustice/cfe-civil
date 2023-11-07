@@ -9,10 +9,6 @@ module GrossIncome
       0
     end
 
-    def assessment_results(proceeding_types)
-      proceeding_types.index_with { "pending" }
-    end
-
     def eligibilities(proceeding_types)
       proceeding_types.map do |proceeding_type|
         Eligibility::GrossIncome.new(

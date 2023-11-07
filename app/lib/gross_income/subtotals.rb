@@ -16,13 +16,6 @@ module GrossIncome
       !eligible? proceeding_types
     end
 
-    def assessment_results(proceeding_types)
-      Creators::GrossIncomeEligibilityCreator.assessment_results dependants: @dependants,
-                                                                 proceeding_types:,
-                                                                 submission_date: @submission_date,
-                                                                 total_gross_income: combined_monthly_gross_income
-    end
-
     def eligibilities(proceeding_types)
       Creators::GrossIncomeEligibilityCreator.call dependants: @dependants,
                                                    proceeding_types:,
@@ -31,6 +24,13 @@ module GrossIncome
     end
 
   private
+
+    def assessment_results(proceeding_types)
+      Creators::GrossIncomeEligibilityCreator.assessment_results dependants: @dependants,
+                                                                 proceeding_types:,
+                                                                 submission_date: @submission_date,
+                                                                 total_gross_income: combined_monthly_gross_income
+    end
 
     def eligible?(proceeding_types)
       Utilities::ResultSummarizer.call(assessment_results(proceeding_types).values).in? %i[eligible partially_eligible]

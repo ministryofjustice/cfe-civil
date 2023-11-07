@@ -6,7 +6,10 @@ module Calculators
     let(:assessment) { create :assessment, :with_gross_income_summary, submission_date: }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
-    subject(:collator) { described_class.benefits(gross_income_summary:, submission_date: assessment.submission_date, state_benefits:) }
+    subject(:collator) do
+      described_class.benefits(regular_transactions: gross_income_summary.regular_transactions,
+                               submission_date: assessment.submission_date, state_benefits:)
+    end
 
     context "no state benefit records" do
       let(:state_benefits) { [] }

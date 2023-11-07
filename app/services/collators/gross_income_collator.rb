@@ -21,7 +21,8 @@ module Collators
         end
 
         person_gross_income_subtotals = PersonGrossIncomeSubtotals.new(
-          gross_income_summary:,
+          student_loan_payments: gross_income_summary.student_loan_payments,
+          unspecified_source_payments: gross_income_summary.unspecified_source_payments,
           regular_income_categories:,
           employment_income_subtotals:,
           state_benefits:,
@@ -54,7 +55,7 @@ module Collators
       end
 
       def benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
-        state_benefits_calculations = Calculators::StateBenefitsCalculator.benefits(gross_income_summary:,
+        state_benefits_calculations = Calculators::StateBenefitsCalculator.benefits(regular_transactions: gross_income_summary.regular_transactions,
                                                                                     submission_date:, state_benefits:)
         GrossIncomeCategorySubtotals.new(
           category: :benefits,

@@ -8,8 +8,8 @@ module Calculators
     Benefits = Data.define(:state_benefits_regular, :state_benefits_bank)
 
     class << self
-      def benefits(gross_income_summary:, submission_date:, state_benefits:)
-        Benefits.new state_benefits_regular: state_benefits_regular(gross_income_summary, submission_date),
+      def benefits(regular_transactions:, submission_date:, state_benefits:)
+        Benefits.new state_benefits_regular: state_benefits_regular(regular_transactions, submission_date),
                      state_benefits_bank: state_benefits_bank(submission_date:, state_benefits:)
       end
 
@@ -20,12 +20,12 @@ module Calculators
 
     private
 
-      def state_benefits_regular(gross_income_summary, submission_date)
+      def state_benefits_regular(regular_transactions, submission_date)
         transactions = if housing_benefit_in_gross_income?(submission_date)
-                         gross_income_summary.regular_transactions.with_operation_and_category(:credit, :benefits) +
-                           gross_income_summary.regular_transactions.with_operation_and_category(:credit, :housing_benefit)
+                         regular_transactions.with_operation_and_category(:credit, :benefits) +
+                           regular_transactions.with_operation_and_category(:credit, :housing_benefit)
                        else
-                         gross_income_summary.regular_transactions.with_operation_and_category(:credit, :benefits)
+                         regular_transactions.with_operation_and_category(:credit, :benefits)
                        end
         MonthlyRegularTransactionAmountCalculator.call(transactions)
       end

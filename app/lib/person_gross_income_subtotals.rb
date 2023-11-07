@@ -1,7 +1,8 @@
 class PersonGrossIncomeSubtotals
   class << self
     def blank
-      new gross_income_summary: GrossIncomeSummary.new,
+      new student_loan_payments: [],
+          unspecified_source_payments: [],
           regular_income_categories: [],
           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
           state_benefits: []
@@ -13,12 +14,14 @@ class PersonGrossIncomeSubtotals
   attr_reader :employment_income_subtotals
 
   def initialize(
-    gross_income_summary:,
+    student_loan_payments:,
+    unspecified_source_payments:,
     regular_income_categories:,
     employment_income_subtotals:,
     state_benefits:
   )
-    @gross_income_summary = gross_income_summary
+    @student_loan_payments = student_loan_payments
+    @unspecified_source_payments = unspecified_source_payments
     @regular_income_categories = regular_income_categories
     @employment_income_subtotals = employment_income_subtotals
     @state_benefits = state_benefits
@@ -47,11 +50,11 @@ class PersonGrossIncomeSubtotals
   end
 
   def monthly_student_loan
-    @gross_income_summary.student_loan_payments.sum { monthly_equivalent_amount(_1) }
+    @student_loan_payments.sum { monthly_equivalent_amount(_1) }
   end
 
   def monthly_unspecified_source
-    @gross_income_summary.unspecified_source_payments.sum { monthly_equivalent_amount(_1) }
+    @unspecified_source_payments.sum { monthly_equivalent_amount(_1) }
   end
 
   def is_student?
@@ -60,7 +63,7 @@ class PersonGrossIncomeSubtotals
     # salary from employment, or an income from self-employment, or studyrelated income (i.e. student loan, student grant or other income received
     # from a person who is not their partner or relative for the purpose of
     # supporting the individual’s course of study)'
-    @gross_income_summary.student_loan_payments.any?
+    @student_loan_payments.any?
   end
 
 private

@@ -2,12 +2,9 @@ module DisposableIncome
   class Base
     attr_reader :partner_disposable_income_subtotals, :applicant_disposable_income_subtotals
 
-    def initialize(partner_disposable_income_subtotals:, applicant_disposable_income_subtotals:,
-                   level_of_help:, submission_date:)
+    def initialize(partner_disposable_income_subtotals:, applicant_disposable_income_subtotals:)
       @partner_disposable_income_subtotals = partner_disposable_income_subtotals
       @applicant_disposable_income_subtotals = applicant_disposable_income_subtotals
-      @level_of_help = level_of_help
-      @submission_date = submission_date
     end
 
     def combined_total_disposable_income

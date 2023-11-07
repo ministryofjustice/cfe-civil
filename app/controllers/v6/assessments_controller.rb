@@ -4,6 +4,8 @@ module V6
 
     EmploymentOrSelfEmploymentDetails = Data.define(:income, :client_reference)
 
+    ResultAndEligibility = Data.define(:workflow_result, :eligibility_result)
+
     def create
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
@@ -14,41 +16,106 @@ module V6
                                 model_params: full_assessment_params.fetch(:applicant, {}),
                                 additional_properties_params: full_assessment_params.fetch(:properties, {}),
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
+                                gross_income_summary: create.assessment.applicant_gross_income_summary,
                                 submission_date: create.assessment.submission_date) || return
 
         partner_params = full_assessment_params[:partner]
-        calculation_output = if partner_params.present?
-                               partner = person_data(input_params: partner_params,
-                                                     model_params: partner_params.fetch(:partner, {}),
-                                                     main_home_params: nil,
-                                                     additional_properties_params: partner_params,
-                                                     submission_date: create.assessment.submission_date) || return
-                               Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                            applicant:,
-                                                            partner:)
-                             else
-                               Workflows::MainWorkflow.call(assessment: create.assessment,
-                                                            applicant:,
-                                                            partner: nil)
-                             end
-        proceeding_types = create.assessment.proceeding_types
-        eligibility_result = EligibilityResults.new(
-          proceeding_types:,
-          receives_qualifying_benefit: applicant.details.receives_qualifying_benefit,
-          receives_asylum_support: applicant.details.receives_asylum_support,
-          submission_date: create.assessment.submission_date,
-          gross_income_assessment_results: calculation_output.gross_income_subtotals.assessment_results(proceeding_types),
-          disposable_income_assessment_results: calculation_output.disposable_income_assessment_results(proceeding_types),
-          capital_assessment_results: calculation_output.capital_subtotals.assessment_results(proceeding_types),
-        )
+        full = if partner_params.present?
+                 partner = person_data(input_params: partner_params,
+                                       model_params: partner_params.fetch(:partner, {}),
+                                       submission_date: create.assessment.submission_date,
+                                       main_home_params: nil,
+                                       additional_properties_params: partner_params,
+                                       gross_income_summary: create.assessment.partner_gross_income_summary) || return
+                 with_partner_workflow(assessment: create.assessment, applicant:, partner:)
+               else
+                 without_partner_workflow(assessment: create.assessment, applicant:)
+               end
+        create.assessment.add_remarks!(full.workflow_result.remarks)
 
-        render json: assessment_decorator_class.new(assessment: create.assessment, calculation_output:, applicant:, partner:, version:, eligibility_result:).as_json
+        render json: assessment_decorator_class.new(assessment: create.assessment,
+                                                    calculation_output: full.workflow_result.calculation_output,
+                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result).as_json
       else
         render_unprocessable(create.errors)
       end
     end
 
   private
+
+    def without_partner_workflow(assessment:, applicant:)
+      result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                                       proceeding_types: assessment.proceeding_types,
+                                                       applicant:)
+      lower_capital_threshold = result.calculation_output.lower_capital_threshold(assessment.proceeding_types)
+      assessed_capital = result.calculation_output.combined_assessed_capital
+
+      new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
+                                                        other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                        cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                        regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                        submission_date: assessment.submission_date,
+                                                        outgoings: applicant.outgoings,
+                                                        liquid_capital_items: applicant.capitals_data.liquid_capital_items,
+                                                        state_benefits: applicant.state_benefits,
+                                                        lower_capital_threshold:,
+                                                        child_care_bank: result.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
+                                                        assessed_capital:)
+      workflow = Workflows::MainWorkflow::Result.new calculation_output: result.calculation_output,
+                                                     remarks: new_remarks + result.remarks,
+                                                     assessment_result: result.assessment_result
+      er = EligibilityResults.without_partner(
+        proceeding_types: assessment.proceeding_types,
+        submission_date: assessment.submission_date,
+        applicant:,
+        level_of_help: assessment.level_of_help,
+      )
+      ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
+    end
+
+    def with_partner_workflow(assessment:, applicant:, partner:)
+      part = Workflows::MainWorkflow.with_partner(submission_date: assessment.submission_date,
+                                                  level_of_help: assessment.level_of_help,
+                                                  proceeding_types: assessment.proceeding_types,
+                                                  applicant:,
+                                                  partner:)
+      lower_capital_threshold = part.calculation_output.lower_capital_threshold(assessment.proceeding_types)
+      assessed_capital = part.calculation_output.combined_assessed_capital
+
+      remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
+                                                    other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                    cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                    regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                    submission_date: assessment.submission_date,
+                                                    outgoings: applicant.outgoings,
+                                                    liquid_capital_items: applicant.capitals_data.liquid_capital_items,
+                                                    state_benefits: applicant.state_benefits,
+                                                    lower_capital_threshold:,
+                                                    child_care_bank: part.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
+                                                    assessed_capital:)
+      remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
+                                                     other_income_sources: assessment.partner_gross_income_summary.other_income_sources,
+                                                     cash_transactions: assessment.partner_gross_income_summary.cash_transactions,
+                                                     regular_transactions: assessment.partner_gross_income_summary.regular_transactions,
+                                                     submission_date: assessment.submission_date,
+                                                     outgoings: partner.outgoings,
+                                                     liquid_capital_items: partner.capitals_data.liquid_capital_items,
+                                                     lower_capital_threshold:,
+                                                     state_benefits: partner.state_benefits,
+                                                     child_care_bank: part.calculation_output.partner_disposable_income_subtotals.child_care_bank,
+                                                     assessed_capital:)
+      workflow_result = Workflows::MainWorkflow::Result.new calculation_output: part.calculation_output,
+                                                            assessment_result: part.assessment_result,
+                                                            remarks: remarks + part.remarks
+      er = EligibilityResults.with_partner(
+        proceeding_types: assessment.proceeding_types,
+        submission_date: assessment.submission_date,
+        applicant:,
+        level_of_help: assessment.level_of_help,
+        partner:,
+      )
+      ResultAndEligibility.new workflow_result:, eligibility_result: er
+    end
 
     def assessment_decorator_class
       Decorators::V6::AssessmentDecorator
@@ -82,7 +149,7 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:)
+    def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:, gross_income_summary:)
       dependant_models = parse_dependants input_params, submission_date
       render_unprocessable(dependant_errors(dependant_models)) && return if dependant_models.reject(&:valid?).any?
 
@@ -108,6 +175,7 @@ module V6
                      employments: parse_employment_income(employments),
                      capitals_data:,
                      outgoings:,
+                     gross_income_summary:,
                      dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
     end

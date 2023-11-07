@@ -3,6 +3,10 @@ require "rails_helper"
 module Decorators
   module V6
     RSpec.describe AssessmentDecorator do
+      before do
+        create(:partner_gross_income_summary, assessment:)
+      end
+
       let(:assessment) do
         create :assessment,
                :with_gross_income_summary,
@@ -18,7 +22,8 @@ module Decorators
                                                                   PersonGrossIncomeSubtotals.new(
                                                                     state_benefits: [],
                                                                     employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                    gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                    unspecified_source_payments: assessment.applicant_gross_income_summary.unspecified_source_payments,
+                                                                    student_loan_payments: assessment.applicant_gross_income_summary.student_loan_payments,
                                                                     regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                                                                       GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
                                                                     end,
@@ -26,7 +31,8 @@ module Decorators
                                                                 partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
                                                                   state_benefits: [],
                                                                   employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                  gross_income_summary: assessment.applicant_gross_income_summary,
+                                                                  unspecified_source_payments: assessment.partner_gross_income_summary.unspecified_source_payments,
+                                                                  student_loan_payments: assessment.partner_gross_income_summary.student_loan_payments,
                                                                   regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                                                                     GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
                                                                   end,
@@ -39,7 +45,6 @@ module Decorators
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
                         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
                         capital_subtotals: Capital::Unassessed.new(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []),
-                                                                   partner_capitals: nil,
                                                                    level_of_help: assessment.level_of_help,
                                                                    submission_date: assessment.submission_date))
       end
@@ -57,7 +62,11 @@ module Decorators
                               eligibility_result:,
                               version:).as_json
         end
-        let(:applicant) { build(:person_data, details: build(:applicant)) }
+        let(:applicant) do
+          build(:person_data,
+                gross_income_summary: assessment.applicant_gross_income_summary,
+                details: build(:applicant))
+        end
         let(:partner) { nil }
 
         it "has the required keys in the returned hash" do
@@ -86,11 +95,14 @@ module Decorators
         end
 
         context "with partner" do
-          let(:partner) { build(:person_data, details: build(:applicant)) }
+          let(:partner) do
+            build(:person_data,
+                  gross_income_summary: assessment.applicant_gross_income_summary,
+                  details: build(:applicant))
+          end
 
           before do
             create(:partner_capital_summary, assessment:)
-            create(:partner_gross_income_summary, assessment:)
             create(:partner_disposable_income_summary, assessment:)
           end
 

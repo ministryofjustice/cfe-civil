@@ -18,7 +18,8 @@ module Decorators
 
       let(:subtotals) do
         PersonGrossIncomeSubtotals.new(
-          gross_income_summary: summary,
+          student_loan_payments: summary.student_loan_payments,
+          unspecified_source_payments: summary.unspecified_source_payments,
           state_benefits:,
           employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
                                                        payment_based_employments: [
