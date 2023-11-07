@@ -18,7 +18,8 @@ module Creators
     let(:proceeding_types) { assessment.proceeding_types }
 
     before do
-      Utilities::ProceedingTypeThresholdPopulator.call assessment
+      Utilities::ProceedingTypeThresholdPopulator.certificated proceeding_types:,
+                                                               submission_date: assessment.submission_date
     end
 
     context "without MTR" do

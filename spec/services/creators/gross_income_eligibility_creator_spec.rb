@@ -8,7 +8,8 @@ module Creators
     let(:submission_date) { assessment.submission_date.to_date }
 
     before do
-      ::Utilities::ProceedingTypeThresholdPopulator.call(assessment)
+      Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
+                                                               submission_date: assessment.submission_date)
     end
 
     subject(:creator) do

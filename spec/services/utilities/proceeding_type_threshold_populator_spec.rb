@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Utilities
   RSpec.describe ProceedingTypeThresholdPopulator do
-    describe ".call" do
+    describe "#call" do
       let(:proceeding_hash) { [%w[DA001 A], %w[DA005 Z], %w[SE014 A]] }
       let(:assessment) { create :assessment, submission_date: Date.new(2022, 7, 12), proceedings: proceeding_hash }
       let(:response) do
@@ -58,13 +58,15 @@ module Utilities
         expect(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).with(expected_payload)
         allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
 
-        described_class.call(assessment)
+        described_class.certificated(proceeding_types: assessment.proceeding_types,
+                                     submission_date: assessment.submission_date)
       end
 
       it "updates the threshold values on the proceeding type records where the threshold is not waived" do
         allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
 
-        described_class.call(assessment)
+        described_class.certificated(proceeding_types: assessment.proceeding_types,
+                                     submission_date: assessment.submission_date)
 
         pt = assessment.reload.proceeding_types.find_by(ccms_code: "DA005")
         expect(pt.gross_income_upper_threshold).to eq 2657.0
@@ -80,7 +82,8 @@ module Utilities
       it "updates threshold values on proceeding type records where the threshold is waived" do
         allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
 
-        described_class.call(assessment)
+        described_class.certificated(proceeding_types: assessment.proceeding_types,
+                                     submission_date: assessment.submission_date)
 
         pt = assessment.reload.proceeding_types.find_by(ccms_code: "DA001")
         expect(pt.gross_income_upper_threshold).to eq 999_999_999_999.0
@@ -89,12 +92,11 @@ module Utilities
       end
 
       context "for controlled work" do
-        before { assessment.update(level_of_help: "controlled") }
-
         it "ignores waivers" do
           expect(LegalFrameworkAPI::MockThresholdWaivers).not_to receive(:call)
 
-          described_class.call(assessment)
+          described_class.controlled(proceeding_types: assessment.proceeding_types,
+                                     submission_date: assessment.submission_date)
 
           pt = assessment.reload.proceeding_types.find_by(ccms_code: "DA001")
           expect(pt.gross_income_upper_threshold).to eq 2657.0
@@ -109,7 +111,8 @@ module Utilities
         it "ignores waivers" do
           expect(LegalFrameworkAPI::MockThresholdWaivers).not_to receive(:call)
 
-          described_class.call(assessment)
+          described_class.certificated(proceeding_types: assessment.proceeding_types,
+                                       submission_date: assessment.submission_date)
 
           pt = assessment.reload.proceeding_types.find_by(ccms_code: "IM030")
           expect(pt.gross_income_upper_threshold).to eq 2657.0
