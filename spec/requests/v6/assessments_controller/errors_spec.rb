@@ -84,8 +84,12 @@ module V6
         let(:current_date) { "frobulate" }
         let(:params) { {} }
 
+        it "has a correct error status" do
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+
         it "returns an error" do
-          expect(parsed_response[:errors]).to include(%r{Date::Error: invalid date})
+          expect(parsed_response[:errors]).to eq(["Submission date can't be blank", "Submission date cannot be in the future"])
         end
       end
 

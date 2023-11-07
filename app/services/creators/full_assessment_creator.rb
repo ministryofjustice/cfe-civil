@@ -8,14 +8,18 @@ module Creators
       end
 
       def call(remote_ip:, params:)
-        create = Creators::AssessmentCreator.call(remote_ip:, assessment_params: params[:assessment])
-        assessment = create.assessment
+        result = Creators::AssessmentCreator.call(remote_ip:, assessment_params: params[:assessment])
+        if result.success?
+          assessment = result.assessment
 
-        errors = CREATE_FUNCTIONS.map { |f|
-          f.call(assessment, params)
-        }.compact.reject(&:success?).map(&:errors).reduce([], :+)
+          errors = CREATE_FUNCTIONS.map { |f|
+            f.call(assessment, params)
+          }.compact.reject(&:success?).map(&:errors).reduce([], :+)
 
-        CreationResult.new(errors:, assessment: create.assessment.reload).freeze
+          CreationResult.new(errors:, assessment: result.assessment.reload).freeze
+        else
+          result
+        end
       end
 
       CREATE_FUNCTIONS = [

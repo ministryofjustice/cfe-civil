@@ -2,6 +2,12 @@ require "rails_helper"
 
 module RemarkGenerators
   RSpec.describe Orchestrator, :calls_bank_holiday do
+    around do |example|
+      travel_to submission_date
+      example.run
+      travel_back
+    end
+
     let(:submission_date) { Date.new(2023, 4, 20) }
     let(:assessment) { create :assessment, submission_date: }
     let(:state_benefits) do

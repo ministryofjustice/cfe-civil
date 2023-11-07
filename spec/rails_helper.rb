@@ -84,6 +84,13 @@ RSpec.configure do |config|
     stub_request(:get, "https://www.gov.uk/bank-holidays.json")
       .to_return(body: file_fixture("bank-holidays.json").read)
   end
+
+  # https://eliotsykes.com/2017/03/08/realistic-error-responses/
+  config.include ErrorResponses
+
+  config.around(errors: true) do |example|
+    respond_without_detailed_exceptions(&example)
+  end
 end
 
 require "webmock/rspec"

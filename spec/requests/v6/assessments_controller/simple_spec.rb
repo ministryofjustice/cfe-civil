@@ -2042,8 +2042,9 @@ module V6
       end
 
       context "redact response timestamp" do
+        # control the run date for timestamps
         around do |example|
-          travel_to Date.new(2022, 4, 20)
+          travel_to Date.new(2022, 7, 20)
           example.run
           travel_back
         end
@@ -2060,11 +2061,11 @@ module V6
           end
 
           it "returns timestamp in response" do
-            expect(parsed_response[:timestamp]).to eq("2022-04-20T00:00:00.000Z")
+            expect(parsed_response[:timestamp]).to eq("2022-07-20T00:00:00.000Z")
           end
 
           it "redacts time in timestamp" do
-            expect(log_record.response["timestamp"]).to eq("2022-04-20")
+            expect(log_record.response["timestamp"]).to eq("2022-07-20")
           end
 
           context "client_reference_id" do
