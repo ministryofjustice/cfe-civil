@@ -20,14 +20,14 @@ class AssessmentStats
   end
 
   class << self
-    def filter_request_log(request_log:, level_of_help:, partner:, passported:)
+    def request_log_matched?(request_log:, level_of_help:, partner:, passported:)
       request = request_log.request.deep_symbolize_keys
       request[:assessment][:level_of_help] == level_of_help && (request[:applicant][:receives_qualifying_benefit] == passported) && (request[:partner].present? == partner)
     end
 
     # filter out the request logs so that they meet the specifiied criteria
     def filter_request_logs(request_logs:, level_of_help:, partner: false, passported: false)
-      request_logs.select { |rl| filter_request_log(request_log: rl, partner:, passported:, level_of_help:) }.map { |rl| rl.response.deep_symbolize_keys }
+      request_logs.select { |rl| request_log_matched?(request_log: rl, partner:, passported:, level_of_help:) }.map { |rl| rl.response.deep_symbolize_keys }
     end
 
     def count_gross_results(responses:, outcome:)
@@ -88,7 +88,7 @@ class AssessmentStats
     end
 
     def all_request_logs(user_agent)
-      RequestLog.where(http_status: 200).where("user_agent LIKE ?", user_agent) # .find_each(batch_size: 5000)
+      RequestLog.where(http_status: 200).where("user_agent LIKE ?", user_agent).find_each(batch_size: 5000)
     end
   end
 end
