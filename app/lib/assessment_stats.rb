@@ -1,5 +1,4 @@
-# frozen_string_literal: true
-
+# RequestLog filtering to generate stats based on https://docs.google.com/spreadsheets/d/1YB_JDQJpq_ZqYRbJ-FH53orLgIcuyBplgrDRl8BgY8M/edit#gid=0
 class AssessmentStats
   def initialize(user_agent:, http_status:)
     @user_agent = user_agent
