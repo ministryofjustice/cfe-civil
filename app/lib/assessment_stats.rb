@@ -2,7 +2,7 @@
 
 class AssessmentStats
   class << self
-    def call(level_of_help: "controlled", partner: false, passported: false, outcome: "ineligible", reason: %w[gross_income], user_agent: "ccq%(production)")
+    def call(level_of_help: "controlled", partner: false, passported: false, outcome: "ineligible", reason: %w[], user_agent: "ccq%(production)")
       eligibility_results(level_of_help:, outcome:, reason:, partner:, passported:, user_agent:)
     end
 
@@ -15,39 +15,43 @@ class AssessmentStats
         response = rl.response.deep_symbolize_keys
         request = rl.request.deep_symbolize_keys
         # filter request
-        if request[:assessment][:level_of_help] == level_of_help && (request[:applicant][:receives_qualifying_benefit] == passported) && (request[:partner].present? == partner) && rl.http_status == 200
-          # filter response
-          if reason.all? "gross_income"
-            if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.all? "disposable_income"
-            if response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.all? "capital"
-            if response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.any?("gross_income") && reason.any?("disposable_income") && reason.any?("capital")
-            if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.any?("gross_income") && reason.any?("disposable_income")
-            if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.any?("disposable_income") && reason.any?("capital")
-            if response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
-          elsif reason.any?("gross_income") && reason.any?("capital")
-            if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
-              rows << rl.id
-            end
+        next unless request[:assessment][:level_of_help] == level_of_help && (request[:applicant][:receives_qualifying_benefit] == passported) && (request[:partner].present? == partner) && rl.http_status == 200
+
+        # filter response
+        case reason.sort
+        when %w[gross_income].sort
+          if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
           end
+        when %w[disposable_income].sort
+          if response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        when %w[capital].sort
+          if response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        when %w[gross_income disposable_income].sort
+          if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        when %w[disposable_income capital].sort
+          if response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        when %w[gross_income capital].sort
+          if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        when %w[gross_income disposable_income capital].sort
+          if response[:result_summary][:gross_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:disposable_income][:proceeding_types].any? { |pt| pt[:result] == outcome } && response[:result_summary][:capital][:proceeding_types].any? { |pt| pt[:result] == outcome }
+            rows << rl.id
+          end
+        else
+          raise "Invalid reason: #{reason} "
         end
       end
+
       {
         count: rows.size,
         total: request_logs.size,
