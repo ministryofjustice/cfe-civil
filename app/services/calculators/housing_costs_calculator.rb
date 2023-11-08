@@ -6,7 +6,10 @@ module Calculators
       def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:)
         # Because this code uses #allowable_amount, tbe 'bank' value has already been halved during the calculation
         # if the outgoing amount is of type 'board_and_lodging'
-        gross_housing_costs_bank = gross_housing_costs_bank(housing_cost_outgoings)
+        gross_housing_costs_bank = Calculators::MonthlyEquivalentCalculator.call(
+          collection: housing_cost_outgoings,
+          amount_method: :allowable_amount,
+        )
 
         # the other amounts have to be halved as well - they don't have a 'housing cost type' associated with them, but we do a 'best effort'
         # and assume that they are all of the same type if the 'outgoings' are all board_and_lodging type
@@ -20,7 +23,8 @@ module Calculators
 
         gross_housing_costs = gross_housing_costs_bank + gross_housing_costs_regular_transactions + gross_housing_costs_cash
 
-        housing_benefit = if StateBenefitsCalculator.housing_benefit_in_gross_income?(submission_date)
+        # we have to subtract housing benefit from net_housing_costs if it is outside the calculation (pre MTR)
+        housing_benefit = if StateBenefitsCalculator.housing_benefit_in_standard_calculation?(submission_date)
                             0
                           else
                             monthly_housing_benefit
@@ -44,13 +48,6 @@ module Calculators
         else
           gross_housing_costs - monthly_housing_benefit
         end
-      end
-
-      def gross_housing_costs_bank(housing_cost_outgoings)
-        Calculators::MonthlyEquivalentCalculator.call(
-          collection: housing_cost_outgoings,
-          amount_method: :allowable_amount,
-        )
       end
 
       def gross_housing_costs_cash(gross_income_summary)
