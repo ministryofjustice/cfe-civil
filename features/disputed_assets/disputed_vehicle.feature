@@ -2,9 +2,8 @@ Feature:
     "I have a vehicle that is disputed"
 
     Scenario: A SMOD vehicle whose assessed value is entirely disregarded
-      Given I am undertaking a certificated assessment
-      And An applicant who receives passporting benefits
-        And I am using version 6 of the API
+        Given I am undertaking a certificated assessment
+        And An applicant who receives passporting benefits
         And I add the following vehicle details for the current assessment:
             | value                     | 18000      |
             | loan_amount_outstanding   | 0          |
@@ -23,9 +22,8 @@ Feature:
             | assessed_capital                    | 0.0     |
 
     Scenario: A SMOD vehicle whose assessed value is over the SMOD limit
-      Given I am undertaking a certificated assessment
-      And An applicant who receives passporting benefits
-        And I am using version 6 of the API
+        Given I am undertaking a certificated assessment
+        And An applicant who receives passporting benefits
         And I add the following vehicle details for the current assessment:
             | value                     | 180000     |
             | loan_amount_outstanding   | 0          |
@@ -44,9 +42,8 @@ Feature:
             | assessed_capital                    | 80000.0  |
 
     Scenario: A SMOD vehicle whose assessed value is partially disregarded due to other SMOD assets reaching SMOD cap
-      Given I am undertaking a certificated assessment
-      And An applicant who receives passporting benefits
-        And I am using version 6 of the API
+        Given I am undertaking a certificated assessment
+        And An applicant who receives passporting benefits
         And I add the following vehicle details for the current assessment:
             | value                     | 18000      |
             | loan_amount_outstanding   | 0          |

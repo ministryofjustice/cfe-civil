@@ -11,6 +11,7 @@ Given("I am undertaking a certificated assessment") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "SE003", client_involvement_type: "A" }] }
   @employments = []
   @api_version = 6
+  @capitals_data = {}
 end
 
 Given("An applicant who receives passporting benefits") do
@@ -51,6 +52,7 @@ Given("I am undertaking a controlled assessment") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: "DA001", client_involvement_type: "A" }] }
   @employments = []
   @api_version = 6
+  @capitals_data = {}
 end
 
 Given("A domestic abuse case") do
@@ -65,12 +67,6 @@ Given("A first tier asylum case") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
-Given("I am using version {int} of the API") do |int|
-  @api_version = int
-  @capitals_data = {}
-  @employments = []
-end
-
 Given("I create an assessment with the following details:") do |table|
   data = table.rows_hash
 
@@ -82,7 +78,7 @@ Given("I create an assessment with the following details:") do |table|
 end
 
 Given("I add the following applicant details for the current assessment:") do |table|
-  @applicant_data = cast_values(table.rows_hash)
+  @applicant_data.merge! cast_values(table.rows_hash)
 end
 
 Given("I add the following dependent details for the current assessment:") do |table|
@@ -315,7 +311,7 @@ When("I retrieve the final assessment") do
 
   single_shot_api_data.merge!(main_home_data) if main_home_data
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
-  single_shot_api_data[:capitals] = @capitals_data if @capitals_data
+  single_shot_api_data[:capitals] = @capitals_data if @capitals_data && @capitals_data.any?
   single_shot_api_data[:regular_transactions] = @regular_transactions if @regular_transactions
 
   partner_data[:self_employment_details] = @self_employment_details[:partner] if self_employed_partner

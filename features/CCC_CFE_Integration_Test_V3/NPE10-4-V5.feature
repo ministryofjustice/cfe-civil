@@ -4,9 +4,8 @@ Feature:
   2) Client has education income and dependnat under 15""
 
   Scenario: Test that the correct output is produced for the following set of data.
-    Given I am using version 6 of the API
-    And I create an assessment with the following details:
-      | submission_date     | 2020-04-27 |
+    Given I am undertaking a certificated assessment
+    And A submission date of "2020-04-27"
     And I add the following applicant details for the current assessment:
       | date_of_birth               | 1972-12-20 |
       | involvement_type            | applicant  |
