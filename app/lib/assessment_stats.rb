@@ -11,7 +11,6 @@ class AssessmentStats
     request_logs.find_each(batch_size: 5000) do |rl|
       response = rl.response.deep_symbolize_keys
       request = rl.request.deep_symbolize_keys
-      # filter request
       next unless request[:assessment][:level_of_help] == level_of_help && (request[:applicant][:receives_qualifying_benefit] == passported) && (request[:partner].present? == partner) && rl.http_status == 200
 
       # filter response
