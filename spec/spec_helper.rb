@@ -27,6 +27,7 @@ unless ENV["NOCOVERAGE"]
     add_filter "app/mailers/exception_alert_mailer.rb"
     add_filter "app/lib/exception_notifier/templated_notifier.rb"
     add_filter "app/services/request_rerunner.rb"
+    add_filter "app/lib/assessment_stats.rb"
 
     enable_coverage :branch
     primary_coverage :branch
