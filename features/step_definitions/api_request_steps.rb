@@ -121,6 +121,14 @@ Given("I add housing benefit of {int} per month") do |monthly_housing_benefit|
   }
 end
 
+Given("I add other income {string} of {int} per month") do |income_type, monthly_amount|
+  dates = %w[2021-05-10 2021-04-10 2021-03-10]
+  payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
+
+  @other_incomes_data = { other_incomes: [source: income_type,
+                                          payments:] }
+end
+
 Given("I add the following irregular_income details in the current assessment:") do |table|
   @irregular_income_data = { "payments": table.hashes.map { cast_values(_1) } }
 end
@@ -208,7 +216,11 @@ Given("I add {string} outgoings of {int} per month") do |name, amount|
       amount:,
     }
   end
-  @outgoings_data = { "outgoings": ["name": name, "payments": payments] }
+  @outgoings_data = if name == "rent_or_mortgage"
+                      { "outgoings": ["name": name, "payments": payments.map { _1.merge(housing_cost_type: "rent") }] }
+                    else
+                      { "outgoings": ["name": name, "payments": payments] }
+                    end
 end
 
 Given("I add {string} cash_transactions of {int} per month") do |category, amount|
