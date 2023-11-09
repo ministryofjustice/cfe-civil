@@ -14,6 +14,10 @@ class Dependant
     before: proc { Time.zone.tomorrow }, message: :not_in_the_future
   }
 
+  def monthly_income
+    Utilities::MonthlyAmountConverter.call(income_frequency, income_amount)
+  end
+
   def becomes_16_on
     date_of_birth.years_since(16)
   end
@@ -22,7 +26,7 @@ class Dependant
     date_of_birth > (submission_date - 14.years)
   end
 
-  def child_dependant?
+  def child_relative?
     relationship == "child_relative"
   end
 

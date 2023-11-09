@@ -44,20 +44,22 @@ module Creators
         dependant_increase_starts_after = thresholds(submission_date)[:dependant_increase_starts_after]
         if proceeding_type.gross_income_upper_threshold == 999_999_999_999
           proceeding_type.gross_income_upper_threshold
-        elsif dependant_increase_starts_after.present?
-          proceeding_type.gross_income_upper_threshold +
-            dependant_increase(countable_child_dependants: number_of_child_dependants(dependants) - dependant_increase_starts_after, submission_date:)
         else
-          proceeding_type.gross_income_upper_threshold * (1 + (dependant_percentage_increase(dependants:, submission_date:) / 100.0))
+          non_earning_dependants = dependants.select { _1.monthly_income < Threshold.value_for(:dependant_allowances, at: submission_date).fetch(:child_16_and_over) }
+          if dependant_increase_starts_after.present?
+            proceeding_type.gross_income_upper_threshold +
+              dependant_increase(countable_child_dependants: number_of_child_dependants(non_earning_dependants) - dependant_increase_starts_after, submission_date:)
+          else
+            proceeding_type.gross_income_upper_threshold * (1 + (dependant_percentage_increase(dependants: non_earning_dependants, submission_date:) / 100.0))
+          end
         end
       end
 
       def dependant_percentage_increase(dependants:, submission_date:)
-        under_14_count = dependants.count(&:under_14_years_old?)
-        over_14_count = dependants.count - under_14_count
+        under_14s, over_14s = dependants.partition(&:under_14_years_old?)
 
-        under_14_count * thresholds(submission_date).fetch(:dependant_under_14_increase_percent) +
-          over_14_count * thresholds(submission_date).fetch(:dependant_over_14_increase_percent)
+        under_14s.size * thresholds(submission_date).fetch(:dependant_under_14_increase_percent) +
+          over_14s.size * thresholds(submission_date).fetch(:dependant_over_14_increase_percent)
       end
 
       def dependant_increase(countable_child_dependants:, submission_date:)
@@ -71,7 +73,7 @@ module Creators
       # We check 'child_relative' here is this is the important test (they could be >18 but still dependant)
       # rather than the 'over_16' test for childcare eligibility
       def number_of_child_dependants(dependants)
-        dependants.count { |c| c.relationship == "child_relative" }
+        dependants.count(&:child_relative?)
       end
 
       def dependant_step(submission_date)

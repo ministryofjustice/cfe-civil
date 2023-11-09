@@ -4,7 +4,7 @@ module Calculators
   class LoneParentAllowanceCalculator
     class << self
       def call(dependants:, submission_date:)
-        if dependants.count(&:child_dependant?).positive?
+        if dependants.count(&:child_relative?).positive?
           lone_parent_allowance(submission_date)
         else
           0
