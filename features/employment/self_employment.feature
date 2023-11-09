@@ -34,7 +34,6 @@ Feature:
 
   Scenario: 4 The single client is unemployed
     Given I am undertaking a controlled assessment
-    And I am using version 6 of the API
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -109,7 +108,6 @@ Feature:
 
   Scenario: 11: Both are unemployed
     Given I am undertaking a controlled assessment
-    And I am using version 6 of the API
     And I add the following additional property details for the partner in the current assessment:
       | value                       | 70000.00 |
       | outstanding_mortgage        | 69000.00 |

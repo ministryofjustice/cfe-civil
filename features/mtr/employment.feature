@@ -2,10 +2,8 @@ Feature:
     "Employment"
 
     Scenario: The client is employed, and receiving a prisoner_levy
-        Given I am using version 6 of the API
-        And I create an assessment with the following details:
-            | client_reference_id | NP-FULL-1  |
-            | submission_date     | 2023-01-10 |
+        Given I am undertaking a certificated assessment
+        And A submission date of "2023-01-10"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |

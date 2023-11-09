@@ -3,7 +3,6 @@ Feature:
 
   Scenario: The client is self-employed, child care submitted as regular_transactions, gross > 0
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 1200.00  |  -50 | -30                 |
@@ -20,7 +19,6 @@ Feature:
 
   Scenario: The client is self-employed, child care submitted as regular_transactions, gross = 0
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 0.00     |  0   |  0                  |

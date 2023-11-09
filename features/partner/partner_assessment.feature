@@ -5,7 +5,6 @@ Feature:
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
     And A domestic abuse case
-    And I am using version 6 of the API
     And I add the following main property details for the current assessment:
       | value                     | 150000 |
       | outstanding_mortgage      | 145000 |
@@ -44,23 +43,21 @@ Feature:
 Scenario: An applicant and partner's combined capital is over the lower threshold
   Given I am undertaking a certificated assessment
   And An applicant who receives passporting benefits
-    And I am using version 6 of the API
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 2000.0  | false                     |
-    And I add the following capital details for "bank_accounts" for the partner:
-      | description  | value   |
-      | Bank account | 2000.0  |
-    When I retrieve the final assessment
-    And I should see the following overall summary:
-      | attribute                    | value                 |
-      | assessment_result            | contribution_required |
-      | capital contribution         | 1000.0                |
+  And I add the following capital details for "bank_accounts" in the current assessment:
+    | description  | value   | subject_matter_of_dispute |
+    | Bank account | 2000.0  | false                     |
+  And I add the following capital details for "bank_accounts" for the partner:
+    | description  | value   |
+    | Bank account | 2000.0  |
+  When I retrieve the final assessment
+  And I should see the following overall summary:
+    | attribute                    | value                 |
+    | assessment_result            | contribution_required |
+    | capital contribution         | 1000.0                |
 
   Scenario: An unemployed applicant with an employed partner
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I am using version 6 of the API
     And I add the following employment details for the partner:
       | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
       |     C     |  2022-07-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
@@ -82,7 +79,6 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: A applicant with a partner with capital and both pensioners
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I am using version 6 of the API
     And I add the following employment details for the partner:
       | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
       |     C     |  2022-07-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
@@ -105,7 +101,6 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
     And A domestic abuse case
-    And I am using version 6 of the API
     And I add the following housing benefit details for the applicant:
       | client_id |     date     |  amount |
       |     C     |  2021-07-22  | 500.0   |
@@ -123,7 +118,6 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: An applicant with an employed partner who is over the gross income threshold
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I am using version 6 of the API
     And I add the following employment details for the partner:
       | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
       |     C     |  2022-07-22  | 5000.50 |       0           | 75.00 |       15.0         |        410.5          |
@@ -136,7 +130,6 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
 
   Scenario: A partner case on or after 10th April 2023
     Given I am undertaking a certificated assessment
-    And I am using version 6 of the API
     And A submission date of "2023-04-10"
     And I add the following dependent details for the current assessment:
       | date_of_birth | in_full_time_education | relationship   | monthly_income | assets_value |

@@ -6,10 +6,8 @@ Feature:
 #  Then Apply refers the 'calculation problem' to an LAA caseworker to decide what to do
 
   Scenario: The client is employed, but received a tax refund during the calculation period
-    Given I am using version 6 of the API
-    And I create an assessment with the following details:
-      | client_reference_id | NP-FULL-1  |
-      | submission_date     | 2023-01-10 |
+    Given I am undertaking a certificated assessment
+    And A submission date of "2023-01-10"
     And I add the following applicant details for the current assessment:
       | date_of_birth               | 1979-12-20 |
       | involvement_type            | applicant  |
@@ -46,10 +44,8 @@ Feature:
 #  consequence of the way HMRC data is returned.
 #
   Scenario: The client is employed, but has more than one job
-    Given I am using version 6 of the API
-    And I create an assessment with the following details:
-      | client_reference_id | NP-FULL-1  |
-      | submission_date     | 2023-01-10 |
+    Given I am undertaking a certificated assessment
+    And A submission date of "2023-01-10"
     And I add the following applicant details for the current assessment:
       | date_of_birth               | 1979-12-20 |
       | involvement_type            | applicant  |
