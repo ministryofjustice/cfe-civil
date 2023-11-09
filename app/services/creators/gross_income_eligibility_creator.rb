@@ -73,7 +73,7 @@ module Creators
       # We check 'child_relative' here is this is the important test (they could be >18 but still dependant)
       # rather than the 'over_16' test for childcare eligibility
       def number_of_child_dependants(dependants)
-        dependants.count(&:child_dependant?)
+        dependants.count(&:child_relative?)
       end
 
       def dependant_step(submission_date)

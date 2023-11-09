@@ -26,7 +26,7 @@ class Dependant
     date_of_birth > (submission_date - 14.years)
   end
 
-  def child_dependant?
+  def child_relative?
     relationship == "child_relative"
   end
 
