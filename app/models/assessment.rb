@@ -9,6 +9,10 @@ class Assessment < ApplicationRecord
             :submission_date,
             presence: true
 
+  validates :submission_date, date: {
+    before: proc { Time.zone.tomorrow }, message: :not_in_the_future
+  }
+
   # Just in case we get multiple POSTs to partner endpoint
   has_many :capital_summaries, dependent: :destroy
   has_many :gross_income_summaries, dependent: :destroy

@@ -2,7 +2,14 @@ require "rails_helper"
 
 module DisposableIncome
   RSpec.describe Subtotals do
-    let(:assessment) { create(:assessment, submission_date: Date.new(2525, 4, 25)) }
+    around do |example|
+      travel_to submission_date
+      example.run
+      travel_back
+    end
+
+    let(:submission_date) { Date.new(2525, 4, 25) }
+    let(:assessment) { create(:assessment, submission_date:) }
     let(:subtotals) do
       described_class.new(
         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,

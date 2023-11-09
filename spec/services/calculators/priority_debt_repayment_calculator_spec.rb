@@ -1,6 +1,12 @@
 require "rails_helper"
 
 RSpec.describe Calculators::PriorityDebtRepaymentCalculator, :calls_bank_holiday do
+  around do |example|
+    travel_to submission_date
+    example.run
+    travel_back
+  end
+
   let(:assessment) do
     create(:assessment, :with_disposable_income_summary, :with_gross_income_summary, submission_date:)
   end

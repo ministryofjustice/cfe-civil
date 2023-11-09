@@ -50,7 +50,7 @@ en:
   activerecord:
     errors:
       models:
-        vehicle:
+        assessment:
           attributes:
-            date_of_purchase:
+            submission_date:
               not_in_the_future: cannot be in the future

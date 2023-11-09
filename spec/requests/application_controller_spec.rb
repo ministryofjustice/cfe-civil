@@ -33,13 +33,20 @@ RSpec.describe ApplicationController, type: :request do
   end
 
   context "raising an error", :errors do
+    before do
+      get "/my_test?raise_error=1"
+    end
+
+    it "returns a 500 error" do
+      expect(response).to have_http_status(:internal_server_error)
+    end
+
     it "returns standard error response" do
       expected_response = {
         success: false,
         errors: ["ZeroDivisionError: divided by 0"],
-      }.to_json
-      get "/my_test?raise_error=1"
-      expect(parsed_response).to eq JSON.parse(expected_response, symbolize_names: true)
+      }
+      expect(parsed_response).to eq expected_response
     end
 
     it "is captured by Sentry" do

@@ -11,7 +11,7 @@ module Creators
         assessment_hash =
           {
             client_reference_id: assessment_params[:client_reference_id],
-            submission_date: Date.parse(assessment_params[:submission_date]),
+            submission_date: assessment_params[:submission_date],
             level_of_help: assessment_params[:level_of_help] || "certificated",
             remote_ip:,
           }
