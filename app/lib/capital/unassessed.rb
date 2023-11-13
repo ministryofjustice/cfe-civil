@@ -31,13 +31,13 @@ module Capital
 
     def unassessed_vehicles(vehicles)
       (vehicles || []).map do |vehicle|
-        Assessors::VehicleAssessor::VehicleData.new(vehicle:, result: Assessors::VehicleAssessor::Result.new(assessed_value: 0, included_in_assessment: false))
+        Calculators::VehicleCalculator::VehicleData.new(vehicle:, result: Calculators::VehicleCalculator::Result.new(assessed_value: 0, included_in_assessment: false))
       end
     end
 
     def unassessed_properties(properties)
       (properties || []).map do |property|
-        Assessors::PropertyAssessor::PropertyData.new(property:, result: Assessors::PropertyAssessor::Result.blank)
+        Calculators::PropertyCalculator::PropertyData.new(property:, result: Calculators::PropertyCalculator::Result.blank)
       end
     end
   end

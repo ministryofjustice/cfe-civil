@@ -71,7 +71,7 @@ class PersonCapitalSubtotals
 
   def main_home
     main_home = @properties.detect { |p| p.property.main_home }
-    (main_home.presence || Assessors::PropertyAssessor::PropertyData.blank_main_home)
+    (main_home.presence || Calculators::PropertyCalculator::PropertyData.blank_main_home)
   end
 
   def additional_properties

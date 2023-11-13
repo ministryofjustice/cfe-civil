@@ -1,5 +1,5 @@
-module Assessors
-  class VehicleAssessor
+module Calculators
+  class VehicleCalculator
     Result = Data.define(:assessed_value, :included_in_assessment)
     VehicleData = Data.define(:vehicle, :result)
 

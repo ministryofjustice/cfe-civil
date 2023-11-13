@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Assessors
-  RSpec.describe VehicleAssessor do
+module Calculators
+  RSpec.describe VehicleCalculator do
     let(:vehicle) do
       input = build(:vehicle,
                     value: estimated_value,

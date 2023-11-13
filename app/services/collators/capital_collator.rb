@@ -3,15 +3,15 @@ module Collators
     class << self
       def call(submission_date:, pensioner_capital_disregard:,
                maximum_subject_matter_of_dispute_disregard:, level_of_help:, capitals_data:)
-        liquid_capital_result = Assessors::LiquidCapitalAssessor.call(capitals_data.liquid_capital_items)
-        non_liquid_capital_result = Assessors::NonLiquidCapitalAssessor.call(capitals_data.non_liquid_capital_items)
+        liquid_capital_result = Calculators::LiquidCapitalCalculator.call(capitals_data.liquid_capital_items)
+        non_liquid_capital_result = Calculators::NonLiquidCapitalCalculator.call(capitals_data.non_liquid_capital_items)
 
-        assessed_properties = Assessors::PropertyAssessor.call(submission_date:,
-                                                               main_home: capitals_data.main_home,
-                                                               additional_properties: capitals_data.additional_properties,
-                                                               smod_cap: maximum_subject_matter_of_dispute_disregard,
-                                                               level_of_help:)
-        assessed_vehicles = Assessors::VehicleAssessor.call(capitals_data.vehicles, submission_date)
+        assessed_properties = Calculators::PropertyCalculator.call(submission_date:,
+                                                                   main_home: capitals_data.main_home,
+                                                                   additional_properties: capitals_data.additional_properties,
+                                                                   smod_cap: maximum_subject_matter_of_dispute_disregard,
+                                                                   level_of_help:)
+        assessed_vehicles = Calculators::VehicleCalculator.call(capitals_data.vehicles, submission_date)
 
         PersonCapitalSubtotals.new(
           vehicles: assessed_vehicles,

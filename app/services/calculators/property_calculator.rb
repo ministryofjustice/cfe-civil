@@ -1,5 +1,5 @@
-module Assessors
-  class PropertyAssessor
+module Calculators
+  class PropertyCalculator
     Result = Data.define(
       :transaction_allowance,
       :net_value,
