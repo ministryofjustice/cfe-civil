@@ -24,6 +24,33 @@ module Collators
         )
       end
 
+      def collate_applicant_capital(submission_date:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
+        call(
+          capitals_data:,
+          submission_date:,
+          maximum_subject_matter_of_dispute_disregard: maximum_subject_matter_of_dispute_disregard(submission_date),
+          pensioner_capital_disregard:,
+          level_of_help:,
+        )
+      end
+
+      def collate_partner_capital(submission_date:, level_of_help:, pensioner_capital_disregard:, capitals_data:)
+        call(
+          capitals_data:,
+          submission_date:,
+          pensioner_capital_disregard:,
+          # partner assets cannot be considered as a subject matter of dispute
+          maximum_subject_matter_of_dispute_disregard: 0,
+          level_of_help:,
+        )
+      end
+
+    private
+
+      def maximum_subject_matter_of_dispute_disregard(submission_date)
+        Threshold.value_for(:subject_matter_of_dispute_disregard, at: submission_date)
+      end
+
       def property_maximum_mortgage_allowance_threshold(submission_date)
         Threshold.value_for(:property_maximum_mortgage_allowance, at: submission_date)
       end
