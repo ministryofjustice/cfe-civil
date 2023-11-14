@@ -221,28 +221,13 @@ jobs:
       - *save_gems_cache
       - *setup_database
       - run:
-          name: Setup Code Climate test-reporter
-          command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./tmp/cc-test-reporter
-            chmod +x ./tmp/cc-test-reporter
-            ./tmp/cc-test-reporter before-build
-      - run:
           name: Run ruby tests
           command: |
             bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec/rspec.xml
       - run:
-          name: Format Code Climate Test Coverage
+          name: Check coverage with undercover
           command: |
-            ./tmp/cc-test-reporter format-coverage -t lcov -o tmp/coverage/codeclimate.json
-      - run:
-          name: Upload Code Climate Test coverage
-          command: |
-            ./tmp/cc-test-reporter upload-coverage -i tmp/coverage/codeclimate.json
-#      disable undercover temporarily as test mode doesn't cover production settings
-#      - run:
-#          name: Check coverage with undercover
-#          command: |
-#            bundle exec undercover -c origin/main -l coverage/lcov.info
+            bundle exec undercover -c origin/main -l coverage/lcov.info
       - store_test_results:
           path: /tmp/test-results/rspec
       - store_artifacts:
