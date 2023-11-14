@@ -96,13 +96,6 @@ Attached to each summary object are the input data, represented as one or more s
 
 Each of the three summary objects also has a number of "Eligibility" objects - one for each proceeding type specified on the assessment.  Each eligibility object contains the upper and lower thresholds for that proceeding type, and will eventually hold the result for that proceeding type.
 
-
-## Logic flow of the calculations
-
-The `AssessmentController` calls the `MainWorkflow`, which immediately branches off to the `PassportedWorkflow` or `UnpassportedWorkflow`.  The main difference is that unpassported applications are assessed on capital, gross income and disposable income, whereas passported applications are only assessed on capital.
-
-In each case, the workflow takes each of the assessments in turn, calls a collator to look at all the sub-objects under the summary and come up with a total figure in the case of capital, or a monthly equivalent figure in the case of gross or disposable  income, and these results are stored on the associated summary object.  After collation, an assessor is called for each summary which stores the results (eligible, ineligible, contribution required) in each of the eligibility objects (one for each proceeding type).  Finally, the main assessor is called to work out the overall result for each proceeding type taking into account the results from the capital, gross income and disposable income assessments.  The assessments controller then calls the main decorator to format the output in the required structure to send back to the client.
-
 # Development
 
 ## Setting the env vars
