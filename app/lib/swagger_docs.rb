@@ -1073,10 +1073,20 @@ class SwaggerDocs
             additionalProperties: false,
             properties: {
               employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-              gross_housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
               housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
               housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-              net_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
+              gross_housing_costs: {
+                allOf: [
+                  { "$ref": "#/components/schemas/HousingCosts" },
+                  { deprecated: true },
+                ],
+              },
+              net_housing_costs: {
+                allOf: [
+                  { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                  { deprecated: true },
+                ],
+              },
               allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
               maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
               dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
@@ -1642,9 +1652,19 @@ class SwaggerDocs
               properties: {
                 employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
                 housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
-                gross_housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
+                gross_housing_costs: {
+                  allOf: [
+                    { "$ref": "#/components/schemas/HousingCosts" },
+                    { deprecated: true },
+                  ],
+                },
+                net_housing_costs: {
+                  allOf: [
+                    { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                    { deprecated: true },
+                  ],
+                },
                 housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-                net_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
                 allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
                 maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
                 dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },

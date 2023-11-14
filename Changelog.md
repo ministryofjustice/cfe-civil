@@ -4,6 +4,11 @@ The date is when it was released/deployed to production - see [cfe-civil CI/CD](
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 14th November 2023
+
+* LEP-410 Added allowed_housing_costs and housing_costs to disposable income fields
+* Deprecated existing gross_housing_costs and net_housing_costs names
+
 ## 18th September 2023
 
 * LEP-233 added support for new MTR percentage based thresholds after MTR go-live date

@@ -1059,14 +1059,18 @@ components:
       properties:
         employment_income:
           "$ref": "#/components/schemas/EmploymentIncomeResult"
-        gross_housing_costs:
-          "$ref": "#/components/schemas/HousingCosts"
         housing_costs:
           "$ref": "#/components/schemas/HousingCosts"
         housing_benefit:
           "$ref": "#/components/schemas/HousingBenefit"
+        gross_housing_costs:
+          allOf:
+          - "$ref": "#/components/schemas/HousingCosts"
+          - deprecated: true
         net_housing_costs:
-          "$ref": "#/components/schemas/AllowedHousingCosts"
+          allOf:
+          - "$ref": "#/components/schemas/AllowedHousingCosts"
+          - deprecated: true
         allowed_housing_costs:
           "$ref": "#/components/schemas/AllowedHousingCosts"
         maintenance_allowance:
@@ -1775,11 +1779,15 @@ components:
           housing_costs:
             "$ref": "#/components/schemas/HousingCosts"
           gross_housing_costs:
-            "$ref": "#/components/schemas/HousingCosts"
+            allOf:
+            - "$ref": "#/components/schemas/HousingCosts"
+            - deprecated: true
+          net_housing_costs:
+            allOf:
+            - "$ref": "#/components/schemas/AllowedHousingCosts"
+            - deprecated: true
           housing_benefit:
             "$ref": "#/components/schemas/HousingBenefit"
-          net_housing_costs:
-            "$ref": "#/components/schemas/AllowedHousingCosts"
           allowed_housing_costs:
             "$ref": "#/components/schemas/AllowedHousingCosts"
           maintenance_allowance:
