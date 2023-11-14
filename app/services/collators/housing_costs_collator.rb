@@ -1,13 +1,13 @@
 module Collators
   class HousingCostsCollator
     # The regular housing costs total is not exposed, so don't expose it here
-    Result = Data.define(:gross_housing_costs, :gross_housing_costs_bank, :net_housing_costs,
-                         :gross_housing_costs_cash) do
+    Result = Data.define(:housing_costs, :housing_costs_bank, :allowed_housing_costs,
+                         :housing_costs_cash) do
       def self.blank
-        new(gross_housing_costs: 0,
-            gross_housing_costs_bank: 0,
-            gross_housing_costs_cash: 0,
-            net_housing_costs: 0)
+        new(housing_costs: 0,
+            housing_costs_bank: 0,
+            housing_costs_cash: 0,
+            allowed_housing_costs: 0)
       end
     end
 
@@ -17,17 +17,17 @@ module Collators
                                                                       monthly_housing_benefit: housing_benefit,
                                                                       submission_date:, housing_costs_cap_applies: housing_costs_cap_applies?(person))
 
-        net_housing_costs = if allow_negative_net
-                              housing_calculator.net_housing_costs
-                            else
-                              [housing_calculator.net_housing_costs, 0.0].max
-                            end
+        allowed_housing_costs = if allow_negative_net
+                                  housing_calculator.allowed_housing_costs
+                                else
+                                  [housing_calculator.allowed_housing_costs, 0.0].max
+                                end
 
         Result.new(
-          gross_housing_costs: housing_calculator.gross_housing_costs,
-          gross_housing_costs_bank: housing_calculator.gross_housing_costs_bank,
-          gross_housing_costs_cash: housing_calculator.gross_housing_costs_cash,
-          net_housing_costs:,
+          housing_costs: housing_calculator.housing_costs,
+          housing_costs_bank: housing_calculator.housing_costs_bank,
+          housing_costs_cash: housing_calculator.housing_costs_cash,
+          allowed_housing_costs:,
         )
       end
 

@@ -1010,7 +1010,7 @@ class SwaggerDocs
               },
             },
           },
-          GrossHousingCosts: {
+          HousingCosts: {
             type: :number,
             format: :decimal,
             minimum: 0,
@@ -1022,11 +1022,11 @@ class SwaggerDocs
             minimum: 0,
             description: "Calculated monthly housing benefit received",
           },
-          NetHousingCosts: {
+          AllowedHousingCosts: {
             type: :number,
             format: :decimal,
             minimum: 0,
-            description: "Calculated monthly net housing costs (gross - housing_benefit)",
+            description: "Calculated monthly allowed housing costs",
           },
           MaintenanceAllowance: {
             type: :number,
@@ -1073,9 +1073,11 @@ class SwaggerDocs
             additionalProperties: false,
             properties: {
               employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-              gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+              gross_housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
+              housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
               housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-              net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+              net_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
+              allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
               maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
               dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
               dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
@@ -1639,9 +1641,11 @@ class SwaggerDocs
               additionalProperties: false,
               properties: {
                 employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-                gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+                housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
+                gross_housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
                 housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-                net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+                net_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
                 maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
                 dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
                 dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
@@ -1860,9 +1864,9 @@ class SwaggerDocs
               additionalProperties: false,
               properties: {
                 employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-                gross_housing_costs: { "$ref": "#/components/schemas/GrossHousingCosts" },
+                housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
                 housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-                net_housing_costs: { "$ref": "#/components/schemas/NetHousingCosts" },
+                allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
                 maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
                 dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
                 dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
@@ -1878,9 +1882,9 @@ class SwaggerDocs
               },
               required: %i[
                 employment_income
-                gross_housing_costs
+                housing_costs
                 housing_benefit
-                net_housing_costs
+                allowed_housing_costs
                 maintenance_allowance
                 dependant_allowance_under_16
                 dependant_allowance_over_16

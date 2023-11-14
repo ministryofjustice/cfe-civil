@@ -17,9 +17,9 @@ module Decorators
           version: @version,
           timestamp: Time.current,
           success: true,
-          result_summary: ResultSummaryDecorator.new(assessment:, calculation_output: @calculation_output,
-                                                     eligibility_result: @eligibility_result,
-                                                     partner_present: @partner.present?).as_json,
+          result_summary: result_summary_decorator_class.new(assessment:, calculation_output: @calculation_output,
+                                                             eligibility_result: @eligibility_result,
+                                                             partner_present: @partner.present?).as_json,
           assessment: assessment_details.transform_values(&:as_json),
         }
       end
@@ -27,10 +27,6 @@ module Decorators
     private
 
       def assessment_details
-        # summarized_assessment_result = @calculation_output.summarized_assessment_result(proceeding_types: assessment.proceeding_types,
-        #                                                                                 submission_date: assessment.submission_date,
-        #                                                                                 receives_asylum_support: @applicant.details.receives_asylum_support,
-        #                                                                                 receives_qualifying_benefit: @applicant.details.receives_qualifying_benefit)
         details = {
           id: assessment.id,
           client_reference_id: assessment.client_reference_id,
@@ -56,6 +52,10 @@ module Decorators
 
       def applicant_decorator_class
         ApplicantDecorator
+      end
+
+      def result_summary_decorator_class
+        ResultSummaryDecorator
       end
 
       def gross_income
