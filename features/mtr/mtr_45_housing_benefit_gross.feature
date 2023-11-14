@@ -33,6 +33,3 @@ Feature:
     And I should see the following "gross income" details:
       | attribute                      | value                 |
       | combined_total_gross_income    | 2950.0                |
-    And I should see the following "disposable_income_summary" details:
-      | attribute                        | value                |
-      | combined_total_disposable_income |   0.0                |

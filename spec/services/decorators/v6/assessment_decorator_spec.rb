@@ -44,8 +44,7 @@ module Decorators
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
                         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
-                        capital_subtotals: Capital::Unassessed.new(applicant_capitals: instance_double(CapitalsData, vehicles: [], properties: []),
-                                                                   level_of_help: assessment.level_of_help,
+                        capital_subtotals: Capital::Unassessed.new(level_of_help: assessment.level_of_help,
                                                                    submission_date: assessment.submission_date))
       end
       let(:eligibility_result) do
