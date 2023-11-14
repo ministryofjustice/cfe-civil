@@ -43,8 +43,8 @@ module Collators
         end
 
         it "instantiates and calls the Property Assessment service" do
-          property_data = instance_double(Assessors::PropertyAssessor::PropertyData, result: instance_double(Assessors::PropertyAssessor::Result, smod_allowance: 0, assessed_equity: 23_000))
-          allow(Assessors::PropertyAssessor).to receive(:call).and_return([property_data])
+          property_data = instance_double(Calculators::PropertyCalculator::PropertyData, result: instance_double(Calculators::PropertyCalculator::Result, smod_allowance: 0, assessed_equity: 23_000))
+          allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_data])
           expect(collator.total_property).to eq 23_000.0
         end
       end
@@ -134,8 +134,8 @@ module Collators
         end
 
         it "summarizes the results it gets from the subservices" do
-          property_data = instance_double(Assessors::PropertyAssessor::PropertyData, result: instance_double(Assessors::PropertyAssessor::Result, smod_allowance: 0, assessed_equity: 23_000))
-          allow(Assessors::PropertyAssessor).to receive(:call).and_return([property_data])
+          property_data = instance_double(Calculators::PropertyCalculator::PropertyData, result: instance_double(Calculators::PropertyCalculator::Result, smod_allowance: 0, assessed_equity: 23_000))
+          allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_data])
 
           expect(collator.total_liquid.to_f).to eq 145.83
           expect(collator.total_non_liquid).to eq 500

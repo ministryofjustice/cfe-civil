@@ -7,7 +7,7 @@ module Decorators
         subject(:json_hash) { described_class.new(property.property, property.result).as_json }
 
         context "property is nil" do
-          let(:property) { Assessors::PropertyAssessor::PropertyData.new(nil, nil) }
+          let(:property) { Calculators::PropertyCalculator::PropertyData.new(nil, nil) }
 
           it "returns nil" do
             expect(json_hash).to be_nil
@@ -25,7 +25,7 @@ module Decorators
                   subject_matter_of_dispute: false
           end
           let(:property) do
-            assessed_properties = Assessors::PropertyAssessor.call(
+            assessed_properties = Calculators::PropertyCalculator.call(
               submission_date: Date.current,
               main_home:,
               additional_properties: [],

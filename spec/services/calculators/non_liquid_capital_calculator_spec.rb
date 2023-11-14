@@ -1,7 +1,7 @@
 require "rails_helper"
 
-module Assessors
-  RSpec.describe NonLiquidCapitalAssessor do
+module Calculators
+  RSpec.describe NonLiquidCapitalCalculator do
     let(:assessment) { create :assessment, :with_capital_summary }
     let(:capital_summary) { assessment.applicant_capital_summary }
 

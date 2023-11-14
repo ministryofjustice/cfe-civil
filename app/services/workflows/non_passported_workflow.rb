@@ -13,13 +13,13 @@ module Workflows
         gross_income_subtotals = get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals_with_partner(applicant:, partner:, gross_income_subtotals: gross_income_subtotals.gross,
                                                                                    submission_date:, level_of_help:)
-        capital_subtotals = CapitalCollatorAndAssessor.partner submission_date:,
-                                                               level_of_help:,
-                                                               capitals_data: applicant.capitals_data,
-                                                               partner_capitals_data: partner.capitals_data,
-                                                               date_of_birth: applicant.details.date_of_birth,
-                                                               partner_date_of_birth: partner.details.date_of_birth,
-                                                               total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
+        capital_subtotals = assess_with_partner submission_date:,
+                                                level_of_help:,
+                                                capitals_data: applicant.capitals_data,
+                                                partner_capitals_data: partner.capitals_data,
+                                                date_of_birth: applicant.details.date_of_birth,
+                                                partner_date_of_birth: partner.details.date_of_birth,
+                                                total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
         internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:,
                                  proceeding_types:, submission_date:, level_of_help:)
@@ -32,11 +32,11 @@ module Workflows
                                                      level_of_help:)
         gross_income_subtotals = get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals(applicant:, gross_income_subtotals: gross_income_subtotals.gross, level_of_help:, submission_date:)
-        capital_subtotals = CapitalCollatorAndAssessor.call submission_date:,
-                                                            level_of_help:,
-                                                            capitals_data: applicant.capitals_data,
-                                                            date_of_birth: applicant.details.date_of_birth,
-                                                            total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
+        capital_subtotals = assess_without_partner submission_date:,
+                                                   level_of_help:,
+                                                   capitals_data: applicant.capitals_data,
+                                                   date_of_birth: applicant.details.date_of_birth,
+                                                   total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
         internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:,
                                  proceeding_types:, submission_date:, level_of_help:)
@@ -44,6 +44,42 @@ module Workflows
       end
 
     private
+
+      def assess_with_partner(submission_date:, level_of_help:, capitals_data:, partner_capitals_data:, date_of_birth:, partner_date_of_birth:,
+                              total_disposable_income:)
+        applicant_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth:)
+        partner_value = Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth: partner_date_of_birth)
+
+        applicant_subtotals = Collators::CapitalCollator.collate_applicant_capital(submission_date:,
+                                                                                   level_of_help:,
+                                                                                   pensioner_capital_disregard: [applicant_value, partner_value].max,
+                                                                                   capitals_data:)
+        partner_subtotals = Collators::CapitalCollator.collate_partner_capital(submission_date:,
+                                                                               level_of_help:,
+                                                                               pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
+                                                                               capitals_data: partner_capitals_data)
+        Capital::SubtotalsWithPartner.new(
+          applicant_capital_subtotals: applicant_subtotals,
+          partner_capital_subtotals: partner_subtotals,
+          level_of_help:,
+          submission_date:,
+        )
+      end
+
+      def assess_without_partner(submission_date:, level_of_help:, capitals_data:, date_of_birth:, total_disposable_income:)
+        applicant_subtotals = Collators::CapitalCollator.collate_applicant_capital(
+          submission_date:,
+          level_of_help:,
+          pensioner_capital_disregard: Calculators::PensionerCapitalDisregardCalculator.non_passported_value(submission_date:, total_disposable_income:, date_of_birth:),
+          capitals_data:,
+        )
+
+        Capital::Subtotals.new(
+          applicant_capital_subtotals: applicant_subtotals,
+          level_of_help:,
+          submission_date:,
+        )
+      end
 
       def result(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:, proceeding_types:,
                  submission_date:, level_of_help:)
