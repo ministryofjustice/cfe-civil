@@ -1095,6 +1095,20 @@ class SwaggerDocs
               total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
               total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
             },
+            required: %i[
+              employment_income
+              gross_housing_costs
+              housing_benefit
+              net_housing_costs
+              allowed_housing_costs
+              housing_costs
+              maintenance_allowance
+              dependant_allowance_under_16
+              dependant_allowance_over_16
+              dependant_allowance
+              total_outgoings_and_allowances
+              total_disposable_income
+            ],
           },
           PartnerAllowance: {
             type: :number,
@@ -1684,6 +1698,8 @@ class SwaggerDocs
                 gross_housing_costs
                 housing_benefit
                 net_housing_costs
+                allowed_housing_costs
+                housing_costs
                 maintenance_allowance
                 dependant_allowance_under_16
                 dependant_allowance_over_16
