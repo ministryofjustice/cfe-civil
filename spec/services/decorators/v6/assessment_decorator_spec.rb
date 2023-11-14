@@ -60,7 +60,8 @@ module Decorators
                               applicant:,
                               partner:,
                               eligibility_result:,
-                              version:).as_json
+                              version:,
+                              remarks: instance_double(Remarks)).as_json
         end
         let(:applicant) do
           build(:person_data,

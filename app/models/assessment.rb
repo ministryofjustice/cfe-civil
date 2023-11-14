@@ -47,6 +47,6 @@ class Assessment < ApplicationRecord
     new_remarks.each do |remark|
       my_remarks.add(remark.type, remark.issue, remark.ids)
     end
-    update!(remarks: my_remarks)
+    my_remarks
   end
 end
