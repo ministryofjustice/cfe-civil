@@ -203,7 +203,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, type: :request, swagger_d
                        },
                      },
                      disposable_income: { "$ref": components[:v6_applicant_disposable_income] },
-                     partner_disposable_income: { "$ref": components[:disposable_income] },
+                     partner_disposable_income: { "$ref": components[:v6_disposable_income] },
                      capital: { "$ref": components[:v6_applicant_capital_result] },
                      partner_capital: { "$ref": components[:capital_result] },
                    },

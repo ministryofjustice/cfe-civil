@@ -24,7 +24,8 @@ class SwaggerDocs
     v6_applicant_capital_result: "#/components/schemas/v6/ApplicantCapitalResult",
     v7_applicant_capital_result: "#/components/schemas/v7/ApplicantCapitalResult",
     property_result: "#/components/schemas/PropertyResult",
-    disposable_income: "#/components/schemas/DisposableIncome",
+    v6_disposable_income: "#/components/schemas/v6/DisposableIncome",
+    v7_disposable_income: "#/components/schemas/v7/DisposableIncome",
     v6_applicant_disposable_income: "#/components/schemas/v6/ApplicantDisposableIncome",
     v7_applicant_disposable_income: "#/components/schemas/v7/ApplicantDisposableIncome",
     property: "#/components/schemas/Property",
@@ -1068,48 +1069,6 @@ class SwaggerDocs
             minimum: 0,
             description: "Amount of income contribution required (only valid if result is contribution_required)",
           },
-          DisposableIncome: {
-            type: :object,
-            additionalProperties: false,
-            properties: {
-              employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
-              housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
-              housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
-              gross_housing_costs: {
-                allOf: [
-                  { "$ref": "#/components/schemas/HousingCosts" },
-                  { deprecated: true },
-                ],
-              },
-              net_housing_costs: {
-                allOf: [
-                  { "$ref": "#/components/schemas/AllowedHousingCosts" },
-                  { deprecated: true },
-                ],
-              },
-              allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
-              maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
-              dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
-              dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
-              dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
-              total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
-              total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
-            },
-            required: %i[
-              employment_income
-              gross_housing_costs
-              housing_benefit
-              net_housing_costs
-              allowed_housing_costs
-              housing_costs
-              maintenance_allowance
-              dependant_allowance_under_16
-              dependant_allowance_over_16
-              dependant_allowance
-              total_outgoings_and_allowances
-              total_disposable_income
-            ],
-          },
           PartnerAllowance: {
             type: :number,
             format: :decimal,
@@ -1508,6 +1467,48 @@ class SwaggerDocs
                 },
               },
             },
+            DisposableIncome: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+                housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
+                housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+                gross_housing_costs: {
+                  allOf: [
+                    { "$ref": "#/components/schemas/HousingCosts" },
+                    { deprecated: true },
+                  ],
+                },
+                net_housing_costs: {
+                  allOf: [
+                    { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                    { deprecated: true },
+                  ],
+                },
+                allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+                dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+                dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+                dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+                total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+                total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+              },
+              required: %i[
+                employment_income
+                gross_housing_costs
+                housing_benefit
+                net_housing_costs
+                allowed_housing_costs
+                housing_costs
+                maintenance_allowance
+                dependant_allowance_under_16
+                dependant_allowance_over_16
+                dependant_allowance
+                total_outgoings_and_allowances
+                total_disposable_income
+              ],
+            },
             Employments: {
               type: :array,
               description: "One or more employment income details",
@@ -1760,6 +1761,34 @@ class SwaggerDocs
                                            example: false,
                                            description: "Applicant receives section 4 or section 95 Asylum Support" },
               },
+            },
+            DisposableIncome: {
+              type: :object,
+              additionalProperties: false,
+              properties: {
+                employment_income: { "$ref": "#/components/schemas/EmploymentIncomeResult" },
+                housing_costs: { "$ref": "#/components/schemas/HousingCosts" },
+                housing_benefit: { "$ref": "#/components/schemas/HousingBenefit" },
+                allowed_housing_costs: { "$ref": "#/components/schemas/AllowedHousingCosts" },
+                maintenance_allowance: { "$ref": "#/components/schemas/MaintenanceAllowance" },
+                dependant_allowance_under_16: { "$ref": "#/components/schemas/DependantAllowanceUnder16" },
+                dependant_allowance_over_16: { "$ref": "#/components/schemas/DependantAllowanceOver16" },
+                dependant_allowance: { "$ref": "#/components/schemas/DependantAllowance" },
+                total_outgoings_and_allowances: { "$ref": "#/components/schemas/TotalOutgoingsAndAllowances" },
+                total_disposable_income: { "$ref": "#/components/schemas/TotalDisposableIncome" },
+              },
+              required: %i[
+                employment_income
+                housing_benefit
+                allowed_housing_costs
+                housing_costs
+                maintenance_allowance
+                dependant_allowance_under_16
+                dependant_allowance_over_16
+                dependant_allowance
+                total_outgoings_and_allowances
+                total_disposable_income
+              ],
             },
             Employments: {
               type: :array,

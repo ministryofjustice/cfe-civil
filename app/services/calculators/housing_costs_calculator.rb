@@ -3,6 +3,9 @@ module Calculators
     Result = Data.define(:housing_costs, :allowed_housing_costs, :housing_costs_bank, :housing_costs_cash, :housing_costs_regular)
 
     class << self
+      # ‘Board and lodging' adjustment”
+      # Payments for ‘board and lodging’ are assumed to be half for accommodation and half for food/utilities,
+      # so allow only half - see Lord Chancellors' Guidance (certificated) 5.5 'Housing costs' paragraph 7”
       def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:)
         # Because this code uses #allowable_amount, tbe 'bank' value has already been halved during the calculation
         # if the outgoing amount is of type 'board_and_lodging'
