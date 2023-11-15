@@ -6,12 +6,12 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
   describe ".call" do
     let(:proceeding_type_data) do
       {
-        "DA001" => "A",
-        "DA002" => "D",
-        "DA003" => "W",
-        "DA004" => "I",
-        "DA005" => "Z",
-        "SE014" => "A",
+        DA001: "A",
+        DA002: "D",
+        DA003: "W",
+        DA004: "I",
+        DA005: "Z",
+        SE014: "A",
       }
     end
     let(:proceeding_type_details) { proceeding_type_data.map { |code, type| { ccms_code: code, client_involvement_type: type } } }
@@ -25,9 +25,9 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
 
     # waivers are only set true for DA with client_involvement_type == 'A'
     let(:non_waived_types) do
-      %w[DA002 DA003 DA004 DA005].map do |code|
+      %i[DA002 DA003 DA004 DA005].map do |code|
         {
-          ccms_code: code,
+          ccms_code: code.to_s,
           full_s8_only: false,
           matter_type: "Domestic abuse",
           gross_income_upper: false,
