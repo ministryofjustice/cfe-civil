@@ -1,10 +1,5 @@
 module RemarkGenerators
   class FrequencyChecker < BaseChecker
-    include Exemptable
-
-    # for Exemptable mixin
-    attr_reader :child_care_bank
-
     def self.call(child_care_bank:, collection:, date_attribute: :payment_date)
       new(child_care_bank:, collection:).call(date_attribute) unless collection.empty?
     end
@@ -20,6 +15,10 @@ module RemarkGenerators
     end
 
   private
+
+    def exempt_from_checking
+      Utilities::ChildcareExemptionDetector.call(record_type, @child_care_bank)
+    end
 
     def unknown_frequency?
       Utilities::PaymentPeriodAnalyser.new(dates).period_pattern == :unknown

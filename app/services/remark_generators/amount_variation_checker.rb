@@ -1,10 +1,5 @@
 module RemarkGenerators
   class AmountVariationChecker < BaseChecker
-    include Exemptable
-
-    # for Exemptable mixin
-    attr_reader :child_care_bank
-
     def self.call(collection:, child_care_bank:)
       new(child_care_bank:, collection:).call
     end
@@ -19,6 +14,10 @@ module RemarkGenerators
     end
 
   private
+
+    def exempt_from_checking
+      Utilities::ChildcareExemptionDetector.call(record_type, @child_care_bank)
+    end
 
     def unique_amounts
       @collection.map(&:amount).uniq.size == 1
