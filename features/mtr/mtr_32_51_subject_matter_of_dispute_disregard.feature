@@ -38,12 +38,3 @@ Feature:
       | attribute                           |  value   |
       | subject_matter_of_dispute_disregard | 200000.0 |
 
-  Scenario: SMOD Disregard Cap is removed under MTR rules, gross income below lower threshold
-    Given I am undertaking a controlled assessment
-    And A submission date of "2525-04-10"
-    And I add employment income of 400 per month
-    And I add disputed main property of value 200000
-    When I retrieve the final assessment
-    Then I should see the following "capital summary" details:
-      | attribute                           | value |
-      | subject_matter_of_dispute_disregard |  0.0  |

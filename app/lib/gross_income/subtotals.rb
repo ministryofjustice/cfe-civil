@@ -13,8 +13,8 @@ module GrossIncome
       @applicant_gross_income_subtotals.total_gross_income + @partner_gross_income_subtotals.total_gross_income
     end
 
-    def ineligible?(proceeding_types)
-      !eligible? proceeding_types
+    def ineligible?(proceeding_types:, submission_date:)
+      !eligible? proceeding_types:, submission_date:
     end
 
     def eligibilities(proceeding_types)
@@ -25,22 +25,17 @@ module GrossIncome
                                                    total_gross_income: combined_monthly_gross_income
     end
 
-    def below_the_lower_controlled_threshold?
-      threshold = Creators::GrossIncomeEligibilityCreator.lower_threshold(level_of_help: @level_of_help, submission_date: @submission_date)
-      combined_monthly_gross_income < threshold
-    end
-
   private
 
-    def assessment_results(proceeding_types)
-      Creators::GrossIncomeEligibilityCreator.assessment_results dependants: @dependants,
-                                                                 proceeding_types:,
-                                                                 submission_date: @submission_date,
-                                                                 total_gross_income: combined_monthly_gross_income
+    def eligible?(proceeding_types:, submission_date:)
+      Utilities::ResultSummarizer.call(assessment_results(proceeding_types:, submission_date:).values).in? %i[eligible partially_eligible]
     end
 
-    def eligible?(proceeding_types)
-      Utilities::ResultSummarizer.call(assessment_results(proceeding_types).values).in? %i[eligible partially_eligible]
+    def assessment_results(proceeding_types:, submission_date:)
+      Creators::GrossIncomeEligibilityCreator.assessment_results dependants: @dependants,
+                                                                 proceeding_types:,
+                                                                 submission_date:,
+                                                                 total_gross_income: combined_monthly_gross_income
     end
   end
 end

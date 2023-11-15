@@ -83,30 +83,28 @@ module Workflows
 
       def result(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:, proceeding_types:,
                  submission_date:, level_of_help:)
-        if gross_income_subtotals.ineligible? proceeding_types
+        if gross_income_subtotals.ineligible?(proceeding_types:, submission_date:)
           calculation_output = CalculationOutput.new(gross_income_subtotals:,
                                                      disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:,
                                                                                                                    submission_date:),
                                                      capital_subtotals: unassessed_capital)
           InternalResult.new(calculation_output:, assessment_result: :ineligible)
-        elsif gross_income_subtotals.below_the_lower_controlled_threshold?
-          calculation_output = CalculationOutput.new(gross_income_subtotals:,
-                                                     disposable_income_subtotals:,
-                                                     capital_subtotals: unassessed_capital)
-          InternalResult.new(calculation_output:, assessment_result: :eligible)
-        elsif disposable_income_subtotals.ineligible? proceeding_types
-          calculation_output = CalculationOutput.new(gross_income_subtotals:,
-                                                     disposable_income_subtotals:,
-                                                     capital_subtotals: unassessed_capital)
-          InternalResult.new(calculation_output:, assessment_result: :ineligible)
         else
-          calculation_output = CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
-          capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
-          disposable_result = disposable_income_subtotals.summarized_assessment_result(proceeding_types)
-          if capital_result != :eligible
-            InternalResult.new(calculation_output:, assessment_result: capital_result)
+          gross_lower_threshold = Creators::GrossIncomeEligibilityCreator.lower_threshold(level_of_help:, submission_date:)
+          if gross_income_subtotals.combined_monthly_gross_income >= gross_lower_threshold && disposable_income_subtotals.ineligible?(proceeding_types)
+            calculation_output = CalculationOutput.new(gross_income_subtotals:,
+                                                       disposable_income_subtotals:,
+                                                       capital_subtotals: unassessed_capital)
+            InternalResult.new(calculation_output:, assessment_result: :ineligible)
           else
-            InternalResult.new(calculation_output:, assessment_result: disposable_result)
+            calculation_output = CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
+            capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
+            disposable_result = disposable_income_subtotals.summarized_assessment_result(proceeding_types)
+            if capital_result != :eligible
+              InternalResult.new(calculation_output:, assessment_result: capital_result)
+            else
+              InternalResult.new(calculation_output:, assessment_result: disposable_result)
+            end
           end
         end
       end
