@@ -6,8 +6,8 @@ Includes changes that are material to the client - refactors are ignored.
 
 ## 14th November 2023
 
-* LEP-410 Added allowed_housing_costs and housing_costs to disposable income fields
-* Deprecated existing gross_housing_costs and net_housing_costs names
+* LEP-410 Renamed net_housing_costs and gross_housing_costs response fields to allowed_housing_costs and housing_costs
+* The old field names remain in the v6 API and are deprecated
 
 ## 18th September 2023
 
