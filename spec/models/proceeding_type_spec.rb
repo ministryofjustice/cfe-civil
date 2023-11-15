@@ -23,7 +23,7 @@ RSpec.describe ProceedingType do
     it "writes proceeding_type to the database" do
       expect {
         described_class.create(ccms_code: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.sample,
-                               client_involvement_type: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES.sample,
+                               client_involvement_type: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES.sample,
                                assessment:)
       }.to change(described_class, :count).by(1)
     end

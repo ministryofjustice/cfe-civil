@@ -1574,14 +1574,12 @@ class SwaggerDocs
                   ccms_code: {
                     type: :string,
                     enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                    example: "DA001",
                     description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
                   },
                   client_involvement_type: {
                     type: :string,
-                    enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
-                    example: "A",
-                    description: "A CCMS client_involvement_type. This is not used in the calculation, so can be set to any valid value.",
+                    enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
+                    description: "CCMS Client Involvement type A=applicant/claimant/petitioner, D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party. Domestic abuse waivers only apply for type 'A'",
                     deprecated: true,
                   },
                 },
@@ -1601,7 +1599,7 @@ class SwaggerDocs
                   },
                   client_involvement_type: {
                     type: :string,
-                    enum: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+                    enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
                     example: "A",
                     description: "The client_involvement_type expected by CCMS",
                   },

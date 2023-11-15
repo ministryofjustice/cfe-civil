@@ -5,7 +5,7 @@ http_interactions:
     uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
     body:
       encoding: UTF-8
-      string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","proceedings":[{"ccms_code":"DA001","client_involvement_type":"A"},{"ccms_code":"DA005","client_involvement_type":"Z"},{"ccms_code":"SE014","client_involvement_type":"A"}]}'
+      string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","proceedings":[{"ccms_code":"DA001","client_involvement_type":"A"},{"ccms_code":"DA002","client_involvement_type":"D"},{"ccms_code":"DA003","client_involvement_type":"W"},{"ccms_code":"DA004","client_involvement_type":"I"},{"ccms_code":"DA005","client_involvement_type":"Z"},{"ccms_code":"SE014","client_involvement_type":"A"}]}'
     headers:
       User-Agent:
       - Faraday v1.10.3
@@ -21,42 +21,43 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 10 Mar 2023 15:37:38 GMT
+      - Wed, 15 Nov 2023 14:32:22 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
-      - '642'
+      - '1197'
       Connection:
       - keep-alive
       X-Frame-Options:
       - SAMEORIGIN
       X-Xss-Protection:
-      - 1; mode=block
+      - '0'
       X-Content-Type-Options:
       - nosniff
-      X-Download-Options:
-      - noopen
       X-Permitted-Cross-Domain-Policies:
       - none
       Referrer-Policy:
       - strict-origin-when-cross-origin
+      Vary:
+      - Accept, Origin
       Etag:
-      - W/"ea1a12281c2747e41a4d405b99ab05ca"
+      - W/"bac93e7297adcaeba0aefbcec39c267a"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - 51ff03c9861ef0fd294e8df3504cfe79
+      - ec2e8dd75c41e9b8eafc09b0fd332351
       X-Runtime:
-      - '0.048138'
-      Vary:
-      - Accept, Origin
+      - '0.038134'
       Strict-Transport-Security:
       - max-age=15724800; includeSubDomains
     body:
       encoding: UTF-8
       string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","success":true,"proceedings":[{"ccms_code":"DA001","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":true,"disposable_income_upper":true,"capital_upper":true,"client_involvement_type":"A"},{"ccms_code":"DA005","full_s8_only":false,"matter_type":"Domestic
+        abuse","gross_income_upper":true,"disposable_income_upper":true,"capital_upper":true,"client_involvement_type":"A"},{"ccms_code":"DA002","full_s8_only":false,"matter_type":"Domestic
+        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"D"},{"ccms_code":"DA003","full_s8_only":false,"matter_type":"Domestic
+        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"W"},{"ccms_code":"DA004","full_s8_only":false,"matter_type":"Domestic
+        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"I"},{"ccms_code":"DA005","full_s8_only":false,"matter_type":"Domestic
         abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"Z"},{"ccms_code":"SE014","full_s8_only":false,"matter_type":"Children
         - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"A"}]}'
-  recorded_at: Fri, 10 Mar 2023 15:37:38 GMT
-recorded_with: VCR 6.1.0
+  recorded_at: Wed, 15 Nov 2023 14:32:22 GMT
+recorded_with: VCR 6.2.0
