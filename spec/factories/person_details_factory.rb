@@ -9,6 +9,7 @@ FactoryBot.define do
     capitals_data
     state_benefits { [] }
     other_income_payments { [] }
+    cash_transactions { [] }
     irregular_income_payments { [] }
     regular_transactions { [] }
   end

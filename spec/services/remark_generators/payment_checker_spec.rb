@@ -3,22 +3,20 @@ require "rails_helper"
 module RemarkGenerators
   RSpec.describe PaymentChecker do
     let(:operation) { :debit }
-    let(:name) { "priority_debt_repayment" }
     let(:category) { :priority_debt_repayment }
     let(:assessment) { create(:assessment) }
     let(:gross_income_summary) { create(:gross_income_summary, assessment:) }
     let(:disposable_income_summary) { create(:disposable_income_summary, assessment:) }
-    let(:cash_transaction_category) { create(:cash_transaction_category, operation:, name:, gross_income_summary:) }
-    let(:cash_transactions) { gross_income_summary.cash_transactions }
+    let(:regular_transactions) { gross_income_summary.regular_transactions }
     let(:outgoings) { build_list(:priority_debt_repayment_outgoing, 3, client_id: "client_id_2") }
 
     subject(:payment_checker) { described_class.call(cash_transactions:, regular_transactions:, outgoings:) }
 
     context "with payments" do
-      let(:regular_transactions) { build_list(:regular_transaction, 3, category:, operation:) }
+      let(:cash_transactions) { build_list(:cash_transaction, 1, category:, operation:, client_id: "client_id_1") }
 
-      before do
-        create_list(:cash_transaction, 3, cash_transaction_category:, client_id: "client_id_1")
+      let(:regular_transactions) do
+        build_list(:regular_transaction, 3, category:, operation:)
       end
 
       it "returns remarks array" do
@@ -29,6 +27,7 @@ module RemarkGenerators
     context "without payments" do
       let(:outgoings) { [] }
       let(:regular_transactions) { [] }
+      let(:cash_transactions) { [] }
 
       it "returns no remarks" do
         expect(payment_checker).to eq []

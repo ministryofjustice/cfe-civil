@@ -180,7 +180,7 @@ module Workflows
                                                                        liquid_capital_items: [],
                                                                        outgoings: [],
                                                                        other_income_payments: [],
-                                                                       cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                                       cash_transactions: [],
                                                                        regular_transactions: [],
                                                                        assessed_capital: 0,
                                                                        submission_date: assessment.submission_date).and_call_original
@@ -198,7 +198,7 @@ module Workflows
                                                                        state_benefits: [],
                                                                        outgoings: [],
                                                                        other_income_payments: [],
-                                                                       cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                                       cash_transactions: [],
                                                                        regular_transactions: [],
                                                                        assessed_capital: 0,
                                                                        submission_date: assessment.submission_date).and_call_original

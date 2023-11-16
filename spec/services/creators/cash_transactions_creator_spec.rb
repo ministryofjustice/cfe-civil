@@ -3,39 +3,26 @@ require "rails_helper"
 describe Creators::CashTransactionsCreator do
   describe ".call" do
     let(:assessment) { create :assessment, :with_gross_income_summary }
-    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:cash_transaction_params) { params }
-    let(:month0) { Date.current.beginning_of_month - 4.months }
-    let(:month1) { Date.current.beginning_of_month - 3.months }
-    let(:month2) { Date.current.beginning_of_month - 2.months }
-    let(:month3) { Date.current.beginning_of_month - 1.month }
+    let(:month0) { assessment.submission_date.beginning_of_month - 4.months }
+    let(:month1) { assessment.submission_date.beginning_of_month - 3.months }
+    let(:month2) { assessment.submission_date.beginning_of_month - 2.months }
+    let(:month3) { assessment.submission_date.beginning_of_month - 1.month }
 
     subject(:creator) do
-      described_class.call(submission_date: assessment.submission_date,
-                           gross_income_summary: assessment.applicant_gross_income_summary, cash_transaction_params:)
+      described_class.call(cash_transaction_params:, submission_date: assessment.submission_date)
     end
 
     context "happy_path" do
       let(:params) { valid_params }
-      let(:expected_category_details) do
-        [
-          %w[child_care debit],
-          %w[maintenance_out debit],
-          %w[friends_or_family credit],
-          %w[maintenance_in credit],
-        ]
-      end
 
-      it "creates the cash transaction category records" do
-        expect { creator }.to change(CashTransactionCategory, :count).by(4)
-        category_details = gross_income_summary.cash_transaction_categories.pluck(:name, :operation)
-        expect(category_details).to match_array expected_category_details
+      it "doesnt error" do
+        expect(creator.errors).to be_empty
       end
 
       it "creates the payment records" do
-        expect { creator }.to change(CashTransaction, :count).by(12)
-        cat = gross_income_summary.cash_transaction_categories.find_by(name: "child_care")
-        trx_details = cat.cash_transactions.order(:date).pluck(:date, :amount, :client_id)
+        cat = creator.records.select(&:child_care_payment?)
+        trx_details = cat.sort_by(&:date).map { [_1.date, _1.amount, _1.client_id] }
         expect(trx_details).to eq(
           [
             [month1, 256.0, "ec7b707b-d795-47c2-8b39-ccf022eae33b"],
@@ -44,33 +31,11 @@ describe Creators::CashTransactionsCreator do
           ],
         )
       end
-
-      it "responds true to #success?" do
-        expect(creator.success?).to be true
-      end
     end
 
     context "unhappy paths" do
-      RSpec.shared_examples "it is unsuccessful" do
-        it "does not create any CashTransactionCategory records" do
-          expect { creator }.not_to change(CashTransactionCategory, :count)
-        end
-
-        it "does not create any CashTransaction records" do
-          expect { creator }.not_to change(CashTransaction, :count)
-        end
-
-        it "responds false to #success?" do
-          expect(creator.success?).to be false
-        end
-      end
-
       context "not exactly three occurrences of payments" do
         let(:params) { invalid_params_two_payments }
-
-        before { creator }
-
-        it_behaves_like "it is unsuccessful"
 
         it "returns expected errors" do
           expect(creator.errors).to eq ["There must be exactly 3 payments for category maintenance_in"]
@@ -80,10 +45,6 @@ describe Creators::CashTransactionsCreator do
       context "not consecutive months" do
         let(:params) { invalid_params_not_consecutive_months }
 
-        before { creator }
-
-        it_behaves_like "it is unsuccessful"
-
         it "returns expected errors" do
           expect(creator.errors).to eq ["Expecting payment dates for category maintenance_in to be 1st of three of the previous 3 months"]
         end
@@ -91,10 +52,6 @@ describe Creators::CashTransactionsCreator do
 
       context "not the expected dates" do
         let(:params) { invalid_params_wrong_dates }
-
-        before { creator }
-
-        it_behaves_like "it is unsuccessful"
 
         it "returns expected errors" do
           expect(creator.errors).to eq ["Expecting payment dates for category child_care to be 1st of three of the previous 3 months"]
@@ -106,7 +63,7 @@ describe Creators::CashTransactionsCreator do
       {
         income: [
           {
-            category: "maintenance_in",
+            category: :maintenance_in,
             payments: [
               {
                 date: month1.strftime("%F"),
@@ -126,7 +83,7 @@ describe Creators::CashTransactionsCreator do
             ],
           },
           {
-            category: "friends_or_family",
+            category: :friends_or_family,
             payments: [
               {
                 date: month2.strftime("%F"),
@@ -149,7 +106,7 @@ describe Creators::CashTransactionsCreator do
         outgoings:
           [
             {
-              category: "maintenance_out",
+              category: :maintenance_out,
               payments: [
                 {
                   date: month2.strftime("%F"),
@@ -169,7 +126,7 @@ describe Creators::CashTransactionsCreator do
               ],
             },
             {
-              category: "child_care",
+              category: :child_care,
               payments: [
                 {
                   date: month3.strftime("%F"),

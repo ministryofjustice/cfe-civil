@@ -53,7 +53,7 @@ module V6
 
       new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                         other_income_payments: applicant.other_income_payments,
-                                                        cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                        cash_transactions: applicant.cash_transactions,
                                                         regular_transactions: applicant.regular_transactions,
                                                         submission_date: assessment.submission_date,
                                                         outgoings: applicant.outgoings,
@@ -85,7 +85,7 @@ module V6
 
       remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                     other_income_payments: applicant.other_income_payments,
-                                                    cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                                                    cash_transactions: applicant.cash_transactions,
                                                     regular_transactions: applicant.regular_transactions,
                                                     submission_date: assessment.submission_date,
                                                     outgoings: applicant.outgoings,
@@ -96,7 +96,7 @@ module V6
                                                     assessed_capital:)
       remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
                                                      other_income_payments: partner.other_income_payments,
-                                                     cash_transactions: assessment.partner_gross_income_summary.cash_transactions,
+                                                     cash_transactions: partner.cash_transactions,
                                                      regular_transactions: partner.regular_transactions,
                                                      submission_date: assessment.submission_date,
                                                      outgoings: partner.outgoings,
@@ -173,6 +173,11 @@ module V6
                                        non_liquid_capital_items: parse_capitals(capitals.fetch(:non_liquid_capital, [])))
 
       employments = input_params.fetch(:employment_income, []).presence || input_params.fetch(:employments, [])
+
+      cash_transaction_params = input_params.fetch(:cash_transactions, {})
+      cash_transactions = Creators::CashTransactionsCreator.call(cash_transaction_params:, submission_date:)
+      render_unprocessable(cash_transactions.errors) && return if cash_transactions.errors.any?
+
       PersonData.new(details: person_model.freeze,
                      employment_details: parse_employment_details(input_params.fetch(:employment_details, [])),
                      self_employments: parse_self_employments(input_params.fetch(:self_employment_details, [])),
@@ -181,6 +186,7 @@ module V6
                      outgoings:,
                      other_income_payments:,
                      irregular_income_payments: parse_irregular_incomes(irregular_income_params).map(&:freeze),
+                     cash_transactions: cash_transactions.records,
                      gross_income_summary:,
                      regular_transactions: parse_regular_transactions(input_params.fetch(:regular_transactions, [])),
                      dependants: dependant_models.map(&:freeze),

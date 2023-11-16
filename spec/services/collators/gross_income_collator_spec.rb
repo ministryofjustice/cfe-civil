@@ -14,7 +14,7 @@ module Collators
                              employments:,
                              regular_transactions: [],
                              irregular_income_payments:,
-                             gross_income_summary: assessment.applicant_gross_income_summary,
+                             cash_transactions: [],
                              self_employments: [],
                              employment_details: [],
                              other_income_payments:
@@ -111,7 +111,7 @@ module Collators
         end
 
         context "bank and cash transactions" do
-          let(:assessment) { create :assessment, :with_gross_income_summary_and_records }
+          let(:assessment) { create :assessment, :with_gross_income_summary }
           let(:irregular_income_payments) { [] }
 
           it "updates with totals for all categories based on bank and cash transactions" do

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "rails_helper"
 
 RSpec.describe "Calculators::PensionContributionCalculator", :calls_bank_holiday do
@@ -27,8 +25,7 @@ RSpec.describe "Calculators::PensionContributionCalculator", :calls_bank_holiday
   describe "#pension_contributions" do
     let(:pension_outgoings) { build_list(:pension_contribution_outgoing, 3, amount: monthly_contribution) }
     let(:pension_cash_transactions) do
-      ctc = create(:cash_transaction_category, name: "pension_contribution", operation: :debit, gross_income_summary: assessment.applicant_gross_income_summary)
-      create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: monthly_contribution)
+      build_list(:cash_transaction, 3, category: :pension_contribution, operation: :debit, amount: monthly_contribution)
     end
     let(:pension_regular_transactions) { [] }
 
@@ -51,8 +48,7 @@ RSpec.describe "Calculators::PensionContributionCalculator", :calls_bank_holiday
 
   describe "#pension_contribution_cash" do
     let(:pension_cash_transactions) do
-      ctc = create(:cash_transaction_category, name: "pension_contribution", operation: :debit, gross_income_summary: assessment.applicant_gross_income_summary)
-      create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: monthly_contribution)
+      build_list(:cash_transaction, 3, category: :pension_contribution, operation: :debit, amount: monthly_contribution)
     end
     let(:pension_outgoings) { [] }
     let(:pension_regular_transactions) { [] }

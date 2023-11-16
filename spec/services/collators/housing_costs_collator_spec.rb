@@ -7,14 +7,13 @@ module Collators
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:housing_benefit_type) { create :state_benefit_type, label: "housing_benefit" }
     let(:submission_date) { assessment.submission_date }
-    let(:rent_or_mortgage_category) { create(:rent_or_mortgage_transaction_category, gross_income_summary: assessment.applicant_gross_income_summary) }
 
     subject(:collator) do
       described_class.call(housing_cost_outgoings:,
                            regular_transactions: [],
                            person: instance_double(PersonWrapper, single?: true, dependants: []),
                            housing_benefit:,
-                           gross_income_summary: assessment.applicant_gross_income_summary,
+                           cash_transactions:,
                            submission_date: assessment.submission_date,
                            allow_negative_net: false)
     end
@@ -22,6 +21,7 @@ module Collators
     describe ".call" do
       context "with no housing cost outgoings" do
         let(:housing_cost_outgoings) { [] }
+        let(:cash_transactions) { [] }
 
         context "without housing benefit" do
           let(:housing_benefit) { 0 }
@@ -50,6 +50,7 @@ module Collators
       end
 
       context "with housing cost outgoings" do
+        let(:cash_transactions) { [] }
         let(:housing_cost_outgoings) do
           [build(:housing_cost_outgoing, amount: 355.44, payment_date: Date.current, housing_cost_type:),
            build(:housing_cost_outgoing, amount: 355.44, payment_date: 1.month.ago, housing_cost_type:),
@@ -126,8 +127,8 @@ module Collators
         let(:housing_cost_outgoings) { [] }
         let(:housing_benefit) { 0 }
 
-        before do
-          create(:cash_transaction, cash_transaction_category: rent_or_mortgage_category, amount: 564)
+        let(:cash_transactions) do
+          build_list(:cash_transaction, 1, category: :rent_or_mortgage, operation: :debit, amount: 564)
         end
 
         it "caps the net costs" do

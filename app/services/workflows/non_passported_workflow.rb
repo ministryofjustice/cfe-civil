@@ -218,8 +218,8 @@ module Workflows
                                                            self_employments:,
                                                            employment_details:,
                                                            irregular_income_payments: person.irregular_income_payments, employments: converted_employments_and_remarks.employment_data,
-                                                           gross_income_summary: person.gross_income_summary,
                                                            regular_transactions: person.regular_transactions,
+                                                           cash_transactions: person.cash_transactions,
                                                            other_income_payments: person.other_income_payments,
                                                            state_benefits: person.state_benefits)
         Collators::GrossIncomeCollator::Result.new person_gross_income_subtotals: gross_result.person_gross_income_subtotals,
@@ -244,7 +244,7 @@ module Workflows
         applicant_outgoings = Collators::OutgoingsCollator.call(submission_date:,
                                                                 person: applicant,
                                                                 regular_transactions: applicant_person_data.regular_transactions,
-                                                                gross_income_summary: applicant_person_data.gross_income_summary,
+                                                                cash_transactions: applicant_person_data.cash_transactions,
                                                                 outgoings: applicant_person_data.outgoings,
                                                                 eligible_for_childcare:,
                                                                 state_benefits: applicant_person_data.state_benefits,
@@ -252,7 +252,7 @@ module Workflows
                                                                 allow_negative_net: true)
         partner_outgoings = Collators::OutgoingsCollator.call(submission_date:,
                                                               person: partner,
-                                                              gross_income_summary: partner_person_data.gross_income_summary,
+                                                              cash_transactions: partner_person_data.cash_transactions,
                                                               regular_transactions: partner_person_data.regular_transactions,
                                                               outgoings: partner_person_data.outgoings,
                                                               eligible_for_childcare:,
@@ -260,11 +260,11 @@ module Workflows
                                                               total_gross_income: gross_income_subtotals.partner_gross_income_subtotals.total_gross_income,
                                                               allow_negative_net: true)
 
-        applicant_disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: applicant_person_data.gross_income_summary)
+        applicant_disposable = Collators::DisposableIncomeCollator.call(cash_transactions: applicant_person_data.cash_transactions)
         applicant_regular = Collators::RegularOutgoingsCollator.call(regular_transactions: applicant_person_data.regular_transactions,
                                                                      eligible_for_childcare:)
 
-        partner_disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: partner_person_data.gross_income_summary)
+        partner_disposable = Collators::DisposableIncomeCollator.call(cash_transactions: partner_person_data.cash_transactions)
         partner_regular = Collators::RegularOutgoingsCollator.call(regular_transactions: partner_person_data.regular_transactions,
                                                                    eligible_for_childcare:)
 
@@ -298,14 +298,14 @@ module Workflows
         )
         outgoings = Collators::OutgoingsCollator.call(submission_date:,
                                                       person: applicant,
-                                                      gross_income_summary: applicant_person_data.gross_income_summary,
                                                       outgoings: applicant_person_data.outgoings,
                                                       regular_transactions: applicant_person_data.regular_transactions,
                                                       eligible_for_childcare:,
+                                                      cash_transactions: applicant_person_data.cash_transactions,
                                                       state_benefits: applicant_person_data.state_benefits,
                                                       total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
                                                       allow_negative_net: false)
-        disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: applicant_person_data.gross_income_summary)
+        disposable = Collators::DisposableIncomeCollator.call(cash_transactions: applicant_person_data.cash_transactions)
         regular = Collators::RegularOutgoingsCollator.call(regular_transactions: applicant_person_data.regular_transactions,
                                                            eligible_for_childcare:)
         DisposableResult.new(

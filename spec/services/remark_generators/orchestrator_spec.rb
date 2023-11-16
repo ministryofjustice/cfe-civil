@@ -41,7 +41,7 @@ module RemarkGenerators
                            outgoings: childcare_outgoings + housing_outgoings + legal_aid_outgoings + maintenance_outgoings,
                            employments:,
                            other_income_payments:,
-                           cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
+                           cash_transactions: [],
                            regular_transactions:,
                            assessed_capital: 0,
                            submission_date:)

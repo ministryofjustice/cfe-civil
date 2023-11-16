@@ -105,6 +105,7 @@ module Workflows
       let(:applicant_data) do
         build(:person_data, details: applicant,
                             regular_transactions:,
+                            cash_transactions:,
                             gross_income_summary: assessment.applicant_gross_income_summary,
                             dependants:, employments:,
                             capitals_data: build(:capitals_data, main_home:, additional_properties:))
@@ -142,6 +143,7 @@ module Workflows
       context "with controlled work" do
         let(:level_of_help) { "controlled" }
         let(:dependants) { [] }
+        let(:cash_transactions) { [] }
 
         describe "self employed" do
           let(:applicant) { build :applicant }
@@ -297,6 +299,7 @@ module Workflows
         let(:level_of_help) { "certificated" }
         let(:self_employments) { [] }
         let(:regular_transactions) { [] }
+        let(:cash_transactions) { [] }
 
         context "with capital" do
           let(:dependants) { [] }
@@ -334,6 +337,7 @@ module Workflows
             let(:partner_additional_properties) do
               [build(:property, :additional_property, value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)]
             end
+            let(:cash_transactions) { [] }
 
             before do
               create(:partner_capital_summary, assessment:)
@@ -353,12 +357,7 @@ module Workflows
           context "with childcare costs (and at least 1 dependent child)" do
             let(:salary) { 19_000 }
             let(:dependants) { build_list(:dependant, 1, :under15, submission_date: assessment.submission_date) }
-
-            before do
-              create(:child_care_transaction_category,
-                     gross_income_summary: assessment.applicant_gross_income_summary,
-                     cash_transactions: build_list(:cash_transaction, 1, amount: 800))
-            end
+            let(:cash_transactions) { build_list(:cash_transaction, 1, operation: :debit, category: :child_care, amount: 800) }
 
             context "when employed" do
               let(:employed) { true }

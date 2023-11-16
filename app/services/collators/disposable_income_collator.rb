@@ -7,13 +7,12 @@ module Collators
     end
 
     class << self
-      def call(gross_income_summary:)
-        Result.new(legal_aid_cash: monthly_cash_by_category(gross_income_summary, :legal_aid),
-                   maintenance_out_cash: monthly_cash_by_category(gross_income_summary, :maintenance_out))
+      def call(cash_transactions:)
+        Result.new(legal_aid_cash: monthly_cash_by_category(cash_transactions.select(&:legal_aid_payment?)),
+                   maintenance_out_cash: monthly_cash_by_category(cash_transactions.select(&:maintenance_out_payment?)))
       end
 
-      def monthly_cash_by_category(gross_income_summary, category)
-        cash_transactions = gross_income_summary.cash_transactions.by_operation_and_category(:debit, category)
+      def monthly_cash_by_category(cash_transactions)
         Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
     end

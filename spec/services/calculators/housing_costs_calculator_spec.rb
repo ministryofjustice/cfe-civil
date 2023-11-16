@@ -13,9 +13,9 @@ module Calculators
       described_class.call(housing_cost_outgoings:,
                            housing_costs_cap_applies:,
                            monthly_housing_benefit: housing_benefit_amount,
+                           cash_transactions: [],
                            submission_date: assessment.submission_date,
-                           regular_transactions: [],
-                           gross_income_summary: assessment.applicant_gross_income_summary)
+                           regular_transactions: [])
     end
 
     context "when using outgoings and state_benefits" do
