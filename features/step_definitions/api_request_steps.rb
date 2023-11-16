@@ -31,8 +31,8 @@ Given("I add disputed main property of value {int}") do |value|
   @main_home = { subject_matter_of_dispute: true, value:, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
 end
 
-Given("I add non-disputed main property") do
-  @main_home = { subject_matter_of_dispute: false, value: 200_000, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
+Given("I add a non-disputed main property of value {int}") do |value|
+  @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
 end
 
 Given("A submission date of {string}") do |date|
