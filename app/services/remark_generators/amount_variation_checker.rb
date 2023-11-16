@@ -10,12 +10,12 @@ module RemarkGenerators
     end
 
     def call
-      populate_remarks unless unique_amounts || exempt_from_checking
+      populate_remarks unless unique_amounts || exempt_from_checking?
     end
 
   private
 
-    def exempt_from_checking
+    def exempt_from_checking?
       Utilities::ChildcareExemptionDetector.call(record_type, @child_care_bank)
     end
 

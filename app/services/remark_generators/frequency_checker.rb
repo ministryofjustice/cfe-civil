@@ -11,12 +11,12 @@ module RemarkGenerators
 
     def call(date_attribute = :payment_date)
       @date_attribute = date_attribute
-      populate_remarks if unknown_frequency? && !exempt_from_checking
+      populate_remarks if unknown_frequency? && !exempt_from_checking?
     end
 
   private
 
-    def exempt_from_checking
+    def exempt_from_checking?
       Utilities::ChildcareExemptionDetector.call(record_type, @child_care_bank)
     end
 
