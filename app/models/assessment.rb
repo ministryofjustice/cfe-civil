@@ -1,9 +1,7 @@
 class Assessment < ApplicationRecord
-  serialize :remarks
-
   LEVELS_OF_HELP = %w[certificated controlled].freeze
 
-  attr_accessor :level_of_help
+  attr_accessor :level_of_help, :remarks
 
   validates :remote_ip,
             :submission_date,
@@ -31,22 +29,22 @@ class Assessment < ApplicationRecord
            dependent: :destroy
 
   # Always instantiate a new Remarks object from a nil value
-  def remarks
-    attributes["remarks"] || Remarks.new(id)
-  rescue StandardError
-    Remarks.new(id)
-  end
+  # def remarks
+  #   attributes["remarks"] || Remarks.new(id)
+  # rescue StandardError
+  #   Remarks.new(id)
+  # end
 
   def proceeding_type_codes
     proceeding_types.order(:ccms_code).map(&:ccms_code)
   end
 
   def add_remarks!(new_remarks)
-    my_remarks = remarks
+    my_remarks = Remarks.new(id)
 
     new_remarks.each do |remark|
       my_remarks.add(remark.type, remark.issue, remark.ids)
     end
-    my_remarks
+    self.remarks = my_remarks
   end
 end

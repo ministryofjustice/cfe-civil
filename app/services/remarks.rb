@@ -30,7 +30,7 @@ class Remarks
   ].freeze
 
   def initialize(assessment_id)
-    @assessment_id = assessment_id
+    @assessment = Assessment.find(assessment_id)
     @remarks_hash = {}
   end
 
@@ -42,7 +42,8 @@ class Remarks
   end
 
   def as_json
-    @remarks_hash.merge! ExplicitRemark.remarks_by_category(@assessment_id)
+    #@remarks_hash.merge! ExplicitRemark.remarks_by_category(@assessment.id)
+    @remarks_hash.merge! @assessment.explicit_remarks.by_category
   end
 
 private
