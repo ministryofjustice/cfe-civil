@@ -1580,7 +1580,6 @@ class SwaggerDocs
                     type: :string,
                     enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
                     description: "CCMS Client Involvement type A=applicant/claimant/petitioner, D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party. Domestic abuse waivers only apply for type 'A'",
-                    deprecated: true,
                   },
                 },
               },
