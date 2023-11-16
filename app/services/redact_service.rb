@@ -43,11 +43,14 @@ class RedactService
     end
 
     def redact_remarks(remarks)
-      remarks.map { |key, value|
-        if value.is_a? Hash
-          value = redact_remarks_client_ids(value)
+      remarks.map { |type, issues|
+        if issues.is_a? Hash
+          issues = issues.map { |issue, ids|
+            ids = ids.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
+            [issue, ids]
+          }.to_h
         end
-        [key, value]
+        [type, issues]
       }.to_h
     end
 
@@ -56,19 +59,6 @@ class RedactService
     end
 
   private
-
-    def redact_remarks_client_ids(object)
-      object.transform_values do |value|
-        case value
-        when Hash
-          redact_remarks_client_ids(value)
-        when Array
-          value.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
-        else
-          CFEConstants::REDACTED_MESSAGE
-        end
-      end
-    end
 
     def safe_parse_date(date)
       Date.parse(date) if date

@@ -127,10 +127,6 @@ describe RedactService do
               "** REDACTED **",
               "** REDACTED **",
             ],
-            additional_remark_issue: {
-              issue_1: ["** REDACTED **", "** REDACTED **"],
-              issue_2: "** REDACTED **",
-            },
           },
           policy_disregards: %w[
             string
