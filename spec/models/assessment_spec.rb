@@ -2,9 +2,9 @@ require "rails_helper"
 require Rails.root.join("spec/fixtures/assessment_request_fixture.rb")
 
 RSpec.describe Assessment, type: :model do
-  it { is_expected.to have_many(:explicit_remarks) }
-
   let(:payload) { AssessmentRequestFixture.json }
+
+  it { is_expected.to have_many(:explicit_remarks) }
 
   context "version 6" do
     let(:param_hash) do
@@ -38,38 +38,30 @@ RSpec.describe Assessment, type: :model do
     end
   end
 
-  describe "#remarks" do
-    # context "nil value in database" do
-    #   it "instantiates a new empty Remarks object" do
-    #     assessment = create :assessment
-    #     expect(assessment.remarks.class).to eq Remarks
-    #     expect(assessment.remarks.as_json).to eq Remarks.new(assessment.id).as_json
-    #   end
-    # end
+  describe "#transform_remarks" do
+    let(:remarks) do
+      [
+        Data.define(:type, :issue, :ids).new(:other_income_payment, :unknown_frequency, %w[abc def]),
+        Data.define(:type, :issue, :ids).new(:other_income_payment, :amount_variation, %w[ghu jkl]),
+        Data.define(:type, :issue, :ids).new(:state_benefit_payment, :residual_balance, %w[cde sss]),
+      ]
+    end
 
-    context "saving and reloading" do
-      let(:remarks) do
-        r = Remarks.new(assessment.id)
-        r.add(:other_income_payment, :unknown_frequency, %w[abc def])
-        r.add(:other_income_payment, :amount_variation, %w[ghu jkl])
-        r
-      end
+    let(:assessment) { create :assessment }
 
-      let(:assessment) { create :assessment }
+    subject(:transformed_remarks) { assessment.transform_remarks(remarks) }
 
-      before { assessment.remarks = remarks }
-
-      it "reconstitutes into a remarks class with the same values" do
-        expect(assessment.remarks.as_json).to eq remarks.as_json
+    context "without explicit remarks" do
+      it "reconstitutes into a remarks hash" do
+        expect(transformed_remarks).to eq({ other_income_payment: { unknown_frequency: %w[abc def], amount_variation: %w[ghu jkl] }, state_benefit_payment: { residual_balance: %w[cde sss] } })
       end
     end
 
-    context "error handling" do
-      it "instantiates a new empty Remarks object when there is an attributes failure" do
-        assessment = create :assessment, remarks: "remarks"
-        allow(assessment).to receive(:attributes).and_raise(StandardError.new("error"))
-        #expect(assessment.remarks.class).to eq Remarks
-        #expect(assessment.remarks.as_json).to eq Remarks.new(assessment.id).as_json
+    context "with explicit remarks" do
+      before { create :explicit_remark, remark: "test remark", assessment: }
+
+      it "reconstitutes into a remarks hash with explicit remarks" do
+        expect(transformed_remarks).to eq({ other_income_payment: { unknown_frequency: %w[abc def], amount_variation: %w[ghu jkl] }, state_benefit_payment: { residual_balance: %w[cde sss] }, policy_disregards: ["test remark"] })
       end
     end
   end

@@ -1,10 +1,10 @@
 require "rails_helper"
 
 RSpec.describe ExplicitRemark, type: :model do
-  it { is_expected.to belong_to(:assessment) }
-
-  let(:assessment1) { create :assessment }
   let(:assessment2) { create :assessment }
+  let(:assessment1) { create :assessment }
+
+  it { is_expected.to belong_to(:assessment) }
 
   describe "#by_category" do
     before do

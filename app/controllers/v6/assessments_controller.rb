@@ -31,7 +31,7 @@ module V6
                else
                  without_partner_workflow(assessment: create.assessment, applicant:)
                end
-        remarks = create.assessment.add_remarks!(full.workflow_result.remarks)
+        remarks = create.assessment.transform_remarks(full.workflow_result.remarks)
 
         render json: assessment_decorator_class.new(assessment: create.assessment,
                                                     calculation_output: full.workflow_result.calculation_output,
