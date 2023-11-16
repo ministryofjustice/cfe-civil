@@ -1,30 +1,23 @@
 module RemarkGenerators
   class AmountVariationChecker < BaseChecker
-    def self.call(collection:, child_care_bank:)
-      new(child_care_bank:, collection:).call
-    end
+    class << self
+      def call(collection:, child_care_bank:)
+        populate_remarks(collection) unless unique_amounts(collection) || exempt_from_checking?(collection:, child_care_bank:)
+      end
 
-    def initialize(child_care_bank:, collection:)
-      super(collection)
-      @child_care_bank = child_care_bank
-    end
+    private
 
-    def call
-      populate_remarks unless unique_amounts || exempt_from_checking?
-    end
+      def exempt_from_checking?(collection:, child_care_bank:)
+        Utilities::ChildcareExemptionDetector.call(record_type(collection), child_care_bank)
+      end
 
-  private
+      def unique_amounts(collection)
+        collection.map(&:amount).uniq.size == 1
+      end
 
-    def exempt_from_checking?
-      Utilities::ChildcareExemptionDetector.call(record_type, @child_care_bank)
-    end
-
-    def unique_amounts
-      @collection.map(&:amount).uniq.size == 1
-    end
-
-    def populate_remarks
-      RemarksData.new(record_type, :amount_variation, @collection.map(&:client_id))
+      def populate_remarks(collection)
+        RemarksData.new(record_type(collection), :amount_variation, collection.map(&:client_id))
+      end
     end
   end
 end

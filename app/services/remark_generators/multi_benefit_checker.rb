@@ -1,17 +1,19 @@
 module RemarkGenerators
   class MultiBenefitChecker < BaseChecker
-    def call
-      populate_remarks if flagged?
-    end
+    class << self
+      def call(collection)
+        populate_remarks(collection) if flagged?(collection)
+      end
 
-  private
+    private
 
-    def flagged?
-      @collection.map(&:flags).any?(%w[multi_benefit])
-    end
+      def flagged?(collection)
+        collection.map(&:flags).any?(%w[multi_benefit])
+      end
 
-    def populate_remarks
-      RemarksData.new(type: record_type, issue: :multi_benefit, ids: @collection.map(&:client_id))
+      def populate_remarks(collection)
+        RemarksData.new(type: record_type(collection), issue: :multi_benefit, ids: collection.map(&:client_id))
+      end
     end
   end
 end
