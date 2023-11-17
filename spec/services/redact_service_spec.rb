@@ -85,6 +85,8 @@ describe RedactService do
       end
     end
 
+    # Redact response test has already been covered in spec/requests/v6/assessments_controller/simple_spec.rb.
+    # RequestLog factory created with sample response remarks just to test the RequestLog remark redaction logic
     context "successful response with assessment remarks" do
       before do
         create(:request_log, :with_response_remarks)

@@ -56,7 +56,7 @@ module Decorators
 
       describe "#as_json" do
         let(:remarks) do
-          assessment.transform_remarks([Data.define(:type, :issue, :ids).new(:other_income_payment, :unknown_frequency, %w[abc def])])
+          [Data.define(:type, :issue, :ids).new(:other_income_payment, :unknown_frequency, %w[abc def])]
         end
         let(:applicant) do
           build(:person_data,

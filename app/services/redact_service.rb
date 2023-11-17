@@ -45,9 +45,8 @@ class RedactService
     def redact_remarks(remarks)
       remarks.map { |type, issues|
         if issues.is_a? Hash
-          issues = issues.map { |issue, ids|
-            ids = ids.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
-            [issue, ids]
+          issues.transform_values! { |ids|
+            ids.map { |_client_id| CFEConstants::REDACTED_MESSAGE }
           }.to_h
         end
         [type, issues]

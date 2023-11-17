@@ -31,13 +31,4 @@ class Assessment < ApplicationRecord
   def proceeding_type_codes
     proceeding_types.order(:ccms_code).map(&:ccms_code)
   end
-
-  def transform_remarks(remarks)
-    remarks_hash_by_type = remarks.group_by(&:type)
-    remarks_hash = remarks_hash_by_type.transform_values do |v|
-      v.group_by(&:issue).transform_values { |c| c.map(&:ids).flatten }
-    end
-    remarks_hash.merge! explicit_remarks.by_category
-    remarks_hash.symbolize_keys
-  end
 end
