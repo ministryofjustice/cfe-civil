@@ -4,6 +4,7 @@ class RequestRerunner
     USER_AGENT = "REQUEST_RERUNNER".freeze
     HEADERS = { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'USER-AGENT': USER_AGENT }.freeze
     BATCH_SIZE = 500
+    CFE_URL = "/v6/assessments".freeze
 
     def call
       faraday = Faraday.new(API_BASE_URL, headers: HEADERS) do |f|
@@ -26,7 +27,7 @@ class RequestRerunner
             original = standardize_response v6_request.response
             date = original.dig(:assessment, :submission_date)
 
-            faraday_response = faraday.post("/v7/assessments", v6_request.request)
+            faraday_response = faraday.post(CFE_URL, v6_request.request)
             if faraday_response.success?
               response = standardize_response(faraday_response.body)
               diffs = make_diffs original, response
