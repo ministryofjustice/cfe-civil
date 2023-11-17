@@ -1,36 +1,31 @@
 module RemarkGenerators
   class FrequencyChecker < BaseChecker
-    include Exemptable
+    class << self
+      def call(child_care_bank:, collection:, date_attribute: :payment_date)
+        check(child_care_bank:, collection:, date_attribute:) unless collection.empty?
+      end
 
-    # for Exemptable mixin
-    attr_reader :child_care_bank
+    private
 
-    def self.call(child_care_bank:, collection:, date_attribute: :payment_date)
-      new(child_care_bank:, collection:).call(date_attribute) unless collection.empty?
-    end
+      def check(child_care_bank:, collection:, date_attribute:)
+        populate_remarks(collection) if unknown_frequency?(collection:, date_attribute:) && !exempt_from_checking?(child_care_bank:, collection:)
+      end
 
-    def initialize(child_care_bank:, collection:)
-      super(collection)
-      @child_care_bank = child_care_bank
-    end
+      def exempt_from_checking?(child_care_bank:, collection:)
+        Utilities::ChildcareExemptionDetector.call(record_type(collection), child_care_bank)
+      end
 
-    def call(date_attribute = :payment_date)
-      @date_attribute = date_attribute
-      populate_remarks if unknown_frequency? && !exempt_from_checking
-    end
+      def unknown_frequency?(collection:, date_attribute:)
+        Utilities::PaymentPeriodAnalyser.new(dates(collection:, date_attribute:)).period_pattern == :unknown
+      end
 
-  private
+      def dates(collection:, date_attribute:)
+        collection.map { |rec| rec.send(date_attribute) }
+      end
 
-    def unknown_frequency?
-      Utilities::PaymentPeriodAnalyser.new(dates).period_pattern == :unknown
-    end
-
-    def dates
-      @collection.map { |rec| rec.send(@date_attribute) }
-    end
-
-    def populate_remarks
-      RemarksData.new(type: record_type, issue: :unknown_frequency, ids: @collection.map(&:client_id))
+      def populate_remarks(collection)
+        RemarksData.new(type: record_type(collection), issue: :unknown_frequency, ids: collection.map(&:client_id))
+      end
     end
   end
 end
