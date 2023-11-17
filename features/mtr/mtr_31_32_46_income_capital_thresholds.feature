@@ -42,7 +42,8 @@ Feature:
       | attribute                      | value    |
       | total_disposable_income        |   234.0  |
 
-  Scenario: Between disposable thresholds post MTR - band zero extends up to £622, plus £20 minimum makes lower threshold look high
+  Scenario: Between disposable thresholds post MTR
+#  band zero extends up to £622, plus £20 minimum makes lower threshold look high
     Given I am undertaking a certificated assessment
     And A submission date of "2525-04-10"
     And I add employment income of 2900 per month
