@@ -1,7 +1,16 @@
 class ProceedingType < ApplicationRecord
   belongs_to :assessment
 
-  validates :client_involvement_type, inclusion: { in: CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES,
+  # client_involvement_types
+  # Applicant/claimant/petitioner A
+  # Defendant/respondent D
+  # Subject of proceedings (child) W
+  # Intervenor I
+  # Joined party Z
+  # Domestic abuse waivers will only be applied for client_involvement_type == 'A'
+  VALID_CLIENT_INVOLVEMENT_TYPES = %w[A D W Z I].freeze
+
+  validates :client_involvement_type, inclusion: { in: VALID_CLIENT_INVOLVEMENT_TYPES,
                                                    message: "invalid client_involvement_type: %{value}",
                                                    allow_nil: true }
   validate :proceeding_type_code_validations

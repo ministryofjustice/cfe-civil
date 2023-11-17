@@ -3,7 +3,7 @@ FactoryBot.define do
     assessment
 
     sequence(:ccms_code) { |n| CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES[n % CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.size] }
-    client_involvement_type { CFEConstants::VALID_CLIENT_INVOLVEMENT_TYPES.sample }
+    client_involvement_type { ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES.sample }
 
     trait :with_invalid_ccms_code do
       ccms_code { "XX1234" }

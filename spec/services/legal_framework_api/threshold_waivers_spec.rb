@@ -4,22 +4,17 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
   before { allow(SecureRandom).to receive(:uuid).and_return(request_id) }
 
   describe ".call" do
-    let(:proceeding_type_details) do
-      [
-        {
-          ccms_code: "DA001",
-          client_involvement_type: "A",
-        },
-        {
-          ccms_code: "DA005",
-          client_involvement_type: "Z",
-        },
-        {
-          ccms_code: "SE014",
-          client_involvement_type: "A",
-        },
-      ]
+    let(:proceeding_type_data) do
+      {
+        DA001: "A",
+        DA002: "D",
+        DA003: "W",
+        DA004: "I",
+        DA005: "Z",
+        SE014: "A",
+      }
     end
+    let(:proceeding_type_details) { proceeding_type_data.map { |code, type| { ccms_code: code, client_involvement_type: type } } }
 
     let(:request_body) do
       {
@@ -28,6 +23,20 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
       }.to_json
     end
 
+    # waivers are only set true for DA with client_involvement_type == 'A'
+    let(:non_waived_types) do
+      %i[DA002 DA003 DA004 DA005].map do |code|
+        {
+          ccms_code: code.to_s,
+          full_s8_only: false,
+          matter_type: "Domestic abuse",
+          gross_income_upper: false,
+          disposable_income_upper: false,
+          capital_upper: false,
+          client_involvement_type: proceeding_type_data.fetch(code),
+        }
+      end
+    end
     let(:expected_parsed_response) do
       {
         request_id: "e76bd31f-dd62-444f-9d7d-a731b40b7eea",
@@ -42,15 +51,7 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
             capital_upper: true,
             client_involvement_type: "A",
           },
-          {
-            ccms_code: "DA005",
-            full_s8_only: false,
-            client_involvement_type: "Z",
-            gross_income_upper: false,
-            disposable_income_upper: false,
-            capital_upper: false,
-            matter_type: "Domestic abuse",
-          },
+        ] + non_waived_types + [
           {
             ccms_code: "SE014",
             full_s8_only: false,
