@@ -14,6 +14,7 @@ module Calculators
                            housing_costs_cap_applies:,
                            monthly_housing_benefit: housing_benefit_amount,
                            submission_date: assessment.submission_date,
+                           regular_transactions: [],
                            gross_income_summary: assessment.applicant_gross_income_summary)
     end
 

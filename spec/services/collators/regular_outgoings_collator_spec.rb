@@ -12,25 +12,28 @@ require "rails_helper"
 
 RSpec.describe Collators::RegularOutgoingsCollator do
   let(:assessment) { create(:assessment, :with_gross_income_summary, :with_disposable_income_summary) }
-  let(:gross_income_summary) { assessment.applicant_gross_income_summary }
   let(:eligible_for_childcare) { true }
 
   describe ".call" do
     subject(:collator) do
-      described_class.call(gross_income_summary:, eligible_for_childcare:)
+      described_class.call(regular_transactions:, eligible_for_childcare:)
     end
 
     context "without monthly regular transactions" do
+      let(:regular_transactions) { [] }
+
       it "does increments #<cagtegory>_all_sources data" do
         expect(collator).to have_attributes(legal_aid_regular: 0.0, maintenance_out_regular: 0.0)
       end
     end
 
     context "with monthly regular transactions" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "monthly", amount: 111.11)
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "legal_aid", frequency: "monthly", amount: 222.22)
-        create(:regular_transaction, gross_income_summary:, operation: "credit", category: "maintenance_in", frequency: "monthly", amount: 12_000)
+      let(:regular_transactions) do
+        [
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "monthly", amount: 111.11),
+          build(:regular_transaction, operation: :debit, category: :legal_aid, frequency: "monthly", amount: 222.22),
+          build(:regular_transaction, operation: :credit, category: :maintenance_in, frequency: "monthly", amount: 12_000),
+        ]
       end
 
       it "increments #<cagtegory>_all_sources data" do
@@ -39,10 +42,12 @@ RSpec.describe Collators::RegularOutgoingsCollator do
     end
 
     context "with four_weekly regular transactions" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "four_weekly", amount: 111.11)
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "legal_aid", frequency: "four_weekly", amount: 222.22)
-        create(:regular_transaction, gross_income_summary:, operation: "credit", category: "maintenance_in", frequency: "four_weekly", amount: 12_000)
+      let(:regular_transactions) do
+        [
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "four_weekly", amount: 111.11),
+          build(:regular_transaction, operation: :debit, category: :legal_aid, frequency: "four_weekly", amount: 222.22),
+          build(:regular_transaction, operation: :credit, category: :maintenance_in, frequency: "four_weekly", amount: 12_000),
+        ]
       end
 
       it "increments #<cagtegory>_all_sources data" do
@@ -51,10 +56,12 @@ RSpec.describe Collators::RegularOutgoingsCollator do
     end
 
     context "with two_weekly regular transactions" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "two_weekly", amount: 111.11)
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "legal_aid", frequency: "two_weekly", amount: 222.22)
-        create(:regular_transaction, gross_income_summary:, operation: "credit", category: "maintenance_in", frequency: "two_weekly", amount: 12_000)
+      let(:regular_transactions) do
+        [
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "two_weekly", amount: 111.11),
+          build(:regular_transaction, operation: :debit, category: :legal_aid, frequency: "two_weekly", amount: 222.22),
+          build(:regular_transaction, operation: :credit, category: :maintenance_in, frequency: "two_weekly", amount: 12_000),
+        ]
       end
 
       it "increments #<cagtegory>_all_sources data" do
@@ -63,10 +70,12 @@ RSpec.describe Collators::RegularOutgoingsCollator do
     end
 
     context "with weekly regular transaction" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "weekly", amount: 111.11)
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "legal_aid", frequency: "weekly", amount: 222.22)
-        create(:regular_transaction, gross_income_summary:, operation: "credit", category: "maintenance_in", frequency: "weekly", amount: 12_000)
+      let(:regular_transactions) do
+        [
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "weekly", amount: 111.11),
+          build(:regular_transaction, operation: :debit, category: :legal_aid, frequency: "weekly", amount: 222.22),
+          build(:regular_transaction, operation: :credit, category: :maintenance_in, frequency: "weekly", amount: 12_000),
+        ]
       end
 
       it "increments #<cagtegory>_all_sources data" do
@@ -75,12 +84,11 @@ RSpec.describe Collators::RegularOutgoingsCollator do
     end
 
     context "with monthly regular transaction of :child_care" do
-      before do
-        create(:regular_transaction,
-               gross_income_summary:,
-               operation: "debit",
-               category: "child_care",
-               frequency: "monthly", amount: 111.11)
+      let(:regular_transactions) do
+        build_list(:regular_transaction, 1,
+                   operation: :debit,
+                   category: :child_care,
+                   frequency: "monthly", amount: 111.11)
       end
 
       context "when eligible for childcare" do
@@ -99,9 +107,11 @@ RSpec.describe Collators::RegularOutgoingsCollator do
     end
 
     context "with multiple regular transactions of same operation and category" do
-      before do
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "monthly", amount: 111.11)
-        create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "monthly", amount: 222.22)
+      let(:regular_transactions) do
+        [
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "monthly", amount: 111.11),
+          build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "monthly", amount: 222.22),
+        ]
       end
 
       it "increments their values into single #<cagtegory>_all_sources data" do
@@ -111,9 +121,11 @@ RSpec.describe Collators::RegularOutgoingsCollator do
 
     context "with existing data" do
       context "with monthly regular transactions" do
-        before do
-          create(:regular_transaction, gross_income_summary:, operation: "debit", category: "maintenance_out", frequency: "monthly", amount: 1000.00)
-          create(:regular_transaction, gross_income_summary:, operation: "debit", category: "legal_aid", frequency: "monthly", amount: 2000.00)
+        let(:regular_transactions) do
+          [
+            build(:regular_transaction, operation: :debit, category: :maintenance_out, frequency: "monthly", amount: 1000.00),
+            build(:regular_transaction, operation: :debit, category: :legal_aid, frequency: "monthly", amount: 2000.00),
+          ]
         end
 
         it "increments #<category>_all_sources data to existing values" do

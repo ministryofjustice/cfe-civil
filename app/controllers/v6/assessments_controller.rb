@@ -52,7 +52,7 @@ module V6
       new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                         other_income_payments: applicant.other_income_payments,
                                                         cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                                                        regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                        regular_transactions: applicant.regular_transactions,
                                                         submission_date: assessment.submission_date,
                                                         outgoings: applicant.outgoings,
                                                         liquid_capital_items: applicant.capitals_data.liquid_capital_items,
@@ -84,7 +84,7 @@ module V6
       remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                     other_income_payments: applicant.other_income_payments,
                                                     cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                                                    regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                    regular_transactions: applicant.regular_transactions,
                                                     submission_date: assessment.submission_date,
                                                     outgoings: applicant.outgoings,
                                                     liquid_capital_items: applicant.capitals_data.liquid_capital_items,
@@ -95,7 +95,7 @@ module V6
       remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
                                                      other_income_payments: partner.other_income_payments,
                                                      cash_transactions: assessment.partner_gross_income_summary.cash_transactions,
-                                                     regular_transactions: assessment.partner_gross_income_summary.regular_transactions,
+                                                     regular_transactions: partner.regular_transactions,
                                                      submission_date: assessment.submission_date,
                                                      outgoings: partner.outgoings,
                                                      liquid_capital_items: partner.capitals_data.liquid_capital_items,
@@ -178,8 +178,16 @@ module V6
                      outgoings:,
                      other_income_payments:,
                      gross_income_summary:,
+                     regular_transactions: parse_regular_transactions(input_params.fetch(:regular_transactions, [])),
                      dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
+    end
+
+    def parse_regular_transactions(regular_transaction_params)
+      regular_transaction_params.map do |regular_transaction|
+        RegularTransaction.new category: regular_transaction[:category].to_sym, operation: regular_transaction[:operation].to_sym,
+                               frequency: regular_transaction[:frequency].to_sym, amount: regular_transaction[:amount]
+      end
     end
 
     def parse_state_benefits(state_benefits_params)

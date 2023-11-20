@@ -3,7 +3,7 @@ module Calculators
     Result = Data.define(:housing_costs, :allowed_housing_costs, :housing_costs_bank, :housing_costs_cash, :housing_costs_regular)
 
     class << self
-      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:)
+      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:, regular_transactions:)
         # 'Board and lodging' adjustment has already taken place in :allowable_amount
         housing_costs_bank = Calculators::MonthlyEquivalentCalculator.call(
           collection: housing_cost_outgoings,
@@ -17,10 +17,10 @@ module Calculators
         # so to decide whether to halve them, we do a 'best effort' by assuming they are board_and_lodging if the 'bank' housing costs
         # are of board_and_lodging type
         if should_halve_full_cost_minus_benefits?(housing_cost_outgoings, monthly_housing_benefit)
-          housing_costs_regular = housing_costs_regular_transactions(gross_income_summary) / 2
+          housing_costs_regular = housing_costs_regular_transactions(regular_transactions) / 2
           housing_costs_cash = housing_costs_cash(gross_income_summary) / 2
         else
-          housing_costs_regular = housing_costs_regular_transactions(gross_income_summary)
+          housing_costs_regular = housing_costs_regular_transactions(regular_transactions)
           housing_costs_cash = housing_costs_cash(gross_income_summary)
         end
 
@@ -68,8 +68,8 @@ module Calculators
         Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
 
-      def housing_costs_regular_transactions(gross_income_summary)
-        txns = gross_income_summary.regular_transactions.with_operation_and_category(:debit, :rent_or_mortgage)
+      def housing_costs_regular_transactions(regular_transactions)
+        txns = regular_transactions.select(&:rent_or_mortgage?)
         Calculators::MonthlyRegularTransactionAmountCalculator.call(txns)
       end
 

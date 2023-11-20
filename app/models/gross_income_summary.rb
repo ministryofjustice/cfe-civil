@@ -1,6 +1,5 @@
 class GrossIncomeSummary < ApplicationRecord
   belongs_to :assessment
-  has_many :regular_transactions, dependent: :destroy
   has_many :irregular_income_payments, dependent: :destroy
   has_many :cash_transaction_categories, dependent: :destroy
   has_many :cash_transactions, -> { order(date: :asc) }, through: :cash_transaction_categories, dependent: :destroy

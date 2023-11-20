@@ -5,7 +5,6 @@ RSpec.describe GrossIncomeSummary do
   let(:gross_income_summary) { create :gross_income_summary, assessment: }
 
   describe "associations" do
-    it { is_expected.to have_many(:regular_transactions).dependent(:destroy) }
     it { is_expected.to have_many(:cash_transaction_categories).dependent(:destroy) }
     it { is_expected.to have_many(:cash_transactions).through(:cash_transaction_categories).dependent(:destroy) }
 

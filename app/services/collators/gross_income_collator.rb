@@ -3,7 +3,7 @@ module Collators
     Result = Data.define(:remarks, :person_gross_income_subtotals)
 
     class << self
-      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, other_income_payments:)
+      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, regular_transactions:, other_income_payments:)
         employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
 
         remarks = if employments.count > 1
@@ -12,13 +12,20 @@ module Collators
                     []
                   end
 
-        regular_income_categories = income_categories.map do |category|
-          if category == :benefits
-            benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
-          else
-            calculate_category_subtotals(category:, gross_income_summary:, other_income_payments:)
-          end
-        end
+        # It's useful to call this here to avoid confusion with filtering (which is done by StateBenefitsCalculator#benefits)
+        # being done at different levels in the code
+        state_benefit_results = Calculators::StateBenefitsCalculator.benefits(regular_transactions:,
+                                                                              submission_date:, state_benefits:)
+
+        regular_income_categories = [
+          benefits_category_subtotals(gross_income_summary:,
+                                      state_benefits_bank: state_benefit_results.state_benefits_bank,
+                                      state_benefits_regular: state_benefit_results.state_benefits_regular),
+          calculate_category_subtotals(category: :friends_or_family, other_income_payments:, gross_income_summary:, regular: friends_or_family_regular(regular_transactions)),
+          calculate_category_subtotals(category: :maintenance_in, other_income_payments:, gross_income_summary:, regular: maintenance_in_regular(regular_transactions)),
+          calculate_category_subtotals(category: :property_or_lodger, other_income_payments:, gross_income_summary:, regular: property_or_lodger_regular(regular_transactions)),
+          calculate_category_subtotals(category: :pension, other_income_payments:, gross_income_summary:, regular: pension_regular(regular_transactions)),
+        ]
 
         person_gross_income_subtotals = PersonGrossIncomeSubtotals.new(
           student_loan_payments: gross_income_summary.student_loan_payments,
@@ -32,6 +39,22 @@ module Collators
       end
 
     private
+
+      def friends_or_family_regular(regular_transactions)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions.select(&:friends_or_family?))
+      end
+
+      def maintenance_in_regular(regular_transactions)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions.select(&:maintenance_in?))
+      end
+
+      def property_or_lodger_regular(regular_transactions)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions.select(&:property_or_lodger?))
+      end
+
+      def pension_regular(regular_transactions)
+        Calculators::MonthlyRegularTransactionAmountCalculator.call(regular_transactions.select(&:pension?))
+      end
 
       def derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
         employment_result = case employments.count
@@ -50,29 +73,21 @@ module Collators
                                       self_employment_results:)
       end
 
-      def income_categories
-        CFEConstants::VALID_INCOME_CATEGORIES.map(&:to_sym)
-      end
-
-      def benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
-        state_benefits_calculations = Calculators::StateBenefitsCalculator.benefits(regular_transactions: gross_income_summary.regular_transactions,
-                                                                                    submission_date:, state_benefits:)
+      def benefits_category_subtotals(gross_income_summary:, state_benefits_bank:, state_benefits_regular:)
         GrossIncomeCategorySubtotals.new(
           category: :benefits,
-          bank: state_benefits_calculations.state_benefits_bank,
+          bank: state_benefits_bank,
           cash: cash_transactions_for_category(gross_income_summary, :benefits),
-          regular: state_benefits_calculations.state_benefits_regular,
+          regular: state_benefits_regular,
         )
       end
 
-      def calculate_category_subtotals(category:, gross_income_summary:, other_income_payments:)
+      def calculate_category_subtotals(category:, gross_income_summary:, regular:, other_income_payments:)
         GrossIncomeCategorySubtotals.new(
           category:,
           bank: categorised_bank_transactions(other_income_payments, category),
           cash: cash_transactions_for_category(gross_income_summary, category),
-          regular: Calculators::MonthlyRegularTransactionAmountCalculator.call(
-            gross_income_summary.regular_transactions.with_operation_and_category(:credit, category),
-          ),
+          regular:,
         )
       end
 

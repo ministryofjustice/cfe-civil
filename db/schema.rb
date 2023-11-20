@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_22_113057) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_22_152733) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -84,15 +84,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_113057) do
     t.index ["assessment_id"], name: "index_proceeding_types_on_assessment_id"
   end
 
-  create_table "regular_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "gross_income_summary_id", null: false
-    t.string "category"
-    t.string "operation"
-    t.decimal "amount"
-    t.string "frequency"
-    t.index ["gross_income_summary_id"], name: "index_regular_transactions_on_gross_income_summary_id"
-  end
-
   create_table "request_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "http_status", null: false
     t.decimal "duration", null: false
@@ -119,5 +110,4 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_113057) do
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "irregular_income_payments", "gross_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
-  add_foreign_key "regular_transactions", "gross_income_summaries"
 end

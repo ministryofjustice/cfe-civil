@@ -7,12 +7,13 @@ module Calculators
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
 
     subject(:collator) do
-      described_class.benefits(regular_transactions: gross_income_summary.regular_transactions,
+      described_class.benefits(regular_transactions:,
                                submission_date: assessment.submission_date, state_benefits:)
     end
 
     context "no state benefit records" do
       let(:state_benefits) { [] }
+      let(:regular_transactions) { [] }
 
       it "leaves the monthly state benefit value as zero" do
         expect(collator.state_benefits_bank).to eq 0.0
@@ -26,6 +27,7 @@ module Calculators
         let(:state_benefits) do
           build_list(:state_benefit, 1, state_benefit_payments: build_list(:state_benefit_payment, 3, amount: 216.67), exclude_from_gross_income: false)
         end
+        let(:regular_transactions) { [] }
 
         it "returns correct total monthly state benefits" do
           expect(collator.state_benefits_bank).to eq 216.67
@@ -39,8 +41,8 @@ module Calculators
           build_list(:state_benefit, 1, state_benefit_payments: build_list(:state_benefit_payment, 3, amount: 236.67), exclude_from_gross_income: false)
         end
 
-        before do
-          create :housing_benefit_regular, amount: 20, gross_income_summary:, frequency: "monthly"
+        let(:regular_transactions) do
+          build_list :housing_benefit_regular, 1, amount: 20, frequency: "monthly"
         end
 
         #  avoid 'date cannot be in the future' errors
@@ -62,6 +64,7 @@ module Calculators
             build(:state_benefit, state_benefit_payments: build_list(:state_benefit_payment, 3, amount: 112.67), exclude_from_gross_income: true),
           ]
         end
+        let(:regular_transactions) { [] }
 
         it "returns correct sum amounts of only included benefits" do
           expect(collator.state_benefits_bank).to eq(216.67)

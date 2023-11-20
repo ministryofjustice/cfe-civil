@@ -97,6 +97,7 @@ module Workflows
       let(:proceeding_type_codes) { %w[SE003] }
       let(:applicant_data) do
         build(:person_data, details: applicant,
+                            regular_transactions:,
                             gross_income_summary: assessment.applicant_gross_income_summary,
                             dependants:, employments:,
                             capitals_data: build(:capitals_data, main_home:, additional_properties:))
@@ -248,6 +249,7 @@ module Workflows
 
         describe "capital thresholds for controlled" do
           let(:self_employments) { [] }
+          let(:regular_transactions) { [] }
           let(:applicant) { build :applicant, :pensionable_age_under_60 }
 
           let(:additional_properties) do
@@ -287,6 +289,7 @@ module Workflows
       context "with certificated work" do
         let(:level_of_help) { "certificated" }
         let(:self_employments) { [] }
+        let(:regular_transactions) { [] }
 
         context "with capital" do
           let(:dependants) { [] }
@@ -398,9 +401,8 @@ module Workflows
             let(:proceeding_type_codes) { %w[DA001] }
             let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 3_000) }
 
-            before do
-              create(:housing_cost, amount: 2000,
-                                    gross_income_summary: assessment.applicant_gross_income_summary)
+            let(:regular_transactions) do
+              build_list(:housing_cost, 1, amount: 2000)
             end
 
             it "is not eligible due to housing cost cap" do

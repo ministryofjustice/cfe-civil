@@ -1,9 +1,9 @@
 module Collators
   class HousingBenefitsCollator
     class << self
-      def call(gross_income_summary:, state_benefits:)
+      def call(state_benefits:, regular_transactions:)
         housing_benefit_amount = Calculators::MonthlyEquivalentCalculator.call(collection: housing_benefit_payments(state_benefits))
-        housing_benefit_amount + monthly_housing_benefit_regular_transactions(gross_income_summary)
+        housing_benefit_amount + monthly_housing_benefit_regular_transactions(regular_transactions)
       end
 
     private
@@ -12,8 +12,8 @@ module Collators
         state_benefits.detect(&:housing_benefit?)&.state_benefit_payments || []
       end
 
-      def monthly_housing_benefit_regular_transactions(gross_income_summary)
-        txns = gross_income_summary.regular_transactions.with_operation_and_category(:credit, :housing_benefit)
+      def monthly_housing_benefit_regular_transactions(regular_transactions)
+        txns = regular_transactions.select(&:housing_benefit?)
         Calculators::MonthlyRegularTransactionAmountCalculator.call(txns)
       end
     end
