@@ -55,12 +55,8 @@ module Decorators
       end
 
       describe "#as_json" do
-        subject(:decorator) do
-          described_class.new(assessment: assessment.reload, calculation_output:,
-                              applicant:,
-                              partner:,
-                              eligibility_result:,
-                              version:).as_json
+        let(:remarks) do
+          [RemarksData.new(:other_income_payment, :unknown_frequency, %w[abc def])]
         end
         let(:applicant) do
           build(:person_data,
@@ -68,6 +64,15 @@ module Decorators
                 details: build(:applicant))
         end
         let(:partner) { nil }
+
+        subject(:decorator) do
+          described_class.new(assessment: assessment.reload, calculation_output:,
+                              applicant:,
+                              partner:,
+                              eligibility_result:,
+                              version:,
+                              remarks:).as_json
+        end
 
         it "has the required keys in the returned hash" do
           expected_keys = %i[

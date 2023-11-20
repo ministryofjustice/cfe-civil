@@ -31,11 +31,10 @@ module V6
                else
                  without_partner_workflow(assessment: create.assessment, applicant:)
                end
-        create.assessment.add_remarks!(full.workflow_result.remarks)
 
         render json: assessment_decorator_class.new(assessment: create.assessment,
                                                     calculation_output: full.workflow_result.calculation_output,
-                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result).as_json
+                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
       else
         render_unprocessable(create.errors)
       end

@@ -16,7 +16,6 @@ require "rails/test_unit/railtie"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
-require_relative "../app/services/remarks"
 
 module CheckFinancialEligibility
   class Application < Rails::Application
@@ -34,7 +33,7 @@ module CheckFinancialEligibility
 
     # Changes in rails 7.0.3.1 prevented Symbols being used in serialised fields
     # this overrides the setting and allows the code(and tests) to run as normal
-    config.active_record.yaml_column_permitted_classes = [Symbol, Date, Remarks]
+    config.active_record.yaml_column_permitted_classes = [Symbol, Date]
 
     config.x.status.build_date = ENV["BUILD_DATE"] || "Not Available"
     config.x.status.build_tag = ENV["BUILD_TAG"] || "Not Available"
