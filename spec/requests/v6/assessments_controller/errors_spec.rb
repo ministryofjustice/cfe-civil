@@ -296,7 +296,7 @@ module V6
           end
         end
 
-        context "invalid additional property for cash_transactions.outgoings.payments" do
+        context "with payments on incorrect dates" do
           let(:params) do
             {
               cash_transactions: {
@@ -305,22 +305,19 @@ module V6
                   { category: "maintenance_out",
                     payments: [
                       {
-                        date: "2022-02-01",
+                        date: "2022-02-06",
                         amount: 256,
                         client_id:,
-                        additional_attribute: "additional_attribute",
                       },
                       {
                         date: "2022-03-01",
                         amount: 256,
                         client_id:,
-                        additional_attribute: "additional_attribute",
                       },
                       {
                         date: "2022-04-01",
                         amount: 256,
                         client_id:,
-                        additional_attribute: "additional_attribute",
                       },
                     ] },
                 ],
@@ -329,7 +326,7 @@ module V6
           end
 
           it "returns error JSON for '#/cash_transactions/outgoings/0/payments/0'" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/cash_transactions/outgoings/0/payments/0' contains additional properties})
+            expect(parsed_response[:errors]).to eq ["Expecting payment dates for category maintenance_out to be 1st of three of the previous 3 months"]
           end
         end
       end
