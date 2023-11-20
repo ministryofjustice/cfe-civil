@@ -27,7 +27,7 @@ class PersonDisposableIncomeSubtotals
   end
 
   def total_outgoings_and_allowances
-    [net_housing_costs,
+    [allowed_housing_costs,
      dependant_allowance_under_16,
      dependant_allowance_over_16,
      monthly_bank_transactions_total,
@@ -64,15 +64,15 @@ class PersonDisposableIncomeSubtotals
   end
 
   def rent_or_mortgage_bank
-    @outgoings.housing_costs.gross_housing_costs_bank
+    @outgoings.housing_costs.housing_costs_bank
   end
 
   def rent_or_mortgage_cash
-    @outgoings.housing_costs.gross_housing_costs_cash
+    @outgoings.housing_costs.housing_costs_cash
   end
 
   def rent_or_mortgage_all_sources
-    @outgoings.housing_costs.gross_housing_costs
+    @outgoings.housing_costs.housing_costs
   end
 
   def legal_aid_bank
@@ -139,12 +139,12 @@ class PersonDisposableIncomeSubtotals
     @outgoings.housing_benefit
   end
 
-  def gross_housing_costs
-    @outgoings.housing_costs.gross_housing_costs
+  def housing_costs
+    @outgoings.housing_costs.housing_costs
   end
 
-  def net_housing_costs
-    @outgoings.housing_costs.net_housing_costs
+  def allowed_housing_costs
+    @outgoings.housing_costs.allowed_housing_costs
   end
 
   def maintenance_out_bank

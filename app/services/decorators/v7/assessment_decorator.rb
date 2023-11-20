@@ -4,6 +4,10 @@ module Decorators
       def applicant_decorator_class
         ApplicantDecorator
       end
+
+      def result_summary_decorator_class
+        ResultSummaryDecorator
+      end
     end
   end
 end

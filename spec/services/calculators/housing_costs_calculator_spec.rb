@@ -43,8 +43,8 @@ module Calculators
 
               it "caps the return" do
                 expect(calculator)
-                  .to have_attributes(gross_housing_costs: 750.00,
-                                      net_housing_costs: 545.00) # Cap applied
+                  .to have_attributes(housing_costs: 750.00,
+                                      allowed_housing_costs: 545.00) # Cap applied
               end
 
               context "when 50% of monthly bank and cash outgoings are below the cap" do
@@ -53,8 +53,8 @@ module Calculators
                 it "returns the gross cost as net" do
                   expect(calculator)
                     .to have_attributes(
-                      gross_housing_costs: 444.0,
-                      net_housing_costs: 444.0,
+                      housing_costs: 444.0,
+                      allowed_housing_costs: 444.0,
                     )
                 end
               end
@@ -66,8 +66,8 @@ module Calculators
               it "caps the return" do
                 expect(calculator)
                   .to have_attributes(
-                    gross_housing_costs: 1200.0,
-                    net_housing_costs: 545.0, # Cap applied
+                    housing_costs: 1200.0,
+                    allowed_housing_costs: 545.0, # Cap applied
                   )
               end
 
@@ -77,8 +77,8 @@ module Calculators
                 it "returns the net cost" do
                   expect(calculator)
                     .to have_attributes(
-                      gross_housing_costs: 420.0,
-                      net_housing_costs: 420.0,
+                      housing_costs: 420.0,
+                      allowed_housing_costs: 420.0,
                     )
                 end
               end
@@ -96,8 +96,8 @@ module Calculators
               it "caps the return" do
                 expect(calculator)
                   .to have_attributes(
-                    gross_housing_costs: 750.0,
-                    net_housing_costs: 545.0, # Cap applied
+                    housing_costs: 750.0,
+                    allowed_housing_costs: 545.0, # Cap applied
                   )
               end
             end
@@ -108,8 +108,8 @@ module Calculators
               it "caps the return" do
                 expect(calculator)
                   .to have_attributes(
-                    gross_housing_costs: 1200.0,
-                    net_housing_costs: 545.0, # Cap applied
+                    housing_costs: 1200.0,
+                    allowed_housing_costs: 545.0, # Cap applied
                   )
               end
 
@@ -120,8 +120,8 @@ module Calculators
                 it "returns gross less housing benefits" do
                   expect(calculator)
                     .to have_attributes(
-                      gross_housing_costs: 1000.0,
-                      net_housing_costs: 400.0,
+                      housing_costs: 1000.0,
+                      allowed_housing_costs: 400.0,
                     )
                 end
               end
@@ -142,8 +142,8 @@ module Calculators
               it "records half the monthly housing cost" do
                 expect(calculator)
                   .to have_attributes(
-                    gross_housing_costs: 600.00,
-                    net_housing_costs: 600.00,
+                    housing_costs: 600.00,
+                    allowed_housing_costs: 600.00,
                   )
               end
             end
@@ -154,8 +154,8 @@ module Calculators
               it "records the full monthly housing costs" do
                 expect(calculator)
                   .to have_attributes(
-                    gross_housing_costs: 1200.00,
-                    net_housing_costs: 1200.00,
+                    housing_costs: 1200.00,
+                    allowed_housing_costs: 1200.00,
                   )
               end
             end
@@ -172,7 +172,7 @@ module Calculators
             end
 
             it "records the full monthly housing costs" do
-              expect(calculator).to have_attributes(gross_housing_costs: 1200.00)
+              expect(calculator).to have_attributes(housing_costs: 1200.00)
             end
           end
 
@@ -186,8 +186,8 @@ module Calculators
 
               it "records half the monthly outgoing less the housing benefit" do
                 expect(calculator)
-                  .to have_attributes(gross_housing_costs: 600.00,
-                                      net_housing_costs: housing_cost_amount.to_d / 2 - housing_benefit_amount.to_d)
+                  .to have_attributes(housing_costs: 600.00,
+                                      allowed_housing_costs: housing_cost_amount.to_d / 2 - housing_benefit_amount.to_d)
               end
             end
 
@@ -196,8 +196,8 @@ module Calculators
 
               it "records the full monthly housing costs" do
                 expect(calculator)
-                  .to have_attributes(gross_housing_costs: 1200.00,
-                                      net_housing_costs: 700.00)
+                  .to have_attributes(housing_costs: 1200.00,
+                                      allowed_housing_costs: 700.00)
               end
             end
           end
@@ -226,8 +226,8 @@ module Calculators
 
           it "returns net the same as gross" do
             expect(calculator)
-              .to have_attributes(gross_housing_costs: 1200.00,
-                                  net_housing_costs: 1200.00)
+              .to have_attributes(housing_costs: 1200.00,
+                                  allowed_housing_costs: 1200.00)
           end
         end
 
@@ -236,8 +236,8 @@ module Calculators
 
           it "returns half the vakue, net the same as gross" do
             expect(calculator)
-              .to have_attributes(gross_housing_costs: 600.00,
-                                  net_housing_costs: 600.00)
+              .to have_attributes(housing_costs: 600.00,
+                                  allowed_housing_costs: 600.00)
           end
         end
       end

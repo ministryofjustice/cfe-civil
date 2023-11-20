@@ -34,7 +34,7 @@ module Decorators
           },
           gross_income: ApplicantGrossIncomeResultDecorator.new(gross_income_subtotals: @calculation_output.gross_income_subtotals,
                                                                 proceeding_types: assessment.proceeding_types),
-          disposable_income: ApplicantDisposableIncomeResultDecorator.new(
+          disposable_income: applicant_disposable_income_result_decorator_class.new(
             assessment.applicant_disposable_income_summary,
             assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
@@ -66,7 +66,7 @@ module Decorators
       end
 
       def partner_disposable_income
-        DisposableIncomeResultDecorator.new(
+        disposable_income_result_decorator_class.new(
           assessment.partner_disposable_income_summary,
           assessment.partner_gross_income_summary,
           @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals,
@@ -77,6 +77,16 @@ module Decorators
       def partner_capital
         CapitalResultDecorator.new(assessment.partner_capital_summary,
                                    @calculation_output.capital_subtotals.partner_capital_subtotals)
+      end
+
+    private
+
+      def applicant_disposable_income_result_decorator_class
+        ApplicantDisposableIncomeResultDecorator
+      end
+
+      def disposable_income_result_decorator_class
+        DisposableIncomeResultDecorator
       end
     end
   end

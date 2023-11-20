@@ -29,8 +29,8 @@ module Collators
             collator
             expect(collator)
               .to have_attributes(
-                gross_housing_costs: 0.0,
-                net_housing_costs: 0.0,
+                housing_costs: 0.0,
+                allowed_housing_costs: 0.0,
               )
           end
         end
@@ -41,8 +41,8 @@ module Collators
           it "has expected housing cost attributes" do
             expect(collator)
               .to have_attributes(
-                gross_housing_costs: 0.0,
-                net_housing_costs: 0,
+                housing_costs: 0.0,
+                allowed_housing_costs: 0,
               )
           end
         end
@@ -64,8 +64,8 @@ module Collators
             it "records half the monthly housing cost" do
               expect(collator)
                 .to have_attributes(
-                  gross_housing_costs: 177.72,
-                  net_housing_costs: 177.72,
+                  housing_costs: 177.72,
+                  allowed_housing_costs: 177.72,
                 )
             end
           end
@@ -76,8 +76,8 @@ module Collators
             it "records the full monthly housing costs" do
               expect(collator)
                 .to have_attributes(
-                  gross_housing_costs: 355.44,
-                  net_housing_costs: 355.44,
+                  housing_costs: 355.44,
+                  allowed_housing_costs: 355.44,
                 )
             end
           end
@@ -92,8 +92,8 @@ module Collators
             it "records half the housing cost less the housing benefit" do
               expect(collator)
                 .to have_attributes(
-                  gross_housing_costs: 177.72,
-                  net_housing_costs: 76.70, # 177.72 - 101.02
+                  housing_costs: 177.72,
+                  allowed_housing_costs: 76.70, # 177.72 - 101.02
                 )
             end
           end
@@ -104,8 +104,8 @@ module Collators
             it "records the full housing costs less the housing benefit" do
               expect(collator)
                 .to have_attributes(
-                  gross_housing_costs: 355.44,
-                  net_housing_costs: 254.42, # 355.44 - 101.02
+                  housing_costs: 355.44,
+                  allowed_housing_costs: 254.42, # 355.44 - 101.02
                 )
             end
           end
@@ -116,7 +116,7 @@ module Collators
           let(:housing_cost_type) { "rent" }
 
           it "records the full monthly housing costs" do
-            expect(collator).to have_attributes(gross_housing_costs: 355.44)
+            expect(collator).to have_attributes(housing_costs: 355.44)
           end
         end
       end
@@ -131,8 +131,8 @@ module Collators
 
         it "caps the net costs" do
           expect(collator)
-            .to have_attributes(gross_housing_costs: 564.00,
-                                net_housing_costs: 545.00) # Cap applied
+            .to have_attributes(housing_costs: 564.00,
+                                allowed_housing_costs: 545.00) # Cap applied
         end
       end
     end
