@@ -45,7 +45,6 @@ RSpec.describe CullStaleAssessmentsService do
       create :partner_capital_summary, assessment: ass
       create :gross_income_summary,
              :with_all_records,
-             :with_everything,
              assessment: ass
       create :partner_gross_income_summary, assessment: ass
       create :partner_gross_income_summary, assessment: ass
@@ -66,8 +65,6 @@ RSpec.describe CullStaleAssessmentsService do
       ExplicitRemark,
       GrossIncomeSummary,
       IrregularIncomePayment,
-      OtherIncomePayment,
-      OtherIncomeSource,
       ProceedingType,
       RegularTransaction,
     ]

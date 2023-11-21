@@ -132,6 +132,7 @@ module Workflows
                                                       gross_income_summary: applicant.gross_income_summary,
                                                       self_employments: applicant_self_employments,
                                                       state_benefits: applicant.state_benefits,
+                                                      other_income_payments: applicant.other_income_payments,
                                                       employment_details: applicant_employment_details)
 
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
@@ -149,6 +150,7 @@ module Workflows
                                                       gross_income_summary: applicant.gross_income_summary,
                                                       self_employments: applicant_self_employments,
                                                       state_benefits: applicant.state_benefits,
+                                                      other_income_payments: applicant.other_income_payments,
                                                       employment_details: applicant_employment_details)
 
         partner_self_employments = convert_employment_details(partner.self_employments)
@@ -156,6 +158,7 @@ module Workflows
         partner_gross_income = collate_gross_income(submission_date:,
                                                     employments: partner.employments,
                                                     state_benefits: partner.state_benefits,
+                                                    other_income_payments: applicant.other_income_payments,
                                                     gross_income_summary: partner.gross_income_summary,
                                                     self_employments: partner_self_employments,
                                                     employment_details: partner_employment_details)
@@ -246,14 +249,15 @@ module Workflows
         end
       end
 
-      def collate_gross_income(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
+      def collate_gross_income(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, other_income_payments:)
         converted_employments_and_remarks = convert_employment_payments(employments, submission_date)
         gross_result = Collators::GrossIncomeCollator.call(submission_date:,
                                                            self_employments:,
                                                            employment_details:,
                                                            employments: converted_employments_and_remarks.employment_data,
                                                            gross_income_summary:,
-                                                           state_benefits:)
+                                                           state_benefits:,
+                                                           other_income_payments:)
         Collators::GrossIncomeCollator::Result.new person_gross_income_subtotals: gross_result.person_gross_income_subtotals,
                                                    remarks: gross_result.remarks + converted_employments_and_remarks.remarks
       end

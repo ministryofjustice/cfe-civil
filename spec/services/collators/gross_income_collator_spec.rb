@@ -5,6 +5,7 @@ module Collators
     let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: proceeding_type_codes }
     let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
+    let(:other_income_payments) { [] }
 
     describe ".call" do
       subject(:collator) do
@@ -13,7 +14,8 @@ module Collators
                              employments:,
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              self_employments: [],
-                             employment_details: []
+                             employment_details: [],
+                             other_income_payments:
       end
 
       context "only domestic abuse proceeding type codes" do
@@ -29,16 +31,15 @@ module Collators
           end
 
           context "monthly_other_income_sources_exist" do
-            before do
-              source1 = create :other_income_source, gross_income_summary:, name: "friends_or_family"
-              source2 = create :other_income_source, gross_income_summary:, name: "property_or_lodger"
-              create :other_income_payment, other_income_source: source1, payment_date: Date.current, amount: 105.13
-              create :other_income_payment, other_income_source: source1, payment_date: 1.month.ago.to_date, amount: 105.23
-              create :other_income_payment, other_income_source: source1, payment_date: 1.month.ago.to_date, amount: 105.03
-
-              create :other_income_payment, other_income_source: source2, payment_date: Date.current, amount: 66.45
-              create :other_income_payment, other_income_source: source2, payment_date: 1.month.ago.to_date, amount: 66.45
-              create :other_income_payment, other_income_source: source2, payment_date: 1.month.ago.to_date, amount: 66.45
+            let(:other_income_payments) do
+              [
+                build(:other_income_payment, name: "friends_or_family", payment_date: Date.current, amount: 105.13),
+                build(:other_income_payment, name: "friends_or_family", payment_date: 1.month.ago.to_date, amount: 105.23),
+                build(:other_income_payment, name: "friends_or_family", payment_date: 1.month.ago.to_date, amount: 105.03),
+                build(:other_income_payment, name: "property_or_lodger", payment_date: Date.current, amount: 66.45),
+                build(:other_income_payment, name: "property_or_lodger", payment_date: 1.month.ago.to_date, amount: 66.45),
+                build(:other_income_payment, name: "property_or_lodger", payment_date: 1.month.ago.to_date, amount: 66.45),
+              ]
             end
 
             it "updates the gross income record with categorised monthly incomes" do

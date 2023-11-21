@@ -3,7 +3,7 @@ module Collators
     Result = Data.define(:remarks, :person_gross_income_subtotals)
 
     class << self
-      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:)
+      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, other_income_payments:)
         employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
 
         remarks = if employments.count > 1
@@ -16,7 +16,7 @@ module Collators
           if category == :benefits
             benefits_category_subtotals(gross_income_summary:, submission_date:, state_benefits:)
           else
-            calculate_category_subtotals(category:, gross_income_summary:)
+            calculate_category_subtotals(category:, gross_income_summary:, other_income_payments:)
           end
         end
 
@@ -65,10 +65,10 @@ module Collators
         )
       end
 
-      def calculate_category_subtotals(category:, gross_income_summary:)
+      def calculate_category_subtotals(category:, gross_income_summary:, other_income_payments:)
         GrossIncomeCategorySubtotals.new(
           category:,
-          bank: categorised_bank_transactions(gross_income_summary, category),
+          bank: categorised_bank_transactions(other_income_payments, category),
           cash: cash_transactions_for_category(gross_income_summary, category),
           regular: Calculators::MonthlyRegularTransactionAmountCalculator.call(
             gross_income_summary.regular_transactions.with_operation_and_category(:credit, category),
@@ -81,13 +81,10 @@ module Collators
         Calculators::MonthlyCashTransactionAmountCalculator.call(collection: cash_transactions)
       end
 
-      def categorised_bank_transactions(gross_income_summary, category)
-        source = gross_income_summary.other_income_sources.detect { _1.name.to_sym == category }
-        if source.present?
-          Calculators::MonthlyEquivalentCalculator.call(collection: source.other_income_payments).tap do |monthly_income|
-            # TODO: Stop persisting this
-            source.update!(monthly_income:)
-          end
+      def categorised_bank_transactions(other_income_payments, category)
+        incomes = other_income_payments.select { _1.name.to_sym == category }
+        if incomes.present?
+          Calculators::MonthlyEquivalentCalculator.call(collection: incomes)
         else
           0
         end
