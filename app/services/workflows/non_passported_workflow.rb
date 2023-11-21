@@ -217,7 +217,7 @@ module Workflows
         gross_result = Collators::GrossIncomeCollator.call(submission_date:,
                                                            self_employments:,
                                                            employment_details:,
-                                                           employments: converted_employments_and_remarks.employment_data,
+                                                           irregular_income_payments: person.irregular_income_payments, employments: converted_employments_and_remarks.employment_data,
                                                            gross_income_summary: person.gross_income_summary,
                                                            regular_transactions: person.regular_transactions,
                                                            other_income_payments: person.other_income_payments,

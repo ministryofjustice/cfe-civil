@@ -22,8 +22,6 @@ FactoryBot.define do
         rent_or_mortgage_in_cash = create :cash_transaction_category, name: "rent_or_mortgage", operation: "debit", gross_income_summary: gross_income_summary
         legal_aid_in_cash = create :cash_transaction_category, name: "legal_aid", operation: "debit", gross_income_summary: gross_income_summary
 
-        create :student_loan_payment, amount: 600, gross_income_summary: gross_income_summary
-
         3.times do
           create :cash_transaction, cash_transaction_category: benefits_in_cash
           create :cash_transaction, cash_transaction_category: friends_or_family_in_cash

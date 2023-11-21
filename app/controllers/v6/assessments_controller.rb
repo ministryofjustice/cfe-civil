@@ -14,6 +14,7 @@ module V6
 
         applicant = person_data(input_params: full_assessment_params,
                                 model_params: full_assessment_params.fetch(:applicant, {}),
+                                irregular_income_params: full_assessment_params.fetch(:irregular_incomes, {}),
                                 additional_properties_params: full_assessment_params.fetch(:properties, {}),
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
                                 gross_income_summary: create.assessment.applicant_gross_income_summary,
@@ -23,6 +24,7 @@ module V6
         full = if partner_params.present?
                  partner = person_data(input_params: partner_params,
                                        model_params: partner_params.fetch(:partner, {}),
+                                       irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
                                        submission_date: create.assessment.submission_date,
                                        main_home_params: nil,
                                        additional_properties_params: partner_params,
@@ -148,7 +150,8 @@ module V6
       dependants.reject(&:valid?).map { |m| m.errors.full_messages }.reduce([], &:+)
     end
 
-    def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:, gross_income_summary:)
+    def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:,
+                    gross_income_summary:, irregular_income_params:)
       dependant_models = parse_dependants input_params, submission_date
       render_unprocessable(dependant_errors(dependant_models)) && return if dependant_models.reject(&:valid?).any?
 
@@ -177,6 +180,7 @@ module V6
                      capitals_data:,
                      outgoings:,
                      other_income_payments:,
+                     irregular_income_payments: parse_irregular_incomes(irregular_income_params).map(&:freeze),
                      gross_income_summary:,
                      regular_transactions: parse_regular_transactions(input_params.fetch(:regular_transactions, [])),
                      dependants: dependant_models.map(&:freeze),
@@ -187,6 +191,16 @@ module V6
       regular_transaction_params.map do |regular_transaction|
         RegularTransaction.new category: regular_transaction[:category].to_sym, operation: regular_transaction[:operation].to_sym,
                                frequency: regular_transaction[:frequency].to_sym, amount: regular_transaction[:amount]
+      end
+    end
+
+    def parse_irregular_incomes(irregular_income_params)
+      irregular_income_params.fetch(:payments, []).map do |payment_params|
+        IrregularIncomePayment.new(
+          income_type: payment_params[:income_type].to_sym,
+          frequency: payment_params[:frequency],
+          amount: payment_params[:amount],
+        )
       end
     end
 

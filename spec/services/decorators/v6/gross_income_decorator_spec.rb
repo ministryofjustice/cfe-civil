@@ -11,15 +11,16 @@ module Decorators
 
       let(:summary) do
         create :gross_income_summary,
-               assessment:,
-               unspecified_source_payments: build_list(:unspecified_source_payment, 1, amount: 423.35),
-               student_loan_payments: build_list(:student_loan_payment, 1, frequency: "monthly", amount: 250)
+               assessment:
+      end
+      let(:irregular_income_payments) do
+        [build(:unspecified_source_payment, amount: 423.35),
+         build(:student_loan_payment, frequency: "monthly", amount: 250)]
       end
 
       let(:subtotals) do
         PersonGrossIncomeSubtotals.new(
-          student_loan_payments: summary.student_loan_payments,
-          unspecified_source_payments: summary.unspecified_source_payments,
+          irregular_income_payments:,
           state_benefits:,
           employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
                                                        payment_based_employments: [

@@ -3,7 +3,7 @@ module Collators
     Result = Data.define(:remarks, :person_gross_income_subtotals)
 
     class << self
-      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, regular_transactions:, other_income_payments:)
+      def call(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, regular_transactions:, other_income_payments:, irregular_income_payments:)
         employment_income_subtotals = derive_employment_income_subtotals(submission_date:, employments:, self_employments:, employment_details:)
 
         remarks = if employments.count > 1
@@ -28,8 +28,7 @@ module Collators
         ]
 
         person_gross_income_subtotals = PersonGrossIncomeSubtotals.new(
-          student_loan_payments: gross_income_summary.student_loan_payments,
-          unspecified_source_payments: gross_income_summary.unspecified_source_payments,
+          irregular_income_payments:,
           regular_income_categories:,
           employment_income_subtotals:,
           state_benefits:,

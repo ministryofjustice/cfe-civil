@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_22_152733) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_23_113144) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -64,15 +64,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_152733) do
     t.index ["assessment_id"], name: "index_gross_income_summaries_on_assessment_id"
   end
 
-  create_table "irregular_income_payments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "gross_income_summary_id", null: false
-    t.string "income_type", null: false
-    t.string "frequency", null: false
-    t.decimal "amount", default: "0.0"
-    t.index ["gross_income_summary_id", "income_type"], name: "irregular_income_payments_unique", unique: true
-    t.index ["gross_income_summary_id"], name: "index_irregular_income_payments_on_gross_income_summary_id"
-  end
-
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
@@ -108,6 +99,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_22_152733) do
   add_foreign_key "cash_transactions", "cash_transaction_categories"
   add_foreign_key "disposable_income_summaries", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
-  add_foreign_key "irregular_income_payments", "gross_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
 end

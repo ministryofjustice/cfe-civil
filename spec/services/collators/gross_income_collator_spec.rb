@@ -13,6 +13,7 @@ module Collators
                              submission_date: assessment.submission_date,
                              employments:,
                              regular_transactions: [],
+                             irregular_income_payments:,
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              self_employments: [],
                              employment_details: [],
@@ -23,6 +24,8 @@ module Collators
         let(:proceeding_type_codes) { [%w[DA001 A]] }
 
         context "monthly_other_income" do
+          let(:irregular_income_payments) { [] }
+
           context "there are no other income records" do
             it "set monthly other income to zero" do
               expect(collator.person_gross_income_subtotals)
@@ -56,6 +59,8 @@ module Collators
 
         context "monthly_student_loan" do
           context "there are no irregular income payments" do
+            let(:irregular_income_payments) { [] }
+
             it "set monthly student loan to zero" do
               response = collator.person_gross_income_subtotals
               expect(response.monthly_student_loan).to eq 0.0
@@ -63,7 +68,7 @@ module Collators
           end
 
           context "monthly_student_loan exists" do
-            before { create :irregular_income_payment, gross_income_summary:, amount: 12_000 }
+            let(:irregular_income_payments) { build_list :irregular_income_payment, 1, amount: 12_000 }
 
             it "updates the gross income record with categorised monthly incomes" do
               response = collator.person_gross_income_subtotals
@@ -78,6 +83,8 @@ module Collators
 
         context "monthly_unspecified_source" do
           context "there are no irregular income payments" do
+            let(:irregular_income_payments) { [] }
+
             it "set monthly income from unspecified sources to zero" do
               response = collator.person_gross_income_subtotals
               expect(response.monthly_unspecified_source).to eq 0.0
@@ -85,12 +92,11 @@ module Collators
           end
 
           context "monthly_unspecified_source exists" do
-            before do
-              create :irregular_income_payment,
-                     gross_income_summary:,
-                     amount: 12_000,
-                     income_type: "unspecified_source",
-                     frequency: "quarterly"
+            let(:irregular_income_payments) do
+              build_list :irregular_income_payment, 1,
+                         amount: 12_000,
+                         income_type: :unspecified_source,
+                         frequency: "quarterly"
             end
 
             it "updates the gross income record with categorised monthly incomes" do
@@ -106,6 +112,7 @@ module Collators
 
         context "bank and cash transactions" do
           let(:assessment) { create :assessment, :with_gross_income_summary_and_records }
+          let(:irregular_income_payments) { [] }
 
           it "updates with totals for all categories based on bank and cash transactions" do
             response = collator.person_gross_income_subtotals
@@ -141,6 +148,7 @@ module Collators
         end
 
         context "gross_employment_income" do
+          let(:irregular_income_payments) { [] }
           let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do

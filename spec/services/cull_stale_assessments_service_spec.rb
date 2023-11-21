@@ -63,7 +63,6 @@ RSpec.describe CullStaleAssessmentsService do
       DisposableIncomeSummary,
       ExplicitRemark,
       GrossIncomeSummary,
-      IrregularIncomePayment,
       ProceedingType,
     ]
   end

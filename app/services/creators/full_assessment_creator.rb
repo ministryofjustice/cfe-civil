@@ -35,12 +35,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:irregular_incomes]
-            Creators::IrregularIncomeCreator.call(irregular_income_params: params[:irregular_incomes],
-                                                  gross_income_summary: assessment.applicant_gross_income_summary)
-          end
-        },
-        lambda { |assessment, params|
           if params[:partner]
             Creators::PartnerFinancialsCreator.call(assessment:,
                                                     partner_financials_params: params[:partner])

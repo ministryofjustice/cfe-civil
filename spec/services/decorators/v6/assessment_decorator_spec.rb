@@ -22,8 +22,7 @@ module Decorators
                                                                   PersonGrossIncomeSubtotals.new(
                                                                     state_benefits: [],
                                                                     employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                    unspecified_source_payments: assessment.applicant_gross_income_summary.unspecified_source_payments,
-                                                                    student_loan_payments: assessment.applicant_gross_income_summary.student_loan_payments,
+                                                                    irregular_income_payments: [],
                                                                     regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                                                                       GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
                                                                     end,
@@ -31,8 +30,7 @@ module Decorators
                                                                 partner_gross_income_subtotals: PersonGrossIncomeSubtotals.new(
                                                                   state_benefits: [],
                                                                   employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                  unspecified_source_payments: assessment.partner_gross_income_summary.unspecified_source_payments,
-                                                                  student_loan_payments: assessment.partner_gross_income_summary.student_loan_payments,
+                                                                  irregular_income_payments: [],
                                                                   regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                                                                     GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
                                                                   end,
