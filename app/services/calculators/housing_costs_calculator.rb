@@ -27,14 +27,13 @@ module Calculators
         housing_costs = housing_costs_bank + housing_costs_regular + housing_costs_cash
 
         # Housing benefit
-        housing_benefit_to_subtract = if StateBenefitsCalculator.housing_benefit_included_in_gross_income_and_allowed_housing_costs?(submission_date)
-                                        # Post-MTR: The part of the housing costs that are paid for by housing benefit is an allowable cost,
-                                        # i.e. nothing needs to be subtracted from housing costs when calculating allowed_housing_costs
-                                        0
-                                      else
-                                        # Pre-MTR: Housing cost allowed is NET of housing benefit
-                                        # i.e. subtract the housing benefit amount when calculating allowed_housing_costs
+        housing_benefit_to_subtract = if allowed_housing_costs_are_net_of_housing_benefit?(submission_date)
+                                        # Pre-MTR: Allowed housing costs are NET of housing benefit
+                                        # i.e. when calculating allowed_housing_costs we'll subtract the housing benefit amount
                                         monthly_housing_benefit
+                                      else
+                                        # Post-MTR: nothing needs to be subtracted from housing costs when calculating allowed_housing_costs
+                                        0
                                       end
 
         Result.new housing_costs:,
@@ -55,6 +54,13 @@ module Calculators
         else
           housing_costs - housing_benefit_to_subtract
         end
+      end
+
+      def allowed_housing_costs_are_net_of_housing_benefit?(submission_date)
+        # - True pre-MTR
+        # - False post-MTR
+        # i.e. the opposite of housing_benefit_included_in_gross_income
+        !StateBenefitsCalculator.housing_benefit_included_in_gross_income?(submission_date)
       end
 
       def housing_costs_cash(gross_income_summary)
