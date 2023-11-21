@@ -3,19 +3,19 @@ module Calculators
     Result = Data.define(:housing_costs, :allowed_housing_costs, :housing_costs_bank, :housing_costs_cash, :housing_costs_regular)
 
     class << self
-      # ‘Board and lodging' adjustment”
-      # Payments for ‘board and lodging’ are assumed to be half for accommodation and half for food/utilities,
-      # so allow only half - see Lord Chancellors' Guidance (certificated) 5.5 'Housing costs' paragraph 7”
       def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:)
-        # Because this code uses #allowable_amount, tbe 'bank' value has already been halved during the calculation
-        # if the outgoing amount is of type 'board_and_lodging'
+        # 'Board and lodging' adjustment has already taken place in :allowable_amount
         housing_costs_bank = Calculators::MonthlyEquivalentCalculator.call(
           collection: housing_cost_outgoings,
           amount_method: :allowable_amount,
         )
 
-        # the other amounts have to be halved as well - they don't have a 'housing cost type' associated with them, but we do a 'best effort'
-        # and assume that they are all of the same type if the 'outgoings' are all board_and_lodging type
+        # 'Board and lodging' adjustments - Where outgoings are for 'board and lodging' (rather then rent/mortgage) then only half the
+        # outgoing can be 'allowed housing costs' (i.e. the meals element is not an allowable deduction)
+        # (see Lord Chancellors' Guidance (certificated) 5.5 'Housing costs' paragraph 7)
+        # Unlike 'bank' housing costs, 'regular' and 'cash' housing costs don't have a 'housing cost type' associated with them,
+        # so to decide whether to halve them, we do a 'best effort' by assuming they are board_and_lodging if the 'bank' housing costs
+        # are of board_and_lodging type
         if should_halve_full_cost_minus_benefits?(housing_cost_outgoings, monthly_housing_benefit)
           housing_costs_regular = housing_costs_regular_transactions(gross_income_summary) / 2
           housing_costs_cash = housing_costs_cash(gross_income_summary) / 2
@@ -26,16 +26,20 @@ module Calculators
 
         housing_costs = housing_costs_bank + housing_costs_regular + housing_costs_cash
 
-        # we have to subtract housing benefit from net_housing_costs if it is outside the calculation (pre MTR)
-        housing_benefit = if StateBenefitsCalculator.housing_benefit_in_standard_calculation?(submission_date)
-                            0
-                          else
-                            monthly_housing_benefit
-                          end
+        # Housing benefit
+        housing_benefit_to_subtract = if StateBenefitsCalculator.housing_benefit_included_in_gross_income_and_allowed_housing_costs?(submission_date)
+                                        # Post-MTR: The part of the housing costs that are paid for by housing benefit is an allowable cost,
+                                        # i.e. nothing needs to be subtracted from housing costs when calculating allowed_housing_costs
+                                        0
+                                      else
+                                        # Pre-MTR: Housing cost allowed is NET of housing benefit
+                                        # i.e. subtract the housing benefit amount when calculating allowed_housing_costs
+                                        monthly_housing_benefit
+                                      end
 
         Result.new housing_costs:,
                    allowed_housing_costs: allowed_housing_costs(submission_date:, housing_costs_cap_applies:,
-                                                                monthly_housing_benefit: housing_benefit, housing_costs:),
+                                                                housing_benefit_to_subtract:, housing_costs:),
                    housing_costs_bank:,
                    housing_costs_cash:,
                    housing_costs_regular:
@@ -43,13 +47,13 @@ module Calculators
 
     private
 
-      def allowed_housing_costs(submission_date:, housing_costs_cap_applies:, monthly_housing_benefit:, housing_costs:)
+      def allowed_housing_costs(submission_date:, housing_costs_cap_applies:, housing_benefit_to_subtract:, housing_costs:)
         if housing_costs_cap_applies
           [housing_costs,
-           housing_costs - monthly_housing_benefit,
+           housing_costs - housing_benefit_to_subtract,
            single_monthly_housing_costs_cap(submission_date)].min
         else
-          housing_costs - monthly_housing_benefit
+          housing_costs - housing_benefit_to_subtract
         end
       end
 
