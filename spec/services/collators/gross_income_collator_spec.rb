@@ -33,12 +33,12 @@ module Collators
           context "monthly_other_income_sources_exist" do
             let(:other_income_payments) do
               [
-                build(:other_income_payment, category: "friends_or_family", payment_date: Date.current, amount: 105.13),
-                build(:other_income_payment, category: "friends_or_family", payment_date: 1.month.ago.to_date, amount: 105.23),
-                build(:other_income_payment, category: "friends_or_family", payment_date: 1.month.ago.to_date, amount: 105.03),
-                build(:other_income_payment, category: "property_or_lodger", payment_date: Date.current, amount: 66.45),
-                build(:other_income_payment, category: "property_or_lodger", payment_date: 1.month.ago.to_date, amount: 66.45),
-                build(:other_income_payment, category: "property_or_lodger", payment_date: 1.month.ago.to_date, amount: 66.45),
+                build(:other_income_payment, category: :friends_or_family, payment_date: Date.current, amount: 105.13),
+                build(:other_income_payment, category: :friends_or_family, payment_date: 1.month.ago.to_date, amount: 105.23),
+                build(:other_income_payment, category: :friends_or_family, payment_date: 1.month.ago.to_date, amount: 105.03),
+                build(:other_income_payment, category: :property_or_lodger, payment_date: Date.current, amount: 66.45),
+                build(:other_income_payment, category: :property_or_lodger, payment_date: 1.month.ago.to_date, amount: 66.45),
+                build(:other_income_payment, category: :property_or_lodger, payment_date: 1.month.ago.to_date, amount: 66.45),
               ]
             end
 
