@@ -82,7 +82,7 @@ module Collators
       end
 
       def categorised_bank_transactions(other_income_payments, category)
-        incomes = other_income_payments.select { _1.name.to_sym == category }
+        incomes = other_income_payments.select { _1.category.to_sym == category }
         if incomes.present?
           Calculators::MonthlyEquivalentCalculator.call(collection: incomes)
         else

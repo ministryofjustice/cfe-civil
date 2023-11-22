@@ -217,7 +217,7 @@ module V6
     def parse_other_incomes(other_incomes_params)
       other_incomes_params.map { |other_income|
         other_income[:payments].map do |payment_params|
-          OtherIncomePayment.new(name: other_income[:source],
+          OtherIncomePayment.new(category: other_income[:source],
                                  payment_date: Date.parse(payment_params[:date]),
                                  amount: payment_params[:amount],
                                  client_id: payment_params[:client_id])

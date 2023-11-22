@@ -43,7 +43,7 @@ module RemarkGenerators
       end
 
       def check_other_income_variations(other_income_payments:, child_care_bank:)
-        other_income_payments.group_by(&:name).values.flat_map { |collection| AmountVariationChecker.call(collection:, child_care_bank:) }.compact
+        other_income_payments.group_by(&:category).values.flat_map { |collection| AmountVariationChecker.call(collection:, child_care_bank:) }.compact
       end
 
       def check_outgoings_variation(outgoings:, child_care_bank:)
@@ -52,7 +52,7 @@ module RemarkGenerators
 
       def check_frequencies(employments:, state_benefits:, outgoings:, other_income_payments:, child_care_bank:)
         state_benefits.map { |sb| FrequencyChecker.call(collection: sb.state_benefit_payments, child_care_bank:) }.compact +
-          other_income_payments.group_by(&:name).values.flat_map { |collection| FrequencyChecker.call(collection:, child_care_bank:) }.compact +
+          other_income_payments.group_by(&:category).values.flat_map { |collection| FrequencyChecker.call(collection:, child_care_bank:) }.compact +
           outgoings.group_by(&:class).values.flat_map { |collection| FrequencyChecker.call(collection:, child_care_bank:) }.compact +
           employments.map { |job| FrequencyChecker.call(collection: job.employment_payments, date_attribute: :date, child_care_bank:) }.compact
       end
