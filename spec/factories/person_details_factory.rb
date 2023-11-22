@@ -8,6 +8,7 @@ FactoryBot.define do
     outgoings { [] }
     capitals_data
     state_benefits { [] }
+    other_income_payments { [] }
   end
 
   factory :capitals_data do

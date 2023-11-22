@@ -50,7 +50,7 @@ module V6
       assessed_capital = result.calculation_output.combined_assessed_capital
 
       new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
-                                                        other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                        other_income_payments: applicant.other_income_payments,
                                                         cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
                                                         regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
                                                         submission_date: assessment.submission_date,
@@ -82,7 +82,7 @@ module V6
       assessed_capital = part.calculation_output.combined_assessed_capital
 
       remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
-                                                    other_income_sources: assessment.applicant_gross_income_summary.other_income_sources,
+                                                    other_income_payments: applicant.other_income_payments,
                                                     cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
                                                     regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
                                                     submission_date: assessment.submission_date,
@@ -93,7 +93,7 @@ module V6
                                                     child_care_bank: part.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                     assessed_capital:)
       remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
-                                                     other_income_sources: assessment.partner_gross_income_summary.other_income_sources,
+                                                     other_income_payments: partner.other_income_payments,
                                                      cash_transactions: assessment.partner_gross_income_summary.cash_transactions,
                                                      regular_transactions: assessment.partner_gross_income_summary.regular_transactions,
                                                      submission_date: assessment.submission_date,
@@ -158,6 +158,8 @@ module V6
       outgoings = parse_outgoings(input_params.fetch(:outgoings, []))
       render_unprocessable(dependant_errors(outgoings)) && return if outgoings.reject(&:valid?).any?
 
+      other_income_payments = parse_other_incomes(input_params.fetch(:other_incomes, []))
+
       additional_properties = additional_properties_params.fetch(:additional_properties, [])
 
       capitals = input_params.fetch(:capitals, {})
@@ -174,6 +176,7 @@ module V6
                      employments: parse_employment_income(employments),
                      capitals_data:,
                      outgoings:,
+                     other_income_payments:,
                      gross_income_summary:,
                      dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
@@ -207,6 +210,17 @@ module V6
         klass = CFEConstants::OUTGOING_KLASSES[outgoing[:name].to_sym]
         outgoing[:payments].map do |payment_params|
           klass.new payment_params
+        end
+      }.flatten
+    end
+
+    def parse_other_incomes(other_incomes_params)
+      other_incomes_params.map { |other_income|
+        other_income[:payments].map do |payment_params|
+          OtherIncomePayment.new(category: other_income[:source].to_sym,
+                                 payment_date: Date.parse(payment_params[:date]),
+                                 amount: payment_params[:amount],
+                                 client_id: payment_params[:client_id])
         end
       }.flatten
     end

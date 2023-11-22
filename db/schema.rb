@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_14_183951) do
+ActiveRecord::Schema[7.0].define(version: 2023_11_22_113057) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -73,21 +73,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_14_183951) do
     t.index ["gross_income_summary_id"], name: "index_irregular_income_payments_on_gross_income_summary_id"
   end
 
-  create_table "other_income_payments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "other_income_source_id", null: false
-    t.date "payment_date", null: false
-    t.decimal "amount", null: false
-    t.string "client_id"
-    t.index ["other_income_source_id"], name: "index_other_income_payments_on_other_income_source_id"
-  end
-
-  create_table "other_income_sources", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "gross_income_summary_id", null: false
-    t.string "name", null: false
-    t.decimal "monthly_income"
-    t.index ["gross_income_summary_id"], name: "index_other_income_sources_on_gross_income_summary_id"
-  end
-
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "ccms_code", null: false
@@ -133,8 +118,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_14_183951) do
   add_foreign_key "disposable_income_summaries", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "irregular_income_payments", "gross_income_summaries"
-  add_foreign_key "other_income_payments", "other_income_sources"
-  add_foreign_key "other_income_sources", "gross_income_summaries"
   add_foreign_key "proceeding_types", "assessments"
   add_foreign_key "regular_transactions", "gross_income_summaries"
 end

@@ -95,7 +95,7 @@ module RemarkGenerators
     end
 
     context "when checking employment_payments" do
-      let(:gross_income_summary) { create :gross_income_summary, :with_everything }
+      let(:gross_income_summary) { create :gross_income_summary }
       let(:assessment) { gross_income_summary.assessment }
       let(:amount) { 277.67 }
 
