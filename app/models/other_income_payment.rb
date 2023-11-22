@@ -5,6 +5,7 @@ class OtherIncomePayment
 
   validates :name, inclusion: { in: CFEConstants::HUMANIZED_INCOME_CATEGORIES }
   validates :amount, numericality: { greater_than_or_equal_to: 0 }
+  validates :payment_date, presence: true
 
   attribute :name
   attribute :payment_date, :date
