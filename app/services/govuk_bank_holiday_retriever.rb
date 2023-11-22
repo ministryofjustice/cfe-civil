@@ -10,7 +10,8 @@ class GovukBankHolidayRetriever
 private
 
   def response
-    store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/cache", expires_in: 10.days)
+    # Use standard file location to minimise bleed-through between test runs
+    store = ActiveSupport::Cache.lookup_store(:file_store, "tmp/cache", expires_in: 10.days)
     client = Faraday.new do |builder|
       builder.use Faraday::HttpCache, store:, strategy: Faraday::HttpCache::Strategies::ByUrl, logger: Rails.logger
       builder.adapter Faraday.default_adapter

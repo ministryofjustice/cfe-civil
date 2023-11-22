@@ -283,7 +283,6 @@ GEM
     multi_test (1.1.0)
     multipart-post (2.3.0)
     nenv (0.3.0)
-    nesty (1.0.2)
     net-imap (0.4.5)
       date
       net-protocol
@@ -539,7 +538,6 @@ DEPENDENCIES
   json-schema (~> 3.0.0)
   listen (>= 3.0.5, < 3.9)
   lograge
-  nesty
   net-imap
   net-pop
   net-smtp
