@@ -329,6 +329,44 @@ module V6
             expect(parsed_response[:errors]).to eq ["Expecting payment dates for category maintenance_out to be 1st of three of the previous 3 months"]
           end
         end
+
+        context "with an invalid payment date" do
+          let(:params) do
+            {
+              cash_transactions: {
+                income: [],
+                outgoings: [
+                  { category: "maintenance_out",
+                    payments: [
+                      {
+                        date: "2022-22-06",
+                        amount: 256,
+                        client_id:,
+                      },
+                      {
+                        date: "2022-03-01",
+                        amount: 256,
+                        client_id:,
+                      },
+                      {
+                        date: "2022-04-01",
+                        amount: 256,
+                        client_id:,
+                      },
+                    ] },
+                ],
+              },
+            }
+          end
+
+          it "doesnt crash" do
+            expect(response).to have_http_status(:unprocessable_entity)
+          end
+
+          it "returns error JSON for '#/cash_transactions/outgoings/0/payments/0'" do
+            expect(parsed_response).to eq({ success: false, errors: ["Date::Error: invalid date"] })
+          end
+        end
       end
 
       context "with an invalid irregular incomes" do
