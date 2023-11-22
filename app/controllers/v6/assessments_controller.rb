@@ -158,7 +158,7 @@ module V6
       outgoings = parse_outgoings(input_params.fetch(:outgoings, []))
       render_unprocessable(dependant_errors(outgoings)) && return if outgoings.reject(&:valid?).any?
 
-      other_incomes = parse_other_incomes(input_params.fetch(:other_incomes, []))
+      other_income_payments = parse_other_incomes(input_params.fetch(:other_incomes, []))
 
       additional_properties = additional_properties_params.fetch(:additional_properties, [])
 
@@ -176,7 +176,7 @@ module V6
                      employments: parse_employment_income(employments),
                      capitals_data:,
                      outgoings:,
-                     other_income_payments: other_incomes,
+                     other_income_payments:,
                      gross_income_summary:,
                      dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))
