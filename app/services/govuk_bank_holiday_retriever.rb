@@ -10,7 +10,11 @@ class GovukBankHolidayRetriever
 private
 
   def response
-    store = ActiveSupport::Cache.lookup_store(:file_store, "/tmp/cache", expires_in: 10.days)
+    # The Faraday::HttpCache middleware is slightly 'broken' as it doesn't respect the TTL of the
+    # response, and relies on the expiry time set on the 'store' object passed to
+    # it. k8s pods get recycled regularly anyway, so the expiry time is unlikely
+    # to be exceeded
+    store = ActiveSupport::Cache.lookup_store(:file_store, "tmp/cache", expires_in: 10.days)
     client = Faraday.new do |builder|
       builder.use Faraday::HttpCache, store:, strategy: Faraday::HttpCache::Strategies::ByUrl, logger: Rails.logger
       builder.adapter Faraday.default_adapter
