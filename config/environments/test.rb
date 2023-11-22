@@ -6,7 +6,6 @@ require "active_support/core_ext/integer/time"
 # and recreated between test runs. Don't rely on the data there!
 
 Rails.application.configure do
-  # Settings specified here will take precedence over those in config/application.rb.
   config.after_initialize do
     Bullet.enable        = true
     Bullet.bullet_logger = true
@@ -14,6 +13,12 @@ Rails.application.configure do
     Bullet.unused_eager_loading_enable = false
     Bullet.raise = true # raise an error if n+1 query occurs
   end
+
+  # Configure 'rails notes' to inspect Cucumber files
+  config.annotations.register_directories("features")
+  config.annotations.register_extensions("feature") { |tag| /#\s*(#{tag}):?\s*(.*)$/ }
+
+  # Settings specified here will take precedence over those in config/application.rb.
 
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false

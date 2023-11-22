@@ -20,6 +20,7 @@ Rails.application.configure do
   # Ensures that a master key has been made available in ENV["RAILS_MASTER_KEY"], config/master.key, or an environment
   # key such as config/credentials/production.key. This key is used to decrypt credentials (and other encrypted files).
   # config.require_master_key = true
+  config.require_master_key = false
 
   # Disable serving static files from `public/`, relying on NGINX/Apache to do so instead.
   # config.public_file_server.enabled = false
@@ -42,7 +43,7 @@ Rails.application.configure do
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # Can be used together with config.force_ssl for Strict-Transport-Security and secure cookies.
-  # config.assume_ssl = true
+  config.assume_ssl = true
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
   # config.force_ssl = true
@@ -53,6 +54,13 @@ Rails.application.configure do
   config.logger = ActiveSupport::Logger.new($stdout)
     .tap  { |logger| logger.formatter = ::Logger::Formatter.new }
     .then { |logger| ActiveSupport::TaggedLogging.new(logger) }
+
+  # Include generic and useful information about system operation, but avoid logging too much
+  # information to avoid inadvertent exposure of personally identifiable information (PII).
+  config.log_level = :info
+
+  # enable lograge in production builds so that parameters are not logged into MOJ wide system logs
+  config.lograge.enabled = true
 
   # Prepend all log lines with the following tags.
   config.log_tags = [:request_id]
@@ -67,7 +75,7 @@ Rails.application.configure do
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
   # config.active_job.queue_adapter = :resque
-  # config.active_job.queue_name_prefix = "check_financial_eligibility_production"
+  # config.active_job.queue_name_prefix = "cfe_civil_production"
 
   config.action_mailer.perform_caching = false
 
@@ -78,6 +86,13 @@ Rails.application.configure do
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
+
+  unless ENV["SENTRY"]&.casecmp("enabled")&.zero?
+    # Detect unhandled exceptions and, using grouping to avoid notification overload in the case
+    # of large numbers of similar errors, use app/lib/exception_notifider/templated_notifier.rb to
+    # communicate them
+    config.middleware.use ExceptionNotification::Rack, templated: {}, error_grouping: true
+  end
 
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
@@ -92,4 +107,5 @@ Rails.application.configure do
   # ]
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  Rails.application.routes.default_url_options[:host] = ENV["HOST"]
 end
