@@ -1,14 +1,14 @@
 class OtherIncomePayment
-  include ActiveModel::Model
-  include ActiveModel::Attributes
   include ActiveModel::Validations
+  attr_reader :name, :payment_date, :amount, :client_id
 
   validates :name, inclusion: { in: CFEConstants::HUMANIZED_INCOME_CATEGORIES }
-  validates :amount, numericality: { greater_than_or_equal_to: 0 }
   validates :payment_date, presence: true
 
-  attribute :name
-  attribute :payment_date, :date
-  attribute :amount, :decimal
-  attribute :client_id
+  def initialize(name:, payment_date:, amount:, client_id:)
+    @name = name
+    @payment_date = payment_date
+    @amount = amount
+    @client_id = client_id
+  end
 end
