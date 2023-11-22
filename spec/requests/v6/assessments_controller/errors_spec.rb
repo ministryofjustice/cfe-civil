@@ -364,7 +364,7 @@ module V6
           end
 
           it "returns error JSON for '#/cash_transactions/outgoings/0/payments/0'" do
-            expect(parsed_response).to eq({ success: false, errors: ["Date::Error: invalid date"] })
+            expect(parsed_response).to eq({ success: false, errors: ["Expecting payment dates for category maintenance_out to be 1st of three of the previous 3 months"] })
           end
         end
       end

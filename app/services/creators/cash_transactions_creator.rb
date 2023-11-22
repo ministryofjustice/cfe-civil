@@ -35,33 +35,36 @@ module Creators
     end
 
     def create_records
-      errors = [income_attributes, outgoings_attributes].map { |categories| validate_categories(categories) }.flatten
-      return Result.new(errors:).freeze unless errors.empty?
+      errors = ActiveRecord::Base.transaction do
+        incomes = income_attributes.map { |category_hash| create_category(category_hash, "credit") }
+        outgoings = outgoings_attributes.map { |category_hash| create_category(category_hash, "debit") }
 
-      ActiveRecord::Base.transaction do
-        income_attributes.each { |category_hash| create_category(category_hash, "credit") }
-        outgoings_attributes.each { |category_hash| create_category(category_hash, "debit") }
+        (incomes + outgoings).map { |categories| validate_category(categories) }.compact.tap do |validation_errors|
+          if validation_errors.empty?
+            (incomes + outgoings).each(&:save!)
+          end
+        end
       end
-      Result.new(errors: []).freeze
+      Result.new(errors:)
     end
 
     def validate_categories(categories)
-      categories.map { |category_hash| validate_category(category_hash) }.compact
+      categories.map { |cash_transaction_category| validate_category(cash_transaction_category) }.compact
     end
 
-    def validate_category(category_hash)
-      if category_hash[:payments].size != 3
-        return "There must be exactly 3 payments for category #{category_hash[:category]}"
+    def validate_category(cash_transaction_category)
+      if cash_transaction_category.cash_transactions.size != 3
+        return "There must be exactly 3 payments for category #{cash_transaction_category.name}"
       end
 
-      validate_payment_dates(category: category_hash[:category], payments: category_hash[:payments])
+      validate_payment_dates(cash_transaction_category)
     end
 
-    def validate_payment_dates(category:, payments:)
-      dates = payments.map { |payment| Date.parse(payment[:date]) }.sort
+    def validate_payment_dates(cash_transaction_category)
+      dates = cash_transaction_category.cash_transactions.map(&:date).compact.sort
       return if dates == first_three_valid_dates || dates == last_three_valid_dates
 
-      "Expecting payment dates for category #{category} to be 1st of three of the previous 3 months"
+      "Expecting payment dates for category #{cash_transaction_category.name} to be 1st of three of the previous 3 months"
     end
 
     def first_three_valid_dates
@@ -73,17 +76,17 @@ module Creators
     end
 
     def create_category(category_hash, operation)
-      cash_transaction_category = CashTransactionCategory.create!(gross_income_summary: @gross_income_summary,
-                                                                  name: category_hash[:category],
-                                                                  operation:)
-      category_hash[:payments].each { |payment| create_cash_transaction(payment, cash_transaction_category) }
+      @gross_income_summary.cash_transaction_categories.build(name: category_hash[:category], operation:).tap do |cash_transaction_category|
+        category_hash[:payments].each { |payment| create_cash_transaction(payment, cash_transaction_category) }
+      end
     end
 
     def create_cash_transaction(payment, cash_transaction_category)
-      CashTransaction.create!(cash_transaction_category:,
-                              date: Date.parse(payment[:date]),
-                              amount: payment[:amount],
-                              client_id: payment[:client_id])
+      cash_transaction_category.cash_transactions.build(
+        date: payment[:date],
+        amount: payment[:amount],
+        client_id: payment[:client_id],
+      )
     end
 
     def income_attributes
