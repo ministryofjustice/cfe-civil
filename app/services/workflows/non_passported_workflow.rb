@@ -158,7 +158,7 @@ module Workflows
         partner_gross_income = collate_gross_income(submission_date:,
                                                     employments: partner.employments,
                                                     state_benefits: partner.state_benefits,
-                                                    other_income_payments: applicant.other_income_payments,
+                                                    other_income_payments: partner.other_income_payments,
                                                     gross_income_summary: partner.gross_income_summary,
                                                     self_employments: partner_self_employments,
                                                     employment_details: partner_employment_details)
