@@ -48,10 +48,6 @@ module Creators
       Result.new(errors:)
     end
 
-    def validate_categories(categories)
-      categories.map { |cash_transaction_category| validate_category(cash_transaction_category) }.compact
-    end
-
     def validate_category(cash_transaction_category)
       if cash_transaction_category.cash_transactions.size != 3
         return "There must be exactly 3 payments for category #{cash_transaction_category.name}"
