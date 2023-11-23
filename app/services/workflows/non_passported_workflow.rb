@@ -6,10 +6,6 @@ module Workflows
       InternalResult = Data.define(:calculation_output, :assessment_result)
 
       def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
-        unassessed_capital = Capital::UnassessedWithPartner.new(applicant_capitals: applicant.capitals_data,
-                                                                partner_capitals: partner.capitals_data,
-                                                                submission_date:,
-                                                                level_of_help:)
         gross_income_subtotals = get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals_with_partner(applicant:, partner:, gross_income_subtotals: gross_income_subtotals.gross,
                                                                                    submission_date:, level_of_help:)
@@ -21,15 +17,12 @@ module Workflows
                                                 partner_date_of_birth: partner.details.date_of_birth,
                                                 total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
-        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:,
-                                 proceeding_types:, submission_date:, level_of_help:)
+        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
+                                 proceeding_types:)
         Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
       end
 
       def without_partner(applicant:, submission_date:, level_of_help:, proceeding_types:)
-        unassessed_capital = Capital::Unassessed.new(applicant_capitals: applicant.capitals_data,
-                                                     submission_date:,
-                                                     level_of_help:)
         gross_income_subtotals = get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
         disposable_income_subtotals = get_disposable_income_subtotals(applicant:, gross_income_subtotals: gross_income_subtotals.gross, level_of_help:, submission_date:)
         capital_subtotals = assess_without_partner submission_date:,
@@ -38,8 +31,8 @@ module Workflows
                                                    date_of_birth: applicant.details.date_of_birth,
                                                    total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
-        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:,
-                                 proceeding_types:, submission_date:, level_of_help:)
+        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
+                                 proceeding_types:)
         Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
       end
 
@@ -81,26 +74,17 @@ module Workflows
         )
       end
 
-      def result(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, unassessed_capital:, proceeding_types:,
-                 submission_date:, level_of_help:)
-        if gross_income_subtotals.ineligible? proceeding_types
-          calculation_output = CalculationOutput.new(gross_income_subtotals:,
-                                                     disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:,
-                                                                                                                   submission_date:),
-                                                     capital_subtotals: unassessed_capital)
+      def result(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, proceeding_types:)
+        calculation_output = CalculationOutput.new(gross_income_subtotals:,
+                                                   disposable_income_subtotals:,
+                                                   capital_subtotals:)
+        if gross_income_subtotals.ineligible?(proceeding_types)
           InternalResult.new(calculation_output:, assessment_result: :ineligible)
         elsif gross_income_subtotals.below_the_lower_controlled_threshold?
-          calculation_output = CalculationOutput.new(gross_income_subtotals:,
-                                                     disposable_income_subtotals:,
-                                                     capital_subtotals: unassessed_capital)
           InternalResult.new(calculation_output:, assessment_result: :eligible)
         elsif disposable_income_subtotals.ineligible? proceeding_types
-          calculation_output = CalculationOutput.new(gross_income_subtotals:,
-                                                     disposable_income_subtotals:,
-                                                     capital_subtotals: unassessed_capital)
           InternalResult.new(calculation_output:, assessment_result: :ineligible)
         else
-          calculation_output = CalculationOutput.new(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
           capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
           disposable_result = disposable_income_subtotals.summarized_assessment_result(proceeding_types)
           if capital_result != :eligible

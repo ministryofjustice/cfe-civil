@@ -16,14 +16,8 @@ module Workflows
       def call(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
         if non_means_tested?(proceeding_type_codes: proceeding_types.pluck(:ccms_code),
                              receives_asylum_support: applicant.details.receives_asylum_support, submission_date:)
-          if partner.present?
-            blank_calculation_result_with_partner(submission_date:,
-                                                  level_of_help:,
-                                                  applicant_capitals: applicant.capitals_data,
-                                                  partner_capitals: partner.capitals_data)
-          else
-            blank_calculation_result(submission_date:, level_of_help:, applicant_capitals: applicant.capitals_data)
-          end
+          blank_calculation_result(submission_date:,
+                                   level_of_help:)
         elsif applicant.details.receives_qualifying_benefit?
           calculation_output = if partner.present?
                                  PassportedWorkflow.partner(capitals_data: applicant.capitals_data,
@@ -59,20 +53,11 @@ module Workflows
         !!Threshold.value_for(:asylum_support_is_non_means_tested_for_all_matter_types, at: submission_date)
       end
 
-      def blank_calculation_result(applicant_capitals:, level_of_help:, submission_date:)
+      def blank_calculation_result(level_of_help:, submission_date:)
         calculation_output = CalculationOutput.new(
           gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::Unassessed.new(applicant_capitals:, submission_date:, level_of_help:),
-        )
-        Result.new calculation_output:, remarks: [], assessment_result: :eligible
-      end
-
-      def blank_calculation_result_with_partner(applicant_capitals:, partner_capitals:, level_of_help:, submission_date:)
-        calculation_output = CalculationOutput.new(
-          gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
-          disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::UnassessedWithPartner.new(applicant_capitals:, partner_capitals:, submission_date:, level_of_help:),
+          capital_subtotals: Capital::Unassessed.new(submission_date:, level_of_help:),
         )
         Result.new calculation_output:, remarks: [], assessment_result: :eligible
       end

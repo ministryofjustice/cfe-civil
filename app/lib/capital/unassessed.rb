@@ -1,9 +1,9 @@
 module Capital
   class Unassessed < Base
-    def initialize(applicant_capitals:, submission_date:, level_of_help:)
+    def initialize(submission_date:, level_of_help:)
       super(
-        PersonCapitalSubtotals.unassessed(vehicles: unassessed_vehicles(applicant_capitals.vehicles),
-                                          properties: unassessed_properties(applicant_capitals.properties)),
+        PersonCapitalSubtotals.unassessed(vehicles: [],
+                                          properties: []),
       )
       @level_of_help = level_of_help
       @submission_date = submission_date
@@ -25,20 +25,6 @@ module Capital
 
     def capital_contribution(_proceeding_types)
       0
-    end
-
-  private
-
-    def unassessed_vehicles(vehicles)
-      (vehicles || []).map do |vehicle|
-        Calculators::VehicleCalculator::VehicleData.new(vehicle:, result: Calculators::VehicleCalculator::Result.new(assessed_value: 0, included_in_assessment: false))
-      end
-    end
-
-    def unassessed_properties(properties)
-      (properties || []).map do |property|
-        Calculators::PropertyCalculator::PropertyData.new(property:, result: Calculators::PropertyCalculator::Result.blank)
-      end
     end
   end
 end
