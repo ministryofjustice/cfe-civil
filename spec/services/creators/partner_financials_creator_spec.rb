@@ -27,33 +27,6 @@ module Creators
         end
       end
 
-      context "with valid irregular income" do
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            irregular_incomes: [
-              {
-                income_type: "unspecified_source",
-                frequency: "monthly",
-                amount: 101.01,
-              },
-            ],
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-
-        it "creates an income object" do
-          creator
-          expect(assessment.partner_gross_income_summary.irregular_income_payments.count).to eq 1
-        end
-      end
-
       context "with valid employment" do
         let(:partner_financials_params) do
           {

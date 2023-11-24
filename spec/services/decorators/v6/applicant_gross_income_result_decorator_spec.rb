@@ -22,12 +22,13 @@ module Decorators
       let(:assessment) { create :assessment, proceedings: [%w[DA002 A], %w[DA003 A], %w[SE013 A]] }
       let(:summary) do
         create :gross_income_summary,
-               unspecified_source_payments: build_list(:unspecified_source_payment, 1, amount: 16_615.40),
                assessment:
       end
+      let(:irregular_income_payments) { [build(:student_loan_payment, amount: 600), build(:unspecified_source_payment, amount: 16_615.40)] }
+
       let(:expected_hash) do
         {
-          total_gross_income: 16_615.40,
+          total_gross_income: 16_665.40,
           proceeding_types: [
             {
               ccms_code: "DA002",
@@ -60,8 +61,7 @@ module Decorators
                             gross_income_subtotals: instance_double(
                               GrossIncome::Subtotals,
                               eligibilities: eligibility_records,
-                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(student_loan_payments: summary.student_loan_payments,
-                                                                                               unspecified_source_payments: summary.unspecified_source_payments,
+                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(irregular_income_payments:,
                                                                                                employment_income_subtotals: EmploymentIncomeSubtotals.blank,
                                                                                                regular_income_categories: [],
                                                                                                state_benefits: []),

@@ -52,7 +52,12 @@ module Workflows
                             gross_income_summary: assessment.applicant_gross_income_summary,
                             capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
       end
-      let(:partner_applicant) { person_applicant }
+      let(:partner_applicant) do
+        build(:person_data, details: applicant,
+                            irregular_income_payments: partner_irregular_incomes,
+                            gross_income_summary: assessment.applicant_gross_income_summary,
+                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
+      end
 
       subject(:calculation_output) do
         assessment.reload
@@ -69,6 +74,7 @@ module Workflows
 
       context "with gross income exceeded" do
         let(:gross_income_upper_threshold) { 2000 }
+        let(:partner_irregular_incomes) { [] }
 
         it "contains vehicles" do
           expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
@@ -81,6 +87,7 @@ module Workflows
       context "with disposable income exceeded" do
         let(:gross_income_upper_threshold) { 5000 }
         let(:disposable_income_upper_threshold) { 2000 }
+        let(:partner_irregular_incomes) { [] }
 
         it "contains vehicles" do
           expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
@@ -383,10 +390,7 @@ module Workflows
 
               context "with partner student loan" do
                 let(:partner) { build :applicant, employed: false }
-
-                before do
-                  create(:student_loan_payment, gross_income_summary: assessment.reload.partner_gross_income_summary)
-                end
+                let(:partner_irregular_incomes) { build_list(:student_loan_payment, 1) }
 
                 it "is eligible" do
                   expect(assessment_result).to eq("eligible")

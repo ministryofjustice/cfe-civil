@@ -1,8 +1,7 @@
 class PersonGrossIncomeSubtotals
   class << self
     def blank
-      new student_loan_payments: [],
-          unspecified_source_payments: [],
+      new irregular_income_payments: [],
           regular_income_categories: [],
           employment_income_subtotals: EmploymentIncomeSubtotals.blank,
           state_benefits: []
@@ -14,14 +13,13 @@ class PersonGrossIncomeSubtotals
   attr_reader :employment_income_subtotals
 
   def initialize(
-    student_loan_payments:,
-    unspecified_source_payments:,
+    irregular_income_payments:,
     regular_income_categories:,
     employment_income_subtotals:,
     state_benefits:
   )
-    @student_loan_payments = student_loan_payments
-    @unspecified_source_payments = unspecified_source_payments
+    @student_loan_payments = irregular_income_payments.select(&:student_loan_payment?)
+    @unspecified_source_payments = irregular_income_payments.select(&:unspecified_source_payment?)
     @regular_income_categories = regular_income_categories
     @employment_income_subtotals = employment_income_subtotals
     @state_benefits = state_benefits
