@@ -43,7 +43,7 @@ module Workflows
         allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                         proceeding_types: assessment.proceeding_types,
-                                        applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
+                                        applicant: build(:person_data, details: applicant))
       end
 
       context "for immigration/asylum proceeding types" do
@@ -57,7 +57,6 @@ module Workflows
             described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                             proceeding_types: assessment.proceeding_types,
                                             applicant: build(:person_data,
-                                                             gross_income_summary: assessment.applicant_gross_income_summary,
                                                              details: applicant))
           end
         end
@@ -74,8 +73,7 @@ module Workflows
             expect(NonPassportedWorkflow).not_to receive(:without_partner)
             described_class.without_partner(proceeding_types: assessment.proceeding_types, level_of_help: assessment.level_of_help,
                                             submission_date: assessment.submission_date,
-                                            applicant: build(:person_data, details: applicant,
-                                                                           gross_income_summary: assessment.applicant_gross_income_summary))
+                                            applicant: build(:person_data, details: applicant))
           end
         end
       end
@@ -89,7 +87,7 @@ module Workflows
           described_class.without_partner(submission_date: assessment.submission_date,
                                           level_of_help: assessment.level_of_help,
                                           proceeding_types: assessment.proceeding_types,
-                                          applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
+                                          applicant: build(:person_data, details: applicant))
         end
 
         it "calls PassportedWorkflow" do
@@ -113,8 +111,8 @@ module Workflows
         subject(:workflow_call) do
           described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                        proceeding_types: assessment.proceeding_types,
-                                       applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary),
-                                       partner: build(:person_data, details: partner, gross_income_summary: assessment.partner_gross_income_summary))
+                                       applicant: build(:person_data, details: applicant),
+                                       partner: build(:person_data, details: partner))
         end
 
         before do
@@ -143,7 +141,7 @@ module Workflows
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                         proceeding_types: assessment.proceeding_types,
-                                        applicant: build(:person_data, details: applicant, gross_income_summary: assessment.applicant_gross_income_summary))
+                                        applicant: build(:person_data, details: applicant))
       end
 
       it "calls NonPassportedWorkflow" do
@@ -166,8 +164,7 @@ module Workflows
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                         proceeding_types: assessment.proceeding_types,
-                                        applicant: build(:person_data, details: applicant,
-                                                                       gross_income_summary: assessment.applicant_gross_income_summary))
+                                        applicant: build(:person_data, details: applicant))
       end
 
       context "with proceeding types" do

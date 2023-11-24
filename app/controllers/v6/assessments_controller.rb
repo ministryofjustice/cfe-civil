@@ -17,7 +17,6 @@ module V6
                                 irregular_income_params: full_assessment_params.fetch(:irregular_incomes, {}),
                                 additional_properties_params: full_assessment_params.fetch(:properties, {}),
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
-                                gross_income_summary: create.assessment.applicant_gross_income_summary,
                                 submission_date: create.assessment.submission_date) || return
 
         partner_params = full_assessment_params[:partner]
@@ -27,8 +26,7 @@ module V6
                                        irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
                                        submission_date: create.assessment.submission_date,
                                        main_home_params: nil,
-                                       additional_properties_params: partner_params,
-                                       gross_income_summary: create.assessment.partner_gross_income_summary) || return
+                                       additional_properties_params: partner_params) || return
                  with_partner_workflow(assessment: create.assessment, applicant:, partner:)
                else
                  without_partner_workflow(assessment: create.assessment, applicant:)
@@ -151,7 +149,7 @@ module V6
     end
 
     def person_data(input_params:, submission_date:, model_params:, main_home_params:, additional_properties_params:,
-                    gross_income_summary:, irregular_income_params:)
+                    irregular_income_params:)
       dependant_models = parse_dependants input_params, submission_date
       render_unprocessable(dependant_errors(dependant_models)) && return if dependant_models.reject(&:valid?).any?
 
@@ -187,7 +185,6 @@ module V6
                      other_income_payments:,
                      irregular_income_payments: parse_irregular_incomes(irregular_income_params).map(&:freeze),
                      cash_transactions: cash_transactions.records,
-                     gross_income_summary:,
                      regular_transactions: parse_regular_transactions(input_params.fetch(:regular_transactions, [])),
                      dependants: dependant_models.map(&:freeze),
                      state_benefits: parse_state_benefits(input_params.fetch(:state_benefits, [])))

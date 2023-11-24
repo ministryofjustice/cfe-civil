@@ -49,13 +49,11 @@ module Workflows
       let(:additional_properties) { [] }
       let(:person_applicant) do
         build(:person_data, details: applicant,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
                             capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
       end
       let(:partner_applicant) do
         build(:person_data, details: applicant,
                             irregular_income_payments: partner_irregular_incomes,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
                             capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
       end
 
@@ -106,7 +104,6 @@ module Workflows
         build(:person_data, details: applicant,
                             regular_transactions:,
                             cash_transactions:,
-                            gross_income_summary: assessment.applicant_gross_income_summary,
                             dependants:, employments:,
                             capitals_data: build(:capitals_data, main_home:, additional_properties:))
       end
@@ -115,7 +112,6 @@ module Workflows
         assessment.reload
         co = if partner.present?
                partner_data = build(:person_data, details: partner, employments: partner_employments,
-                                                  gross_income_summary: assessment.partner_gross_income_summary,
                                                   capitals_data: build(:capitals_data, main_home: partner_main_home,
                                                                                        additional_properties: partner_additional_properties))
 
@@ -152,7 +148,6 @@ module Workflows
             described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                             proceeding_types: assessment.proceeding_types,
                                             applicant: build(:person_data, details: build(:applicant),
-                                                                           gross_income_summary: assessment.applicant_gross_income_summary,
                                                                            self_employments:,
                                                                            capitals_data: build(:capitals_data, main_home:, additional_properties:))).calculation_output
           end
