@@ -181,7 +181,7 @@ module Workflows
                                                                        outgoings: [],
                                                                        other_income_payments: [],
                                                                        cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                                                                       regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                                       regular_transactions: [],
                                                                        assessed_capital: 0,
                                                                        submission_date: assessment.submission_date).and_call_original
 
@@ -199,7 +199,7 @@ module Workflows
                                                                        outgoings: [],
                                                                        other_income_payments: [],
                                                                        cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                                                                       regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                                                                       regular_transactions: [],
                                                                        assessed_capital: 0,
                                                                        submission_date: assessment.submission_date).and_call_original
 

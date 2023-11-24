@@ -52,7 +52,6 @@ RSpec.describe CullStaleAssessmentsService do
       create :partner_disposable_income_summary, assessment: ass
       create :partner_disposable_income_summary, assessment: ass
       create :explicit_remark, assessment: ass
-      create :regular_transaction, gross_income_summary: ass.applicant_gross_income_summary
     end
   end
 
@@ -66,7 +65,6 @@ RSpec.describe CullStaleAssessmentsService do
       GrossIncomeSummary,
       IrregularIncomePayment,
       ProceedingType,
-      RegularTransaction,
     ]
   end
 

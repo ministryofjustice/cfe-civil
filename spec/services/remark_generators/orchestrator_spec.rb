@@ -25,11 +25,12 @@ module RemarkGenerators
     let(:employment_payments) { employments.first.employment_payments }
     let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
     let(:gross_income_summary) { create(:gross_income_summary, assessment:) }
+    let(:regular_transactions) { build_list(:regular_transaction, 1, :priority_debt_repayment, amount: 300, frequency: "monthly") }
 
     before do
       create(:disposable_income_summary, assessment:)
       create(:capital_summary, assessment:)
-      create_list(:regular_transaction, 1, :priority_debt_repayment, amount: 300, frequency: "monthly", gross_income_summary:)
+      gross_income_summary
     end
 
     subject(:orchestrator) do
@@ -41,7 +42,7 @@ module RemarkGenerators
                            employments:,
                            other_income_payments:,
                            cash_transactions: assessment.applicant_gross_income_summary.cash_transactions,
-                           regular_transactions: assessment.applicant_gross_income_summary.regular_transactions,
+                           regular_transactions:,
                            assessed_capital: 0,
                            submission_date:)
     end

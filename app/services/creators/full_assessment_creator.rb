@@ -41,14 +41,6 @@ module Creators
           end
         },
         lambda { |assessment, params|
-          if params[:regular_transactions]
-            Creators::RegularTransactionsCreator.call(
-              gross_income_summary: assessment.applicant_gross_income_summary,
-              regular_transaction_params: { regular_transactions: params[:regular_transactions] },
-            )
-          end
-        },
-        lambda { |assessment, params|
           if params[:partner]
             Creators::PartnerFinancialsCreator.call(assessment:,
                                                     partner_financials_params: params[:partner])

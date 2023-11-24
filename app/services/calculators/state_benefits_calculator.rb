@@ -22,10 +22,10 @@ module Calculators
 
       def state_benefits_regular(regular_transactions, submission_date)
         transactions = if housing_benefit_included_in_gross_income?(submission_date)
-                         regular_transactions.with_operation_and_category(:credit, :benefits) +
-                           regular_transactions.with_operation_and_category(:credit, :housing_benefit)
+                         regular_transactions.select(&:benefit?) +
+                           regular_transactions.select(&:housing_benefit?)
                        else
-                         regular_transactions.with_operation_and_category(:credit, :benefits)
+                         regular_transactions.select(&:benefit?)
                        end
         MonthlyRegularTransactionAmountCalculator.call(transactions)
       end

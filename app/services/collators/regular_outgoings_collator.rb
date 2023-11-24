@@ -18,20 +18,19 @@ module Collators
     end
 
     class << self
-      def call(gross_income_summary:, eligible_for_childcare:)
+      def call(regular_transactions:, eligible_for_childcare:)
         childcare_monthly_amount = if eligible_for_childcare # see *§ above
-                                     regular_amount_for(gross_income_summary, :child_care)
+                                     regular_amount_for(regular_transactions.select(&:child_care_payment?))
                                    else
                                      0
                                    end
 
         Result.new(child_care_regular: childcare_monthly_amount,
-                   legal_aid_regular: regular_amount_for(gross_income_summary, :legal_aid),
-                   maintenance_out_regular: regular_amount_for(gross_income_summary, :maintenance_out))
+                   legal_aid_regular: regular_amount_for(regular_transactions.select(&:legal_aid_payment?)),
+                   maintenance_out_regular: regular_amount_for(regular_transactions.select(&:maintenance_out_payment?)))
       end
 
-      def regular_amount_for(gross_income_summary, category)
-        txns = gross_income_summary.regular_transactions.with_operation_and_category(:debit, category)
+      def regular_amount_for(txns)
         Calculators::MonthlyRegularTransactionAmountCalculator.call(txns)
       end
     end

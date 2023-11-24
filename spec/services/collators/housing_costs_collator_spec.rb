@@ -11,6 +11,7 @@ module Collators
 
     subject(:collator) do
       described_class.call(housing_cost_outgoings:,
+                           regular_transactions: [],
                            person: instance_double(PersonWrapper, single?: true, dependants: []),
                            housing_benefit:,
                            gross_income_summary: assessment.applicant_gross_income_summary,

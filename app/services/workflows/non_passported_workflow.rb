@@ -109,15 +109,7 @@ module Workflows
       GrossIncomeSubtotals = Data.define(:gross, :remarks)
 
       def get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
-        applicant_self_employments = convert_employment_details(applicant.self_employments)
-        applicant_employment_details = convert_employment_details(applicant.employment_details)
-        applicant_gross_income = collate_gross_income(submission_date:,
-                                                      employments: applicant.employments,
-                                                      gross_income_summary: applicant.gross_income_summary,
-                                                      self_employments: applicant_self_employments,
-                                                      state_benefits: applicant.state_benefits,
-                                                      other_income_payments: applicant.other_income_payments,
-                                                      employment_details: applicant_employment_details)
+        applicant_gross_income = collate_gross_income(submission_date:, person: applicant)
 
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
@@ -127,25 +119,9 @@ module Workflows
       end
 
       def get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
-        applicant_self_employments = convert_employment_details(applicant.self_employments)
-        applicant_employment_details = convert_employment_details(applicant.employment_details)
-        applicant_gross_income = collate_gross_income(submission_date:,
-                                                      employments: applicant.employments,
-                                                      gross_income_summary: applicant.gross_income_summary,
-                                                      self_employments: applicant_self_employments,
-                                                      state_benefits: applicant.state_benefits,
-                                                      other_income_payments: applicant.other_income_payments,
-                                                      employment_details: applicant_employment_details)
+        applicant_gross_income = collate_gross_income(submission_date:, person: applicant)
 
-        partner_self_employments = convert_employment_details(partner.self_employments)
-        partner_employment_details = convert_employment_details(partner.employment_details)
-        partner_gross_income = collate_gross_income(submission_date:,
-                                                    employments: partner.employments,
-                                                    state_benefits: partner.state_benefits,
-                                                    other_income_payments: partner.other_income_payments,
-                                                    gross_income_summary: partner.gross_income_summary,
-                                                    self_employments: partner_self_employments,
-                                                    employment_details: partner_employment_details)
+        partner_gross_income = collate_gross_income(submission_date:, person: partner)
 
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
@@ -233,15 +209,19 @@ module Workflows
         end
       end
 
-      def collate_gross_income(submission_date:, employments:, gross_income_summary:, self_employments:, employment_details:, state_benefits:, other_income_payments:)
-        converted_employments_and_remarks = convert_employment_payments(employments, submission_date)
+      def collate_gross_income(submission_date:, person:)
+        self_employments = convert_employment_details(person.self_employments)
+        employment_details = convert_employment_details(person.employment_details)
+
+        converted_employments_and_remarks = convert_employment_payments(person.employments, submission_date)
         gross_result = Collators::GrossIncomeCollator.call(submission_date:,
                                                            self_employments:,
                                                            employment_details:,
                                                            employments: converted_employments_and_remarks.employment_data,
-                                                           gross_income_summary:,
-                                                           state_benefits:,
-                                                           other_income_payments:)
+                                                           gross_income_summary: person.gross_income_summary,
+                                                           regular_transactions: person.regular_transactions,
+                                                           other_income_payments: person.other_income_payments,
+                                                           state_benefits: person.state_benefits)
         Collators::GrossIncomeCollator::Result.new person_gross_income_subtotals: gross_result.person_gross_income_subtotals,
                                                    remarks: gross_result.remarks + converted_employments_and_remarks.remarks
       end
@@ -263,6 +243,7 @@ module Workflows
         )
         applicant_outgoings = Collators::OutgoingsCollator.call(submission_date:,
                                                                 person: applicant,
+                                                                regular_transactions: applicant_person_data.regular_transactions,
                                                                 gross_income_summary: applicant_person_data.gross_income_summary,
                                                                 outgoings: applicant_person_data.outgoings,
                                                                 eligible_for_childcare:,
@@ -272,6 +253,7 @@ module Workflows
         partner_outgoings = Collators::OutgoingsCollator.call(submission_date:,
                                                               person: partner,
                                                               gross_income_summary: partner_person_data.gross_income_summary,
+                                                              regular_transactions: partner_person_data.regular_transactions,
                                                               outgoings: partner_person_data.outgoings,
                                                               eligible_for_childcare:,
                                                               state_benefits: partner_person_data.state_benefits,
@@ -279,11 +261,11 @@ module Workflows
                                                               allow_negative_net: true)
 
         applicant_disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: applicant_person_data.gross_income_summary)
-        applicant_regular = Collators::RegularOutgoingsCollator.call(gross_income_summary: applicant_person_data.gross_income_summary,
+        applicant_regular = Collators::RegularOutgoingsCollator.call(regular_transactions: applicant_person_data.regular_transactions,
                                                                      eligible_for_childcare:)
 
         partner_disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: partner_person_data.gross_income_summary)
-        partner_regular = Collators::RegularOutgoingsCollator.call(gross_income_summary: partner_person_data.gross_income_summary,
+        partner_regular = Collators::RegularOutgoingsCollator.call(regular_transactions: partner_person_data.regular_transactions,
                                                                    eligible_for_childcare:)
 
         DisposableResult.new(
@@ -318,12 +300,13 @@ module Workflows
                                                       person: applicant,
                                                       gross_income_summary: applicant_person_data.gross_income_summary,
                                                       outgoings: applicant_person_data.outgoings,
+                                                      regular_transactions: applicant_person_data.regular_transactions,
                                                       eligible_for_childcare:,
                                                       state_benefits: applicant_person_data.state_benefits,
                                                       total_gross_income: gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
                                                       allow_negative_net: false)
         disposable = Collators::DisposableIncomeCollator.call(gross_income_summary: applicant_person_data.gross_income_summary)
-        regular = Collators::RegularOutgoingsCollator.call(gross_income_summary: applicant_person_data.gross_income_summary,
+        regular = Collators::RegularOutgoingsCollator.call(regular_transactions: applicant_person_data.regular_transactions,
                                                            eligible_for_childcare:)
         DisposableResult.new(
           applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.new(

@@ -101,34 +101,6 @@ module Creators
         end
       end
 
-      context "with valid regular transactions" do
-        let(:partner_financials_params) do
-          {
-            partner: {
-              date_of_birth:,
-              employed: true,
-            },
-            regular_transactions: [
-              {
-                category: "benefits",
-                operation: "credit",
-                amount: 9.99,
-                frequency: "monthly",
-              },
-            ],
-          }
-        end
-
-        it "returns a success status flag" do
-          expect(creator.success?).to be true
-        end
-
-        it "creates a transaction object" do
-          creator
-          expect(assessment.partner_gross_income_summary.regular_transactions.count).to eq 1
-        end
-      end
-
       context "with valid properties" do
         let(:partner_financials_params) do
           {

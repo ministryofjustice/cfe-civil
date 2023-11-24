@@ -12,6 +12,7 @@ module Collators
         described_class.call state_benefits: [],
                              submission_date: assessment.submission_date,
                              employments:,
+                             regular_transactions: [],
                              gross_income_summary: assessment.applicant_gross_income_summary,
                              self_employments: [],
                              employment_details: [],
@@ -24,9 +25,8 @@ module Collators
         context "monthly_other_income" do
           context "there are no other income records" do
             it "set monthly other income to zero" do
-              response = collator.person_gross_income_subtotals
-              expect(response.monthly_unspecified_source).to eq 0.0
-              expect(response.monthly_student_loan).to eq 0.0
+              expect(collator.person_gross_income_subtotals)
+                .to have_attributes(monthly_unspecified_source: 0.0, monthly_student_loan: 0.0)
             end
           end
 

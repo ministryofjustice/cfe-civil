@@ -12,9 +12,10 @@ module Collators
     end
 
     class << self
-      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, person:, allow_negative_net:, housing_benefit:)
+      def call(housing_cost_outgoings:, gross_income_summary:, submission_date:, person:, allow_negative_net:, housing_benefit:, regular_transactions:)
         housing_calculator = Calculators::HousingCostsCalculator.call(housing_cost_outgoings:, gross_income_summary:,
                                                                       monthly_housing_benefit: housing_benefit,
+                                                                      regular_transactions:,
                                                                       submission_date:, housing_costs_cap_applies: housing_costs_cap_applies?(person))
 
         allowed_housing_costs = if allow_negative_net
