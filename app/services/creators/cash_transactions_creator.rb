@@ -54,9 +54,6 @@ module Creators
 
       #  return a hash key
       def create_category(category_hash:, operation:)
-        # @gross_income_summary.cash_transaction_categories.build(name: category_hash[:category], operation:).tap do |cash_transaction_category|
-        #   category_hash[:payments].each { |payment| create_cash_transaction(payment, cash_transaction_category) }
-        # end
         cash_transactions = category_hash[:payments].map { |payment| create_cash_transaction(category: category_hash[:category], operation:, payment:) }
         { category_hash[:category] => cash_transactions }
       end
