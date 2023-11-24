@@ -410,6 +410,9 @@ workflows:
             - unit_tests
             - integration_tests
             - end2end_tests
+          filters:
+            branches:
+              ignore: main
       - delete_dependabot_deployment:
           context: cfe-civil-uat
           filters:

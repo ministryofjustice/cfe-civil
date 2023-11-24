@@ -2,13 +2,13 @@ module Utilities
   # class to calculate the overall given an array of results (from the eligibility records for each proceeding type)
   class ResultSummarizer
     def self.call(individual_results)
-      return :pending if individual_results.empty?
+      return :not_calculated if individual_results.empty?
 
       summarized_results(individual_results.uniq.map(&:to_sym))
     end
 
     def self.summarized_results(uniq_results)
-      return :pending if uniq_results.include?(:pending)
+      return :not_calculated if uniq_results.include?(:not_calculated)
 
       return :eligible if uniq_results == [:eligible]
 

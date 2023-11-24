@@ -27,7 +27,7 @@ module Creators
           Eligibility::DisposableIncome.new(proceeding_type:,
                                             upper_threshold: threshold.upper_threshold,
                                             lower_threshold: threshold.lower_threshold,
-                                            assessment_result: "pending")
+                                            assessment_result: "not_calculated")
         end
       end
 

@@ -17,7 +17,7 @@ module GrossIncome
           proceeding_type:,
           upper_threshold: proceeding_type.gross_income_upper_threshold,
           lower_threshold: Creators::GrossIncomeEligibilityCreator.lower_threshold(level_of_help: @level_of_help, submission_date: @submission_date),
-          assessment_result: "pending",
+          assessment_result: "not_calculated",
         )
       end
     end
