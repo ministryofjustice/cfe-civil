@@ -79,7 +79,7 @@ group :development, :test do
   gem "pry-byebug"
   gem "rack-mini-profiler", require: false
   gem "rspec_junit_formatter"
-  gem "rspec-rails", "~> 6.0"
+  gem "rspec-rails", "~> 6.1"
   gem "rswag-specs"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
