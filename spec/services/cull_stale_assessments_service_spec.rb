@@ -44,7 +44,6 @@ RSpec.describe CullStaleAssessmentsService do
       create :partner_capital_summary, assessment: ass
       create :partner_capital_summary, assessment: ass
       create :gross_income_summary,
-             :with_all_records,
              assessment: ass
       create :partner_gross_income_summary, assessment: ass
       create :partner_gross_income_summary, assessment: ass
@@ -58,8 +57,6 @@ RSpec.describe CullStaleAssessmentsService do
   def associated_models
     [
       CapitalSummary,
-      CashTransactionCategory,
-      CashTransaction,
       DisposableIncomeSummary,
       ExplicitRemark,
       GrossIncomeSummary,

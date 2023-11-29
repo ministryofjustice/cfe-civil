@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require "rails_helper"
 
 RSpec.describe Calculators::CouncilTaxCalculator, :calls_bank_holiday do
@@ -26,8 +24,7 @@ RSpec.describe Calculators::CouncilTaxCalculator, :calls_bank_holiday do
     let(:outgoings) { build_list(:council_tax_outgoing, 3, amount: 100) }
     let(:regular_transactions) { build_list(:regular_transaction, 1, :council_tax, amount: 300, frequency: "monthly") }
     let(:cash_transactions) do
-      ctc = create(:cash_transaction_category, name: "council_tax", operation: :debit, gross_income_summary: assessment.applicant_gross_income_summary)
-      create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: 200)
+      build_list(:cash_transaction, 3, category: :council_tax, operation: :debit, amount: 200)
     end
 
     context "before MTR" do

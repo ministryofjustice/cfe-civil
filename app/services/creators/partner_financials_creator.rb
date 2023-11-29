@@ -44,13 +44,6 @@ module Creators
         assessment.create_partner_disposable_income_summary!
         Result.new(errors: []).freeze
       },
-      lambda { |assessment, params|
-        if params[:cash_transactions]
-          CashTransactionsCreator.call(submission_date: assessment.submission_date,
-                                       gross_income_summary: assessment.partner_gross_income_summary,
-                                       cash_transaction_params: params[:cash_transactions])
-        end
-      },
     ].freeze
   end
 end

@@ -28,13 +28,6 @@ module Creators
                                                 proceeding_types_params: { proceeding_types: params[:proceeding_types] })
         },
         lambda { |assessment, params|
-          if params[:cash_transactions]
-            Creators::CashTransactionsCreator.call(submission_date: assessment.submission_date,
-                                                   gross_income_summary: assessment.applicant_gross_income_summary,
-                                                   cash_transaction_params: params[:cash_transactions])
-          end
-        },
-        lambda { |assessment, params|
           if params[:partner]
             Creators::PartnerFinancialsCreator.call(assessment:,
                                                     partner_financials_params: params[:partner])

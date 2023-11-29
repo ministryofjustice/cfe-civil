@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_11_23_113144) do
+ActiveRecord::Schema[7.1].define(version: 2023_11_23_155518) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -28,22 +28,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_23_113144) do
     t.uuid "assessment_id"
     t.string "type", default: "ApplicantCapitalSummary"
     t.index ["assessment_id"], name: "index_capital_summaries_on_assessment_id"
-  end
-
-  create_table "cash_transaction_categories", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "gross_income_summary_id"
-    t.string "operation"
-    t.string "name"
-    t.index ["gross_income_summary_id", "name", "operation"], name: "index_cash_transaction_categories_uniqueness", unique: true
-    t.index ["gross_income_summary_id"], name: "index_cash_transaction_categories_on_gross_income_summary_id"
-  end
-
-  create_table "cash_transactions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "cash_transaction_category_id"
-    t.date "date"
-    t.decimal "amount"
-    t.string "client_id"
-    t.index ["cash_transaction_category_id"], name: "index_cash_transactions_on_cash_transaction_category_id"
   end
 
   create_table "disposable_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -95,8 +79,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_11_23_113144) do
   end
 
   add_foreign_key "capital_summaries", "assessments"
-  add_foreign_key "cash_transaction_categories", "gross_income_summaries"
-  add_foreign_key "cash_transactions", "cash_transaction_categories"
   add_foreign_key "disposable_income_summaries", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "proceeding_types", "assessments"

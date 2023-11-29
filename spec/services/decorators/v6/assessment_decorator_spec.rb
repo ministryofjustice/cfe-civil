@@ -57,7 +57,6 @@ module Decorators
         end
         let(:applicant) do
           build(:person_data,
-                gross_income_summary: assessment.applicant_gross_income_summary,
                 details: build(:applicant))
         end
         let(:partner) { nil }
@@ -99,7 +98,6 @@ module Decorators
         context "with partner" do
           let(:partner) do
             build(:person_data,
-                  gross_income_summary: assessment.applicant_gross_income_summary,
                   details: build(:applicant))
           end
 

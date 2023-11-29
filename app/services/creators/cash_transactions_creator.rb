@@ -1,96 +1,87 @@
 module Creators
   class CashTransactionsCreator
-    Result = Struct.new :errors, keyword_init: true do
-      def success?
-        errors.empty?
-      end
-    end
+    Result = Data.define :errors, :records
 
     class << self
-      def call(submission_date:, gross_income_summary:, cash_transaction_params:)
-        new(submission_date:, gross_income_summary:, cash_transaction_params:).call
+      def call(submission_date:, cash_transaction_params:)
+        create_records submission_date:, cash_transaction_params:
       end
-    end
 
-    def initialize(submission_date:, gross_income_summary:, cash_transaction_params:)
-      @submission_date = submission_date
-      @gross_income_summary = gross_income_summary
-      @cash_transaction_params = cash_transaction_params
-    end
+    private
 
-    def call
-      create_records
-    end
+      def valid_dates(submission_date)
+        base_date = submission_date.beginning_of_month
+        [
+          base_date - 4.months,
+          base_date - 3.months,
+          base_date - 2.months,
+          base_date - 1.month,
+        ]
+      end
 
-  private
+      def create_records(submission_date:, cash_transaction_params:)
+        incomes = income_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :credit) }.reduce({}) { _1.merge(_2) }
+        outgoings = outgoings_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :debit) }.reduce({}) { _1.merge(_2) }
 
-    def valid_dates
-      base_date = @submission_date.beginning_of_month
-      @valid_dates ||= [
-        base_date - 4.months,
-        base_date - 3.months,
-        base_date - 2.months,
-        base_date - 1.month,
-      ]
-    end
+        records_hash = incomes.merge(outgoings)
 
-    def create_records
-      errors = ActiveRecord::Base.transaction do
-        incomes = income_attributes.map { |category_hash| create_category(category_hash, "credit") }
-        outgoings = outgoings_attributes.map { |category_hash| create_category(category_hash, "debit") }
+        errors = records_hash.map { |category, cash_transactions| validate_category(category:, cash_transactions:, submission_date:) }.compact
+        Result.new(errors:, records: records_hash.values.reduce([], &:+))
+      end
 
-        (incomes + outgoings).map { |categories| validate_category(categories) }.compact.tap do |validation_errors|
-          if validation_errors.empty?
-            (incomes + outgoings).each(&:save!)
-          end
+      def validate_category(category:, cash_transactions:, submission_date:)
+        if cash_transactions.size != 3
+          return "There must be exactly 3 payments for category #{category}"
         end
-      end
-      Result.new(errors:)
-    end
 
-    def validate_category(cash_transaction_category)
-      if cash_transaction_category.cash_transactions.size != 3
-        return "There must be exactly 3 payments for category #{cash_transaction_category.name}"
+        validate_payment_dates(category:, cash_transactions:, submission_date:)
       end
 
-      validate_payment_dates(cash_transaction_category)
-    end
+      def validate_payment_dates(category:, cash_transactions:, submission_date:)
+        dates = cash_transactions.map(&:date).compact.sort
+        return if dates == first_three_valid_dates(submission_date) || dates == last_three_valid_dates(submission_date)
 
-    def validate_payment_dates(cash_transaction_category)
-      dates = cash_transaction_category.cash_transactions.map(&:date).compact.sort
-      return if dates == first_three_valid_dates || dates == last_three_valid_dates
-
-      "Expecting payment dates for category #{cash_transaction_category.name} to be 1st of three of the previous 3 months"
-    end
-
-    def first_three_valid_dates
-      valid_dates.slice(0, 3)
-    end
-
-    def last_three_valid_dates
-      valid_dates.slice(1, 3)
-    end
-
-    def create_category(category_hash, operation)
-      @gross_income_summary.cash_transaction_categories.build(name: category_hash[:category], operation:).tap do |cash_transaction_category|
-        category_hash[:payments].each { |payment| create_cash_transaction(payment, cash_transaction_category) }
+        "Expecting payment dates for category #{category} to be 1st of three of the previous 3 months"
       end
-    end
 
-    def create_cash_transaction(payment, cash_transaction_category)
-      cash_transaction_category.cash_transactions.build(
-        date: payment[:date],
-        amount: payment[:amount],
-        client_id: payment[:client_id],
-      )
-    end
+      def first_three_valid_dates(submission_date)
+        valid_dates(submission_date).slice(0, 3)
+      end
 
-    def income_attributes
-      @income_attributes ||= @cash_transaction_params[:income]
-    end
+      def last_three_valid_dates(submission_date)
+        valid_dates(submission_date).slice(1, 3)
+      end
 
-    def outgoings_attributes
-      @outgoings_attributes ||= @cash_transaction_params[:outgoings]
+      #  return a hash key
+      def create_category(category_hash:, operation:)
+        cash_transactions = category_hash[:payments].map { |payment| create_cash_transaction(category: category_hash[:category], operation:, payment:) }
+        { category_hash[:category] => cash_transactions }
+      end
+
+      def create_cash_transaction(category:, operation:, payment:)
+        CashTransaction.new(
+          category: category.to_sym,
+          operation:,
+          date: safe_date_parse(payment[:date]),
+          amount: payment[:amount],
+          client_id: payment[:client_id],
+        )
+      end
+
+      # emulate rails date parsing, convert to nil if not a valid date
+      def safe_date_parse(value)
+        Date.parse(value)
+      rescue StandardError
+        nil
+      end
+
+      def income_attributes(cash_transaction_params)
+        cash_transaction_params.fetch(:income, [])
+      end
+
+      def outgoings_attributes(cash_transaction_params)
+        cash_transaction_params.fetch(:outgoings, [])
+      end
     end
   end
 end

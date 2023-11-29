@@ -24,8 +24,7 @@ RSpec.describe Calculators::PriorityDebtRepaymentCalculator, :calls_bank_holiday
     let(:outgoings) { build_list(:priority_debt_repayment_outgoing, 3, amount: 100) }
     let(:regular_transactions) { build_list(:regular_transaction, 1, :priority_debt_repayment, amount: 300, frequency: "monthly") }
     let(:cash_transactions) do
-      ctc = create(:cash_transaction_category, name: "priority_debt_repayment", operation: :debit, gross_income_summary: assessment.applicant_gross_income_summary)
-      create_list(:cash_transaction, 3, cash_transaction_category: ctc, amount: 200)
+      build_list(:cash_transaction, 3, category: :priority_debt_repayment, operation: :debit, amount: 200)
     end
 
     context "before MTR" do
