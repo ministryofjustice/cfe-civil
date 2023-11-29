@@ -1,7 +1,7 @@
 module Workflows
   class PassportedWorkflow
     class << self
-      def call(capitals_data:, date_of_birth:, submission_date:, level_of_help:)
+      def without_partner(capitals_data:, date_of_birth:, submission_date:, level_of_help:)
         capital_subtotals = passported_without_partner(capitals_data:, submission_date:, level_of_help:,
                                                        date_of_birth:)
         CalculationOutput.new(capital_subtotals:,
@@ -9,9 +9,9 @@ module Workflows
                               gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
       end
 
-      def partner(capitals_data:, partner_capitals_data:, date_of_birth:,
-                  partner_date_of_birth:,
-                  submission_date:, level_of_help:)
+      def with_partner(capitals_data:, partner_capitals_data:, date_of_birth:,
+                       partner_date_of_birth:,
+                       submission_date:, level_of_help:)
         capital_subtotals = partner_passported(capitals_data:, partner_capitals_data:, date_of_birth:,
                                                partner_date_of_birth:, submission_date:, level_of_help:)
         CalculationOutput.new(capital_subtotals:,

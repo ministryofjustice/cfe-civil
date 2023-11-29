@@ -27,8 +27,10 @@ module Capital
     end
 
     def capital_contribution(proceeding_types)
-      threshold = eligibilities(proceeding_types).map(&:lower_threshold).min
-      [0, combined_assessed_capital - threshold].max
+      lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types:,
+                                                                                            level_of_help: @level_of_help,
+                                                                                            submission_date: @submission_date)
+      [0, combined_assessed_capital - lower_capital_threshold].max
     end
 
   private

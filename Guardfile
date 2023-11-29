@@ -21,6 +21,22 @@ guard :rubocop, rubocop_options do
   watch(%r{(?:.+/)?\.rubocop(?:_todo)?\.yml$}) { |m| File.dirname(m[0]) }
 end
 
+### SWAGGER ###
+swagger_options = {
+  all_on_start: false,
+}
+guard :shell, swagger_options do
+  watch(%r{^spec/requests/swagger_docs/.+\.rb}) do
+    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
+  end
+  watch("spec/swagger_helper.rb") do
+    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
+  end
+  watch("app/lib/swagger_docs.rb") do
+    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
+  end
+end
+
 ### RSPEC ###
 rspec_options = {
   cmd: "VERBOSE=true bundle exec rspec",
@@ -72,21 +88,5 @@ guard :cucumber, cucumber_options do
 
   watch(%r{^features/step_definitions/(.+)_steps\.rb$}) do |m|
     Dir[File.join("**/#{m[1]}.feature")][0] || "features"
-  end
-end
-
-### SWAGGER ###
-swagger_options = {
-  all_on_start: false,
-}
-guard :shell, swagger_options do
-  watch(%r{^spec/requests/swagger_docs/.+\.rb}) do
-    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
-  end
-  watch("spec/swagger_helper.rb") do
-    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
-  end
-  watch("app/lib/swagger_docs.rb") do
-    `NOCOVERAGE=1 bundle exec rake rswag:specs:swaggerize`
   end
 end

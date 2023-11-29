@@ -15,9 +15,4 @@ class CalculationOutput
   def disposable_income_eligibilities(proceeding_types)
     @disposable_income_subtotals.eligibilities proceeding_types
   end
-
-  def lower_capital_threshold(proceeding_types)
-    # we can take the lower threshold from the first eligibility records as they are all the same
-    capital_subtotals.eligibilities(proceeding_types).first.lower_threshold
-  end
 end

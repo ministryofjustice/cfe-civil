@@ -29,6 +29,12 @@ module Creators
         end
       end
 
+      def lower_capital_threshold(proceeding_types:, level_of_help:, submission_date:)
+        thresholds_for(proceeding_types:,
+                       level_of_help:,
+                       submission_date:).values.map(&:lower_threshold).min
+      end
+
     private
 
       UpperLowerThreshold = Data.define :upper_threshold, :lower_threshold
