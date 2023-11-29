@@ -35,10 +35,15 @@ module V6
                else
                  Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
                end
+        assessment_params = full_assessment_params.fetch(:assessment)
+        eligibility_result = ResultWrapper.new(result: full.eligibility_result,
+                                               gross_section: assessment_params.fetch(:section_gross_income, "complete"),
+                                               disposable_section: assessment_params.fetch(:section_disposable_income, "complete"),
+                                               capital_section: assessment_params.fetch(:section_capital, "complete"))
 
         render json: assessment_decorator_class.new(assessment: create.assessment,
                                                     calculation_output: full.workflow_result.calculation_output,
-                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
+                                                    applicant:, partner:, version:, eligibility_result:, remarks: full.workflow_result.remarks).as_json
       else
         render_unprocessable(create.errors)
       end

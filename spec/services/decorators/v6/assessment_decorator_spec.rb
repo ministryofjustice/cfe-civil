@@ -16,7 +16,10 @@ module Decorators
       let(:version) { "6" }
       let(:calculation_output) do
         instance_double(CalculationOutput,
+                        submission_date: assessment.submission_date,
+                        level_of_help: assessment.level_of_help,
                         gross_income_subtotals: instance_double(GrossIncome::Subtotals,
+                                                                dependants: [],
                                                                 combined_monthly_gross_income: 0,
                                                                 applicant_gross_income_subtotals:
                                                                   PersonGrossIncomeSubtotals.new(
@@ -34,10 +37,8 @@ module Decorators
                                                                   regular_income_categories: CFEConstants::VALID_INCOME_CATEGORIES.map do |category|
                                                                     GrossIncomeCategorySubtotals.new(category: category.to_sym, bank: 0, cash: 0, regular: 0)
                                                                   end,
-                                                                ),
-                                                                eligibilities: []),
+                                                                )),
                         income_contribution: 0,
-                        disposable_income_eligibilities: [],
                         combined_total_disposable_income: 0,
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
@@ -48,6 +49,9 @@ module Decorators
       let(:eligibility_result) do
         instance_double(EligibilityResults,
                         summarized_assessment_result: "eligible",
+                        gross_eligibilities: [],
+                        disposable_eligibilities: [],
+                        capital_eligibilities: [],
                         assessment_results: [])
       end
 

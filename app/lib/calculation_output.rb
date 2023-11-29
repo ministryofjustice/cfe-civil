@@ -4,15 +4,17 @@ class CalculationOutput
 
   delegate :combined_assessed_capital, to: :capital_subtotals
 
-  def initialize(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
+  attr_reader :level_of_help, :submission_date, :capital_subtotals, :gross_income_subtotals
+
+  def initialize(submission_date:, level_of_help:, gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:)
+    @submission_date = submission_date
+    @level_of_help = level_of_help
     @gross_income_subtotals = gross_income_subtotals
     @disposable_income_subtotals = disposable_income_subtotals
     @capital_subtotals = capital_subtotals
   end
 
-  attr_reader :capital_subtotals, :gross_income_subtotals
-
-  def disposable_income_eligibilities(proceeding_types)
-    @disposable_income_subtotals.eligibilities proceeding_types
+  def disposable_income_assessed?
+    @disposable_income_subtotals.assessed?
   end
 end

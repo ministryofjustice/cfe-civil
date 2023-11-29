@@ -4,27 +4,28 @@ module Decorators
   module V6
     RSpec.describe ApplicantGrossIncomeResultDecorator do
       let(:unlimited) { 999_999_999_999.0 }
-      let(:eligibility_records) do
-        ptc_results.map do |ptc, thresh_and_result|
-          threshold, result = thresh_and_result
-          Eligibility::GrossIncome.new upper_threshold: threshold,
-                                       lower_threshold: nil, assessment_result: result, proceeding_type: ptc
-        end
+      let(:proceeding_types) do
+        [
+          build(:proceeding_type, :with_waived_thresholds, ccms_code: "DA002", client_involvement_type: "A"),
+          build(:proceeding_type, :with_waived_thresholds, ccms_code: "DA003", client_involvement_type: "A"),
+          build(:proceeding_type, gross_income_upper_threshold: 8000, ccms_code: "SE013", client_involvement_type: "A"),
+        ]
       end
-      let(:ptc_results) do
-        {
-          build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A") => [unlimited, "eligible"],
-          build(:proceeding_type, ccms_code: "DA003", client_involvement_type: "A") => [unlimited, "eligible"],
-          build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "A") => [8_000, "ineligible"],
-        }
-      end
-      let(:ptcs) { ptc_results.keys }
       let(:assessment) { create :assessment, proceedings: [%w[DA002 A], %w[DA003 A], %w[SE013 A]] }
       let(:summary) do
         create :gross_income_summary,
                assessment:
       end
       let(:irregular_income_payments) { [build(:student_loan_payment, amount: 600), build(:unspecified_source_payment, amount: 16_615.40)] }
+      let(:eligibilities) do
+        proceeding_types.map do |proceeding_type|
+          instance_double(Eligibility::GrossIncome,
+                          proceeding_type:,
+                          upper_threshold: proceeding_type.gross_income_upper_threshold,
+                          lower_threshold: 0.0,
+                          assessment_result: "eligible")
+        end
+      end
 
       let(:expected_hash) do
         {
@@ -49,7 +50,7 @@ module Decorators
               client_involvement_type: "A",
               upper_threshold: 8_000.0,
               lower_threshold: 0.0,
-              result: "ineligible",
+              result: "eligible",
             },
           ],
           combined_total_gross_income: 0.0,
@@ -57,16 +58,9 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(proceeding_types: ptc_results.keys,
-                            gross_income_subtotals: instance_double(
-                              GrossIncome::Subtotals,
-                              eligibilities: eligibility_records,
-                              applicant_gross_income_subtotals: PersonGrossIncomeSubtotals.new(irregular_income_payments:,
-                                                                                               employment_income_subtotals: EmploymentIncomeSubtotals.blank,
-                                                                                               regular_income_categories: [],
-                                                                                               state_benefits: []),
-                              combined_monthly_gross_income: 0,
-                            ))
+        described_class.new(eligibilities:,
+                            combined_monthly_gross_income: 0,
+                            total_gross_income: 16_665.40)
       end
 
       it "generates the expected hash" do

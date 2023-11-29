@@ -17,7 +17,8 @@ module Workflows
                                                 partner_date_of_birth: partner.details.date_of_birth,
                                                 total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
-        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
+        internal_result = result(submission_date:, level_of_help:,
+                                 gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
                                  proceeding_types:)
         Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
       end
@@ -31,7 +32,8 @@ module Workflows
                                                    date_of_birth: applicant.details.date_of_birth,
                                                    total_disposable_income: disposable_income_subtotals.combined_total_disposable_income
 
-        internal_result = result(gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
+        internal_result = result(submission_date:, level_of_help:,
+                                 gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
                                  proceeding_types:)
         Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
       end
@@ -74,8 +76,10 @@ module Workflows
         )
       end
 
-      def result(gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, proceeding_types:)
-        calculation_output = CalculationOutput.new(gross_income_subtotals:,
+      def result(submission_date:, level_of_help:, gross_income_subtotals:, disposable_income_subtotals:, capital_subtotals:, proceeding_types:)
+        calculation_output = CalculationOutput.new(submission_date:,
+                                                   level_of_help:,
+                                                   gross_income_subtotals:,
                                                    disposable_income_subtotals:,
                                                    capital_subtotals:)
         if gross_income_subtotals.ineligible?(proceeding_types)

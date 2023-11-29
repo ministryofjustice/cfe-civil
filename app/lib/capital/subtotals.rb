@@ -11,11 +11,8 @@ module Capital
       PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
     end
 
-    def eligibilities(proceeding_types)
-      Creators::CapitalEligibilityCreator.call proceeding_types:,
-                                               submission_date: @submission_date,
-                                               level_of_help: @level_of_help,
-                                               assessed_capital: combined_assessed_capital
+    def assessed?
+      true
     end
 
     def summarized_assessment_result(proceeding_types)

@@ -32,8 +32,11 @@ module Decorators
             income_contribution:,
             proceeding_types: assessment_results.as_json,
           },
-          gross_income: ApplicantGrossIncomeResultDecorator.new(gross_income_subtotals: @calculation_output.gross_income_subtotals,
-                                                                proceeding_types: assessment.proceeding_types),
+          gross_income: ApplicantGrossIncomeResultDecorator.new(
+            total_gross_income: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income,
+            combined_monthly_gross_income: @calculation_output.gross_income_subtotals.combined_monthly_gross_income,
+            eligibilities: @eligibility_result.gross_eligibilities,
+          ),
           disposable_income: applicant_disposable_income_result_decorator_class.new(
             assessment.applicant_disposable_income_summary,
             assessment.applicant_gross_income_summary,
@@ -42,7 +45,7 @@ module Decorators
             combined_total_disposable_income: @calculation_output.combined_total_disposable_income,
             combined_total_outgoings_and_allowances: @calculation_output.combined_total_outgoings_and_allowances,
             income_contribution:,
-            eligibilities: @calculation_output.disposable_income_eligibilities(assessment.proceeding_types),
+            eligibilities: @eligibility_result.disposable_eligibilities,
           ),
           capital: ApplicantCapitalResultDecorator.new(
             summary: assessment.applicant_capital_summary,
@@ -50,7 +53,7 @@ module Decorators
             partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
             capital_contribution:,
             combined_assessed_capital: @calculation_output.capital_subtotals.combined_assessed_capital.to_f,
-            eligibilities: @calculation_output.capital_subtotals.eligibilities(assessment.proceeding_types),
+            eligibilities: @eligibility_result.capital_eligibilities,
           ),
         }
         result = if @partner_present
