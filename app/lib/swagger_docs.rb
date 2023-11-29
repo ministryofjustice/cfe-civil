@@ -1149,34 +1149,34 @@ class SwaggerDocs
             type: :object,
             additionalProperties: false,
             properties: {
-              employment: {
+              client_employment: {
                 type: :object,
                 additionalProperties: false,
                 properties: {
                   multiple_employments: { "$ref": "#/components/schemas/ClientIdArray" },
                 },
               },
-              employment_tax: {
+              client_employment_tax: {
                 type: :object,
                 additionalProperties: false,
                 properties: {
                   refunds: { "$ref": "#/components/schemas/ClientIdArray" },
                 },
               },
-              employment_nic: {
+              client_employment_nic: {
                 type: :object,
                 additionalProperties: false,
                 properties: {
                   refunds: { "$ref": "#/components/schemas/ClientIdArray" },
                 },
               },
-              employment_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              state_benefit_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              other_income_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              outgoings_housing_cost: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              outgoings_legal_aid: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              outgoings_maintenance: { "$ref": "#/components/schemas/AmountVariationRemark" },
-              outgoings_childcare: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_employment_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_state_benefit_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_other_income_payment: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_outgoings_housing_cost: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_outgoings_legal_aid: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_outgoings_maintenance: { "$ref": "#/components/schemas/AmountVariationRemark" },
+              client_outgoings_childcare: { "$ref": "#/components/schemas/AmountVariationRemark" },
             },
           },
           OutgoingResult: {

@@ -5,11 +5,18 @@ module Decorators
     RSpec.describe RemarksDecorator do
       let(:assessment) { create :assessment }
       let(:remarks) do
-        [
-          RemarksData.new(:other_income_payment, :unknown_frequency, %w[abc def]),
-          RemarksData.new(:other_income_payment, :amount_variation, %w[ghu jkl]),
-          RemarksData.new(:state_benefit_payment, :residual_balance, %w[cde sss]),
-        ]
+        {
+          client: [
+            RemarksData.new(:other_income_payment, :unknown_frequency, %w[abc]),
+            RemarksData.new(:other_income_payment, :amount_variation, %w[ghu]),
+            RemarksData.new(:state_benefit_payment, :residual_balance, %w[cde]),
+          ],
+          partner: [
+            RemarksData.new(:other_income_payment, :unknown_frequency, %w[def]),
+            RemarksData.new(:other_income_payment, :amount_variation, %w[jkl]),
+            RemarksData.new(:state_benefit_payment, :residual_balance, %w[sss]),
+          ],
+        }
       end
 
       before { create :explicit_remark, remark: "test remark", assessment: }
@@ -20,7 +27,27 @@ module Decorators
           let(:assessment_result) { :contribution_required }
 
           it "return remarks with explicit remarks" do
-            expect(remarks_decorator.as_json).to eq({ other_income_payment: { unknown_frequency: %w[abc def], amount_variation: %w[ghu jkl] }, state_benefit_payment: { residual_balance: %w[cde sss] }, policy_disregards: ["test remark"] })
+            expect(remarks_decorator.as_json).to eq(
+              {
+                client_other_income_payment: {
+                  unknown_frequency: %w[abc],
+                  amount_variation: %w[ghu],
+                },
+                client_state_benefit_payment:
+                  {
+                    residual_balance: %w[cde],
+                  },
+                partner_other_income_payment: {
+                  unknown_frequency: %w[def],
+                  amount_variation: %w[jkl],
+                },
+                partner_state_benefit_payment:
+                  {
+                    residual_balance: %w[sss],
+                  },
+                policy_disregards: ["test remark"],
+              },
+            )
           end
         end
 
@@ -28,7 +55,26 @@ module Decorators
           let(:assessment_result) { :ineligible }
 
           it "return remarks without explicit remarks" do
-            expect(remarks_decorator.as_json).to eq({ other_income_payment: { unknown_frequency: %w[abc def], amount_variation: %w[ghu jkl] }, state_benefit_payment: { residual_balance: %w[cde sss] } })
+            expect(remarks_decorator.as_json).to eq(
+              {
+                client_other_income_payment: {
+                  unknown_frequency: %w[abc],
+                  amount_variation: %w[ghu],
+                },
+                client_state_benefit_payment:
+                  {
+                    residual_balance: %w[cde],
+                  },
+                partner_other_income_payment: {
+                  unknown_frequency: %w[def],
+                  amount_variation: %w[jkl],
+                },
+                partner_state_benefit_payment:
+                  {
+                    residual_balance: %w[sss],
+                  },
+              },
+            )
           end
         end
       end

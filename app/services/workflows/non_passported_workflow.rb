@@ -108,7 +108,7 @@ module Workflows
                                            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
                                            dependants: applicant.dependants,
                                            submission_date:, level_of_help:)
-        GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks
+        GrossIncomeSubtotals.new gross:, remarks: { client: applicant_gross_income.remarks, partner: [] }
       end
 
       def get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
@@ -119,7 +119,7 @@ module Workflows
                                            partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
                                            dependants: applicant.dependants + partner.dependants,
                                            submission_date:, level_of_help:)
-        GrossIncomeSubtotals.new gross:, remarks: applicant_gross_income.remarks + partner_gross_income.remarks
+        GrossIncomeSubtotals.new gross:, remarks: { client: applicant_gross_income.remarks, partner: partner_gross_income.remarks }
       end
 
       def get_disposable_income_subtotals(applicant:, gross_income_subtotals:, submission_date:, level_of_help:)

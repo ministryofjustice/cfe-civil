@@ -1309,14 +1309,25 @@ module V6
           describe "remarks" do
             let(:remarks) { assessment.fetch(:remarks) }
 
-            it "has other_income_payment remark from friends and family" do
-              expect(remarks.dig(:other_income_payment, :amount_variation))
-                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1", "ffi-m-3", "ffi-m-2", "ffi-m-1"])
+            it "has client_other_income_payment remark from friends and family" do
+              expect(remarks.dig(:client_other_income_payment, :amount_variation))
+                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1"])
             end
 
-            it "has outgoings_housing_cost" do
-              expect(remarks.fetch(:outgoings_housing_cost)).to eq(
-                { unknown_frequency: ["hc-r-1", "hc-r-1"] },
+            it "has partner_other_income_payment remark from friends and family" do
+              expect(remarks.dig(:partner_other_income_payment, :amount_variation))
+                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1"])
+            end
+
+            it "has client_outgoings_housing_cost" do
+              expect(remarks.fetch(:client_outgoings_housing_cost)).to eq(
+                { unknown_frequency: ["hc-r-1"] },
+              )
+            end
+
+            it "has partner_outgoings_housing_cost" do
+              expect(remarks.fetch(:partner_outgoings_housing_cost)).to eq(
+                { unknown_frequency: ["hc-r-1"] },
               )
             end
           end
@@ -1835,11 +1846,11 @@ module V6
           end
 
           it "returns assessment.remarks client_ids in response" do
-            expect(parsed_response[:assessment][:remarks]).to eq(employment_payment: { unknown_frequency: %w[client_id_1 client_id_2] }, policy_disregards: ["Grenfell tower fund", "Some other fund"])
+            expect(parsed_response[:assessment][:remarks]).to eq(client_employment_payment: { unknown_frequency: %w[client_id_1 client_id_2] }, policy_disregards: ["Grenfell tower fund", "Some other fund"])
           end
 
           it "redacts assessment.remarks client_ids in RequestLog" do
-            expect(log_record.response["assessment"]["remarks"]).to eq("employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] }, "policy_disregards" => ["Grenfell tower fund", "Some other fund"])
+            expect(log_record.response["assessment"]["remarks"]).to eq("client_employment_payment" => { "unknown_frequency" => ["** REDACTED **", "** REDACTED **"] }, "policy_disregards" => ["Grenfell tower fund", "Some other fund"])
           end
         end
       end

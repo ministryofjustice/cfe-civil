@@ -57,7 +57,7 @@ module Decorators
 
       describe "#as_json" do
         let(:remarks) do
-          [RemarksData.new(:other_income_payment, :unknown_frequency, %w[abc def])]
+          { client: [RemarksData.new(:other_income_payment, :unknown_frequency, %w[abc def])] }
         end
         let(:applicant) do
           build(:person_data,

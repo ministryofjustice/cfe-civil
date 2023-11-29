@@ -19,12 +19,12 @@ RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank
 
   def deep_orderless_match(actual, expected)
     expect(actual.keys).to match_array(expected.keys)
-    expect_matching_array(actual, expected, :state_benefit_payment, :amount_variation)
-    expect_matching_array(actual, expected, :state_benefit_payment, :unknown_frequency)
-    expect_matching_array(actual, expected, :other_income_payment, :amount_variation)
-    expect_matching_array(actual, expected, :other_income_payment, :unknown_frequency)
-    expect_matching_array(actual, expected, :outgoings_housing_cost, :amount_variation)
-    expect_matching_array(actual, expected, :outgoings_maintenance, :unknown_frequency)
+    expect_matching_array(actual, expected, :client_state_benefit_payment, :amount_variation)
+    expect_matching_array(actual, expected, :client_state_benefit_payment, :unknown_frequency)
+    expect_matching_array(actual, expected, :client_other_income_payment, :amount_variation)
+    expect_matching_array(actual, expected, :client_other_income_payment, :unknown_frequency)
+    expect_matching_array(actual, expected, :client_outgoings_housing_cost, :amount_variation)
+    expect_matching_array(actual, expected, :client_outgoings_maintenance, :unknown_frequency)
     expect(actual[:policy_disregards]).to match_array(expected[:policy_disregards])
   end
 
@@ -301,11 +301,11 @@ RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank
 
   def expected_remarks
     {
-      state_benefit_payment: {
+      client_state_benefit_payment: {
         amount_variation: %w[CHB001 CHB002 CHB003],
         unknown_frequency: %w[CHB001 CHB002 CHB003],
       },
-      other_income_payment: {
+      client_other_income_payment: {
         amount_variation: [
           "OISL-001",
           "OISL-002",
@@ -320,14 +320,14 @@ RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank
           client_id,
         ],
       },
-      outgoings_housing_cost: {
+      client_outgoings_housing_cost: {
         amount_variation: [
           client_id,
           client_id,
           client_id,
         ],
       },
-      outgoings_maintenance: {
+      client_outgoings_maintenance: {
         unknown_frequency: [
           client_id,
           client_id,
