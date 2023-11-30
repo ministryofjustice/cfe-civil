@@ -3,7 +3,7 @@ require "rails_helper"
 module Utilities
   RSpec.describe ResultSummarizer do
     let(:no_results) { [] }
-    let(:one_pending) { %i[eligible eligible pending] }
+    let(:one_not_calculated) { %i[eligible eligible not_calculated] }
     let(:all_eligible) { %i[eligible eligible eligible] }
     let(:all_ineligible) { %i[ineligible ineligible ineligible] }
     let(:all_contrib) { %i[contribution_required contribution_required contribution_required] }
@@ -17,16 +17,16 @@ module Utilities
     context "no results" do
       let(:results) { no_results }
 
-      it "returns :pending" do
-        expect(summarizer).to eq :pending
+      it "returns :not_calculated" do
+        expect(summarizer).to eq :not_calculated
       end
     end
 
-    context "one pending" do
-      let(:results) { one_pending }
+    context "one not_calculated" do
+      let(:results) { one_not_calculated }
 
-      it "returns :pending" do
-        expect(summarizer).to eq :pending
+      it "returns :not_calculated" do
+        expect(summarizer).to eq :not_calculated
       end
     end
 
@@ -70,7 +70,7 @@ module Utilities
       end
     end
 
-    context "ineligble and contribution_required mixed" do
+    context "ineligible and contribution_required mixed" do
       let(:results) { inelig_and_contrib }
 
       it "returns :partially_eligible" do

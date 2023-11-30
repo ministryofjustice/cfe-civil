@@ -2,8 +2,8 @@ FactoryBot.define do
   factory :capital_summary do
     assessment
 
-    trait :pending do
-      assessment_result { "pending" }
+    trait :not_calculated do
+      assessment_result { "not_calculated" }
     end
 
     trait "summarised" do

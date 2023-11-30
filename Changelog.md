@@ -4,6 +4,10 @@ The date is when it was released/deployed to production - see [cfe-civil CI/CD](
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 30th November 2023
+
+* LEP-421 Breaking change - rename pending to not_calculated
+
 ## 23rd November 2023
 
 * LEP-349 Breaking change (agreed): 'Short-circuiting' removed, so an ineligible gross income or disposable income test no longer causes disposable income and/or capital tests to be skipped, which resulted in them having 'pending' result
