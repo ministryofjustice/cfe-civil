@@ -80,6 +80,7 @@ group :development, :test do
   gem "rack-mini-profiler", require: false
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.1"
+  # Later versions use a deprecated rspec API, so pin for now
   gem "rswag-specs", "< 2.12"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
