@@ -24,9 +24,10 @@ module Decorators
           remarks_hash = remarks_hash_by_type.transform_values do |v|
             v.group_by(&:issue).transform_values { |c| c.map(&:ids).flatten }
           end
-          all_remarks.merge!(remarks_hash.transform_keys { |key| "#{applicant_type}_#{key}".to_sym }.symbolize_keys)
+          all_remarks.merge!(remarks_hash.transform_keys { |key| "#{applicant_type}_#{key}".to_sym })
         end
         all_remarks.merge! @explicit_remarks.by_category
+        all_remarks.symbolize_keys
       end
     end
   end
