@@ -1,7 +1,7 @@
 module Workflows
   class PersonWorkflow
     class << self
-      def without_partner_workflow(assessment:, applicant:)
+      def without_partner(assessment:, applicant:)
         result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                                          proceeding_types: assessment.proceeding_types,
                                                          applicant:)
@@ -33,7 +33,7 @@ module Workflows
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
 
-      def with_partner_workflow(assessment:, applicant:, partner:)
+      def with_partner(assessment:, applicant:, partner:)
         part = Workflows::MainWorkflow.with_partner(submission_date: assessment.submission_date,
                                                     level_of_help: assessment.level_of_help,
                                                     proceeding_types: assessment.proceeding_types,

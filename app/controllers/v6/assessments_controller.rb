@@ -25,9 +25,9 @@ module V6
                                        submission_date: create.assessment.submission_date,
                                        main_home_params: nil,
                                        additional_properties_params: partner_params) || return
-                 Workflows::PersonWorkflow.with_partner_workflow(assessment: create.assessment, applicant:, partner:)
+                 Workflows::PersonWorkflow.with_partner(assessment: create.assessment, applicant:, partner:)
                else
-                 Workflows::PersonWorkflow.without_partner_workflow(assessment: create.assessment, applicant:)
+                 Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
                end
 
         render json: assessment_decorator_class.new(assessment: create.assessment,
