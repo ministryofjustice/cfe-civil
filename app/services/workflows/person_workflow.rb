@@ -11,7 +11,7 @@ module Workflows
                                                                                               submission_date: assessment.submission_date)
         assessed_capital = result.calculation_output.combined_assessed_capital
 
-        new_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
+        applicant_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                           other_income_payments: applicant.other_income_payments,
                                                           cash_transactions: applicant.cash_transactions,
                                                           regular_transactions: applicant.regular_transactions,
@@ -23,7 +23,10 @@ module Workflows
                                                           child_care_bank: result.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                           assessed_capital:)
         workflow = Workflows::MainWorkflow::Result.new calculation_output: result.calculation_output,
-                                                       remarks: new_remarks + result.remarks,
+                                                       remarks: {
+                                                         client: (result.remarks[:client] + applicant_remarks),
+                                                         partner: [],
+                                                       },
                                                        assessment_result: result.assessment_result
         er = EligibilityResults.without_partner(
           proceeding_types: assessment.proceeding_types,
@@ -45,7 +48,7 @@ module Workflows
                                                                                               submission_date: assessment.submission_date)
         assessed_capital = part.calculation_output.combined_assessed_capital
 
-        remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
+        applicant_remarks = RemarkGenerators::Orchestrator.call(employments: applicant.employments,
                                                       other_income_payments: applicant.other_income_payments,
                                                       cash_transactions: applicant.cash_transactions,
                                                       regular_transactions: applicant.regular_transactions,
@@ -56,7 +59,7 @@ module Workflows
                                                       lower_capital_threshold:,
                                                       child_care_bank: part.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
                                                       assessed_capital:)
-        remarks += RemarkGenerators::Orchestrator.call(employments: partner.employments,
+        partner_remarks = RemarkGenerators::Orchestrator.call(employments: partner.employments,
                                                        other_income_payments: partner.other_income_payments,
                                                        cash_transactions: partner.cash_transactions,
                                                        regular_transactions: partner.regular_transactions,
@@ -69,7 +72,10 @@ module Workflows
                                                        assessed_capital:)
         workflow_result = Workflows::MainWorkflow::Result.new calculation_output: part.calculation_output,
                                                               assessment_result: part.assessment_result,
-                                                              remarks: remarks + part.remarks
+                                                              remarks: {
+                                                                client: (part.remarks[:client] + applicant_remarks),
+                                                                partner: (part.remarks[:partner] + partner_remarks),
+                                                              }
         er = EligibilityResults.with_partner(
           proceeding_types: assessment.proceeding_types,
           submission_date: assessment.submission_date,
