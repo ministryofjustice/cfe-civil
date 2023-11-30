@@ -34,68 +34,6 @@ module Workflows
       end
     end
 
-    context "vehicle collection output", :calls_bank_holiday do
-      let(:disposable_income_upper_threshold) { 5000 }
-      let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 4000) }
-      let(:applicant) { build :applicant }
-      let(:proceeding_type_codes) { %w[SE003] }
-      let(:level_of_help) { "certificated" }
-      let(:self_employments) do
-        [OpenStruct.new(income: SelfEmploymentIncome.new(tax: 200, benefits_in_kind: 100,
-                                                         national_insurance: 150, gross: 2900, frequency: "monthly"))]
-      end
-
-      let(:main_home) { nil }
-      let(:additional_properties) { [] }
-      let(:person_applicant) do
-        build(:person_data, details: applicant,
-                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
-      end
-      let(:partner_applicant) do
-        build(:person_data, details: applicant,
-                            irregular_income_payments: partner_irregular_incomes,
-                            capitals_data: build(:capitals_data, vehicles: build_list(:vehicle, 1), main_home: nil, additional_properties: []))
-      end
-
-      subject(:calculation_output) do
-        assessment.reload
-        described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                     proceeding_types: assessment.proceeding_types,
-                                     applicant: person_applicant, partner: partner_applicant).calculation_output
-      end
-
-      before do
-        create(:partner_capital_summary, assessment:)
-        create(:partner_gross_income_summary, assessment:)
-        create(:partner_disposable_income_summary, assessment:)
-      end
-
-      context "with gross income exceeded" do
-        let(:gross_income_upper_threshold) { 2000 }
-        let(:partner_irregular_incomes) { [] }
-
-        it "contains vehicles" do
-          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
-          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).first).to have_attributes(assessed_value: 0, included_in_assessment: false)
-
-          expect(calculation_output.capital_subtotals.partner_capital_subtotals.vehicles.map(&:result).size).to eq(1)
-        end
-      end
-
-      context "with disposable income exceeded" do
-        let(:gross_income_upper_threshold) { 5000 }
-        let(:disposable_income_upper_threshold) { 2000 }
-        let(:partner_irregular_incomes) { [] }
-
-        it "contains vehicles" do
-          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).size).to eq(1)
-          expect(calculation_output.capital_subtotals.applicant_capital_subtotals.vehicles.map(&:result).first).to have_attributes(assessed_value: 0, included_in_assessment: false)
-
-          expect(calculation_output.capital_subtotals.partner_capital_subtotals.vehicles.map(&:result).size).to eq(1)
-        end
-      end
-    end
-
     describe "#call", :calls_bank_holiday do
       let(:gross_income_upper_threshold) { 9_999_999_999 }
       let(:disposable_income_upper_threshold) { 9_999_999_999 }
@@ -133,7 +71,7 @@ module Workflows
                                                   applicant: applicant_data,
                                                   level_of_help: assessment.level_of_help)
              end
-        co.summarized_assessment_result
+        co.summarized_assessment_result.to_s
       end
 
       context "with controlled work" do

@@ -11,23 +11,12 @@ module Workflows
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
-                      disposable_income_eligibilities: [
-                        Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.first, assessment_result: "eligible",
-                                                          upper_threshold: 27, lower_threshold: 14),
-                        Eligibility::DisposableIncome.new(proceeding_type: assessment.proceeding_types.last, assessment_result: "eligible",
-                                                          upper_threshold: 27, lower_threshold: 14),
-                      ],
                       gross_income_subtotals: GrossIncome::Unassessed.new(submission_date: assessment.submission_date,
                                                                           level_of_help: assessment.level_of_help),
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
                       capital_subtotals: instance_double(Capital::Subtotals,
                                                          summarized_assessment_result: :eligible,
-                                                         combined_assessed_capital: 0,
-                                                         eligibilities: [
-                                                           Eligibility::Capital.new(proceeding_type: assessment.proceeding_types.first,
-                                                                                    assessment_result: "contribution_required",
-                                                                                    upper_threshold: 6000, lower_threshold: 3000),
-                                                         ]))
+                                                         combined_assessed_capital: 0))
     end
     let(:non_passported_result) { instance_double(NonPassportedWorkflow::Result, calculation_output:, remarks: []) }
     let(:person_blank) { nil }
@@ -40,7 +29,7 @@ module Workflows
       let(:applicant) { build(:applicant, receives_asylum_support: true) }
 
       it "calls normal workflows by default" do
-        allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
+        allow(PassportedWorkflow).to receive(:without_partner).and_return(calculation_output)
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                         proceeding_types: assessment.proceeding_types,
                                         applicant: build(:person_data, details: applicant))
@@ -51,7 +40,7 @@ module Workflows
           let(:proceedings_hash) { [%w[IM030 A]] }
 
           it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:call)
+            expect(PassportedWorkflow).not_to receive(:without_partner)
             expect(NonPassportedWorkflow).not_to receive(:with_partner)
             expect(NonPassportedWorkflow).not_to receive(:without_partner)
             described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
@@ -69,7 +58,7 @@ module Workflows
           end
 
           it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:call)
+            expect(PassportedWorkflow).not_to receive(:without_partner)
             expect(NonPassportedWorkflow).not_to receive(:without_partner)
             described_class.without_partner(proceeding_types: assessment.proceeding_types, level_of_help: assessment.level_of_help,
                                             submission_date: assessment.submission_date,
@@ -91,16 +80,12 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          allow(PassportedWorkflow).to receive(:call).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                           non_liquid_capital_items: [], main_home: {}, additional_properties: []),
-                                                           date_of_birth: applicant.date_of_birth,
-                                                           submission_date: assessment.submission_date,
-                                                           level_of_help: assessment.level_of_help).and_return(calculation_output)
-          workflow_call
-        end
-
-        it "calls MainSummarizer" do
-          allow(PassportedWorkflow).to receive(:call).and_return(calculation_output)
+          allow(PassportedWorkflow).to receive(:without_partner)
+            .with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                  non_liquid_capital_items: [], main_home: {}, additional_properties: []),
+                  date_of_birth: applicant.date_of_birth,
+                  submission_date: assessment.submission_date,
+                  level_of_help: assessment.level_of_help).and_return(calculation_output)
           workflow_call
         end
       end
@@ -122,14 +107,14 @@ module Workflows
         end
 
         it "calls PassportedWorkflow" do
-          expect(PassportedWorkflow).to receive(:partner).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                               non_liquid_capital_items: [], main_home: {}, additional_properties: []),
-                                                               partner_capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
-                                                                                                       non_liquid_capital_items: [], main_home: {}, additional_properties: []),
-                                                               partner_date_of_birth: partner.date_of_birth,
-                                                               date_of_birth: applicant.date_of_birth,
-                                                               level_of_help: assessment.level_of_help,
-                                                               submission_date: assessment.submission_date).and_call_original
+          expect(PassportedWorkflow).to receive(:with_partner).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                                                                    non_liquid_capital_items: [], main_home: {}, additional_properties: []),
+                                                                    partner_capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
+                                                                                                            non_liquid_capital_items: [], main_home: {}, additional_properties: []),
+                                                                    partner_date_of_birth: partner.date_of_birth,
+                                                                    date_of_birth: applicant.date_of_birth,
+                                                                    level_of_help: assessment.level_of_help,
+                                                                    submission_date: assessment.submission_date).and_call_original
           workflow_call
         end
       end

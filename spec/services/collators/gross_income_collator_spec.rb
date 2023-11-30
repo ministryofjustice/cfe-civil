@@ -3,21 +3,19 @@ require "rails_helper"
 module Collators
   RSpec.describe GrossIncomeCollator, :calls_bank_holiday do
     let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: proceeding_type_codes }
-    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
     let(:employments) { [] }
     let(:other_income_payments) { [] }
+    let(:person) do
+      build(:person_data,
+            other_income_payments:,
+            details: build(:applicant),
+            irregular_income_payments:, employments:)
+    end
 
     describe ".call" do
       subject(:collator) do
-        described_class.call state_benefits: [],
-                             submission_date: assessment.submission_date,
-                             employments:,
-                             regular_transactions: [],
-                             irregular_income_payments:,
-                             cash_transactions: [],
-                             self_employments: [],
-                             employment_details: [],
-                             other_income_payments:
+        described_class.call submission_date: assessment.submission_date,
+                             person:
       end
 
       context "only domestic abuse proceeding type codes" do
@@ -152,7 +150,10 @@ module Collators
           let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
-            [OpenStruct.new(monthly_gross_income: 1500.0, monthly_tax: -495, monthly_national_insurance: -150, monthly_prisoner_levy: -20, monthly_student_debt_repayment: -50, entitles_employment_allowance?: true)]
+            build_list(:employment, 1,
+                       employment_payments: build_list(:employment_payment, 1, gross_income: 1500.0, tax: -495,
+                                                                               national_insurance: -150, prisoner_levy: -20,
+                                                                               student_debt_repayment: -50))
           end
 
           it "has a total gross employed income" do

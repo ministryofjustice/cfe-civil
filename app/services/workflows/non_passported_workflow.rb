@@ -95,21 +95,10 @@ module Workflows
         end
       end
 
-      EmploymentData = Data.define(:monthly_tax, :monthly_gross_income,
-                                   :client_id,
-                                   :entitles_employment_allowance?,
-                                   :entitles_childcare_allowance?,
-                                   :monthly_benefits_in_kind,
-                                   :monthly_national_insurance,
-                                   :monthly_prisoner_levy,
-                                   :monthly_student_debt_repayment,
-                                   :employment_name,
-                                   :employment_payments)
-
       GrossIncomeSubtotals = Data.define(:gross, :remarks)
 
       def get_gross_income_subtotals(applicant:, submission_date:, level_of_help:)
-        applicant_gross_income = collate_gross_income(submission_date:, person: applicant)
+        applicant_gross_income = Collators::GrossIncomeCollator.call(submission_date:, person: applicant)
 
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: PersonGrossIncomeSubtotals.blank,
@@ -119,9 +108,8 @@ module Workflows
       end
 
       def get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
-        applicant_gross_income = collate_gross_income(submission_date:, person: applicant)
-
-        partner_gross_income = collate_gross_income(submission_date:, person: partner)
+        applicant_gross_income = Collators::GrossIncomeCollator.call(submission_date:, person: applicant)
+        partner_gross_income = Collators::GrossIncomeCollator.call(submission_date:, person: partner)
 
         gross = GrossIncome::Subtotals.new(applicant_gross_income_subtotals: applicant_gross_income.person_gross_income_subtotals,
                                            partner_gross_income_subtotals: partner_gross_income.person_gross_income_subtotals,
@@ -155,75 +143,6 @@ module Workflows
           level_of_help:,
           submission_date:,
         )
-      end
-
-      # local define for employment and monthly_values
-      EmploymentResult = Data.define(:employment, :values, :payments, :remarks)
-
-      EmploymentDataAndRemarks = Data.define(:employment_data, :remarks)
-
-      def convert_employment_payments(employments, submission_date)
-        answers = employments.map do
-          monthly_equivalent_payments = Utilities::EmploymentIncomeMonthlyEquivalentCalculator.call(_1.employment_payments)
-          remarks_and_values = Calculators::EmploymentMonthlyValueCalculator.call(_1, submission_date, monthly_equivalent_payments)
-          EmploymentResult.new employment: _1, values: remarks_and_values.values, payments: remarks_and_values.payments, remarks: remarks_and_values.remarks
-        end
-
-        employment_data = answers.map do
-          EmploymentData.new(monthly_tax: _1.values.fetch(:monthly_tax),
-                             monthly_gross_income: _1.values.fetch(:monthly_gross_income),
-                             monthly_national_insurance: _1.values.fetch(:monthly_national_insurance),
-                             monthly_prisoner_levy: _1.values.fetch(:monthly_prisoner_levy),
-                             monthly_student_debt_repayment: _1.values.fetch(:monthly_student_debt_repayment),
-                             entitles_employment_allowance?: _1.employment.entitles_employment_allowance?,
-                             entitles_childcare_allowance?: _1.employment.entitles_childcare_allowance?,
-                             client_id: _1.employment.client_id,
-                             monthly_benefits_in_kind: _1.values.fetch(:monthly_benefits_in_kind),
-                             employment_name: _1.employment.name,
-                             employment_payments: _1.payments)
-        end
-
-        EmploymentDataAndRemarks.new(employment_data:, remarks: answers.map(&:remarks).flatten)
-      end
-
-      def convert_employment_details(employment_details)
-        employment_details.map do |detail|
-          monthly_gross_income = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.gross)
-          monthly_national_insurance = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.national_insurance)
-          monthly_prisoner_levy = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.prisoner_levy)
-          monthly_student_debt_repayment = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.student_debt_repayment)
-          monthly_tax = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.tax)
-          monthly_benefits_in_kind = Utilities::MonthlyAmountConverter.call(detail.income.frequency, detail.income.benefits_in_kind)
-
-          EmploymentData.new(monthly_tax:,
-                             monthly_gross_income:,
-                             monthly_national_insurance:,
-                             monthly_prisoner_levy:,
-                             monthly_student_debt_repayment:,
-                             entitles_employment_allowance?: detail.income.entitles_employment_allowance?,
-                             entitles_childcare_allowance?: detail.income.entitles_childcare_allowance?,
-                             client_id: detail.client_reference,
-                             monthly_benefits_in_kind:,
-                             employment_name: nil,
-                             employment_payments: [])
-        end
-      end
-
-      def collate_gross_income(submission_date:, person:)
-        self_employments = convert_employment_details(person.self_employments)
-        employment_details = convert_employment_details(person.employment_details)
-
-        converted_employments_and_remarks = convert_employment_payments(person.employments, submission_date)
-        gross_result = Collators::GrossIncomeCollator.call(submission_date:,
-                                                           self_employments:,
-                                                           employment_details:,
-                                                           irregular_income_payments: person.irregular_income_payments, employments: converted_employments_and_remarks.employment_data,
-                                                           regular_transactions: person.regular_transactions,
-                                                           cash_transactions: person.cash_transactions,
-                                                           other_income_payments: person.other_income_payments,
-                                                           state_benefits: person.state_benefits)
-        Collators::GrossIncomeCollator::Result.new person_gross_income_subtotals: gross_result.person_gross_income_subtotals,
-                                                   remarks: gross_result.remarks + converted_employments_and_remarks.remarks
       end
 
       # local define to pass back disposable subtotals
