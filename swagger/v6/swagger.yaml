@@ -1460,7 +1460,6 @@ components:
         description: Object describing pertinent applicant details
         required:
         - date_of_birth
-        - receives_qualifying_benefit
         additionalProperties: false
         properties:
           date_of_birth:
@@ -1903,7 +1902,6 @@ components:
         description: Object describing pertinent applicant details
         required:
         - date_of_birth
-        - receives_qualifying_benefit
         additionalProperties: false
         properties:
           date_of_birth:
@@ -2419,7 +2417,6 @@ paths:
               required:
               - assessment
               - applicant
-              - proceeding_types
               additionalProperties: false
               properties:
                 assessment:

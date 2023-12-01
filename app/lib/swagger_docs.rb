@@ -1455,7 +1455,7 @@ class SwaggerDocs
             Applicant: {
               type: :object,
               description: "Object describing pertinent applicant details",
-              required: %i[date_of_birth receives_qualifying_benefit],
+              required: %i[date_of_birth],
               additionalProperties: false,
               properties: {
                 date_of_birth: { type: :string,
@@ -1760,7 +1760,7 @@ class SwaggerDocs
             Applicant: {
               type: :object,
               description: "Object describing pertinent applicant details",
-              required: %i[date_of_birth receives_qualifying_benefit],
+              required: %i[date_of_birth],
               additionalProperties: false,
               properties: {
                 date_of_birth: { type: :string,

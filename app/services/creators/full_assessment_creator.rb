@@ -25,7 +25,7 @@ module Creators
       CREATE_FUNCTIONS = [
         lambda { |assessment, params|
           Creators::ProceedingTypesCreator.call(assessment:,
-                                                proceeding_types_params: { proceeding_types: params[:proceeding_types] })
+                                                proceeding_types_params: { proceeding_types: params.fetch(:proceeding_types, []) })
         },
         lambda { |assessment, params|
           if params[:partner]

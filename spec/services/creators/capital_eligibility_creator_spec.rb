@@ -22,6 +22,18 @@ module Creators
           expect(lower_threshold).to eq(3000)
         end
       end
+
+      context "with no proceeding types" do
+        let(:lower_threshold) do
+          described_class.lower_capital_threshold(proceeding_types: [],
+                                                  level_of_help: assessment.level_of_help,
+                                                  submission_date: assessment.submission_date)
+        end
+
+        it "returns the default threshold" do
+          expect(lower_threshold).to eq(3000)
+        end
+      end
     end
 
     describe "#call" do
