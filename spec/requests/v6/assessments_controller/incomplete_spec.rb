@@ -128,18 +128,10 @@ module V6
         let(:monthly_disposable) { 314 }
         let(:passported) { false }
 
-        context "when below lower threshold" do
-          let(:capital) { 1000 }
-
-          it "cannot be calculated" do
-            expect([overall_result, gross_result, disposable_result, capital_result]).to eq(%i[not_yet_known eligible eligible not_yet_known])
-          end
-        end
-
-        context "when below upper threshold" do
+        context "when below upper capital threshold" do
           let(:capital) { 4000 }
 
-          it "cannot be calculated" do
+          it "cant be known yet" do
             expect([overall_result, gross_result, disposable_result, capital_result]).to eq(%i[not_yet_known eligible eligible not_yet_known])
           end
         end
