@@ -35,18 +35,14 @@ module Workflows
                                         applicant: build(:person_data, details: applicant))
       end
 
-      context "for immigration/asylum proceeding types" do
+      describe "#non_means_tested?" do
         context "before MTR changes, require proceeding type check" do
           let(:proceedings_hash) { [%w[IM030 A]] }
 
-          it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:without_partner)
-            expect(NonPassportedWorkflow).not_to receive(:with_partner)
-            expect(NonPassportedWorkflow).not_to receive(:without_partner)
-            described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                            proceeding_types: assessment.proceeding_types,
-                                            applicant: build(:person_data,
-                                                             details: applicant))
+          it "is not means tested" do
+            expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
+                                                     receives_asylum_support: applicant.receives_asylum_support,
+                                                     proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
           end
         end
 
@@ -57,12 +53,10 @@ module Workflows
             travel_back
           end
 
-          it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:without_partner)
-            expect(NonPassportedWorkflow).not_to receive(:without_partner)
-            described_class.without_partner(proceeding_types: assessment.proceeding_types, level_of_help: assessment.level_of_help,
-                                            submission_date: assessment.submission_date,
-                                            applicant: build(:person_data, details: applicant))
+          it "is not means tested" do
+            expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
+                                                     receives_asylum_support: applicant.receives_asylum_support,
+                                                     proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
           end
         end
       end

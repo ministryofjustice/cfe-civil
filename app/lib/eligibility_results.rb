@@ -1,4 +1,18 @@
 class EligibilityResults
+  class BlankEligibilityResult
+    def initialize(proceeding_types)
+      @proceeding_types = proceeding_types
+    end
+
+    def assessment_results
+      @proceeding_types.index_with { :eligible }
+    end
+
+    def summarized_assessment_result
+      :eligible
+    end
+  end
+
   class << self
     def without_partner(proceeding_types:, submission_date:,
                         applicant:, level_of_help:)
