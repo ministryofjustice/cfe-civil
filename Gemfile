@@ -81,7 +81,7 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.1"
   # Later versions use a deprecated rspec API, so its ok to pin for now
-  gem "rswag-specs", "< 2.12"
+  gem "rswag-specs", "< 2.14"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
 
