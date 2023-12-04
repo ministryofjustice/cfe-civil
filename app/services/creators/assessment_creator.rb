@@ -12,7 +12,9 @@ module Creators
           {
             client_reference_id: assessment_params[:client_reference_id],
             submission_date: assessment_params[:submission_date],
-            level_of_help: assessment_params[:level_of_help] || "certificated",
+            level_of_help: assessment_params[:level_of_help] || Assessment::CERTIFICATED,
+            not_aggregated_no_income_low_capital: assessment_params.fetch(:not_aggregated_no_income_low_capital, false),
+            controlled_legal_representation: assessment_params.fetch(:controlled_legal_representation, false),
             remote_ip:,
           }
 

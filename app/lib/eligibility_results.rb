@@ -35,25 +35,27 @@ class EligibilityResults
 
   class << self
     def without_partner(proceeding_types:, submission_date:,
-                        applicant:, level_of_help:)
+                        applicant:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:)
       new(proceeding_types:, submission_date:,
-          applicant:, level_of_help:, partner: nil)
+          applicant:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, partner: nil)
     end
 
     def with_partner(proceeding_types:, submission_date:,
-                     applicant:, level_of_help:, partner:)
+                     applicant:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, partner:)
       new(proceeding_types:, submission_date:,
-          applicant:, level_of_help:, partner:)
+          applicant:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, partner:)
     end
   end
 
   def initialize(proceeding_types:, submission_date:,
-                 applicant:, partner:, level_of_help:)
+                 applicant:, partner:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:)
     @proceeding_types = proceeding_types
     @submission_date = submission_date
     @applicant = applicant
     @partner = partner
     @level_of_help = level_of_help
+    @controlled_legal_representation = controlled_legal_representation
+    @not_aggregated_no_income_low_capital = not_aggregated_no_income_low_capital
   end
 
   def assessment_results
@@ -122,11 +124,15 @@ private
     if @partner.present?
       Workflows::MainWorkflow.with_partner(applicant: @applicant, proceeding_types:,
                                            level_of_help: @level_of_help,
+                                           controlled_legal_representation: @controlled_legal_representation,
+                                           not_aggregated_no_income_low_capital: @not_aggregated_no_income_low_capital,
                                            partner: @partner,
                                            submission_date: @submission_date)
     else
       Workflows::MainWorkflow.without_partner(applicant: @applicant, proceeding_types:,
                                               level_of_help: @level_of_help,
+                                              controlled_legal_representation: @controlled_legal_representation,
+                                              not_aggregated_no_income_low_capital: @not_aggregated_no_income_low_capital,
                                               submission_date: @submission_date)
     end
   end

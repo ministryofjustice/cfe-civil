@@ -2,7 +2,10 @@ module Workflows
   class PersonWorkflow
     class << self
       def without_partner(assessment:, applicant:)
-        result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+        result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date,
+                                                         level_of_help: assessment.level_of_help,
+                                                         controlled_legal_representation: assessment.controlled_legal_representation,
+                                                         not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                          proceeding_types: assessment.proceeding_types,
                                                          applicant:)
         lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types: assessment.proceeding_types,
@@ -29,6 +32,8 @@ module Workflows
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,
+          controlled_legal_representation: assessment.controlled_legal_representation,
+          not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
         )
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
@@ -36,6 +41,8 @@ module Workflows
       def with_partner(assessment:, applicant:, partner:)
         part = Workflows::MainWorkflow.with_partner(submission_date: assessment.submission_date,
                                                     level_of_help: assessment.level_of_help,
+                                                    controlled_legal_representation: assessment.controlled_legal_representation,
+                                                    not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                     proceeding_types: assessment.proceeding_types,
                                                     applicant:,
                                                     partner:)
@@ -74,6 +81,8 @@ module Workflows
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,
+          controlled_legal_representation: assessment.controlled_legal_representation,
+          not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
           partner:,
         )
         ResultAndEligibility.new workflow_result:, eligibility_result: er

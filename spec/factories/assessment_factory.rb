@@ -4,6 +4,8 @@ FactoryBot.define do
     remote_ip { Faker::Internet.ip_v4_address }
     submission_date { Date.current }
     level_of_help { "certificated" }
+    controlled_legal_representation { false }
+    not_aggregated_no_income_low_capital { false }
     transient do
       # the proceedings transient is an array of arrays, each item comprising a proceeding type code and it's associated client involvement type,
       # e.g. [ ['DA003', 'A'], ['SE014', 'Z']]
