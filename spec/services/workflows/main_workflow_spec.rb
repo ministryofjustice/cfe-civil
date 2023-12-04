@@ -171,7 +171,8 @@ module Workflows
         end
 
         it "creates the eligibility records" do
-          allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:call).with(assessment)
+          allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:certificated).with(proceeding_types: assessment.proceeding_types,
+                                                                                            submission_date: assessment.submission_date)
           allow(NonPassportedWorkflow).to receive(:without_partner).and_return(non_passported_result)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],
                                                                        lower_capital_threshold: 3000,

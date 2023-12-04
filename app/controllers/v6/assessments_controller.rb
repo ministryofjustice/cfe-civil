@@ -8,7 +8,13 @@ module V6
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
       if create.success?
-        Utilities::ProceedingTypeThresholdPopulator.call(create.assessment)
+        if create.assessment.level_of_help == "certificated"
+          Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: create.assessment.proceeding_types,
+                                                                   submission_date: create.assessment.submission_date)
+        else
+          Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: create.assessment.proceeding_types,
+                                                                 submission_date: create.assessment.submission_date)
+        end
 
         applicant = person_data(input_params: full_assessment_params,
                                 model_params: full_assessment_params.fetch(:applicant, {}),
