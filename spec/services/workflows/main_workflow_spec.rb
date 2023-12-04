@@ -32,6 +32,8 @@ module Workflows
         subject(:workflow_call) do
           described_class.without_partner(submission_date: assessment.submission_date,
                                           level_of_help: assessment.level_of_help,
+                                          controlled_legal_representation: assessment.controlled_legal_representation,
+                                          not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                           proceeding_types: assessment.proceeding_types,
                                           applicant: build(:person_data, details: applicant))
         end
@@ -52,6 +54,8 @@ module Workflows
 
         subject(:workflow_call) do
           described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                       controlled_legal_representation: assessment.controlled_legal_representation,
+                                       not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                        proceeding_types: assessment.proceeding_types,
                                        applicant: build(:person_data, details: applicant),
                                        partner: build(:person_data, details: partner))
@@ -82,6 +86,8 @@ module Workflows
 
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                        controlled_legal_representation: assessment.controlled_legal_representation,
+                                        not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                         proceeding_types: assessment.proceeding_types,
                                         applicant: build(:person_data, details: applicant))
       end
@@ -105,6 +111,8 @@ module Workflows
 
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+                                        controlled_legal_representation: assessment.controlled_legal_representation,
+                                        not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                         proceeding_types: assessment.proceeding_types,
                                         applicant: build(:person_data, details: applicant))
       end
