@@ -11,6 +11,20 @@ class EligibilityResults
     def summarized_assessment_result
       :eligible
     end
+
+    # This is used when the assessment is non means tested so there are no thresholds
+    # worth reporting anything about
+    def gross_eligibilities
+      []
+    end
+
+    def disposable_eligibilities
+      []
+    end
+
+    def capital_eligibilities
+      []
+    end
   end
 
   class << self

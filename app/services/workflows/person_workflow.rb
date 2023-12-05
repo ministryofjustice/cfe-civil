@@ -3,9 +3,10 @@ module Workflows
     class << self
       def blank_calculation_result(proceeding_types:, level_of_help:, submission_date:)
         calculation_output = CalculationOutput.new(
+          level_of_help:, submission_date:,
           gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::Unassessed.new(submission_date:, level_of_help:),
+          capital_subtotals: Capital::Unassessed.new(submission_date:, level_of_help:)
         )
         workflow = Workflows::MainWorkflow::Result.new calculation_output:, remarks: [], assessment_result: :eligible
 
