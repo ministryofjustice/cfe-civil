@@ -25,49 +25,6 @@ module Workflows
       allow(GovukBankHolidayRetriever).to receive(:dates).and_return(bank_holiday_response)
     end
 
-    context "applicant is asylum_supported" do
-      let(:applicant) { build(:applicant, receives_asylum_support: true) }
-
-      it "calls normal workflows by default" do
-        allow(PassportedWorkflow).to receive(:without_partner).and_return(calculation_output)
-        described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                        proceeding_types: assessment.proceeding_types,
-                                        applicant: build(:person_data, details: applicant))
-      end
-
-      context "for immigration/asylum proceeding types" do
-        context "before MTR changes, require proceeding type check" do
-          let(:proceedings_hash) { [%w[IM030 A]] }
-
-          it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:without_partner)
-            expect(NonPassportedWorkflow).not_to receive(:with_partner)
-            expect(NonPassportedWorkflow).not_to receive(:without_partner)
-            described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                            proceeding_types: assessment.proceeding_types,
-                                            applicant: build(:person_data,
-                                                             details: applicant))
-          end
-        end
-
-        context "after MTR changes, skip proceeding type check" do
-          around do |example|
-            travel_to Date.new(2525, 4, 20)
-            example.run
-            travel_back
-          end
-
-          it "does not call a workflow" do
-            expect(PassportedWorkflow).not_to receive(:without_partner)
-            expect(NonPassportedWorkflow).not_to receive(:without_partner)
-            described_class.without_partner(proceeding_types: assessment.proceeding_types, level_of_help: assessment.level_of_help,
-                                            submission_date: assessment.submission_date,
-                                            applicant: build(:person_data, details: applicant))
-          end
-        end
-      end
-    end
-
     context "applicant is passported" do
       let(:applicant) { build(:applicant, receives_qualifying_benefit: true) }
 

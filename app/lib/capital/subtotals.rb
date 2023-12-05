@@ -11,10 +11,6 @@ module Capital
       PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
     end
 
-    def assessed?
-      true
-    end
-
     def summarized_assessment_result(proceeding_types)
       Utilities::ResultSummarizer.call(assessment_results(proceeding_types).values)
     end
