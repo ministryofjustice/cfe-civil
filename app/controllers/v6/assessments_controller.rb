@@ -24,6 +24,10 @@ module V6
                                 submission_date: create.assessment.submission_date) || return
 
         full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: create.assessment.proceeding_types.pluck(:ccms_code),
+                                                                      level_of_help: create.assessment.level_of_help,
+                                                                      controlled_legal_representation: create.assessment.controlled_legal_representation,
+                                                                      not_aggregated_no_income_low_capital: create.assessment.not_aggregated_no_income_low_capital,
+                                                                      applicant_under_18_years_old: applicant.details.under_18_years_old?(create.assessment.submission_date),
                                                                       receives_asylum_support: applicant.details.receives_asylum_support,
                                                                       submission_date: create.assessment.submission_date)
                  Workflows::NonMeansTestedWorkflow.blank_calculation_result(submission_date: create.assessment.submission_date,

@@ -3,9 +3,15 @@
 module Workflows
   class NonMeansTestedWorkflow
     class << self
-      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:)
+      def non_means_tested?(proceeding_type_codes:, receives_asylum_support:, submission_date:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, applicant_under_18_years_old:)
         # skip proceeding types check if applicant receives asylum support after MTR go-live date
-        if asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
+        if level_of_help == Assessment::CONTROLLED && controlled_legal_representation && applicant_under_18_years_old
+          true
+        elsif level_of_help == Assessment::CONTROLLED && not_aggregated_no_income_low_capital && applicant_under_18_years_old
+          true
+        elsif level_of_help == Assessment::CERTIFICATED && applicant_under_18_years_old
+          true
+        elsif asylum_support_is_non_means_tested_for_all_matter_types?(submission_date)
           receives_asylum_support
         else
           proceeding_type_codes.map(&:to_sym).all? { _1.in?(CFEConstants::IMMIGRATION_AND_ASYLUM_PROCEEDING_TYPE_CCMS_CODES) } && receives_asylum_support

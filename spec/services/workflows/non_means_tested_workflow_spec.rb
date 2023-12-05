@@ -16,6 +16,10 @@ module Workflows
         context "without a immigration proceeding type" do
           it "is means tested" do
             expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
+                                                     level_of_help: assessment.level_of_help,
+                                                     controlled_legal_representation: assessment.controlled_legal_representation,
+                                                     not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
+                                                     applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
                                                      proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(false)
           end
@@ -26,6 +30,10 @@ module Workflows
 
           it "is not means tested" do
             expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
+                                                     level_of_help: assessment.level_of_help,
+                                                     controlled_legal_representation: assessment.controlled_legal_representation,
+                                                     not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
+                                                     applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
                                                      proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
           end
@@ -40,6 +48,10 @@ module Workflows
 
           it "is not means tested" do
             expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
+                                                     level_of_help: assessment.level_of_help,
+                                                     controlled_legal_representation: assessment.controlled_legal_representation,
+                                                     not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
+                                                     applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
                                                      proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
           end

@@ -3,12 +3,12 @@ module Workflows
     Result = Data.define(:calculation_output, :remarks, :assessment_result)
 
     class << self
-      def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, submission_date:)
-        call(applicant:, partner:, proceeding_types:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, submission_date:)
+      def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
+        call(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
       end
 
-      def without_partner(applicant:, proceeding_types:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, submission_date:)
-        call(applicant:, partner: nil, proceeding_types:, level_of_help:, controlled_legal_representation:, not_aggregated_no_income_low_capital:, submission_date:)
+      def without_partner(applicant:, proceeding_types:, level_of_help:, submission_date:)
+        call(applicant:, partner: nil, proceeding_types:, level_of_help:, submission_date:)
       end
 
     private
