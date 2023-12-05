@@ -1,4 +1,26 @@
 class EligibilityResults
+  class BlankEligibilityResult
+    def initialize(proceeding_types)
+      @proceeding_types = proceeding_types
+    end
+
+    def assessment_results
+      @proceeding_types.index_with { :eligible }
+    end
+
+    def gross_eligibilities
+      []
+    end
+
+    def disposable_eligibilities
+      []
+    end
+
+    def capital_eligibilities
+      []
+    end
+  end
+
   class << self
     def without_partner(proceeding_types:, submission_date:,
                         applicant:, level_of_help:)
@@ -76,16 +98,10 @@ class EligibilityResults
 
   def capital_eligibilities
     subtotals = workflow_results(@proceeding_types).calculation_output.capital_subtotals
-    if subtotals.assessed?
-      Creators::CapitalEligibilityCreator.call proceeding_types: @proceeding_types,
-                                               submission_date: @submission_date,
-                                               level_of_help: @level_of_help,
-                                               assessed_capital: subtotals.combined_assessed_capital
-    else
-      Creators::CapitalEligibilityCreator.unassessed proceeding_types: @proceeding_types,
-                                                     submission_date: @submission_date,
-                                                     level_of_help: @level_of_help
-    end
+    Creators::CapitalEligibilityCreator.call proceeding_types: @proceeding_types,
+                                             submission_date: @submission_date,
+                                             level_of_help: @level_of_help,
+                                             assessed_capital: subtotals.combined_assessed_capital
   end
 
 private

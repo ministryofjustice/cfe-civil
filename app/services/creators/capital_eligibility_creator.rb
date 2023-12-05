@@ -2,50 +2,37 @@ module Creators
   class CapitalEligibilityCreator
     class << self
       def call(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
-        thresholds_for(proceeding_types:, submission_date:, level_of_help:).map do |proceeding_type, threshold|
+        proceeding_types.map do |proceeding_type|
+          threshold = thresholds_for(proceeding_type:, submission_date:, level_of_help:)
+
           Eligibility::Capital.new(
             proceeding_type:,
             upper_threshold: threshold.upper_threshold,
             lower_threshold: threshold.lower_threshold,
-            assessment_result: assessed_result(assessed_capital:, lower_threshold: threshold.lower_threshold, upper_threshold: threshold.upper_threshold),
+            assessment_result: assessed_result(assessed_capital:, threshold:),
           )
         end
       end
 
       def assessment_results(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
-        thresholds_for(proceeding_types:, submission_date:, level_of_help:).transform_values do |threshold|
-          assessed_result(assessed_capital:, lower_threshold: threshold.lower_threshold, upper_threshold: threshold.upper_threshold)
-        end
-      end
-
-      def unassessed(proceeding_types:, level_of_help:, submission_date:)
-        thresholds_for(proceeding_types:, submission_date:, level_of_help:).map do |proceeding_type, threshold|
-          Eligibility::Capital.new(
-            proceeding_type:,
-            upper_threshold: threshold.upper_threshold,
-            lower_threshold: threshold.lower_threshold,
-            assessment_result: "not_calculated",
-          )
+        proceeding_types.index_with do |proceeding_type|
+          assessed_result(assessed_capital:, threshold: thresholds_for(proceeding_type:, submission_date:, level_of_help:))
         end
       end
 
       def lower_capital_threshold(proceeding_types:, level_of_help:, submission_date:)
-        thresholds_for(proceeding_types:,
-                       level_of_help:,
-                       submission_date:).values.map(&:lower_threshold).min
+        proceeding_types.map { |pt| thresholds_for(proceeding_type: pt, level_of_help:, submission_date:) }.map(&:lower_threshold).min
       end
 
     private
 
       UpperLowerThreshold = Data.define :upper_threshold, :lower_threshold
 
-      def thresholds_for(proceeding_types:, submission_date:, level_of_help:)
-        proceeding_types.index_with do |proceeding_type|
-          if level_of_help == "controlled"
-            controlled_thresholds(proceeding_type:, submission_date:)
-          else
-            certificated_thresholds(proceeding_type:, submission_date:)
-          end
+      def thresholds_for(proceeding_type:, submission_date:, level_of_help:)
+        if level_of_help == "controlled"
+          controlled_thresholds(proceeding_type:, submission_date:)
+        else
+          certificated_thresholds(proceeding_type:, submission_date:)
         end
       end
 
@@ -62,11 +49,11 @@ module Creators
 
       def certificated_thresholds(proceeding_type:, submission_date:)
         immigration_threshold = Threshold.value_for(:capital_immigration_upper_tribunal_certificated, at: submission_date)
-        if immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+        if immigration_threshold.present? && proceeding_type.immigration_case?
           UpperLowerThreshold.new(upper_threshold: immigration_threshold, lower_threshold: immigration_threshold)
         else
           asylum_threshold = Threshold.value_for(:capital_asylum_upper_tribunal_certificated, at: submission_date)
-          if asylum_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
+          if asylum_threshold.present? && proceeding_type.asylum_case?
             UpperLowerThreshold.new(upper_threshold: asylum_threshold, lower_threshold: asylum_threshold)
           else
             upper_threshold = proceeding_type.capital_upper_threshold
@@ -76,10 +63,10 @@ module Creators
         end
       end
 
-      def assessed_result(assessed_capital:, lower_threshold:, upper_threshold:)
-        if assessed_capital <= lower_threshold
+      def assessed_result(assessed_capital:, threshold:)
+        if assessed_capital <= threshold.lower_threshold
           :eligible
-        elsif assessed_capital <= upper_threshold
+        elsif assessed_capital <= threshold.upper_threshold
           :contribution_required
         else
           :ineligible

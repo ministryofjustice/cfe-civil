@@ -17,6 +17,14 @@ class ProceedingType < ApplicationRecord
 
   validates :ccms_code, uniqueness: { scope: :assessment_id }
 
+  def immigration_case?
+    ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+  end
+
+  def asylum_case?
+    ccms_code.to_sym == CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE
+  end
+
 private
 
   def proceeding_type_code_validations

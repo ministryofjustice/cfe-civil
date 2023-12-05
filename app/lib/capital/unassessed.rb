@@ -9,10 +9,6 @@ module Capital
       @submission_date = submission_date
     end
 
-    def assessed?
-      false
-    end
-
     def partner_capital_subtotals
       PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
     end

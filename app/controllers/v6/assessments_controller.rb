@@ -23,17 +23,25 @@ module V6
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
                                 submission_date: create.assessment.submission_date) || return
 
-        partner_params = full_assessment_params[:partner]
-        full = if partner_params.present?
-                 partner = person_data(input_params: partner_params,
-                                       model_params: partner_params.fetch(:partner, {}),
-                                       irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
-                                       submission_date: create.assessment.submission_date,
-                                       main_home_params: nil,
-                                       additional_properties_params: partner_params) || return
-                 Workflows::PersonWorkflow.with_partner(assessment: create.assessment, applicant:, partner:)
+        full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: create.assessment.proceeding_types.pluck(:ccms_code),
+                                                                      receives_asylum_support: applicant.details.receives_asylum_support,
+                                                                      submission_date: create.assessment.submission_date)
+                 Workflows::NonMeansTestedWorkflow.blank_calculation_result(submission_date: create.assessment.submission_date,
+                                                                            level_of_help: create.assessment.level_of_help,
+                                                                            proceeding_types: create.assessment.proceeding_types)
                else
-                 Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
+                 partner_params = full_assessment_params[:partner]
+                 if partner_params.present?
+                   partner = person_data(input_params: partner_params,
+                                         model_params: partner_params.fetch(:partner, {}),
+                                         irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
+                                         submission_date: create.assessment.submission_date,
+                                         main_home_params: nil,
+                                         additional_properties_params: partner_params) || return
+                   Workflows::PersonWorkflow.with_partner(assessment: create.assessment, applicant:, partner:)
+                 else
+                   Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
+                 end
                end
         assessment_params = full_assessment_params.fetch(:assessment)
         eligibility_result = ResultWrapper.new(result: full.eligibility_result,
