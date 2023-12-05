@@ -9,14 +9,12 @@ module Capital
       @submission_date = submission_date
     end
 
-    def partner_capital_subtotals
-      PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
+    def assessed?
+      false
     end
 
-    def eligibilities(proceeding_types)
-      Creators::CapitalEligibilityCreator.unassessed proceeding_types:,
-                                                     submission_date: @submission_date,
-                                                     level_of_help: @level_of_help
+    def partner_capital_subtotals
+      PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
     end
 
     def combined_assessed_capital

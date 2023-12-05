@@ -46,6 +46,15 @@ components:
       - eligible
       - ineligible
       - contribution_required
+      - partially_eligible
+    PartialResult:
+      type: string
+      enum:
+      - eligible
+      - ineligible
+      - contribution_required
+      - not_yet_known
+      - not_calculated
     PropertyResult:
       type: object
       additionalProperties: false
@@ -286,6 +295,21 @@ components:
           - controlled
           example: certificated
           description: The level of help required by the client. Defaults to 'certificated'
+        section_gross_income:
+          type: string
+          enum:
+          - complete
+          - incomplete
+        section_disposable_income:
+          type: string
+          enum:
+          - complete
+          - incomplete
+        section_capital:
+          type: string
+          enum:
+          - complete
+          - incomplete
     CashTransactions:
       type: object
       description: A set of cash income[ings] and outgoings payments by category
@@ -1741,7 +1765,7 @@ components:
             lower_threshold:
               type: number
             result:
-              "$ref": "#/components/schemas/OverallResult"
+              "$ref": "#/components/schemas/PartialResult"
           additionalProperties: false
       ApplicantCapitalResult:
         type: object
@@ -2132,7 +2156,7 @@ components:
             lower_threshold:
               type: number
             result:
-              "$ref": "#/components/schemas/OverallResult"
+              "$ref": "#/components/schemas/PartialResult"
           additionalProperties: false
       ApplicantCapitalResult:
         type: object

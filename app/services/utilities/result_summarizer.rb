@@ -1,26 +1,32 @@
 module Utilities
-  # class to calculate the overall given an array of results (from the eligibility records for each proceeding type)
+  # calculate the overall given an array of results (from the eligibility records for each proceeding type)
   class ResultSummarizer
-    def self.call(individual_results)
-      return :not_calculated if individual_results.empty?
+    class << self
+      def call(individual_results)
+        if individual_results.empty?
+          :not_calculated
+        else
+          summarized_results(individual_results.uniq.map(&:to_sym))
+        end
+      end
 
-      summarized_results(individual_results.uniq.map(&:to_sym))
+    private
+
+      def summarized_results(uniq_results)
+        if uniq_results.include?(:not_calculated)
+          :not_calculated
+        elsif uniq_results.include?(:not_yet_known)
+          :not_yet_known
+        elsif uniq_results == [:eligible]
+          :eligible
+        elsif uniq_results == [:ineligible]
+          :ineligible
+        elsif !uniq_results.include?(:ineligible)
+          :contribution_required
+        else
+          :partially_eligible
+        end
+      end
     end
-
-    def self.summarized_results(uniq_results)
-      return :not_calculated if uniq_results.include?(:not_calculated)
-
-      return :eligible if uniq_results == [:eligible]
-
-      return :ineligible if uniq_results == [:ineligible]
-
-      return :contribution_required if uniq_results == [:contribution_required]
-
-      return :contribution_required unless uniq_results.include?(:ineligible)
-
-      :partially_eligible
-    end
-
-    private_class_method :summarized_results
   end
 end

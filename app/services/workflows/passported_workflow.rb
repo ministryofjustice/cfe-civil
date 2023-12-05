@@ -2,9 +2,15 @@ module Workflows
   class PassportedWorkflow
     class << self
       def without_partner(capitals_data:, date_of_birth:, submission_date:, level_of_help:)
-        capital_subtotals = passported_without_partner(capitals_data:, submission_date:, level_of_help:,
-                                                       date_of_birth:)
-        CalculationOutput.new(capital_subtotals:,
+        applicant_subtotals = Collators::CapitalCollator.collate_applicant_capital(
+          submission_date:,
+          level_of_help:,
+          pensioner_capital_disregard: Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth:),
+          capitals_data:,
+        )
+
+        capital_subtotals = Capital::Subtotals.new(applicant_capital_subtotals: applicant_subtotals, level_of_help:, submission_date:)
+        CalculationOutput.new(submission_date:, level_of_help:, capital_subtotals:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(submission_date:, level_of_help:),
                               gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
       end
@@ -14,7 +20,7 @@ module Workflows
                        submission_date:, level_of_help:)
         capital_subtotals = partner_passported(capitals_data:, partner_capitals_data:, date_of_birth:,
                                                partner_date_of_birth:, submission_date:, level_of_help:)
-        CalculationOutput.new(capital_subtotals:,
+        CalculationOutput.new(level_of_help:, submission_date:, capital_subtotals:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(submission_date:, level_of_help:),
                               gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
       end
@@ -39,17 +45,6 @@ module Workflows
           level_of_help:,
           submission_date:,
         )
-      end
-
-      def passported_without_partner(submission_date:, level_of_help:, capitals_data:, date_of_birth:)
-        applicant_subtotals = Collators::CapitalCollator.collate_applicant_capital(
-          submission_date:,
-          level_of_help:,
-          pensioner_capital_disregard: Calculators::PensionerCapitalDisregardCalculator.passported_value(submission_date:, date_of_birth:),
-          capitals_data:,
-        )
-
-        Capital::Subtotals.new(applicant_capital_subtotals: applicant_subtotals, level_of_help:, submission_date:)
       end
     end
   end

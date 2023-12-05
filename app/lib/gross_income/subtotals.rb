@@ -1,5 +1,9 @@
 module GrossIncome
   class Subtotals < Base
+    # This object has the dependants required to display eligibilities, so has to expose them
+    # (it's applicant + partner when partner present, just applicant otherwise)
+    attr_reader :dependants
+
     def initialize(applicant_gross_income_subtotals:, partner_gross_income_subtotals:,
                    dependants:, submission_date:, level_of_help:)
       super(applicant_gross_income_subtotals:, partner_gross_income_subtotals:)
@@ -9,20 +13,16 @@ module GrossIncome
       @level_of_help = level_of_help
     end
 
+    def assessed?
+      true
+    end
+
     def combined_monthly_gross_income
       @applicant_gross_income_subtotals.total_gross_income + @partner_gross_income_subtotals.total_gross_income
     end
 
     def ineligible?(proceeding_types)
       !eligible? proceeding_types
-    end
-
-    def eligibilities(proceeding_types)
-      Creators::GrossIncomeEligibilityCreator.call dependants: @dependants,
-                                                   proceeding_types:,
-                                                   level_of_help: @level_of_help,
-                                                   submission_date: @submission_date,
-                                                   total_gross_income: combined_monthly_gross_income
     end
 
     def below_the_lower_controlled_threshold?

@@ -155,7 +155,11 @@ class SwaggerDocs
           },
           OverallResult: {
             type: :string,
-            enum: %w[eligible ineligible contribution_required],
+            enum: %w[eligible ineligible contribution_required partially_eligible],
+          },
+          PartialResult: {
+            type: :string,
+            enum: %w[eligible ineligible contribution_required not_yet_known not_calculated],
           },
           PropertyResult: {
             type: :object,
@@ -401,6 +405,18 @@ class SwaggerDocs
                 enum: Assessment::LEVELS_OF_HELP,
                 example: Assessment::LEVELS_OF_HELP.first,
                 description: "The level of help required by the client. Defaults to 'certificated'",
+              },
+              section_gross_income: {
+                type: :string,
+                enum: %i[complete incomplete],
+              },
+              section_disposable_income: {
+                type: :string,
+                enum: %i[complete incomplete],
+              },
+              section_capital: {
+                type: :string,
+                enum: %i[complete incomplete],
               },
             },
           },
@@ -1631,7 +1647,7 @@ class SwaggerDocs
                   },
                   upper_threshold: { type: :number },
                   lower_threshold: { type: :number },
-                  result: { "$ref": "#/components/schemas/OverallResult" },
+                  result: { "$ref": "#/components/schemas/PartialResult" },
                 },
               },
             },
@@ -1894,7 +1910,7 @@ class SwaggerDocs
                   },
                   upper_threshold: { type: :number },
                   lower_threshold: { type: :number },
-                  result: { "$ref": "#/components/schemas/OverallResult" },
+                  result: { "$ref": "#/components/schemas/PartialResult" },
                 },
               },
             },

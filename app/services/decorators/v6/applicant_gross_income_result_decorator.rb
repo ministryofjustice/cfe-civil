@@ -1,10 +1,10 @@
 module Decorators
   module V6
     class ApplicantGrossIncomeResultDecorator < GrossIncomeResultDecorator
-      def initialize(gross_income_subtotals:, proceeding_types:)
-        super(gross_income_subtotals.applicant_gross_income_subtotals.total_gross_income)
-        @eligibilities = gross_income_subtotals.eligibilities(proceeding_types)
-        @combined_monthly_gross_income = gross_income_subtotals.combined_monthly_gross_income
+      def initialize(total_gross_income:, eligibilities:, combined_monthly_gross_income:)
+        super(total_gross_income)
+        @combined_monthly_gross_income = combined_monthly_gross_income
+        @eligibilities = eligibilities
       end
 
       def as_json

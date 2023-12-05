@@ -34,7 +34,58 @@ class EligibilityResults
   end
 
   def summarized_assessment_result
-    Utilities::ResultSummarizer.call(assessment_results.values).to_s
+    Utilities::ResultSummarizer.call(assessment_results.values)
+  end
+
+  def gross_eligibilities
+    subtotals = workflow_results(@proceeding_types).calculation_output.gross_income_subtotals
+    if subtotals.assessed?
+      Creators::GrossIncomeEligibilityCreator.call(
+        dependants: subtotals.dependants,
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+        total_gross_income: subtotals.combined_monthly_gross_income,
+      )
+    else
+      Creators::GrossIncomeEligibilityCreator.unassessed(
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+      )
+    end
+  end
+
+  def disposable_eligibilities
+    calculation_output = workflow_results(@proceeding_types).calculation_output
+    if calculation_output.disposable_income_assessed?
+      Creators::DisposableIncomeEligibilityCreator.call(
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+        total_disposable_income: calculation_output.combined_total_disposable_income,
+      )
+    else
+      Creators::DisposableIncomeEligibilityCreator.unassessed(
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+      )
+    end
+  end
+
+  def capital_eligibilities
+    subtotals = workflow_results(@proceeding_types).calculation_output.capital_subtotals
+    if subtotals.assessed?
+      Creators::CapitalEligibilityCreator.call proceeding_types: @proceeding_types,
+                                               submission_date: @submission_date,
+                                               level_of_help: @level_of_help,
+                                               assessed_capital: subtotals.combined_assessed_capital
+    else
+      Creators::CapitalEligibilityCreator.unassessed proceeding_types: @proceeding_types,
+                                                     submission_date: @submission_date,
+                                                     level_of_help: @level_of_help
+    end
   end
 
 private

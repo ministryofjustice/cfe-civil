@@ -10,7 +10,18 @@ module Creators
             upper_threshold:,
             lower_threshold: lower_threshold(submission_date:, level_of_help:),
             assessment_result: result_from_threshold(total_gross_income:, upper_threshold:),
-          ).freeze
+          )
+        end
+      end
+
+      def unassessed(proceeding_types:, level_of_help:, submission_date:)
+        proceeding_types.map do |proceeding_type|
+          Eligibility::GrossIncome.new(
+            proceeding_type:,
+            upper_threshold: proceeding_type.gross_income_upper_threshold,
+            lower_threshold: lower_threshold(level_of_help:, submission_date:),
+            assessment_result: "not_calculated",
+          )
         end
       end
 

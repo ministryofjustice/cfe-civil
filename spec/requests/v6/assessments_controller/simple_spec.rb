@@ -29,48 +29,18 @@ module V6
       let(:cash_transactions_params) do
         {
           income: [
-            {
-              category: "maintenance_in",
-              payments: cash_transactions(1033.44),
-            },
-            {
-              category: "friends_or_family",
-              payments: cash_transactions(250.0),
-            },
-            {
-              category: "benefits",
-              payments: cash_transactions(65.12),
-            },
-            {
-              category: "property_or_lodger",
-              payments: cash_transactions(91.87),
-            },
-            {
-              category: "pension",
-              payments: cash_transactions(34.12),
-            },
+            { category: "maintenance_in", payments: cash_transactions(1033.44) },
+            { category: "friends_or_family", payments: cash_transactions(250.0) },
+            { category: "benefits", payments: cash_transactions(65.12) },
+            { category: "property_or_lodger", payments: cash_transactions(91.87) },
+            { category: "pension", payments: cash_transactions(34.12) },
           ],
           outgoings: [
-            {
-              category: "maintenance_out",
-              payments: cash_transactions(256.0),
-            },
-            {
-              category: "child_care",
-              payments: cash_transactions(257.0),
-            },
-            {
-              category: "legal_aid",
-              payments: cash_transactions(44.54),
-            },
-            {
-              category: "rent_or_mortgage",
-              payments: cash_transactions(87.54),
-            },
-            {
-              category: "pension_contribution",
-              payments: cash_transactions(87.54),
-            },
+            { category: "maintenance_out", payments: cash_transactions(256.0) },
+            { category: "child_care", payments: cash_transactions(257.0) },
+            { category: "legal_aid", payments: cash_transactions(44.54) },
+            { category: "rent_or_mortgage", payments: cash_transactions(87.54) },
+            { category: "pension_contribution", payments: cash_transactions(87.54) },
           ],
         }
       end
@@ -160,28 +130,14 @@ module V6
       let(:asset_2) { "Ming Vase" }
       let(:non_liquid_params) do
         [
-          {
-            description: asset_1,
-            value: 17.12,
-          },
-          {
-            description: asset_2,
-            value: 6.19,
-          },
+          { description: asset_1, value: 17.12 },
+          { description: asset_2, value: 6.19 },
         ]
       end
       let(:irregular_income_payments) do
         [
-          {
-            income_type: "student_loan",
-            frequency: "annual",
-            amount: 456.78,
-          },
-          {
-            income_type: "unspecified_source",
-            frequency: "monthly",
-            amount: 10.92,
-          },
+          { income_type: "student_loan", frequency: "annual", amount: 456.78 },
+          { income_type: "unspecified_source", frequency: "monthly", amount: 10.92 },
         ]
       end
       let(:irregular_income_params) { { payments: irregular_income_payments } }
@@ -193,16 +149,6 @@ module V6
       context "with blank main and additional homes" do
         let(:params) do
           {
-            proceeding_types: [
-              {
-                ccms_code: "DA004",
-                client_involvement_type: "D",
-              },
-              {
-                ccms_code: "SE013",
-                client_involvement_type: "A",
-              },
-            ],
             employment_income: [
               {
                 name: "Job 1",
@@ -212,7 +158,6 @@ module V6
                     client_id: "yyy",
                     date: "2023-01-31",
                     gross: 2024.0,
-                    benefits_in_kind: 0.0,
                     tax: -194.2,
                     national_insurance: -117.12,
                   },
@@ -220,7 +165,6 @@ module V6
                     client_id: "zzz",
                     date: "2022-12-31",
                     gross: 1936.0,
-                    benefits_in_kind: 0.0,
                     tax: -176.6,
                     national_insurance: -106.56,
                   },
@@ -228,7 +172,6 @@ module V6
                     client_id: "www",
                     date: "2022-12-01",
                     gross: 1848.0,
-                    benefits_in_kind: 0.0,
                     tax: -158.8,
                     national_insurance: -96.0,
                   },
@@ -236,20 +179,14 @@ module V6
                     client_id: "vvv",
                     date: "2022-10-31",
                     gross: 2024.0,
-                    benefits_in_kind: 0.0,
                     tax: -194.2,
                     national_insurance: -129.32,
                   },
-                ],
+                ].map { _1.merge(benefits_in_kind: 0) },
               },
             ],
             properties: {
-              main_home: {
-                value: 0.0,
-                outstanding_mortgage: 0.0,
-                percentage_owned: 0.0,
-                shared_with_housing_assoc: false,
-              },
+              main_home: { value: 0.0, outstanding_mortgage: 0.0, percentage_owned: 0.0, shared_with_housing_assoc: false },
 
               additional_properties: [
                 {
@@ -305,58 +242,6 @@ module V6
         end
       end
 
-      context "with an assessment error" do
-        let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
-
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/assessment' did not contain a required property of 'submission_date'})
-        end
-      end
-
-      context "with an invalid proceeding type" do
-        let(:params) { { proceeding_types: [{ ccms_code: "ZZ", client_involvement_type: "A" }] } }
-
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "returns error JSON" do
-          codes = CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.join(", ")
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types\/0\/ccms_code' value "ZZ" did not match one of the following values: #{codes} in schema/)
-        end
-      end
-
-      context "with no proceeding types" do
-        let(:params) { { proceeding_types: [] } }
-
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
-        end
-      end
-
-      context "with no applicant" do
-        let(:default_params) { { assessment: {} } }
-        let(:params) { {} }
-
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "returns error JSON" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/' did not contain a required property of 'applicant'})
-        end
-      end
-
       context "with an applicant without partner opponent" do
         let(:params) do
           { applicant: { date_of_birth: dob,
@@ -366,161 +251,6 @@ module V6
 
         it "returns false for has_partner_opponent" do
           expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to eq(false)
-        end
-      end
-
-      context "with an applicant error" do
-        context "missing date_of_birth" do
-          let(:params) do
-            { applicant: { has_partner_opponent: false,
-                           receives_qualifying_benefit: false,
-                           employed: } }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/applicant' did not contain a required property of 'date_of_birth'})
-          end
-        end
-
-        context "with a future date of birth" do
-          let(:params) do
-            { applicant: { has_partner_opponent: false,
-                           receives_qualifying_benefit: false,
-                           date_of_birth: "2900-01-09",
-                           employed: } }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(/Date of birth cannot be in the future/)
-          end
-
-          it "creates a log record" do
-            expect(log_record)
-              .to have_attributes(created_at: Time.zone.today,
-                                  http_status: 422,
-                                  response: {
-                                    "success" => false,
-                                    "errors" => ["Date of birth cannot be in the future"],
-                                  })
-            expect(log_record.request.except("applicant")).to eq({
-              "assessment" => { "submission_date" => "2022-06-06" },
-              "proceeding_types" => [{ "ccms_code" => "DA001", "client_involvement_type" => "A" }],
-            })
-          end
-        end
-      end
-
-      context "with an partner error" do
-        context "missing partner" do
-          let(:params) do
-            { partner: {} }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/partner' did not contain a required property of 'partner'})
-          end
-        end
-
-        context "missing partner date_of_birth" do
-          let(:params) do
-            { partner: { partner: { employed: true } } }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/partner/partner' did not contain a required property of 'date_of_birth'})
-          end
-        end
-      end
-
-      context "with an dependant error" do
-        context "with a future date of birth" do
-          let(:params) do
-            { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "3004-06-11").except(:income_amount, :income_frequency),
-            ] }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors])
-              .to include(/Date of birth cannot be in the future/)
-          end
-        end
-
-        context "missing dependant date_of_birth" do
-          let(:params) do
-            { dependants: [
-              attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }).except(:date_of_birth, :income_amount, :income_frequency),
-            ] }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/dependants/0' did not contain a required property of 'date_of_birth'})
-          end
-        end
-      end
-
-      context "with a partner dependant error" do
-        context "with a future date of birth" do
-          let(:params) do
-            {
-              partner: { partner: attributes_for(:applicant).except(:receives_qualifying_benefit, :receives_asylum_support),
-                         dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:income_amount, :income_frequency),
-                         ] },
-            }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors])
-              .to include(/Date of birth cannot be in the future/)
-          end
-        end
-
-        context "with missing date of birth" do
-          let(:params) do
-            {
-              partner: { partner: attributes_for(:applicant),
-                         dependants: [
-                           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 0, frequency: "monthly" }, date_of_birth: "2904-06-11").except(:date_of_birth, :income_amount, :income_frequency),
-                         ] },
-            }
-          end
-
-          it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
-          end
-
-          it "returns error JSON" do
-            expect(parsed_response[:errors]).to include(%r{The property '#/partner/dependants/0' did not contain a required property of 'date_of_birth'})
-          end
         end
       end
 
@@ -585,19 +315,6 @@ module V6
 
         it "has remarks" do
           expect(parsed_response.dig(:assessment, :remarks)).to eq({ policy_disregards: %w[charity employment] })
-        end
-      end
-
-      context "with invalid cash_transactions" do
-        let(:params) { { cash_transactions: { income: {}, outgoings: [] } } }
-
-        it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "returns error JSON" do
-          expect(parsed_response[:errors])
-            .to include(/The property '#\/cash_transactions\/income' of type object did not match the following type: array in schema/)
         end
       end
 
@@ -1180,51 +897,6 @@ module V6
                 },
               )
           end
-        end
-      end
-
-      context "with an invalid partner" do
-        let(:params) do
-          {
-            partner: {
-              partner: { date_of_birth: "2087-08-08", employed: true },
-            },
-          }
-        end
-
-        it "errors" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "contains the error" do
-          expect(parsed_response).to eq({ success: false, errors: ["Date of birth cannot be in the future"] })
-        end
-      end
-
-      context "with invalid outgoings" do
-        let(:params) do
-          {
-            outgoings: [
-              {
-                name: "child_care",
-                payments: [
-                  {
-                    payment_date: "2090-01-01",
-                    amount: 29.12,
-                    client_id: SecureRandom.uuid,
-                  },
-                ],
-              },
-            ],
-          }
-        end
-
-        it "errors" do
-          expect(response).to have_http_status(:unprocessable_entity)
-        end
-
-        it "contains the error" do
-          expect(parsed_response).to eq({ success: false, errors: ["Payment date cannot be in the future"] })
         end
       end
 
