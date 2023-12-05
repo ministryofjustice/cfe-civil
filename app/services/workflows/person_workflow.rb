@@ -29,9 +29,7 @@ module Workflows
           proceeding_types: assessment.proceeding_types,
           submission_date: assessment.submission_date,
           applicant:,
-          level_of_help: assessment.level_of_help,
-          controlled_legal_representation: assessment.controlled_legal_representation,
-          not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
+          level_of_help: assessment.level_of_help
         )
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
@@ -39,8 +37,6 @@ module Workflows
       def with_partner(assessment:, applicant:, partner:)
         part = Workflows::MainWorkflow.with_partner(submission_date: assessment.submission_date,
                                                     level_of_help: assessment.level_of_help,
-                                                    controlled_legal_representation: assessment.controlled_legal_representation,
-                                                    not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                     proceeding_types: assessment.proceeding_types,
                                                     applicant:,
                                                     partner:)
@@ -79,8 +75,6 @@ module Workflows
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,
-          controlled_legal_representation: assessment.controlled_legal_representation,
-          not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
           partner:,
         )
         ResultAndEligibility.new workflow_result:, eligibility_result: er

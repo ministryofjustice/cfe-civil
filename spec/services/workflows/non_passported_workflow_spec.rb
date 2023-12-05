@@ -61,9 +61,7 @@ module Workflows
                                                submission_date: assessment.submission_date,
                                                applicant: applicant_data,
                                                partner: partner_data,
-                                               level_of_help: assessment.level_of_help,
-                                               controlled_legal_representation: assessment.controlled_legal_representation,
-                                               not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital)
+                                               level_of_help: assessment.level_of_help)
              else
                described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                                proceeding_types: assessment.proceeding_types,
@@ -71,9 +69,7 @@ module Workflows
                EligibilityResults.without_partner(proceeding_types: assessment.proceeding_types,
                                                   submission_date: assessment.submission_date,
                                                   applicant: applicant_data,
-                                                  level_of_help: assessment.level_of_help,
-                                                  controlled_legal_representation: assessment.controlled_legal_representation,
-                                                  not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital)
+                                                  level_of_help: assessment.level_of_help)
              end
         co.summarized_assessment_result.to_s
       end
