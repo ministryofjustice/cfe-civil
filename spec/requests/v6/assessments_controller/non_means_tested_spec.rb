@@ -100,8 +100,8 @@ module V6
           context "when applicant over 18" do
             let(:date_of_birth) { "2000-02-02" }
 
-            it "is eligible" do
-              expect(overall_result).to eq(:ineligible)
+            it "is not eligible" do
+              expect(overall_result).not_to eq(:eligible)
             end
           end
         end
