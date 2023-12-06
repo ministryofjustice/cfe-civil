@@ -52,6 +52,26 @@ module V6
             .to include(/The property '#\/proceeding_types' did not contain a minimum number of items 1 in schema/)
         end
       end
+
+      context "with missing proceeding_types" do
+        let(:params) { default_params }
+
+        context "certificated work" do
+          let(:level_of_help) { "certificated" }
+
+          it "doesnt error" do
+            expect(response).to have_http_status(:ok)
+          end
+        end
+
+        context "controlled work" do
+          let(:level_of_help) { "controlled" }
+
+          it "doesnt error" do
+            expect(response).to have_http_status(:ok)
+          end
+        end
+      end
     end
   end
 end

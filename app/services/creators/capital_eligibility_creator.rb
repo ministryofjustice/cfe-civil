@@ -20,8 +20,30 @@ module Creators
         end
       end
 
+      class DummyProceedingType
+        def initialize(submission_date)
+          @submission_date = submission_date
+        end
+
+        def immigration_case?
+          false
+        end
+
+        def asylum_case?
+          false
+        end
+
+        def capital_upper_threshold
+          Threshold.value_for(:capital_upper, at: @submission_date)
+        end
+      end
+
       def lower_capital_threshold(proceeding_types:, level_of_help:, submission_date:)
-        proceeding_types.map { |pt| thresholds_for(proceeding_type: pt, level_of_help:, submission_date:) }.map(&:lower_threshold).min
+        if proceeding_types.any?
+          proceeding_types.map { |pt| thresholds_for(proceeding_type: pt, level_of_help:, submission_date:) }.map(&:lower_threshold).min
+        else
+          thresholds_for(proceeding_type: DummyProceedingType.new(submission_date), level_of_help:, submission_date:).lower_threshold
+        end
       end
 
     private
