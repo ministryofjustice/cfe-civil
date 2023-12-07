@@ -20,9 +20,9 @@ module V6
         vehicles: [attributes_for(:vehicle, value: 200_000, loan_amount_outstanding: 0, date_of_purchase: "2022-03-05", in_regular_use: false)],
       }
     end
-    let(:proceeding_types) {
-      { proceeding_types: attributes_for_list(:proceeding_type, 1), }
-    }
+    let(:proceeding_types) do
+      { proceeding_types: attributes_for_list(:proceeding_type, 1) }
+    end
 
     describe "POST /create" do
       before do
@@ -74,7 +74,7 @@ module V6
 
             context "when applicant under 18" do
               let(:date_of_birth) { "2010-02-02" }
-              let(:params) { { } }
+              let(:params) { {} }
 
               it "is eligible" do
                 expect(overall_result).to eq(:eligible)
@@ -97,7 +97,7 @@ module V6
 
           context "when applicant under 18" do
             let(:date_of_birth) { "2010-02-02" }
-            let(:params) { { } }
+            let(:params) { {} }
 
             it "is eligible" do
               expect(overall_result).to eq(:eligible)
