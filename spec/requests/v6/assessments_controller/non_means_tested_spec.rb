@@ -35,7 +35,7 @@ module V6
         context "controlled" do
           let(:level_of_help) { "controlled" }
 
-          context "controlled_legal_representation(CLR)" do
+          context "when controlled_legal_representation(CLR)" do
             let(:assessment_params) do
               {
                 submission_date: "2023-11-23",
@@ -60,6 +60,22 @@ module V6
               it "is ineligible ignoring CLR work" do
                 expect(overall_result).to eq(:ineligible)
               end
+            end
+          end
+
+          context "when not controlled_legal_representation(CLR) and applicant is under 18" do
+            let(:assessment_params) do
+              {
+                submission_date: "2023-11-23",
+                level_of_help:,
+                controlled_legal_representation: false,
+              }
+            end
+            let(:date_of_birth) { "2010-02-02" }
+            let(:params) { {} }
+
+            it "is not_calculated" do
+              expect(overall_result).to eq(:not_calculated)
             end
           end
 
