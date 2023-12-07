@@ -21,7 +21,7 @@ module Workflows
         )
         workflow = Workflows::MainWorkflow::Result.new calculation_output:, remarks: [], assessment_result: :eligible
 
-        er = EligibilityResults::BlankEligibilityResult.new(proceeding_types)
+        er = EligibilityResults::BlankEligibilityResult.new(proceeding_types:, level_of_help:, submission_date:)
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
 

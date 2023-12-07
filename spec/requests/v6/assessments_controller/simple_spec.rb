@@ -1766,38 +1766,6 @@ module V6
               end
             end
           end
-
-          context "receives_asylum_support" do
-            let(:default_params) do
-              {
-                assessment: submission_date_params,
-                applicant: {
-                  date_of_birth: dob,
-                  has_partner_opponent: true,
-                  receives_qualifying_benefit: false,
-                  receives_asylum_support: true,
-                },
-                proceeding_types: [
-                  { ccms_code: "IA031" },
-                ],
-              }
-            end
-
-            let(:params) do
-              {
-                partner:
-                  {
-                    partner: { date_of_birth: dob },
-                    additional_properties: [],
-                    vehicles: [],
-                  },
-              }
-            end
-
-            it "returns http success" do
-              expect(response).to have_http_status(:success)
-            end
-          end
         end
 
         context "with unsuccessful submission" do

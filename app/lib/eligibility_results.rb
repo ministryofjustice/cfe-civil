@@ -1,7 +1,9 @@
 class EligibilityResults
   class BlankEligibilityResult
-    def initialize(proceeding_types)
+    def initialize(proceeding_types:, submission_date:, level_of_help:)
       @proceeding_types = proceeding_types
+      @submission_date = submission_date
+      @level_of_help = level_of_help
     end
 
     def assessment_results
@@ -9,15 +11,25 @@ class EligibilityResults
     end
 
     def gross_eligibilities
-      []
+      Creators::GrossIncomeEligibilityCreator.unassessed(
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+      )
     end
 
     def disposable_eligibilities
-      []
+      Creators::DisposableIncomeEligibilityCreator.unassessed(
+        proceeding_types: @proceeding_types,
+        submission_date: @submission_date,
+        level_of_help: @level_of_help,
+      )
     end
 
     def capital_eligibilities
-      []
+      Creators::CapitalEligibilityCreator.unassessed proceeding_types: @proceeding_types,
+                                                     submission_date: @submission_date,
+                                                     level_of_help: @level_of_help
     end
   end
 
