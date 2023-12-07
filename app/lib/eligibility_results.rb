@@ -10,6 +10,10 @@ class EligibilityResults
       @proceeding_types.index_with { :eligible }
     end
 
+    def summarized_assessment_result
+      :eligible
+    end
+
     def gross_eligibilities
       Creators::GrossIncomeEligibilityCreator.unassessed(
         proceeding_types: @proceeding_types,

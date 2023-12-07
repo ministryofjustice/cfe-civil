@@ -23,6 +23,7 @@ module V6
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
                                 submission_date: create.assessment.submission_date) || return
 
+        assessment_params = full_assessment_params.fetch(:assessment)
         full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: create.assessment.proceeding_types.pluck(:ccms_code),
                                                                       level_of_help: create.assessment.level_of_help,
                                                                       controlled_legal_representation: create.assessment.controlled_legal_representation,
@@ -35,7 +36,7 @@ module V6
                                                                             proceeding_types: create.assessment.proceeding_types)
                else
                  partner_params = full_assessment_params[:partner]
-                 if partner_params.present?
+                 result = if partner_params.present?
                    partner = person_data(input_params: partner_params,
                                          model_params: partner_params.fetch(:partner, {}),
                                          irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
@@ -46,16 +47,16 @@ module V6
                  else
                    Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
                  end
+                 eligibility_result = ResultWrapper.new(result: result.eligibility_result,
+                                   gross_section: assessment_params.fetch(:section_gross_income, "complete"),
+                                   disposable_section: assessment_params.fetch(:section_disposable_income, "complete"),
+                                   capital_section: assessment_params.fetch(:section_capital, "complete"))
+                 Workflows::ResultAndEligibility.new workflow_result: result.workflow_result, eligibility_result: eligibility_result
                end
-        assessment_params = full_assessment_params.fetch(:assessment)
-        eligibility_result = ResultWrapper.new(result: full.eligibility_result,
-                                               gross_section: assessment_params.fetch(:section_gross_income, "complete"),
-                                               disposable_section: assessment_params.fetch(:section_disposable_income, "complete"),
-                                               capital_section: assessment_params.fetch(:section_capital, "complete"))
 
         render json: assessment_decorator_class.new(assessment: create.assessment,
                                                     calculation_output: full.workflow_result.calculation_output,
-                                                    applicant:, partner:, version:, eligibility_result:, remarks: full.workflow_result.remarks).as_json
+                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
       else
         render_unprocessable(create.errors)
       end

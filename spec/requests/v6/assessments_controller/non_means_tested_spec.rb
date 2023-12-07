@@ -10,21 +10,23 @@ module V6
         level_of_help:,
       }
     end
-    let(:params) do
+    let(:default_params) do
       {
         assessment: assessment_params,
         applicant: {
           date_of_birth:,
           receives_qualifying_benefit: false,
         },
-        proceeding_types: attributes_for_list(:proceeding_type, 1),
         vehicles: [attributes_for(:vehicle, value: 200_000, loan_amount_outstanding: 0, date_of_purchase: "2022-03-05", in_regular_use: false)],
       }
     end
+    let(:proceeding_types) {
+      { proceeding_types: attributes_for_list(:proceeding_type, 1), }
+    }
 
     describe "POST /create" do
       before do
-        post v6_assessments_path, params: params.to_json, headers:
+        post v6_assessments_path, params: default_params.merge(params).to_json, headers:
       end
 
       let(:overall_result) { parsed_response.dig(:result_summary, :overall_result, :result).to_sym }
@@ -44,6 +46,7 @@ module V6
 
             context "when applicant under 18" do
               let(:date_of_birth) { "2010-02-02" }
+              let(:params) { {} }
 
               it "is eligible for CLR work" do
                 expect(overall_result).to eq(:eligible)
@@ -52,6 +55,7 @@ module V6
 
             context "when applicant over 18" do
               let(:date_of_birth) { "2000-02-02" }
+              let(:params) { proceeding_types }
 
               it "is ineligible ignoring CLR work" do
                 expect(overall_result).to eq(:ineligible)
@@ -70,6 +74,7 @@ module V6
 
             context "when applicant under 18" do
               let(:date_of_birth) { "2010-02-02" }
+              let(:params) { { } }
 
               it "is eligible" do
                 expect(overall_result).to eq(:eligible)
@@ -78,6 +83,7 @@ module V6
 
             context "when applicant over 18" do
               let(:date_of_birth) { "2000-02-02" }
+              let(:params) { proceeding_types }
 
               it "is ineligible" do
                 expect(overall_result).to eq(:ineligible)
@@ -91,6 +97,7 @@ module V6
 
           context "when applicant under 18" do
             let(:date_of_birth) { "2010-02-02" }
+            let(:params) { { } }
 
             it "is eligible" do
               expect(overall_result).to eq(:eligible)
@@ -99,6 +106,7 @@ module V6
 
           context "when applicant over 18" do
             let(:date_of_birth) { "2000-02-02" }
+            let(:params) { proceeding_types }
 
             it "is not eligible" do
               expect(overall_result).not_to eq(:eligible)
