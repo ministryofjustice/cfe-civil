@@ -14,6 +14,19 @@ module Creators
         end
       end
 
+      def unassessed(proceeding_types:, level_of_help:, submission_date:)
+        proceeding_types.map do |proceeding_type|
+          threshold = thresholds_for(proceeding_type:, submission_date:, level_of_help:)
+
+          Eligibility::Capital.new(
+            proceeding_type:,
+            upper_threshold: threshold.upper_threshold,
+            lower_threshold: threshold.lower_threshold,
+            assessment_result: "not_calculated",
+          )
+        end
+      end
+
       def assessment_results(proceeding_types:, level_of_help:, submission_date:, assessed_capital:)
         proceeding_types.index_with do |proceeding_type|
           assessed_result(assessed_capital:, threshold: thresholds_for(proceeding_type:, submission_date:, level_of_help:))
