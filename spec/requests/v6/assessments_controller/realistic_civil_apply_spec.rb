@@ -4,7 +4,7 @@ require "rails_helper"
 # Civil apply never send data for employment_details, self_employment_details and partner
 
 module V6
-  RSpec.describe AssessmentsController, :calls_bank_holiday, type: :request do
+  RSpec.describe AssessmentsController, :calls_bank_holiday, :calls_lfa, type: :request do
     describe "POST /create" do
       before do
         create :state_benefit_type, label: "personal_independent_payments"

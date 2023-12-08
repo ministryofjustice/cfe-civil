@@ -27,8 +27,7 @@ module Utilities
 
       def retrieve_waiver_data(proceeding_types)
         if waivers_may_apply?(proceeding_types)
-          service = Rails.env.production? ? LegalFrameworkAPI::ThresholdWaivers : LegalFrameworkAPI::MockThresholdWaivers
-          service.call(proceeding_type_details(proceeding_types)).fetch(:proceedings).index_by { _1.fetch(:ccms_code) }
+          LegalFrameworkAPI::ThresholdWaivers.call(proceeding_type_details(proceeding_types)).fetch(:proceedings).index_by { _1.fetch(:ccms_code) }
         else
           {}
         end

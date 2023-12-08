@@ -55,15 +55,15 @@ module Utilities
       end
 
       it "calls LegalFrameworkAPI::ThresholdWaivers with expected payload" do
-        expect(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).with(expected_payload)
-        allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
+        expect(LegalFrameworkAPI::ThresholdWaivers).to receive(:call).with(expected_payload)
+        allow(LegalFrameworkAPI::ThresholdWaivers).to receive(:call).and_return(response)
 
         described_class.certificated(proceeding_types: assessment.proceeding_types,
                                      submission_date: assessment.submission_date)
       end
 
       it "updates the threshold values on the proceeding type records where the threshold is not waived" do
-        allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
+        allow(LegalFrameworkAPI::ThresholdWaivers).to receive(:call).and_return(response)
 
         described_class.certificated(proceeding_types: assessment.proceeding_types,
                                      submission_date: assessment.submission_date)
@@ -80,7 +80,7 @@ module Utilities
       end
 
       it "updates threshold values on proceeding type records where the threshold is waived" do
-        allow(LegalFrameworkAPI::MockThresholdWaivers).to receive(:call).and_return(response)
+        allow(LegalFrameworkAPI::ThresholdWaivers).to receive(:call).and_return(response)
 
         described_class.certificated(proceeding_types: assessment.proceeding_types,
                                      submission_date: assessment.submission_date)
@@ -93,7 +93,7 @@ module Utilities
 
       context "for controlled work" do
         it "ignores waivers" do
-          expect(LegalFrameworkAPI::MockThresholdWaivers).not_to receive(:call)
+          expect(LegalFrameworkAPI::ThresholdWaivers).not_to receive(:call)
 
           described_class.controlled(proceeding_types: assessment.proceeding_types,
                                      submission_date: assessment.submission_date)
