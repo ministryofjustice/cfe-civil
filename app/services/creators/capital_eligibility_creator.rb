@@ -74,7 +74,7 @@ module Creators
       def controlled_thresholds(proceeding_type:, submission_date:)
         controlled_immigration_threshold = Threshold.value_for(:capital_immigration_first_tier_tribunal_controlled, at: submission_date)
 
-        threshold = if controlled_immigration_threshold.present? && proceeding_type.ccms_code.to_sym == CFEConstants::IMMIGRATION_PROCEEDING_TYPE_CCMS_CODE
+        threshold = if controlled_immigration_threshold.present? && proceeding_type.immigration_case?
                       controlled_immigration_threshold
                     else
                       proceeding_type.capital_upper_threshold

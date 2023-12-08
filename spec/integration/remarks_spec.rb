@@ -76,7 +76,7 @@ RSpec.describe "contribution_required Full Assessment with remarks", :calls_bank
   def applicant_params
     {
       applicant: {
-        date_of_birth: 20.years.ago.to_date,
+        date_of_birth: "1999-06-06",
         has_partner_opponent: false,
         receives_qualifying_benefit: true,
       },

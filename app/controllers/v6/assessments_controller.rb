@@ -8,50 +8,57 @@ module V6
       create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
                                                     params: full_assessment_params)
       if create.success?
-        if create.assessment.level_of_help == "certificated"
-          Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: create.assessment.proceeding_types,
-                                                                   submission_date: create.assessment.submission_date)
-        else
-          Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: create.assessment.proceeding_types,
-                                                                 submission_date: create.assessment.submission_date)
-        end
+        assessment = create.assessment
 
         applicant = person_data(input_params: full_assessment_params,
                                 model_params: full_assessment_params.fetch(:applicant, {}),
                                 irregular_income_params: full_assessment_params.fetch(:irregular_incomes, {}),
                                 additional_properties_params: full_assessment_params.fetch(:properties, {}),
                                 main_home_params: full_assessment_params.fetch(:properties, {})[:main_home],
-                                submission_date: create.assessment.submission_date) || return
+                                submission_date: assessment.submission_date) || return
 
-        full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: create.assessment.proceeding_types.pluck(:ccms_code),
-                                                                      receives_asylum_support: applicant.details.receives_asylum_support,
-                                                                      submission_date: create.assessment.submission_date)
-                 Workflows::NonMeansTestedWorkflow.blank_calculation_result(submission_date: create.assessment.submission_date,
-                                                                            level_of_help: create.assessment.level_of_help,
-                                                                            proceeding_types: create.assessment.proceeding_types)
-               else
-                 partner_params = full_assessment_params[:partner]
-                 if partner_params.present?
-                   partner = person_data(input_params: partner_params,
-                                         model_params: partner_params.fetch(:partner, {}),
-                                         irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
-                                         submission_date: create.assessment.submission_date,
-                                         main_home_params: nil,
-                                         additional_properties_params: partner_params) || return
-                   Workflows::PersonWorkflow.with_partner(assessment: create.assessment, applicant:, partner:)
-                 else
-                   Workflows::PersonWorkflow.without_partner(assessment: create.assessment, applicant:)
-                 end
-               end
         assessment_params = full_assessment_params.fetch(:assessment)
-        eligibility_result = ResultWrapper.new(result: full.eligibility_result,
-                                               gross_section: assessment_params.fetch(:section_gross_income, "complete"),
-                                               disposable_section: assessment_params.fetch(:section_disposable_income, "complete"),
-                                               capital_section: assessment_params.fetch(:section_capital, "complete"))
+        full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: assessment.proceeding_types.pluck(:ccms_code),
+                                                                      level_of_help: assessment.level_of_help,
+                                                                      controlled_legal_representation: assessment.controlled_legal_representation,
+                                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
+                                                                      applicant_under_18_years_old: applicant.details.under_18_years_old?(assessment.submission_date),
+                                                                      receives_asylum_support: applicant.details.receives_asylum_support,
+                                                                      submission_date: assessment.submission_date)
+                 Workflows::NonMeansTestedWorkflow.blank_calculation_result(submission_date: assessment.submission_date,
+                                                                            level_of_help: assessment.level_of_help,
+                                                                            proceeding_types: assessment.proceeding_types)
+               else
+                 if assessment.level_of_help == "certificated"
+                   Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
+                                                                            submission_date: assessment.submission_date)
+                 else
+                   Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: assessment.proceeding_types,
+                                                                          submission_date: assessment.submission_date)
+                 end
 
-        render json: assessment_decorator_class.new(assessment: create.assessment,
+                 partner_params = full_assessment_params[:partner]
+                 result = if partner_params.present?
+                            partner = person_data(input_params: partner_params,
+                                                  model_params: partner_params.fetch(:partner, {}),
+                                                  irregular_income_params: { payments: partner_params.fetch(:irregular_incomes, []) },
+                                                  submission_date: assessment.submission_date,
+                                                  main_home_params: nil,
+                                                  additional_properties_params: partner_params) || return
+                            Workflows::PersonWorkflow.with_partner(assessment:, applicant:, partner:)
+                          else
+                            Workflows::PersonWorkflow.without_partner(assessment:, applicant:)
+                          end
+                 eligibility_result = ResultWrapper.new(result: result.eligibility_result,
+                                                        gross_section: assessment_params.fetch(:section_gross_income, "complete"),
+                                                        disposable_section: assessment_params.fetch(:section_disposable_income, "complete"),
+                                                        capital_section: assessment_params.fetch(:section_capital, "complete"))
+                 Workflows::ResultAndEligibility.new(workflow_result: result.workflow_result, eligibility_result:)
+               end
+
+        render json: assessment_decorator_class.new(assessment:,
                                                     calculation_output: full.workflow_result.calculation_output,
-                                                    applicant:, partner:, version:, eligibility_result:, remarks: full.workflow_result.remarks).as_json
+                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
       else
         render_unprocessable(create.errors)
       end

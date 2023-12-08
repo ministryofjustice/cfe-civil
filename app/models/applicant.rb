@@ -16,4 +16,8 @@ class Applicant
   def receives_qualifying_benefit?
     receives_qualifying_benefit
   end
+
+  def under_18_years_old?(submission_date)
+    date_of_birth > (submission_date - 18.years)
+  end
 end

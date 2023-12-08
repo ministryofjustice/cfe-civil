@@ -2,7 +2,8 @@ module Workflows
   class PersonWorkflow
     class << self
       def without_partner(assessment:, applicant:)
-        result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
+        result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date,
+                                                         level_of_help: assessment.level_of_help,
                                                          proceeding_types: assessment.proceeding_types,
                                                          applicant:)
         lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types: assessment.proceeding_types,

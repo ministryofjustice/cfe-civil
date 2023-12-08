@@ -406,6 +406,16 @@ class SwaggerDocs
                 example: Assessment::LEVELS_OF_HELP.first,
                 description: "The level of help required by the client. Defaults to 'certificated'",
               },
+              controlled_legal_representation: {
+                type: :boolean,
+                example: false,
+                description: "Whether the work is “controlled legal representation” (CLR) (only relevant if client under 18)",
+              },
+              not_aggregated_no_income_low_capital: {
+                type: :boolean,
+                example: false,
+                description: "Whether the means test is eligible via the “simplified approach to means testing”, which is only relevant to applications for children (under 18) for controlled work. Set to True if it has been considered inequitable to aggregate the means of the child with that of their maintaining adult(s), the child does not have any regular income (not including part-time earnings, holiday jobs or pocket money), and their capital is worth less than £2500.",
+              },
               section_gross_income: {
                 type: :string,
                 enum: %i[complete incomplete],
