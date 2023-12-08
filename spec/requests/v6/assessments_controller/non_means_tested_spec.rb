@@ -120,7 +120,7 @@ module V6
             end
           end
 
-          context "when applicant over 18" do
+          context "when applicant over 18", :vcr do
             let(:date_of_birth) { "2000-02-02" }
             let(:params) { proceeding_types }
 

@@ -1,0 +1,58 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"10a128c5-4715-4c5a-ada7-83b9191953bf","proceedings":[{"ccms_code":"SE003","client_involvement_type":"I"}]}'
+    headers:
+      User-Agent:
+      - Faraday v1.10.3
+      Content-Type:
+      - application/json
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 08 Dec 2023 12:37:30 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '275'
+      Connection:
+      - keep-alive
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Xss-Protection:
+      - '0'
+      X-Content-Type-Options:
+      - nosniff
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Vary:
+      - Accept, Origin
+      Etag:
+      - W/"fd98c5ee3dab7b0047996c2e714b4ee8"
+      Cache-Control:
+      - max-age=0, private, must-revalidate
+      X-Request-Id:
+      - a1f80ab203b8c581b8f128d83e123dfe
+      X-Runtime:
+      - '0.058834'
+      Strict-Transport-Security:
+      - max-age=15724800; includeSubDomains
+    body:
+      encoding: UTF-8
+      string: '{"request_id":"10a128c5-4715-4c5a-ada7-83b9191953bf","success":true,"proceedings":[{"ccms_code":"SE003","full_s8_only":false,"matter_type":"Children
+        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"I"}]}'
+  recorded_at: Fri, 08 Dec 2023 12:37:30 GMT
+recorded_with: VCR 6.2.0

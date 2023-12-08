@@ -9,13 +9,6 @@ module V6
                                                     params: full_assessment_params)
       if create.success?
         assessment = create.assessment
-        if assessment.level_of_help == "certificated"
-          Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
-                                                                   submission_date: assessment.submission_date)
-        else
-          Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: assessment.proceeding_types,
-                                                                 submission_date: assessment.submission_date)
-        end
 
         applicant = person_data(input_params: full_assessment_params,
                                 model_params: full_assessment_params.fetch(:applicant, {}),
@@ -36,6 +29,14 @@ module V6
                                                                             level_of_help: assessment.level_of_help,
                                                                             proceeding_types: assessment.proceeding_types)
                else
+                 if assessment.level_of_help == "certificated"
+                   Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
+                                                                            submission_date: assessment.submission_date)
+                 else
+                   Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: assessment.proceeding_types,
+                                                                          submission_date: assessment.submission_date)
+                 end
+
                  partner_params = full_assessment_params[:partner]
                  result = if partner_params.present?
                             partner = person_data(input_params: partner_params,
