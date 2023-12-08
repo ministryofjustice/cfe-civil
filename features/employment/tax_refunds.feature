@@ -32,9 +32,9 @@ Feature:
       | net_employment_income      | 34.99  |
     And I should see the following remarks indicating caseworker referral
       | type                       |  issue           |
-      | employment_tax             | refunds          |
-      | employment_nic             | refunds          |
-      | employment_gross_income    | amount_variation |
+      | client_employment_tax             | refunds          |
+      | client_employment_nic             | refunds          |
+      | client_employment_gross_income    | amount_variation |
 
 #  When there are multiple employments, HMRC does not provide unique identifiers tying each pay period to a specific employment
 #  Therefore once again the calculation in (1) cannot be achieved but for a different reason/s.
@@ -75,4 +75,4 @@ Feature:
       | net_employment_income      | -45.0  |
     And I should see the following remarks indicating caseworker referral
       | type         |          issue          |
-      | employment   |   multiple_employments  |
+      | client_employment   |   multiple_employments  |

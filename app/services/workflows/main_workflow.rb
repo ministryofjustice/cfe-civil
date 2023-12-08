@@ -28,7 +28,7 @@ module Workflows
                                                                     level_of_help:,
                                                                     date_of_birth: applicant.details.date_of_birth)
                                end
-          Result.new calculation_output:, remarks: [], assessment_result: calculation_output.capital_subtotals.summarized_assessment_result(proceeding_types)
+          Result.new calculation_output:, remarks: { client: [], partner: [] }, assessment_result: calculation_output.capital_subtotals.summarized_assessment_result(proceeding_types)
         elsif partner.present?
           NonPassportedWorkflow.with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
         else

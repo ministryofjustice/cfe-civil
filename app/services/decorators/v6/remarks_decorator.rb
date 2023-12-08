@@ -18,12 +18,16 @@ module Decorators
       end
 
       def transform_remarks
-        remarks_hash_by_type = @remarks.group_by(&:type)
-        remarks_hash = remarks_hash_by_type.transform_values do |v|
-          v.group_by(&:issue).transform_values { |c| c.map(&:ids).flatten }
+        all_remarks = {}
+        @remarks.each do |applicant_type, remarks|
+          remarks_hash_by_type = remarks.group_by(&:type)
+          remarks_hash = remarks_hash_by_type.transform_values do |v|
+            v.group_by(&:issue).transform_values { |c| c.map(&:ids).flatten }
+          end
+          all_remarks.merge!(remarks_hash.transform_keys { |key| "#{applicant_type}_#{key}".to_sym })
         end
-        remarks_hash.merge! @explicit_remarks.by_category
-        remarks_hash.symbolize_keys
+        all_remarks.merge! @explicit_remarks.by_category
+        all_remarks.symbolize_keys
       end
     end
   end
