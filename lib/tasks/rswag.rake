@@ -2,7 +2,7 @@ desc "Checks for unapplied swagger documentation specs"
 task check_swaggerization: :environment do
   require "digest/sha1"
 
-  swagger_root = Rswag::Api.config.swagger_root
+  swagger_root = Rswag::Api.config.openapi_root
   # make sure files are always loaded in the same order
   files = Dir.glob("#{swagger_root}/**/*.yaml").sort
 
