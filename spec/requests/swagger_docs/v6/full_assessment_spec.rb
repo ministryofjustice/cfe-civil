@@ -25,7 +25,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                   properties: {
                     assessment: { "$ref" => components[:assessment] },
                     applicant: { "$ref" => components[:v6_applicant] },
-                    proceeding_types: { "$ref" => components[:v6_proceeding_types] },
+                    proceeding_types: { "$ref" => components[:proceeding_types] },
                     capitals: { "$ref" => components[:capitals] },
                     cash_transactions: { "$ref" => components[:cash_transactions] },
                     dependants: { "$ref" => components[:v6_dependants] },
@@ -168,7 +168,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                          result: { "$ref" => components[:overall_result] },
                          income_contribution: { "$ref" => components[:income_contribution] },
                          capital_contribution: { "$ref" => components[:capital_contribution] },
-                         proceeding_types: { "$ref" => components[:v6_proceeding_type_results] },
+                         proceeding_types: { "$ref" => components[:proceeding_type_results] },
                        },
                      },
                      gross_income: {
@@ -187,7 +187,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                            format: :decimal,
                            description: "Calculated monthly total gross income for applicant and partner",
                          },
-                         proceeding_types: { "$ref" => components[:v6_proceeding_type_results] },
+                         proceeding_types: { "$ref" => components[:proceeding_type_results] },
                        },
                      },
                      partner_gross_income: {

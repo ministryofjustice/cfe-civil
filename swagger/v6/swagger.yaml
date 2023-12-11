@@ -1469,6 +1469,153 @@ components:
                   type: array
                   items:
                     "$ref": "#/components/schemas/PropertyResult"
+    ProceedingTypes:
+      type: array
+      minItems: 1
+      description: One or more proceeding_type details
+      items:
+        type: object
+        required:
+        - ccms_code
+        - client_involvement_type
+        properties:
+          ccms_code:
+            type: string
+            enum:
+            - DA001
+            - DA002
+            - DA003
+            - DA004
+            - DA005
+            - DA006
+            - DA007
+            - DA020
+            - SE003
+            - SE004
+            - SE013
+            - SE014
+            - SE007
+            - SE008
+            - SE015
+            - SE016
+            - SE095
+            - SE097
+            - SE003A
+            - SE004A
+            - SE007A
+            - SE008A
+            - SE013A
+            - SE014A
+            - SE015A
+            - SE016A
+            - SE095A
+            - SE097A
+            - SE101A
+            - IM030
+            - IA031
+            - SE003E
+            - SE004E
+            - SE007E
+            - SE008E
+            - SE013E
+            - SE014E
+            - SE015E
+            - SE016E
+            - SE096E
+            - SE099E
+            - SE100E
+            - SE101E
+            description: A proxy for the type of law. Values beginning with DA are
+              considered domestic abuse cases. IM030 indicates an immigration case.
+              IA031 indicates an asylum case.
+          client_involvement_type:
+            type: string
+            enum:
+            - A
+            - D
+            - W
+            - Z
+            - I
+            description: CCMS Client Involvement type A=applicant/claimant/petitioner,
+              D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party.
+              Domestic abuse waivers only apply for type 'A'
+        additionalProperties: false
+    ProceedingTypeResults:
+      type: array
+      minItems: 1
+      items:
+        type: object
+        required:
+        - ccms_code
+        - client_involvement_type
+        - upper_threshold
+        - lower_threshold
+        - result
+        properties:
+          ccms_code:
+            type: string
+            enum:
+            - DA001
+            - DA002
+            - DA003
+            - DA004
+            - DA005
+            - DA006
+            - DA007
+            - DA020
+            - SE003
+            - SE004
+            - SE013
+            - SE014
+            - SE007
+            - SE008
+            - SE015
+            - SE016
+            - SE095
+            - SE097
+            - SE003A
+            - SE004A
+            - SE007A
+            - SE008A
+            - SE013A
+            - SE014A
+            - SE015A
+            - SE016A
+            - SE095A
+            - SE097A
+            - SE101A
+            - IM030
+            - IA031
+            - SE003E
+            - SE004E
+            - SE007E
+            - SE008E
+            - SE013E
+            - SE014E
+            - SE015E
+            - SE016E
+            - SE096E
+            - SE099E
+            - SE100E
+            - SE101E
+            description: The code expected by CCMS
+          client_involvement_type:
+            type: string
+            enum:
+            - A
+            - D
+            - W
+            - Z
+            - I
+            example: A
+            description: The client_involvement_type expected by CCMS
+          upper_threshold:
+            type: number
+          lower_threshold:
+            type: number
+          result:
+            "$ref": "#/components/schemas/PartialResult"
+        additionalProperties: false
     v6:
       Applicant:
         type: object
@@ -1635,152 +1782,6 @@ components:
               - "$ref": "#/components/schemas/currency"
               description: Deprecated field not used in calculation
               deprecated: true
-      ProceedingTypes:
-        type: array
-        minItems: 1
-        description: One or more proceeding_type details
-        items:
-          type: object
-          required:
-          - ccms_code
-          properties:
-            ccms_code:
-              type: string
-              enum:
-              - DA001
-              - DA002
-              - DA003
-              - DA004
-              - DA005
-              - DA006
-              - DA007
-              - DA020
-              - SE003
-              - SE004
-              - SE013
-              - SE014
-              - SE007
-              - SE008
-              - SE015
-              - SE016
-              - SE095
-              - SE097
-              - SE003A
-              - SE004A
-              - SE007A
-              - SE008A
-              - SE013A
-              - SE014A
-              - SE015A
-              - SE016A
-              - SE095A
-              - SE097A
-              - SE101A
-              - IM030
-              - IA031
-              - SE003E
-              - SE004E
-              - SE007E
-              - SE008E
-              - SE013E
-              - SE014E
-              - SE015E
-              - SE016E
-              - SE096E
-              - SE099E
-              - SE100E
-              - SE101E
-              description: A proxy for the type of law. Values beginning with DA are
-                considered domestic abuse cases. IM030 indicates an immigration case.
-                IA031 indicates an asylum case.
-            client_involvement_type:
-              type: string
-              enum:
-              - A
-              - D
-              - W
-              - Z
-              - I
-              description: CCMS Client Involvement type A=applicant/claimant/petitioner,
-                D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party.
-                Domestic abuse waivers only apply for type 'A'
-          additionalProperties: false
-      ProceedingTypeResults:
-        type: array
-        minItems: 1
-        items:
-          type: object
-          required:
-          - ccms_code
-          - client_involvement_type
-          - upper_threshold
-          - lower_threshold
-          - result
-          properties:
-            ccms_code:
-              type: string
-              enum:
-              - DA001
-              - DA002
-              - DA003
-              - DA004
-              - DA005
-              - DA006
-              - DA007
-              - DA020
-              - SE003
-              - SE004
-              - SE013
-              - SE014
-              - SE007
-              - SE008
-              - SE015
-              - SE016
-              - SE095
-              - SE097
-              - SE003A
-              - SE004A
-              - SE007A
-              - SE008A
-              - SE013A
-              - SE014A
-              - SE015A
-              - SE016A
-              - SE095A
-              - SE097A
-              - SE101A
-              - IM030
-              - IA031
-              - SE003E
-              - SE004E
-              - SE007E
-              - SE008E
-              - SE013E
-              - SE014E
-              - SE015E
-              - SE016E
-              - SE096E
-              - SE099E
-              - SE100E
-              - SE101E
-              description: The code expected by CCMS
-            client_involvement_type:
-              type: string
-              enum:
-              - A
-              - D
-              - W
-              - Z
-              - I
-              example: A
-              description: The client_involvement_type expected by CCMS
-            upper_threshold:
-              type: number
-            lower_threshold:
-              type: number
-            result:
-              "$ref": "#/components/schemas/PartialResult"
-          additionalProperties: false
       ApplicantCapitalResult:
         type: object
         additionalProperties: false
@@ -1808,7 +1809,7 @@ components:
           pensioner_disregard_applied:
             "$ref": "#/components/schemas/PensionerDisregardApplied"
           proceeding_types:
-            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+            "$ref": "#/components/schemas/ProceedingTypeResults"
           pensioner_capital_disregard:
             "$ref": "#/components/schemas/PensionerCapitalDisregard"
           capital_contribution:
@@ -1862,7 +1863,7 @@ components:
           combined_total_disposable_income:
             "$ref": "#/components/schemas/CombinedDisposableIncome"
           proceeding_types:
-            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+            "$ref": "#/components/schemas/ProceedingTypeResults"
         required:
         - employment_income
         - gross_housing_costs
@@ -2046,131 +2047,6 @@ components:
               - "$ref": "#/components/schemas/currency"
               description: Amount of student debt repayment paid - always negative
               example: -50.0
-      ProceedingTypes:
-        type: array
-        minItems: 1
-        description: One or more proceeding_type details
-        items:
-          type: object
-          required:
-          - ccms_code
-          properties:
-            ccms_code:
-              type: string
-              enum:
-              - DA001
-              - DA002
-              - DA003
-              - DA004
-              - DA005
-              - DA006
-              - DA007
-              - DA020
-              - SE003
-              - SE004
-              - SE013
-              - SE014
-              - SE007
-              - SE008
-              - SE015
-              - SE016
-              - SE095
-              - SE097
-              - SE003A
-              - SE004A
-              - SE007A
-              - SE008A
-              - SE013A
-              - SE014A
-              - SE015A
-              - SE016A
-              - SE095A
-              - SE097A
-              - SE101A
-              - IM030
-              - IA031
-              - SE003E
-              - SE004E
-              - SE007E
-              - SE008E
-              - SE013E
-              - SE014E
-              - SE015E
-              - SE016E
-              - SE096E
-              - SE099E
-              - SE100E
-              - SE101E
-              example: DA001
-              description: A proxy for the type of law. Values beginning with DA are
-                considered domestic abuse cases. IM030 indicates an immigration case.
-                IA031 indicates an asylum case.
-          additionalProperties: false
-      ProceedingTypeResults:
-        type: array
-        minItems: 1
-        items:
-          type: object
-          required:
-          - ccms_code
-          - upper_threshold
-          - lower_threshold
-          - result
-          properties:
-            ccms_code:
-              type: string
-              enum:
-              - DA001
-              - DA002
-              - DA003
-              - DA004
-              - DA005
-              - DA006
-              - DA007
-              - DA020
-              - SE003
-              - SE004
-              - SE013
-              - SE014
-              - SE007
-              - SE008
-              - SE015
-              - SE016
-              - SE095
-              - SE097
-              - SE003A
-              - SE004A
-              - SE007A
-              - SE008A
-              - SE013A
-              - SE014A
-              - SE015A
-              - SE016A
-              - SE095A
-              - SE097A
-              - SE101A
-              - IM030
-              - IA031
-              - SE003E
-              - SE004E
-              - SE007E
-              - SE008E
-              - SE013E
-              - SE014E
-              - SE015E
-              - SE016E
-              - SE096E
-              - SE099E
-              - SE100E
-              - SE101E
-              description: The code expected by CCMS
-            upper_threshold:
-              type: number
-            lower_threshold:
-              type: number
-            result:
-              "$ref": "#/components/schemas/PartialResult"
-          additionalProperties: false
       ApplicantCapitalResult:
         type: object
         additionalProperties: false
@@ -2198,7 +2074,7 @@ components:
           pensioner_disregard_applied:
             "$ref": "#/components/schemas/PensionerDisregardApplied"
           proceeding_types:
-            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
+            "$ref": "#/components/schemas/ProceedingTypeResults"
           pensioner_capital_disregard:
             "$ref": "#/components/schemas/PensionerCapitalDisregard"
           capital_contribution:
@@ -2244,7 +2120,7 @@ components:
           combined_total_disposable_income:
             "$ref": "#/components/schemas/CombinedDisposableIncome"
           proceeding_types:
-            "$ref": "#/components/schemas/v7/ProceedingTypeResults"
+            "$ref": "#/components/schemas/ProceedingTypeResults"
         required:
         - employment_income
         - housing_costs
@@ -2335,7 +2211,7 @@ paths:
                           capital_contribution:
                             "$ref": "#/components/schemas/CapitalContribution"
                           proceeding_types:
-                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+                            "$ref": "#/components/schemas/ProceedingTypeResults"
                       gross_income:
                         type: object
                         description: gross_income calculation for partner, with some
@@ -2357,7 +2233,7 @@ paths:
                             description: Calculated monthly total gross income for
                               applicant and partner
                           proceeding_types:
-                            "$ref": "#/components/schemas/v6/ProceedingTypeResults"
+                            "$ref": "#/components/schemas/ProceedingTypeResults"
                       partner_gross_income:
                         type: object
                         required:
@@ -2439,7 +2315,7 @@ paths:
                 applicant:
                   "$ref": "#/components/schemas/v6/Applicant"
                 proceeding_types:
-                  "$ref": "#/components/schemas/v6/ProceedingTypes"
+                  "$ref": "#/components/schemas/ProceedingTypes"
                 capitals:
                   "$ref": "#/components/schemas/Capitals"
                 cash_transactions:

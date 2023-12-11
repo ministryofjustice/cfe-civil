@@ -3,8 +3,7 @@ class SwaggerDocs
     assessment: "#/components/schemas/Assessment",
     v6_applicant: "#/components/schemas/v6/Applicant",
     v7_applicant: "#/components/schemas/v7/Applicant",
-    v6_proceeding_types: "#/components/schemas/v6/ProceedingTypes",
-    v7_proceeding_types: "#/components/schemas/v7/ProceedingTypes",
+    proceeding_types: "#/components/schemas/ProceedingTypes",
     capitals: "#/components/schemas/Capitals",
     cash_transactions: "#/components/schemas/CashTransactions",
     v6_dependants: "#/components/schemas/v6/Dependants",
@@ -30,8 +29,7 @@ class SwaggerDocs
     v7_applicant_disposable_income: "#/components/schemas/v7/ApplicantDisposableIncome",
     property: "#/components/schemas/Property",
     main_home: "#/components/schemas/MainHome",
-    v6_proceeding_type_results: "#/components/schemas/v6/ProceedingTypeResults",
-    v7_proceeding_type_results: "#/components/schemas/v7/ProceedingTypeResults",
+    proceeding_type_results: "#/components/schemas/ProceedingTypeResults",
     non_property_asset: "#/components/schemas/NonPropertyAsset",
     currency: "#/components/schemas/currency",
     numeric_currency: "#/components/schemas/numeric_currency",
@@ -1461,6 +1459,51 @@ class SwaggerDocs
               },
             },
           },
+          ProceedingTypes: {
+            type: :array,
+            minItems: 1,
+            description: "One or more proceeding_type details",
+            items: {
+              type: :object,
+              required: %i[ccms_code client_involvement_type],
+              properties: {
+                ccms_code: {
+                  type: :string,
+                  enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                  description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
+                },
+                client_involvement_type: {
+                  type: :string,
+                  enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
+                  description: "CCMS Client Involvement type A=applicant/claimant/petitioner, D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party. Domestic abuse waivers only apply for type 'A'",
+                },
+              },
+            },
+          },
+          ProceedingTypeResults: {
+            type: :array,
+            minItems: 1,
+            items: {
+              type: :object,
+              required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
+              properties: {
+                ccms_code: {
+                  type: :string,
+                  enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
+                  description: "The code expected by CCMS",
+                },
+                client_involvement_type: {
+                  type: :string,
+                  enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
+                  example: "A",
+                  description: "The client_involvement_type expected by CCMS",
+                },
+                upper_threshold: { type: :number },
+                lower_threshold: { type: :number },
+                result: { "$ref": "#/components/schemas/PartialResult" },
+              },
+            },
+          },
           v6: {
             Applicant: {
               type: :object,
@@ -1616,51 +1659,6 @@ class SwaggerDocs
                 },
               },
             },
-            ProceedingTypes: {
-              type: :array,
-              minItems: 1,
-              description: "One or more proceeding_type details",
-              items: {
-                type: :object,
-                required: %i[ccms_code],
-                properties: {
-                  ccms_code: {
-                    type: :string,
-                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                    description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
-                  },
-                  client_involvement_type: {
-                    type: :string,
-                    enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
-                    description: "CCMS Client Involvement type A=applicant/claimant/petitioner, D=Defendant, W=subject of proceedings, I=intevenor, Z=joined party. Domestic abuse waivers only apply for type 'A'",
-                  },
-                },
-              },
-            },
-            ProceedingTypeResults: {
-              type: :array,
-              minItems: 1,
-              items: {
-                type: :object,
-                required: %i[ccms_code client_involvement_type upper_threshold lower_threshold result],
-                properties: {
-                  ccms_code: {
-                    type: :string,
-                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                    description: "The code expected by CCMS",
-                  },
-                  client_involvement_type: {
-                    type: :string,
-                    enum: ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES,
-                    example: "A",
-                    description: "The client_involvement_type expected by CCMS",
-                  },
-                  upper_threshold: { type: :number },
-                  lower_threshold: { type: :number },
-                  result: { "$ref": "#/components/schemas/PartialResult" },
-                },
-              },
-            },
             ApplicantCapitalResult: {
               type: :object,
               additionalProperties: false,
@@ -1676,7 +1674,7 @@ class SwaggerDocs
                 assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
                 disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
                 pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
-                proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
+                proceeding_types: { "$ref": "#/components/schemas/ProceedingTypeResults" },
                 pensioner_capital_disregard: { "$ref": "#/components/schemas/PensionerCapitalDisregard" },
                 capital_contribution: { "$ref": "#/components/schemas/CapitalContribution" },
                 combined_disputed_capital: { "$ref": "#/components/schemas/CombinedDisputedCapital" },
@@ -1715,7 +1713,7 @@ class SwaggerDocs
                 lone_parent_allowance: { "$ref": "#/components/schemas/LoneParentAllowance" },
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
-                proceeding_types: { "$ref": "#/components/schemas/v6/ProceedingTypeResults" },
+                proceeding_types: { "$ref": "#/components/schemas/ProceedingTypeResults" },
               },
               required: %i[
                 employment_income
@@ -1889,41 +1887,6 @@ class SwaggerDocs
                 },
               },
             },
-            ProceedingTypes: {
-              type: :array,
-              minItems: 1,
-              description: "One or more proceeding_type details",
-              items: {
-                type: :object,
-                required: %i[ccms_code],
-                properties: {
-                  ccms_code: {
-                    type: :string,
-                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                    example: "DA001",
-                    description: "A proxy for the type of law. Values beginning with DA are considered domestic abuse cases. IM030 indicates an immigration case. IA031 indicates an asylum case.",
-                  },
-                },
-              },
-            },
-            ProceedingTypeResults: {
-              type: :array,
-              minItems: 1,
-              items: {
-                type: :object,
-                required: %i[ccms_code upper_threshold lower_threshold result],
-                properties: {
-                  ccms_code: {
-                    type: :string,
-                    enum: CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES,
-                    description: "The code expected by CCMS",
-                  },
-                  upper_threshold: { type: :number },
-                  lower_threshold: { type: :number },
-                  result: { "$ref": "#/components/schemas/PartialResult" },
-                },
-              },
-            },
             ApplicantCapitalResult: {
               type: :object,
               additionalProperties: false,
@@ -1939,7 +1902,7 @@ class SwaggerDocs
                 assessed_capital: { "$ref": "#/components/schemas/AssessedCapital" },
                 disputed_non_property_disregard: { "$ref": "#/components/schemas/DisputedNonPropertyDisregard" },
                 pensioner_disregard_applied: { "$ref": "#/components/schemas/PensionerDisregardApplied" },
-                proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
+                proceeding_types: { "$ref": "#/components/schemas/ProceedingTypeResults" },
                 pensioner_capital_disregard: { "$ref": "#/components/schemas/PensionerCapitalDisregard" },
                 capital_contribution: { "$ref": "#/components/schemas/CapitalContribution" },
                 combined_disputed_capital: { "$ref": "#/components/schemas/CombinedDisputedCapital" },
@@ -1966,7 +1929,7 @@ class SwaggerDocs
                 lone_parent_allowance: { "$ref": "#/components/schemas/LoneParentAllowance" },
                 combined_total_outgoings_and_allowances: { "$ref": "#/components/schemas/CombinedOutgoingsAndAllowances" },
                 combined_total_disposable_income: { "$ref": "#/components/schemas/CombinedDisposableIncome" },
-                proceeding_types: { "$ref": "#/components/schemas/v7/ProceedingTypeResults" },
+                proceeding_types: { "$ref": "#/components/schemas/ProceedingTypeResults" },
               },
               required: %i[
                 employment_income
