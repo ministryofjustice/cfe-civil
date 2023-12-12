@@ -10,8 +10,7 @@ module Decorators
       let(:assessment) do
         create :assessment,
                :with_gross_income_summary,
-               :with_disposable_income_summary,
-               :with_capital_summary
+               :with_disposable_income_summary
       end
       let(:version) { "6" }
       let(:calculation_output) do
@@ -106,7 +105,6 @@ module Decorators
           end
 
           before do
-            create(:partner_capital_summary, assessment:)
             create(:partner_disposable_income_summary, assessment:)
           end
 

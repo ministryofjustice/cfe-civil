@@ -40,8 +40,7 @@ module Decorators
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
             state_benefits: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.state_benefits,
           ),
-          capital: CapitalDecorator.new(assessment.applicant_capital_summary,
-                                        @calculation_output.capital_subtotals.applicant_capital_subtotals),
+          capital: CapitalDecorator.new(@calculation_output.capital_subtotals.applicant_capital_subtotals),
           remarks: RemarksDecorator.new(assessment.explicit_remarks, @remarks, @eligibility_result.summarized_assessment_result),
         }
         if @partner.present?
@@ -78,8 +77,7 @@ module Decorators
       end
 
       def partner_capital
-        CapitalDecorator.new(assessment.partner_capital_summary,
-                             @calculation_output.capital_subtotals.partner_capital_subtotals)
+        CapitalDecorator.new(@calculation_output.capital_subtotals.partner_capital_subtotals)
       end
     end
   end

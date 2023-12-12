@@ -41,21 +41,6 @@ FactoryBot.define do
       end
     end
 
-    trait :with_capital_summary do
-      after(:create) do |assessment|
-        create :capital_summary, assessment:
-      end
-    end
-
-    trait :with_capital_summary_and_eligibilities do
-      after(:create) do |assessment|
-        capsum = create(:capital_summary, assessment:)
-        assessment.proceeding_type_codes.each do |ptc|
-          create :capital_eligibility, capital_summary: capsum, proceeding_type_code: ptc
-        end
-      end
-    end
-
     trait :with_gross_income_summary do
       after(:create) do |assessment|
         create :gross_income_summary, assessment:
@@ -72,13 +57,6 @@ FactoryBot.define do
       after(:create) do |assessment|
         create(:gross_income_summary, assessment:)
         create(:disposable_income_summary, assessment:)
-        create :capital_summary, assessment:
-      end
-    end
-
-    trait :passported do
-      after(:create) do |assessment|
-        create :capital_summary, :with_eligibilities, assessment:
       end
     end
   end

@@ -3,7 +3,7 @@ require "rails_helper"
 module Creators
   RSpec.describe CapitalEligibilityCreator do
     let(:assessment) do
-      create :assessment, :with_capital_summary,
+      create :assessment,
              level_of_help:,
              proceedings: [%w[DA002 A], %w[SE013 Z], %w[IM030 A], %w[IA031 A]]
     end

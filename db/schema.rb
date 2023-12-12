@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_23_155518) do
+ActiveRecord::Schema[7.1].define(version: 2023_12_12_080442) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,12 +22,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_23_155518) do
     t.date "updated_at", null: false
     t.date "submission_date", null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
-  end
-
-  create_table "capital_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.string "type", default: "ApplicantCapitalSummary"
-    t.index ["assessment_id"], name: "index_capital_summaries_on_assessment_id"
   end
 
   create_table "disposable_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -78,7 +72,6 @@ ActiveRecord::Schema[7.1].define(version: 2023_11_23_155518) do
     t.index ["label"], name: "index_state_benefit_types_on_label", unique: true
   end
 
-  add_foreign_key "capital_summaries", "assessments"
   add_foreign_key "disposable_income_summaries", "assessments"
   add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "proceeding_types", "assessments"

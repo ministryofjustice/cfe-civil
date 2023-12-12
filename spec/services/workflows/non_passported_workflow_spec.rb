@@ -3,7 +3,7 @@ require "rails_helper"
 module Workflows
   RSpec.describe NonPassportedWorkflow do
     let(:assessment) do
-      create :assessment, :with_capital_summary, :with_disposable_income_summary,
+      create :assessment, :with_disposable_income_summary,
              :with_gross_income_summary,
              submission_date: Date.new(2022, 6, 7),
              proceedings: proceeding_type_codes.map { |p| [p, "A"] }, level_of_help:
@@ -254,7 +254,6 @@ module Workflows
             let(:partner) { build :applicant, :pensionable_age_over_60 }
 
             before do
-              create(:partner_capital_summary, assessment:)
               create(:partner_gross_income_summary, assessment:)
               create(:partner_disposable_income_summary, assessment:)
             end
@@ -273,7 +272,6 @@ module Workflows
             let(:cash_transactions) { [] }
 
             before do
-              create(:partner_capital_summary, assessment:)
               create(:partner_gross_income_summary, assessment:)
               create(:partner_disposable_income_summary, assessment:)
             end
@@ -305,7 +303,6 @@ module Workflows
               let(:employed) { false }
 
               before do
-                create(:partner_capital_summary, assessment:)
                 create(:partner_gross_income_summary, assessment:)
                 create(:partner_disposable_income_summary, assessment:)
               end
@@ -349,7 +346,6 @@ module Workflows
               let(:partner) { build(:applicant) }
 
               before do
-                create(:partner_capital_summary, assessment:)
                 create(:partner_gross_income_summary, assessment:)
                 create(:partner_disposable_income_summary, assessment:)
               end
@@ -377,7 +373,6 @@ module Workflows
                 let(:salary) { 5_000 }
 
                 before do
-                  create(:partner_capital_summary, assessment:)
                   create(:partner_gross_income_summary, assessment:)
                   create(:partner_disposable_income_summary, assessment:)
                 end

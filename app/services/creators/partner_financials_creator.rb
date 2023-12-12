@@ -39,7 +39,6 @@ module Creators
 
     CREATE_FUNCTIONS = [
       lambda { |assessment, _params|
-        assessment.create_partner_capital_summary!
         assessment.create_partner_gross_income_summary!
         assessment.create_partner_disposable_income_summary!
         Result.new(errors: []).freeze

@@ -58,7 +58,6 @@ module Workflows
         end
 
         before do
-          create(:partner_capital_summary, assessment:)
           create(:partner_gross_income_summary, assessment:)
           create(:partner_disposable_income_summary, assessment:)
         end
@@ -95,8 +94,6 @@ module Workflows
     context "version 6" do
       let(:assessment) do
         create :assessment,
-               :with_capital_summary,
-               :with_capital_summary,
                :with_gross_income_summary,
                :with_disposable_income_summary,
                proceedings: proceedings_hash

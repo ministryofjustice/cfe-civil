@@ -14,15 +14,12 @@ class Assessment < ApplicationRecord
   }
 
   # Just in case we get multiple POSTs to partner endpoint
-  has_many :capital_summaries, dependent: :destroy
   has_many :gross_income_summaries, dependent: :destroy
   has_many :disposable_income_summaries, dependent: :destroy
 
-  has_one :applicant_capital_summary
   has_one :applicant_gross_income_summary
   has_one :applicant_disposable_income_summary
 
-  has_one :partner_capital_summary
   has_one :partner_gross_income_summary
   has_one :partner_disposable_income_summary
 

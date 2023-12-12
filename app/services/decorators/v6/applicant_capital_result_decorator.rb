@@ -1,9 +1,9 @@
 module Decorators
   module V6
     class ApplicantCapitalResultDecorator < CapitalResultDecorator
-      def initialize(summary:, applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:,
+      def initialize(applicant_capital_subtotals:, partner_capital_subtotals:, capital_contribution:,
                      combined_assessed_capital:, eligibilities:)
-        super(summary, applicant_capital_subtotals)
+        super(applicant_capital_subtotals)
         @capital_contribution = capital_contribution
         @combined_assessed_capital = combined_assessed_capital
         @partner_capital_subtotals = partner_capital_subtotals

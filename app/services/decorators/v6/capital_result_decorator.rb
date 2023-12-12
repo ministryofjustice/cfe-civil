@@ -1,8 +1,7 @@
 module Decorators
   module V6
     class CapitalResultDecorator
-      def initialize(summary, person_capital_subtotals)
-        @summary = summary
+      def initialize(person_capital_subtotals)
         @person_capital_subtotals = person_capital_subtotals
       end
 

@@ -6,7 +6,6 @@ module Workflows
       create :assessment,
              :with_disposable_income_summary,
              :with_gross_income_summary,
-             :with_capital_summary,
              proceedings: [%w[DA003 A], %w[SE014 Z]]
     end
     let(:applicant) { build :applicant, :with_qualifying_benefits }
