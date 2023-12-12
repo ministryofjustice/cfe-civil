@@ -1125,7 +1125,10 @@ class SwaggerDocs
                 type: :string,
                 format: :date,
               },
-              involvement_type: { type: :string },
+              involvement_type: {
+                type: :string,
+                deprecated: true,
+              },
               employed: { type: :boolean },
               has_partner_opponent: { type: :boolean },
               receives_qualifying_benefit: { type: :boolean },
@@ -1489,6 +1492,7 @@ class SwaggerDocs
                                            description: "Applicant receives section 4 or section 95 Asylum Support" },
                 involvement_type: {
                   type: :string,
+                  deprecated: true,
                   "enum": %w[applicant],
                 },
               },
