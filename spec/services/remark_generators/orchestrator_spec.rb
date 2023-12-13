@@ -29,7 +29,6 @@ module RemarkGenerators
 
     before do
       create(:disposable_income_summary, assessment:)
-      create(:capital_summary, assessment:)
       gross_income_summary
     end
 

@@ -12,9 +12,6 @@ module Decorators
         }
       end
       let(:pr_hash) { [%w[DA003 A], %w[SE014 Z]] }
-      let(:summary) do
-        create :capital_summary, assessment:
-      end
 
       let(:subtotals) do
         instance_double(PersonCapitalSubtotals,
@@ -87,8 +84,7 @@ module Decorators
       end
 
       subject(:decorator) do
-        described_class.new(summary:,
-                            applicant_capital_subtotals: subtotals,
+        described_class.new(applicant_capital_subtotals: subtotals,
                             partner_capital_subtotals: subtotals,
                             capital_contribution:,
                             combined_assessed_capital:,

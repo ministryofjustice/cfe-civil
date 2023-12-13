@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe NonLiquidCapitalCalculator do
-    let(:assessment) { create :assessment, :with_capital_summary }
+    let(:assessment) { create :assessment }
     let(:capital_summary) { assessment.applicant_capital_summary }
 
     subject(:non_liquid_total) { described_class.call(non_liquid_capital_items).map(&:result).sum(&:value) }

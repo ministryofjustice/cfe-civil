@@ -1,1 +1,0 @@
-class PartnerCapitalSummary < CapitalSummary; end

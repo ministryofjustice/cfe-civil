@@ -48,7 +48,6 @@ module Decorators
             eligibilities: @eligibility_result.disposable_eligibilities,
           ),
           capital: ApplicantCapitalResultDecorator.new(
-            summary: assessment.applicant_capital_summary,
             applicant_capital_subtotals: @calculation_output.capital_subtotals.applicant_capital_subtotals,
             partner_capital_subtotals: @calculation_output.capital_subtotals.partner_capital_subtotals,
             capital_contribution:,
@@ -78,8 +77,7 @@ module Decorators
       end
 
       def partner_capital
-        CapitalResultDecorator.new(assessment.partner_capital_summary,
-                                   @calculation_output.capital_subtotals.partner_capital_subtotals)
+        CapitalResultDecorator.new(@calculation_output.capital_subtotals.partner_capital_subtotals)
       end
 
     private

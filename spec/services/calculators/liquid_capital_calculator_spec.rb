@@ -2,8 +2,7 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe LiquidCapitalCalculator do
-    let(:assessment) { create :assessment, :with_capital_summary }
-    let(:capital_summary) { assessment.applicant_capital_summary }
+    let(:assessment) { create :assessment }
 
     subject(:liquid_capital_items) do
       described_class.call(liquid_capital_input).map(&:result).sum(0.0, &:value)

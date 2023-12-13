@@ -33,10 +33,6 @@ module Creators
           expect(creator.assessment.level_of_help).to eq "certificated"
         end
 
-        it "creates a CapitalSummary record" do
-          expect { creator }.to change(CapitalSummary, :count).by(1)
-        end
-
         it "has no errors" do
           expect(creator.errors).to be_empty
         end
