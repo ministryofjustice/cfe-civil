@@ -1120,6 +1120,7 @@ components:
           format: date
         involvement_type:
           type: string
+          deprecated: true
         employed:
           type: boolean
         has_partner_opponent:
@@ -1504,6 +1505,7 @@ components:
             description: Applicant receives section 4 or section 95 Asylum Support
           involvement_type:
             type: string
+            deprecated: true
             enum:
             - applicant
       DisposableIncome:

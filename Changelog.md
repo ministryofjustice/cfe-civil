@@ -4,6 +4,10 @@ The date is when it was released/deployed to production - see [cfe-civil CI/CD](
 
 Includes changes that are material to the client - refactors are ignored.
 
+## 15th December 2023
+
+* LEP-412 Deprecate involvement_type for applicant - it is never used, optional and set to 'applicant'
+
 ## 30th November 2023
 
 * LEP-421 Breaking change - rename pending to not_calculated
