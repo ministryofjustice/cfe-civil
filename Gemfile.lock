@@ -256,7 +256,7 @@ GEM
     guard-shell (0.7.2)
       guard (>= 2.0.0)
       guard-compat (~> 1.0)
-    hashdiff (1.0.1)
+    hashdiff (1.1.0)
     httpclient (2.8.3)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
