@@ -22,10 +22,10 @@ pensioner_capital_disregard:
   non_passported: 100_000
   # capital to disregard if monthly disposable income (excluding income derived from capital) is below these figures
   monthly_income_values:
-    [-.inf, 206.99]: 100_000
-    [207.0, 414.99]: 65_000
-    [415.0, 621.99]: 35_000
-    [622.0, .inf]: 0
+    [-.inf, 207.00]: 100_000
+    [207.01, 415.00]: 65_000
+    [415.01, 622.00]: 35_000
+    [622.1, .inf]: 0
 property_notional_sale_costs_percentage: 3.0
 property_maximum_mortgage_allowance: 999_999_999_999
 property_disregard:
