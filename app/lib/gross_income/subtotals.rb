@@ -27,7 +27,7 @@ module GrossIncome
 
     def below_the_lower_controlled_threshold?
       threshold = Creators::GrossIncomeEligibilityCreator.lower_threshold(level_of_help: @level_of_help, submission_date: @submission_date)
-      combined_monthly_gross_income < threshold
+      threshold && combined_monthly_gross_income < threshold
     end
 
   private

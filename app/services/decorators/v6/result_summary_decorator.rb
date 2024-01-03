@@ -19,7 +19,7 @@ module Decorators
             ccms_code: proceeding_type.ccms_code,
             upper_threshold: 0.0,
             lower_threshold: 0.0,
-            result:,
+            result: result.assessment_result,
             client_involvement_type: proceeding_type.client_involvement_type,
           }
         end

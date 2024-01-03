@@ -23,7 +23,9 @@ module Workflows
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
           capital_subtotals: Capital::Unassessed.new(submission_date:, level_of_help:)
         )
-        workflow = Workflows::MainWorkflow::Result.new calculation_output:, remarks: [], assessment_result: :eligible
+        workflow = WorkflowResult.new calculation_output:, remarks: [],
+                                      assessment_result: :eligible,
+                                      sections: []
 
         er = EligibilityResults::BlankEligibilityResult.new(proceeding_types:, level_of_help:, submission_date:)
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er

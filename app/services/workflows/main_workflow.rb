@@ -1,7 +1,5 @@
 module Workflows
   class MainWorkflow
-    Result = Data.define(:calculation_output, :remarks, :assessment_result)
-
     class << self
       def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
         call(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
@@ -28,7 +26,10 @@ module Workflows
                                                                     level_of_help:,
                                                                     date_of_birth: applicant.details.date_of_birth)
                                end
-          Result.new calculation_output:, remarks: { client: [], partner: [] }, assessment_result: calculation_output.capital_subtotals.summarized_assessment_result(proceeding_types)
+          WorkflowResult.new calculation_output:,
+                             remarks: { client: [], partner: [] },
+                             assessment_result: calculation_output.capital_subtotals.summarized_assessment_result(proceeding_types),
+                             sections: [:capital]
         elsif partner.present?
           NonPassportedWorkflow.with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
         else

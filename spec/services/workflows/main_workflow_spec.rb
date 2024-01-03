@@ -18,7 +18,7 @@ module Workflows
                                                          summarized_assessment_result: :eligible,
                                                          combined_assessed_capital: 0))
     end
-    let(:non_passported_result) { instance_double(NonPassportedWorkflow::Result, calculation_output:, remarks: []) }
+    let(:non_passported_result) { instance_double(WorkflowResult, calculation_output:, remarks: []) }
     let(:person_blank) { nil }
 
     before do
