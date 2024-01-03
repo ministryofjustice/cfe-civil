@@ -17,9 +17,8 @@ module Decorators
           upper_threshold: result.upper_threshold.to_f,
           lower_threshold: result.lower_threshold.to_f,
           result: result.assessment_result,
-        }.tap do |hash|
-          hash[:client_involvement_type] = result.proceeding_type.client_involvement_type if result.proceeding_type.client_involvement_type.present?
-        end
+          client_involvement_type: result.proceeding_type.client_involvement_type,
+        }
       end
     end
   end

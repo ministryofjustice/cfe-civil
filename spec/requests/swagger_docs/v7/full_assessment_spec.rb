@@ -23,7 +23,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                   properties: {
                     assessment: { "$ref" => components[:assessment] },
                     applicant: { "$ref" => components[:v7_applicant] },
-                    proceeding_types: { "$ref" => components[:v7_proceeding_types] },
+                    proceeding_types: { "$ref" => components[:proceeding_types] },
                     capitals: { "$ref" => components[:capitals] },
                     cash_transactions: { "$ref" => components[:cash_transactions] },
                     dependants: { "$ref" => components[:v7_dependants] },
@@ -160,7 +160,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                          result: { "$ref" => components[:overall_result] },
                          income_contribution: { "$ref" => components[:income_contribution] },
                          capital_contribution: { "$ref" => components[:capital_contribution] },
-                         proceeding_types: { "$ref" => components[:v7_proceeding_type_results] },
+                         proceeding_types: { "$ref" => components[:proceeding_type_results] },
                        },
                      },
                      gross_income: {
@@ -179,7 +179,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
                            format: :decimal,
                            description: "Calculated monthly total gross income for applicant and partner",
                          },
-                         proceeding_types: { "$ref" => components[:v7_proceeding_type_results] },
+                         proceeding_types: { "$ref" => components[:proceeding_type_results] },
                        },
                      },
                      partner_gross_income: {
@@ -241,7 +241,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
           {
             assessment: { submission_date: "2022-06-06" },
             applicant: { date_of_birth: "2001-02-02", receives_qualifying_benefit: false },
-            proceeding_types: [{ ccms_code: "SE013" }],
+            proceeding_types: [{ ccms_code: "SE013", client_involvement_type: "W" }],
             outgoings: [
               { name: "child_care", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06" }] },
               { name: "rent_or_mortgage", payments: [{ amount: 10.00, client_id: "blah", payment_date: "2022-05-06", housing_cost_type: "rent" }] },

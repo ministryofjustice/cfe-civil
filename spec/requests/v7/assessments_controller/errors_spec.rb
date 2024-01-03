@@ -13,7 +13,7 @@ module V7
           assessment: { submission_date: current_date.to_s },
           applicant: { date_of_birth: "2001-02-02",
                        receives_qualifying_benefit: false },
-          proceeding_types: [{ ccms_code: "DA001" }],
+          proceeding_types: [{ ccms_code: "DA001", client_involvement_type: "W" }],
         }
       end
 
@@ -26,14 +26,6 @@ module V7
 
         it "returns success" do
           expect(response).to be_successful
-        end
-      end
-
-      context "with old proceeding types" do
-        let(:params) { { proceeding_types: [{ ccms_code: "DA001", client_involvement_type: "A" }] } }
-
-        it "complains about client involvement type" do
-          expect(parsed_response[:errors]).to include(%r{The property '#/proceeding_types/0' contains additional properties \["client_involvement_type})
         end
       end
 

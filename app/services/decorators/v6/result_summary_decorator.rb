@@ -20,9 +20,8 @@ module Decorators
             upper_threshold: 0.0,
             lower_threshold: 0.0,
             result:,
-          }.tap do |hash|
-            hash[:client_involvement_type] = proceeding_type.client_involvement_type if proceeding_type.client_involvement_type.present?
-          end
+            client_involvement_type: proceeding_type.client_involvement_type,
+          }
         end
 
         details = {

@@ -19,7 +19,7 @@ module V6
               receives_asylum_support: true,
             },
             proceeding_types: [
-              { ccms_code: "IA031" },
+              { ccms_code: "IA031", client_involvement_type: "A" },
             ],
           }
         end
