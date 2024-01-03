@@ -44,11 +44,11 @@ module Calculators
               end
             end
 
-            context "with an income of 50.99" do
-              let(:disposable_income) { 50.99 }
+            context "with an income of 50" do
+              let(:disposable_income) { 50 }
 
-              it "returns 80k" do
-                expect(value).to eq 80_000.0
+              it "returns 90k" do
+                expect(value).to eq 90_000.0
               end
             end
 
