@@ -18,7 +18,7 @@ RSpec.describe GovukBankHolidayRetriever do
 
     before do
       bank_holiday_stub
-      FileUtils.rm_rf("/tmp/cache")
+      Rails.cache.clear
     end
 
     context "data returned from API" do

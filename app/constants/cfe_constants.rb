@@ -56,11 +56,6 @@ module CFEConstants
   VALID_IRREGULAR_INCOME_FREQUENCIES = [MONTHLY_FREQUENCY, ANNUAL_FREQUENCY, QUARTERLY_FREQUENCY].freeze
   VALID_IRREGULAR_INCOME_TYPES = [STUDENT_LOAN, UNSPECIFIED_SOURCE].freeze
 
-  # Date and bank holidays
-  #
-  GOVUK_BANK_HOLIDAY_API_URL = "https://www.gov.uk/bank-holidays.json".freeze
-  GOVUK_BANK_HOLIDAY_DEFAULT_GROUP = "england-and-wales".freeze
-
   # Frequencies
   #
   VALID_REGULAR_TRANSACTION_FREQUENCIES = %i[three_monthly monthly four_weekly two_weekly weekly unknown].freeze

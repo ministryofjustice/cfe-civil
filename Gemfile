@@ -21,7 +21,6 @@ gem "puma", "~> 6.4"
 # gem 'mini_magick', '~> 4.8'
 
 gem "faraday", "~> 1.10"
-gem "faraday-http-cache"
 
 gem "sentry-rails", ">= 5.8.0"
 gem "sentry-ruby"
