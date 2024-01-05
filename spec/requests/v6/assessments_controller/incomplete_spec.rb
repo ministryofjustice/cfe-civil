@@ -12,7 +12,7 @@ module V6
       v6_params(gross_complete:, disp_complete:, capital_complete:, passported:, monthly_gross_income:, monthly_disposable:, capital:)
     end
 
-    context "with CFE passporting end to end scenario" do
+    context "when passported" do
       let(:body) do
         { assessment: { submission_date: "2024-01-04",
                         level_of_help: "certificated" },
@@ -34,7 +34,7 @@ module V6
         expect(parsed_response[:errors]).to be_nil
       end
 
-      it "has a good response" do
+      it "doesnt calculate gross or disposable" do
         expect([overall_result, gross_result, disposable_result, capital_result]).to eq(%i[eligible not_calculated not_calculated eligible])
       end
     end
