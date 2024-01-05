@@ -70,7 +70,7 @@ module V6
         let(:passported) { true }
 
         it "is eligible apart from uncalculated sections" do
-          expect([overall_result, gross_result, disposable_result, capital_result]).to eq(%i[eligible eligible not_calculated eligible])
+          expect([overall_result, gross_result, disposable_result, capital_result]).to eq(%i[eligible not_calculated not_calculated eligible])
         end
       end
 
