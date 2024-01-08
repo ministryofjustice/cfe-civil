@@ -33,9 +33,7 @@ module Creators
 
       def lower_threshold(level_of_help:, submission_date:)
         if level_of_help == "controlled"
-          Threshold.value_for(:gross_income_lower_controlled, at: submission_date) || 0.0
-        else
-          0.0
+          Threshold.value_for(:gross_income_lower_controlled, at: submission_date)
         end
       end
 

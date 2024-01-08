@@ -34,7 +34,7 @@ module Creators
           expect(creator.fetch("DA002"))
             .to have_attributes(
               upper_threshold: 999_999_999_999,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
 
@@ -42,7 +42,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
       end
@@ -57,7 +57,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
       end
@@ -70,7 +70,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2657.0 + expected_uplift,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
       end
@@ -95,7 +95,7 @@ module Creators
           expect(creator.fetch("SE013"))
             .to have_attributes(
               upper_threshold: 2912.50 * 3.6,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
 
@@ -103,7 +103,7 @@ module Creators
           expect(creator.fetch("DA002"))
             .to have_attributes(
               upper_threshold: 999_999_999_999,
-              lower_threshold: 0.0,
+              lower_threshold: nil,
             )
         end
       end

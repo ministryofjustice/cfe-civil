@@ -1,9 +1,7 @@
 module Workflows
   class NonPassportedWorkflow
-    Result = Data.define(:calculation_output, :remarks, :assessment_result)
-
     class << self
-      InternalResult = Data.define(:calculation_output, :assessment_result)
+      InternalResult = Data.define(:calculation_output, :assessment_result, :sections)
 
       def with_partner(applicant:, partner:, proceeding_types:, level_of_help:, submission_date:)
         gross_income_subtotals = get_gross_income_subtotals_with_partner(applicant:, partner:, submission_date:, level_of_help:)
@@ -20,7 +18,10 @@ module Workflows
         internal_result = result(submission_date:, level_of_help:,
                                  gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
                                  proceeding_types:)
-        Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
+        WorkflowResult.new calculation_output: internal_result.calculation_output,
+                           remarks: gross_income_subtotals.remarks,
+                           assessment_result: internal_result.assessment_result,
+                           sections: internal_result.sections
       end
 
       def without_partner(applicant:, submission_date:, level_of_help:, proceeding_types:)
@@ -35,7 +36,10 @@ module Workflows
         internal_result = result(submission_date:, level_of_help:,
                                  gross_income_subtotals: gross_income_subtotals.gross, disposable_income_subtotals:, capital_subtotals:,
                                  proceeding_types:)
-        Result.new calculation_output: internal_result.calculation_output, remarks: gross_income_subtotals.remarks, assessment_result: internal_result.assessment_result
+        WorkflowResult.new calculation_output: internal_result.calculation_output,
+                           remarks: gross_income_subtotals.remarks,
+                           assessment_result: internal_result.assessment_result,
+                           sections: internal_result.sections
       end
 
     private
@@ -83,18 +87,22 @@ module Workflows
                                                    disposable_income_subtotals:,
                                                    capital_subtotals:)
         if gross_income_subtotals.ineligible?(proceeding_types)
-          InternalResult.new(calculation_output:, assessment_result: :ineligible)
+          InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:gross])
         elsif gross_income_subtotals.below_the_lower_controlled_threshold?
-          InternalResult.new(calculation_output:, assessment_result: :eligible)
-        elsif disposable_income_subtotals.ineligible? proceeding_types
-          InternalResult.new(calculation_output:, assessment_result: :ineligible)
+          InternalResult.new(calculation_output:, assessment_result: :eligible, sections: [:gross])
         else
           capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
           disposable_result = disposable_income_subtotals.summarized_assessment_result(proceeding_types)
-          if capital_result != :eligible
-            InternalResult.new(calculation_output:, assessment_result: capital_result)
+          if disposable_income_subtotals.ineligible? proceeding_types
+            if capital_result == :ineligible
+              InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: %i[disposable capital])
+            else
+              InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:disposable])
+            end
+          elsif capital_result != :eligible
+            InternalResult.new(calculation_output:, assessment_result: capital_result, sections: [:capital])
           else
-            InternalResult.new(calculation_output:, assessment_result: disposable_result)
+            InternalResult.new(calculation_output:, assessment_result: disposable_result, sections: [:disposable])
           end
         end
       end

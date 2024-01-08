@@ -313,6 +313,10 @@ module V6
           }
         end
 
+        it "is contribution_required" do
+          expect(parsed_response.dig(:result_summary, :overall_result, :result)).to eq("contribution_required")
+        end
+
         it "has remarks" do
           expect(parsed_response.dig(:assessment, :remarks)).to eq({ policy_disregards: %w[charity employment] })
         end

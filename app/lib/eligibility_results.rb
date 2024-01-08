@@ -1,4 +1,6 @@
 class EligibilityResults
+  Result = Data.define :assessment_result, :sections
+
   class BlankEligibilityResult
     def initialize(proceeding_types:, submission_date:, level_of_help:)
       @proceeding_types = proceeding_types
@@ -7,7 +9,7 @@ class EligibilityResults
     end
 
     def assessment_results
-      @proceeding_types.index_with { :eligible }
+      @proceeding_types.index_with { Result.new(assessment_result: :eligible, sections: []) }
     end
 
     def summarized_assessment_result
@@ -61,18 +63,14 @@ class EligibilityResults
   end
 
   def assessment_results
-    if @proceeding_types.size == 1
-      { @proceeding_types.first => workflow_results(@proceeding_types).assessment_result }
-    else
-      outputs = @proceeding_types.map do |proceeding_type|
-        [proceeding_type, workflow_results([proceeding_type]).assessment_result]
-      end
-      outputs.to_h
+    @proceeding_types.index_with do |proceeding_type|
+      result = workflow_results([proceeding_type])
+      Result.new(assessment_result: result.assessment_result, sections: result.sections)
     end
   end
 
   def summarized_assessment_result
-    Utilities::ResultSummarizer.call(assessment_results.values)
+    Utilities::ResultSummarizer.call(assessment_results.values.map(&:assessment_result))
   end
 
   def gross_eligibilities
