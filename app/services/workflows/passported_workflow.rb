@@ -9,7 +9,7 @@ module Workflows
           capitals_data:,
         )
 
-        capital_subtotals = Capital::CapitalResult.new(applicant_capital_subtotals: applicant_subtotals, level_of_help:, submission_date:)
+        capital_subtotals = CapitalResult.new(applicant_capital_subtotals: applicant_subtotals, level_of_help:, submission_date:)
         CalculationOutput.new(submission_date:, level_of_help:, capital_subtotals:,
                               disposable_income_subtotals: DisposableIncome::Unassessed.new(submission_date:, level_of_help:),
                               gross_income_subtotals: GrossIncome::Unassessed.new(submission_date:, level_of_help:))
@@ -39,7 +39,7 @@ module Workflows
                                                                                level_of_help:,
                                                                                pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                                                capitals_data: partner_capitals_data)
-        Capital::CapitalResultWithPartner.new(
+        CapitalResultWithPartner.new(
           applicant_capital_subtotals: applicant_subtotals,
           partner_capital_subtotals: partner_subtotals,
           level_of_help:,

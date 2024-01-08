@@ -42,7 +42,7 @@ module Decorators
                         combined_total_outgoings_and_allowances: 0,
                         applicant_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
                         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
-                        capital_subtotals: Capital::UnassessedCapitalResult.new)
+                        capital_subtotals: UnassessedCapitalResult.new)
       end
       let(:eligibility_result) do
         instance_double(EligibilityResults,
