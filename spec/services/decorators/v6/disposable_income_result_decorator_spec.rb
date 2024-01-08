@@ -85,7 +85,7 @@ module Decorators
       end
 
       let(:employment_income_subtotals) do
-        instance_double(EmploymentIncomeSubtotals,
+        instance_double(EmploymentIncomeResults,
                         benefits_in_kind: 0.0,
                         fixed_employment_allowance: -45.0,
                         net_employment_income: -45.0,

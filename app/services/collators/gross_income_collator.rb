@@ -139,9 +139,9 @@ module Collators
                             end
         self_employment_results = self_employments.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
         employment_details_results = employment_details.map { Calculators::EmploymentIncomeCalculator.call(submission_date:, employment: _1) }
-        EmploymentIncomeSubtotals.new(employment_result:,
-                                      employment_details_results:,
-                                      self_employment_results:)
+        EmploymentIncomeResults.new(employment_result:,
+                                    employment_details_results:,
+                                    self_employment_results:)
       end
 
       def benefits_category_subtotals(cash_transactions:, state_benefits_bank:, state_benefits_regular:)
