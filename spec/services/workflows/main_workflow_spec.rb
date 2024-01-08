@@ -14,7 +14,7 @@ module Workflows
                       gross_income_subtotals: GrossIncome::Unassessed.new(submission_date: assessment.submission_date,
                                                                           level_of_help: assessment.level_of_help),
                       applicant_disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals, child_care_bank: 0),
-                      capital_subtotals: instance_double(Capital::Subtotals,
+                      capital_subtotals: instance_double(Capital::CapitalResult,
                                                          summarized_assessment_result: :eligible,
                                                          combined_assessed_capital: 0))
     end

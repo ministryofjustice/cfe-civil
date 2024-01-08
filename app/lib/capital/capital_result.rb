@@ -1,8 +1,10 @@
 module Capital
-  class Subtotals < Base
+  class CapitalResult
+    attr_reader :applicant_capital_subtotals
+
     def initialize(applicant_capital_subtotals:,
                    submission_date:, level_of_help:)
-      super(applicant_capital_subtotals)
+      @applicant_capital_subtotals = applicant_capital_subtotals
       @level_of_help = level_of_help
       @submission_date = submission_date
     end

@@ -57,7 +57,7 @@ module Workflows
                                                                                level_of_help:,
                                                                                pensioner_capital_disregard: applicant_subtotals.pensioner_capital_disregard - applicant_subtotals.pensioner_disregard_applied,
                                                                                capitals_data: partner_capitals_data)
-        Capital::SubtotalsWithPartner.new(
+        Capital::CapitalResultWithPartner.new(
           applicant_capital_subtotals: applicant_subtotals,
           partner_capital_subtotals: partner_subtotals,
           level_of_help:,
@@ -73,7 +73,7 @@ module Workflows
           capitals_data:,
         )
 
-        Capital::Subtotals.new(
+        Capital::CapitalResult.new(
           applicant_capital_subtotals: applicant_subtotals,
           level_of_help:,
           submission_date:,

@@ -21,7 +21,7 @@ module Workflows
           level_of_help:, submission_date:,
           gross_income_subtotals: GrossIncome::Unassessed.new(level_of_help:, submission_date:),
           disposable_income_subtotals: DisposableIncome::Unassessed.new(level_of_help:, submission_date:),
-          capital_subtotals: Capital::Unassessed.new(submission_date:, level_of_help:)
+          capital_subtotals: Capital::UnassessedCapitalResult.new
         )
         workflow = WorkflowResult.new calculation_output:, remarks: [],
                                       assessment_result: :eligible,

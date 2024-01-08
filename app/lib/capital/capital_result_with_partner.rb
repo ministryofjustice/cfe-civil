@@ -1,5 +1,5 @@
 module Capital
-  class SubtotalsWithPartner < Subtotals
+  class CapitalResultWithPartner < CapitalResult
     attr_reader :partner_capital_subtotals
 
     def initialize(applicant_capital_subtotals:, partner_capital_subtotals:,
