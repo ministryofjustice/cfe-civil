@@ -17,7 +17,7 @@ RSpec.describe "IntegrationTests::TestRunner", :vcr, :calls_bank_holiday, type: 
   let(:spreadsheet_title) { "CFE Integration Test V3" }
   let(:target_worksheet) { ENV["TARGET_WORKSHEET"] }
   let(:verbosity_level) { (ENV["VERBOSE"] || "0").to_i }
-  let(:refresh) { (ENV["REFRESH"] || "false") }
+  let(:refresh) { ENV["REFRESH"] || "false" }
 
   let(:spreadsheet_file) { Rails.root.join("tmp/integration_test_data.xlsx") }
   let(:spreadsheet) { Roo::Spreadsheet.open(spreadsheet_file.to_s) }
