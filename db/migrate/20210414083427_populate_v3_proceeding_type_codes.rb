@@ -8,7 +8,7 @@ class PopulateV3ProceedingTypeCodes < ActiveRecord::Migration[6.1]
   end
 
   def down
-    Assessment.all.each do |assessment|
+    Assessment.all.find_each do |assessment|
       next unless assessment.version == "3" && assessment.proceeding_type_codes == %w[DA001]
 
       assessment.update!(proceeding_type_codes: [])
