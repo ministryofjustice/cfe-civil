@@ -72,10 +72,26 @@ module V6
               }
             end
             let(:date_of_birth) { "2010-02-02" }
-            let(:params) { {} }
 
-            it "is not_calculated" do
-              expect(overall_result).to eq(:not_calculated)
+            context "without proceeding_types" do
+              let(:params) { {} }
+
+              it "returns error" do
+                expect(response).to have_http_status(:unprocessable_entity)
+              end
+
+              it "returns error JSON" do
+                expect(parsed_response[:errors])
+                  .to include(/This assessment is not non-means, so requires a proceeding_type/)
+              end
+            end
+
+            context "with proceeding_types" do
+              let(:params) { proceeding_types }
+
+              it "is not_calculated" do
+                expect(overall_result).to eq(:ineligible)
+              end
             end
           end
 
