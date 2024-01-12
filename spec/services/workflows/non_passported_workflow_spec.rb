@@ -3,8 +3,7 @@ require "rails_helper"
 module Workflows
   RSpec.describe NonPassportedWorkflow do
     let(:assessment) do
-      create :assessment, :with_disposable_income_summary,
-             :with_gross_income_summary,
+      create :assessment,
              submission_date: Date.new(2022, 6, 7),
              proceedings: proceeding_type_codes.map { |p| [p, "A"] }, level_of_help:
     end
@@ -253,11 +252,6 @@ module Workflows
             let(:applicant) { build :applicant, :pensionable_age_under_60 }
             let(:partner) { build :applicant, :pensionable_age_over_60 }
 
-            before do
-              create(:partner_gross_income_summary, assessment:)
-              create(:partner_disposable_income_summary, assessment:)
-            end
-
             it "is eligible" do
               expect(assessment_result).to eq("eligible")
             end
@@ -270,11 +264,6 @@ module Workflows
               [build(:property, :additional_property, value: 170_000, outstanding_mortgage: 100_000, percentage_owned: 100)]
             end
             let(:cash_transactions) { [] }
-
-            before do
-              create(:partner_gross_income_summary, assessment:)
-              create(:partner_disposable_income_summary, assessment:)
-            end
 
             it "doesnt double-count" do
               expect(assessment_result).to eq("ineligible")
@@ -301,11 +290,6 @@ module Workflows
 
             context "when unemployed with partner" do
               let(:employed) { false }
-
-              before do
-                create(:partner_gross_income_summary, assessment:)
-                create(:partner_disposable_income_summary, assessment:)
-              end
 
               context "with partner employment" do
                 let(:partner) { build :applicant, employed: true }
@@ -345,11 +329,6 @@ module Workflows
             context "with partner" do
               let(:partner) { build(:applicant) }
 
-              before do
-                create(:partner_gross_income_summary, assessment:)
-                create(:partner_disposable_income_summary, assessment:)
-              end
-
               it "is eligible due to cap being removed" do
                 expect(assessment_result).to eq("eligible")
               end
@@ -371,11 +350,6 @@ module Workflows
                 let(:partner) { build(:applicant, employed: true) }
                 let(:partner_employments) { build_list(:partner_employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: salary / 12.0) }
                 let(:salary) { 5_000 }
-
-                before do
-                  create(:partner_gross_income_summary, assessment:)
-                  create(:partner_disposable_income_summary, assessment:)
-                end
 
                 it "is eligible due to partner allowance" do
                   expect(assessment_result).to eq("eligible")

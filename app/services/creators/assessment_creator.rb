@@ -29,10 +29,7 @@ module Creators
     private
 
       def create_new_assessment_and_summary_records(assessment_hash)
-        Assessment.new(assessment_hash).tap do |assessment|
-          assessment.build_applicant_gross_income_summary
-          assessment.build_applicant_disposable_income_summary
-        end
+        Assessment.new(assessment_hash)
       end
     end
   end

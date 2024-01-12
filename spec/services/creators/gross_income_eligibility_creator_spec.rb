@@ -3,7 +3,7 @@ require "rails_helper"
 module Creators
   RSpec.describe GrossIncomeEligibilityCreator, :calls_lfa do
     let(:summary) { assessment.applicant_gross_income_summary }
-    let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: [%w[DA002 A], %w[SE013 Z]] }
+    let(:assessment) { create :assessment, proceedings: [%w[DA002 A], %w[SE013 Z]] }
     let(:proceeding_types) { assessment.proceeding_types }
     let(:submission_date) { assessment.submission_date.to_date }
 

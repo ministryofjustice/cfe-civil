@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_12_12_080442) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_12_153939) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -24,22 +24,10 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_080442) do
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
   end
 
-  create_table "disposable_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id", null: false
-    t.string "type", default: "ApplicantDisposableIncomeSummary"
-    t.index ["assessment_id"], name: "index_disposable_income_summaries_on_assessment_id"
-  end
-
   create_table "explicit_remarks", force: :cascade do |t|
     t.uuid "assessment_id"
     t.string "category"
     t.string "remark"
-  end
-
-  create_table "gross_income_summaries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.string "type", default: "ApplicantGrossIncomeSummary"
-    t.index ["assessment_id"], name: "index_gross_income_summaries_on_assessment_id"
   end
 
   create_table "proceeding_types", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -72,7 +60,5 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_080442) do
     t.index ["label"], name: "index_state_benefit_types_on_label", unique: true
   end
 
-  add_foreign_key "disposable_income_summaries", "assessments"
-  add_foreign_key "gross_income_summaries", "assessments"
   add_foreign_key "proceeding_types", "assessments"
 end

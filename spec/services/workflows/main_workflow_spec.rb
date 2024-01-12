@@ -6,7 +6,6 @@ module Workflows
     let(:bank_holiday_response) { %w[2015-01-01 2015-04-03 2015-04-06] }
     let(:assessment) do
       create :assessment,
-             :with_everything,
              proceedings: proceedings_hash
     end
     let(:calculation_output) do
@@ -57,11 +56,6 @@ module Workflows
                                        partner: build(:person_data, details: partner))
         end
 
-        before do
-          create(:partner_gross_income_summary, assessment:)
-          create(:partner_disposable_income_summary, assessment:)
-        end
-
         it "calls PassportedWorkflow" do
           expect(PassportedWorkflow).to receive(:with_partner).with(capitals_data: CapitalsData.new(vehicles: [], liquid_capital_items: [],
                                                                                                     non_liquid_capital_items: [], main_home: {}, additional_properties: []),
@@ -94,8 +88,6 @@ module Workflows
     context "version 6" do
       let(:assessment) do
         create :assessment,
-               :with_gross_income_summary,
-               :with_disposable_income_summary,
                proceedings: proceedings_hash
       end
       let(:applicant) { build :applicant, :without_qualifying_benefits }

@@ -95,14 +95,13 @@ module RemarkGenerators
     end
 
     context "when checking employment_payments" do
-      let(:gross_income_summary) { create :gross_income_summary }
-      let(:assessment) { gross_income_summary.assessment }
+      let(:assessment) { create(:assessment) }
       let(:amount) { 277.67 }
 
       let(:collection) { employment.employment_payments }
 
       context "with regular dates" do
-        let(:employment) { build :employment, :with_monthly_payments, submission_date: gross_income_summary.assessment.submission_date }
+        let(:employment) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
 
         it "does not update the remarks class" do
           expect(described_class.call(collection:, date_attribute: "date", child_care_bank: 0)).to be_nil
@@ -110,7 +109,7 @@ module RemarkGenerators
       end
 
       context "with irregular dates" do
-        let(:employment) { build :employment, :with_irregular_payments, submission_date: gross_income_summary.assessment.submission_date }
+        let(:employment) { build :employment, :with_irregular_payments, submission_date: assessment.submission_date }
 
         it "adds the remark" do
           expect(described_class.call(collection:, child_care_bank: 0, date_attribute: "date"))

@@ -2,8 +2,6 @@ require "rails_helper"
 
 module Creators
   RSpec.describe DisposableIncomeEligibilityCreator do
-    let(:summary) { assessment.applicant_disposable_income_summary }
-    let(:eligibilities) { assessment.applicant_disposable_income_summary.eligibilities }
     let(:proceeding_types) { assessment.proceeding_types }
     let(:proceeding_hash) { [%w[DA002 A], %w[SE013 Z], %w[IM030 A]] }
 
@@ -13,7 +11,6 @@ module Creators
     end
     let(:assessment) do
       create :assessment,
-             :with_disposable_income_summary,
              proceedings: proceeding_hash,
              level_of_help:
     end

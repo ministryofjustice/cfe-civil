@@ -1,8 +1,7 @@
 module Decorators
   module V6
     class GrossIncomeDecorator
-      def initialize(summary, employments, subtotals)
-        @summary = summary
+      def initialize(employments, subtotals)
         @employments = employments
         @subtotals = subtotals
       end

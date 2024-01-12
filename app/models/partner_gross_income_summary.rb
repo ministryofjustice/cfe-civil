@@ -1,1 +1,0 @@
-class PartnerGrossIncomeSummary < GrossIncomeSummary; end

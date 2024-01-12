@@ -1,1 +1,0 @@
-class PartnerDisposableIncomeSummary < DisposableIncomeSummary; end

@@ -37,8 +37,6 @@ module Decorators
             eligibilities: @eligibility_result.gross_eligibilities,
           ),
           disposable_income: applicant_disposable_income_result_decorator_class.new(
-            assessment.applicant_disposable_income_summary,
-            assessment.applicant_gross_income_summary,
             @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.employment_income_subtotals,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
             combined_total_disposable_income: @calculation_output.combined_total_disposable_income,
@@ -68,8 +66,6 @@ module Decorators
 
       def partner_disposable_income
         disposable_income_result_decorator_class.new(
-          assessment.partner_disposable_income_summary,
-          assessment.partner_gross_income_summary,
           @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.employment_income_subtotals,
           disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
         )

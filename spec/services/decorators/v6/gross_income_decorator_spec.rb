@@ -9,10 +9,6 @@ module Decorators
 
       let(:assessment) { Assessment.last }
 
-      let(:summary) do
-        create :gross_income_summary,
-               assessment:
-      end
       let(:irregular_income_payments) do
         [build(:unspecified_source_payment, amount: 423.35),
          build(:student_loan_payment, frequency: "monthly", amount: 250)]
@@ -177,8 +173,7 @@ module Decorators
         end
 
         subject(:decorator) do
-          described_class.new(assessment.applicant_gross_income_summary,
-                              [employment1, employment2], subtotals).as_json
+          described_class.new([employment1, employment2], subtotals).as_json
         end
 
         it "returns the expected structure" do

@@ -3,8 +3,7 @@ require "rails_helper"
 module Calculators
   RSpec.describe StateBenefitsCalculator, :calls_bank_holiday do
     let(:submission_date) { Date.new(2022, 6, 6) }
-    let(:assessment) { create :assessment, :with_gross_income_summary, submission_date: }
-    let(:gross_income_summary) { assessment.applicant_gross_income_summary }
+    let(:assessment) { create :assessment, submission_date: }
 
     subject(:collator) do
       described_class.benefits(regular_transactions:,
