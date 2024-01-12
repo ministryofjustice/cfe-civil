@@ -1465,7 +1465,7 @@ class SwaggerDocs
           ProceedingTypes: {
             type: :array,
             minItems: 1,
-            description: "One or more proceeding_type details",
+            description: "Unless the assessment qualifies as 'non-means', it is required to provide one or more proceeding_types",
             items: {
               type: :object,
               required: %i[ccms_code client_involvement_type],

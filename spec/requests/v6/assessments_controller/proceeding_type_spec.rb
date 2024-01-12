@@ -5,10 +5,12 @@ module V6
     let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
     let(:user_agent) { Faker::ProgrammingLanguage.name }
     let(:submission_date) { Date.new(2020, 11, 23) }
+    let(:date_of_birth) { "2001-02-02" }
+    let(:not_aggregated_no_income_low_capital) { false }
     let(:default_params) do
       {
-        assessment: { submission_date:, level_of_help: },
-        applicant: { date_of_birth: "2001-02-02",
+        assessment: { submission_date:, level_of_help:, not_aggregated_no_income_low_capital: },
+        applicant: { date_of_birth:,
                      receives_qualifying_benefit: false },
       }
     end
@@ -56,19 +58,52 @@ module V6
       context "with missing proceeding_types" do
         let(:params) { default_params }
 
-        context "certificated work" do
-          let(:level_of_help) { "certificated" }
+        context "means tested" do
+          context "certificated work" do
+            let(:level_of_help) { "certificated" }
 
-          it "doesnt error" do
-            expect(response).to have_http_status(:ok)
+            it "returns error" do
+              expect(response).to have_http_status(:unprocessable_entity)
+            end
+
+            it "returns error JSON" do
+              expect(parsed_response[:errors])
+                .to include(/This assessment is not non-means, so requires a proceeding_type/)
+            end
+          end
+
+          context "controlled work" do
+            let(:level_of_help) { "controlled" }
+
+            it "returns error" do
+              expect(response).to have_http_status(:unprocessable_entity)
+            end
+
+            it "returns error JSON" do
+              expect(parsed_response[:errors])
+                .to include(/This assessment is not non-means, so requires a proceeding_type/)
+            end
           end
         end
 
-        context "controlled work" do
-          let(:level_of_help) { "controlled" }
+        context "non-means tested" do
+          let(:date_of_birth) { Time.zone.today - 10.years }
+          let(:not_aggregated_no_income_low_capital) { true }
 
-          it "doesnt error" do
-            expect(response).to have_http_status(:ok)
+          context "certificated work" do
+            let(:level_of_help) { "certificated" }
+
+            it "doesnt error" do
+              expect(response).to have_http_status(:ok)
+            end
+          end
+
+          context "controlled work" do
+            let(:level_of_help) { "controlled" }
+
+            it "doesnt error" do
+              expect(response).to have_http_status(:ok)
+            end
           end
         end
       end
