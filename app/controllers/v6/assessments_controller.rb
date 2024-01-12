@@ -30,6 +30,8 @@ module V6
                                                                             proceeding_types: assessment.proceeding_types)
                else
                  if assessment.level_of_help == "certificated"
+                   raise "Missing 'proceeding_types' for certificated cases" if assessment.proceeding_types.blank?
+
                    Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
                                                                             submission_date: assessment.submission_date)
                  else
