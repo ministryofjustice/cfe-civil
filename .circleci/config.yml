@@ -297,7 +297,7 @@ jobs:
           docker_layer_caching: true
       - *authenticate_k8s
       - *restore_helm_cache
-      - deploy:
+      - run:
           name: Helm deployment to UAT
           command: |
             ./bin/uat_deploy
@@ -314,7 +314,7 @@ jobs:
           docker_layer_caching: true
       - *authenticate_k8s
       - *restore_helm_cache
-      - deploy:
+      - run:
           name: Helm deploy CFE Civil to Staging
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
@@ -333,7 +333,7 @@ jobs:
           docker_layer_caching: true
       - *authenticate_k8s
       - *restore_helm_cache
-      - deploy:
+      - run:
           name: Helm deploy CFE Civil to Production
           command: |
             helm upgrade cfe-civil ./deploy/helm/. \
@@ -360,7 +360,7 @@ jobs:
     steps:
       - checkout
       - *authenticate_k8s
-      - deploy:
+      - run:
           name: Deploy infrastructure
           command: |
             kubectl -n ${K8S_NAMESPACE} apply --record=false -f ./infrastructure/${K8S_NAMESPACE}/
