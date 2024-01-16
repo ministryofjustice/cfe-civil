@@ -29,7 +29,10 @@ module V6
                                                                             level_of_help: assessment.level_of_help,
                                                                             proceeding_types: assessment.proceeding_types)
                else
+                 return render_unprocessable("This assessment is not non-means, so requires a proceeding_type") if assessment.proceeding_types.blank?
+
                  if assessment.level_of_help == "certificated"
+
                    Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
                                                                             submission_date: assessment.submission_date)
                  else
