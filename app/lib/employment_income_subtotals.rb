@@ -1,4 +1,4 @@
-class EmploymentIncomeResults
+class EmploymentIncomeSubtotals
   class << self
     def blank
       new(employment_result: nil, employment_details_results: [], self_employment_results: [])

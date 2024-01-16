@@ -7,11 +7,11 @@ module Calculators
       let(:submission_date) { 1.year.ago }
 
       let(:applicant_gross_income_subtotals) do
-        instance_double(PersonGrossIncomeSubtotals, employment_income_subtotals: instance_double(EmploymentIncomeResults, entitles_child_care_allowance?: true))
+        instance_double(PersonGrossIncomeSubtotals, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, entitles_child_care_allowance?: true))
       end
 
       let(:partner_gross_income_subtotals) do
-        instance_double(PersonGrossIncomeSubtotals, employment_income_subtotals: instance_double(EmploymentIncomeResults, entitles_child_care_allowance?: true))
+        instance_double(PersonGrossIncomeSubtotals, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, entitles_child_care_allowance?: true))
       end
 
       context "without partner" do
@@ -34,7 +34,7 @@ module Calculators
         context "with child dependants, a student applicant and no partner" do
           let(:dependants) { [instance_double(Dependant, becomes_16_on: submission_date + 1.year)] }
           let(:applicant_gross_income_subtotals) do
-            instance_double(PersonGrossIncomeSubtotals, is_student?: true, employment_income_subtotals: instance_double(EmploymentIncomeResults, entitles_child_care_allowance?: false))
+            instance_double(PersonGrossIncomeSubtotals, is_student?: true, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, entitles_child_care_allowance?: false))
           end
 
           it "returns true" do
@@ -57,7 +57,7 @@ module Calculators
         context "with child dependants, an employed applicant and an employed partner" do
           let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date + 1.year)] }
           let(:partner_gross_income_subtotals) do
-            instance_double(PersonGrossIncomeSubtotals, is_student?: false, employment_income_subtotals: instance_double(EmploymentIncomeResults, entitles_child_care_allowance?: true))
+            instance_double(PersonGrossIncomeSubtotals, is_student?: false, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, entitles_child_care_allowance?: true))
           end
 
           it "returns true" do
@@ -68,7 +68,7 @@ module Calculators
         context "with child dependants, an employed applicant and an unemployed partner" do
           let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date + 1.year)] }
           let(:partner_gross_income_subtotals) do
-            instance_double(PersonGrossIncomeSubtotals, is_student?: false, employment_income_subtotals: instance_double(EmploymentIncomeResults, entitles_child_care_allowance?: false))
+            instance_double(PersonGrossIncomeSubtotals, is_student?: false, employment_income_subtotals: instance_double(EmploymentIncomeSubtotals, entitles_child_care_allowance?: false))
           end
 
           it "returns false" do

@@ -3,7 +3,7 @@ class PersonGrossIncomeSubtotals
     def blank
       new irregular_income_payments: [],
           regular_income_categories: [],
-          employment_income_subtotals: EmploymentIncomeResults.blank,
+          employment_income_subtotals: EmploymentIncomeSubtotals.blank,
           state_benefits: []
     end
   end

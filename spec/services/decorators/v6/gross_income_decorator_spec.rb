@@ -22,7 +22,7 @@ module Decorators
         PersonGrossIncomeSubtotals.new(
           irregular_income_payments:,
           state_benefits:,
-          employment_income_subtotals: instance_double(EmploymentIncomeResults,
+          employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
                                                        payment_based_employments: [
                                                          OpenStruct.new(employment_name: employment1.name, employment_payments: employment1.employment_payments),
                                                          OpenStruct.new(employment_name: employment2.name, employment_payments: employment2.employment_payments),
