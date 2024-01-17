@@ -6,9 +6,7 @@ Feature:
     And An applicant who is a pensioner
     And A submission date of "2525-04-10"
     And I add employment income of 270 per month
-    And I add the following main property details for the current assessment:
-      | value                     | 250000 |
-      | outstanding_mortgage      |  36000 |
+    And I add a non-disputed main property of value 250000 and mortgage 36000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
@@ -29,9 +27,7 @@ Feature:
     And An applicant who is a pensioner
     And A submission date of "2525-04-10"
     And I add employment income of 280 per month
-    And I add the following main property details for the current assessment:
-      | value                     | 250000 |
-      | outstanding_mortgage      |  16000 |
+    And I add a non-disputed main property of value 250000 and mortgage 16000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
@@ -52,9 +48,7 @@ Feature:
     And An applicant who is a pensioner
     And A submission date of "2525-04-10"
     And I add employment income of 485 per month
-    And I add the following main property details for the current assessment:
-      | value                     | 250000 |
-      | outstanding_mortgage      |  16000 |
+    And I add a non-disputed main property of value 250000 and mortgage 16000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
@@ -75,9 +69,7 @@ Feature:
     And An applicant who is a pensioner
     And A submission date of "2525-04-10"
     And I add employment income of 695 per month
-    And I add the following main property details for the current assessment:
-      | value                     | 250000 |
-      | outstanding_mortgage      |  56000 |
+    And I add a non-disputed main property of value 250000 and mortgage 56000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |

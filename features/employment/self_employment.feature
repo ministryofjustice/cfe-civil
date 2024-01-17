@@ -3,9 +3,7 @@ Feature:
 
   Scenario: 1 The single client is employed, has 1 job and is not receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax | national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                | -50 | -30                | false                                          |
+    And I add employment income of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -51,9 +49,7 @@ Feature:
 
   Scenario: 6 The single client is employed & self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And I add employment income of 1200 per month
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    | tax |  national_insurance |
       | monthly   | 1200.00  | -50 | -30                 |
@@ -169,9 +165,7 @@ Feature:
 
   Scenario: 15 - The client and partner are both employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax  |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And I add employment income of 1200 per month
     And I add the following "partner" employment details in the current assessment:
       | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
       | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |

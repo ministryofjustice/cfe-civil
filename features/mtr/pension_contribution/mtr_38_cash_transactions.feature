@@ -33,7 +33,6 @@ Feature:
       | attribute                 | value  |
       | pension_contribution      | 60.0   |
 
-
   Scenario: Case after MTR data, when pension contribution applied is less than 5% of the total gross income
     Given I am undertaking a certificated assessment
     And A submission date of "2525-04-10"

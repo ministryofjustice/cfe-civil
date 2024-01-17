@@ -53,3 +53,7 @@ Given("I am undertaking upper tribunal certificated asylum assessment") do
   @api_version = 6
   @employments = []
 end
+
+Given("The applicant is receiving asylum support") do
+  @applicant_data.merge!(receives_asylum_support: true)
+end

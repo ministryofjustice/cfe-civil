@@ -81,12 +81,7 @@ Feature:
     And A submission date of "2525-04-10"
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
-    And I add the following main property details for the current assessment:
-      | value                      | 400000 |
-      | outstanding_mortgage       | 130000 |
-      | percentage_owned           |    100 |
-      | shared_with_housing_assoc  | false  |
-      | subject_matter_of_dispute  | false  |
+    And I add a non-disputed main property of value 400000 and mortgage 130000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                      | value                 |
@@ -106,12 +101,7 @@ Feature:
     And A submission date of "2525-04-10"
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
-    And I add the following main property details for the current assessment:
-      | value                      | 400000 |
-      | outstanding_mortgage       | 126000 |
-      | percentage_owned           |    100 |
-      | shared_with_housing_assoc  | false  |
-      | subject_matter_of_dispute  | false  |
+    And I add a non-disputed main property of value 400000 and mortgage 126000
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                      | value      |

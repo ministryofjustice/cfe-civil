@@ -6,12 +6,8 @@ Feature:
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 1200.00  |  -50 | -30                 |
-    And I add the following regular_transaction details:
-      | category    | frequency | operation | amount |
-      | child_care  | monthly   | debit     | 200.0  |
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   |
-      | 2018-12-20    | FALSE                  | child_relative |
+    And I add "child_care" regular_transactions of 200 per month
+    And I have 1 dependant children
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |
@@ -22,12 +18,8 @@ Feature:
     And I add the following "client" self employment details in the current assessment:
       | frequency | gross    |  tax |  national_insurance |
       | monthly   | 0.00     |  0   |  0                  |
-    And I add the following regular_transaction details:
-      | category    | frequency | operation | amount |
-      | child_care  | monthly   | debit     | 200.0  |
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   |
-      | 2018-12-20    | FALSE                  | child_relative |
+    And I add "child_care" regular_transactions of 200 per month
+    And I have 1 dependant children
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |

@@ -4,11 +4,7 @@ Feature:
   Scenario: A pensioner with disputed savings, property and vehicle
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance |
-      |     C     |  2022-07-22  | 200.50 |       0           | 75.00 |       15.0         |
-      |     C     |  2022-08-22  | 200.50 |       0           | 75.00 |       15.0         |
-      |     C     |  2022-09-22  | 200.50 |       0           | 75.00 |       15.0         |
+    And I add employment income of 290 per month
     And I add the following capital details for "bank_accounts" in the current assessment:
       | description  | value   | subject_matter_of_dispute |
       | Bank account | 91000.0 | true                      |

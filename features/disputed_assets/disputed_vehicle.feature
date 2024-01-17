@@ -50,12 +50,7 @@ Feature:
             | date_of_purchase          | 2018-11-23 |
             | in_regular_use            | false      |
             | subject_matter_of_dispute | true       |
-        And I add the following main property details for the current assessment:
-            | value                     | 200000 |
-            | outstanding_mortgage      | 0      |
-            | percentage_owned          | 100    |
-            | shared_with_housing_assoc | false  |
-            | subject_matter_of_dispute | true   |
+        And I add a disputed main property of value 200000 and mortgage 0
         When I retrieve the final assessment
         Then I should see the following "main property" details:
             | attribute                  | value    |

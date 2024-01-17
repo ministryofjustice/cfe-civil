@@ -4,12 +4,7 @@ Feature:
     Scenario: A SMOD property where equity is less than transaction_allowance
       Given I am undertaking a certificated assessment
       And An applicant who receives passporting benefits
-      And I add the following main property details for the current assessment:
-        | value                     | 150000 |
-        | outstanding_mortgage      | 147000 |
-        | percentage_owned          | 100    |
-        | shared_with_housing_assoc | false  |
-        | subject_matter_of_dispute | true   |
+      And I add a disputed main property of value 150000 and mortgage 147000
       When I retrieve the final assessment
       Then I should see the following "main property" details:
         | attribute                  | value    |
@@ -30,12 +25,7 @@ Feature:
     Scenario: A SMOD property where the value of the client's share of its equity is entirely disregarded
         Given I am undertaking a certificated assessment
         And An applicant who receives passporting benefits
-        And I add the following main property details for the current assessment:
-            | value                     | 150000 |
-            | outstanding_mortgage      | 146000 |
-            | percentage_owned          | 100    |
-            | shared_with_housing_assoc | false  |
-            | subject_matter_of_dispute | true   |
+        And I add a disputed main property of value 150000 and mortgage 146000
         When I retrieve the final assessment
         Then I should see the following "main property" details:
             | attribute                  | value    |
@@ -53,12 +43,7 @@ Feature:
     Scenario: The SMOD disregard is capped if the property is assessed as being worth more than £100k.
         Given I am undertaking a certificated assessment
         And An applicant who receives passporting benefits
-        And I add the following main property details for the current assessment:
-            | value                     | 250000 |
-            | outstanding_mortgage      | 0      |
-            | percentage_owned          | 100    |
-            | shared_with_housing_assoc | false  |
-            | subject_matter_of_dispute | true   |
+        And I add a disputed main property of value 250000 and mortgage 0
         When I retrieve the final assessment
         Then I should see the following "main property" details:
             | attribute                  | value    |
@@ -76,12 +61,7 @@ Feature:
     Scenario: Disputed main and additional properties which, combined, are assessed as worth less than £100k
         Given I am undertaking a certificated assessment
         And An applicant who receives passporting benefits
-        And I add the following main property details for the current assessment:
-            | value                     | 250000 |
-            | outstanding_mortgage      | 0      |
-            | percentage_owned          | 50     |
-            | shared_with_housing_assoc | false  |
-            | subject_matter_of_dispute | true   |
+        And I add a disputed 50 percent share main property of value 250000 and mortgage 0
         And I add the following additional property details for the current assessment:
             | value                     | 50000 |
             | outstanding_mortgage      | 0      |
@@ -114,12 +94,7 @@ Feature:
   Scenario: Disputed main and additional property under 100k with controlled work
     Given I am undertaking a controlled assessment
     And An applicant who receives passporting benefits
-    And I add the following main property details for the current assessment:
-      | value                     | 300000 |
-      | outstanding_mortgage      | 80000  |
-      | percentage_owned          | 50     |
-      | shared_with_housing_assoc | false  |
-      | subject_matter_of_dispute | true   |
+    And I add a disputed 50 percent share main property of value 300000 and mortgage 80000
     And I add the following additional property details for the current assessment:
       | value                     | 90000  |
       | outstanding_mortgage      | 80000  |
@@ -151,12 +126,7 @@ Feature:
   Scenario: Disputed main and additional property where main equity > 100k and < 200k
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
-    And I add the following main property details for the current assessment:
-      | value                     | 400000 |
-      | outstanding_mortgage      | 0      |
-      | percentage_owned          | 50     |
-      | shared_with_housing_assoc | false  |
-      | subject_matter_of_dispute | true   |
+    And I add a disputed 50 percent share main property of value 400000 and mortgage 0
     And I add the following additional property details for the current assessment:
       | value                     | 60000  |
       | outstanding_mortgage      | 40000  |
