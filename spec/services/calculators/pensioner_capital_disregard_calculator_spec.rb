@@ -12,8 +12,7 @@ module Calculators
                                              total_disposable_income: disposable_income)
       end
     end
-    let(:assessment) { create :assessment, applicant_disposable_income_summary: disposable_income_summary }
-    let(:disposable_income_summary) { create :disposable_income_summary }
+    let(:assessment) { create :assessment }
     let(:disposable_income) { 0 }
 
     describe "#value" do

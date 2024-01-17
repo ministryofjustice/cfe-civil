@@ -40,22 +40,13 @@ RSpec.describe CullStaleAssessmentsService do
 
   def create_assessment_and_associated_records
     create(:assessment).tap do |ass|
-      create :gross_income_summary,
-             assessment: ass
-      create :partner_gross_income_summary, assessment: ass
-      create :partner_gross_income_summary, assessment: ass
-      create :disposable_income_summary, assessment: ass
-      create :partner_disposable_income_summary, assessment: ass
-      create :partner_disposable_income_summary, assessment: ass
       create :explicit_remark, assessment: ass
     end
   end
 
   def associated_models
     [
-      DisposableIncomeSummary,
       ExplicitRemark,
-      GrossIncomeSummary,
       ProceedingType,
     ]
   end

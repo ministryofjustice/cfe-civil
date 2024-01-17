@@ -35,28 +35,9 @@ FactoryBot.define do
       record.save!
     end
 
-    trait :with_disposable_income_summary do
-      after(:create) do |assessment|
-        create :disposable_income_summary, assessment:
-      end
-    end
-
-    trait :with_gross_income_summary do
-      after(:create) do |assessment|
-        create :gross_income_summary, assessment:
-      end
-    end
-
     trait :with_gross_income_summary_and_employment do
       after(:create) do |assessment|
         create :gross_income_summary, assessment:
-      end
-    end
-
-    trait :with_everything do
-      after(:create) do |assessment|
-        create(:gross_income_summary, assessment:)
-        create(:disposable_income_summary, assessment:)
       end
     end
   end

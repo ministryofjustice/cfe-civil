@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe Creators::CashTransactionsCreator do
   describe ".call" do
-    let(:assessment) { create :assessment, :with_gross_income_summary }
+    let(:assessment) { create :assessment }
     let(:cash_transaction_params) { params }
     let(:month0) { assessment.submission_date.beginning_of_month - 4.months }
     let(:month1) { assessment.submission_date.beginning_of_month - 3.months }

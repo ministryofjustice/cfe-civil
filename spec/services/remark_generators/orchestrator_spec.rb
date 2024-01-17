@@ -24,13 +24,7 @@ module RemarkGenerators
     let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date) }
     let(:employment_payments) { employments.first.employment_payments }
     let(:liquid_capital_items) { build_list(:liquid_capital_item, 2) }
-    let(:gross_income_summary) { create(:gross_income_summary, assessment:) }
     let(:regular_transactions) { build_list(:regular_transaction, 1, :priority_debt_repayment, amount: 300, frequency: "monthly") }
-
-    before do
-      create(:disposable_income_summary, assessment:)
-      gross_income_summary
-    end
 
     subject(:orchestrator) do
       described_class.call(liquid_capital_items:,

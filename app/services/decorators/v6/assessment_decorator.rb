@@ -36,7 +36,6 @@ module Decorators
           applicant: applicant_decorator_class.new(@applicant.details),
           gross_income:,
           disposable_income: DisposableIncomeDecorator.new(
-            summary: assessment.applicant_disposable_income_summary,
             disposable_income_subtotals: @calculation_output.applicant_disposable_income_subtotals,
             state_benefits: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.state_benefits,
           ),
@@ -59,20 +58,17 @@ module Decorators
       end
 
       def gross_income
-        GrossIncomeDecorator.new(assessment.applicant_gross_income_summary,
-                                 @applicant.employments,
+        GrossIncomeDecorator.new(@applicant.employments,
                                  @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals)
       end
 
       def partner_gross_income
-        GrossIncomeDecorator.new(assessment.partner_gross_income_summary,
-                                 @partner.employments,
+        GrossIncomeDecorator.new(@partner.employments,
                                  @calculation_output.gross_income_subtotals.partner_gross_income_subtotals)
       end
 
       def partner_disposable_income
-        DisposableIncomeDecorator.new(summary: assessment.partner_disposable_income_summary,
-                                      disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
+        DisposableIncomeDecorator.new(disposable_income_subtotals: @calculation_output.partner_disposable_income_subtotals,
                                       state_benefits: @calculation_output.gross_income_subtotals.partner_gross_income_subtotals.state_benefits)
       end
 

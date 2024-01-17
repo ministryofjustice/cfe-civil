@@ -5,12 +5,8 @@ module Decorators
     RSpec.describe ApplicantDisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do
-        create :assessment, :with_gross_income_summary, proceedings: proceeding_hash,
-                                                        submission_date: Date.new(2022, 6, 6)
-      end
-      let(:summary) do
-        create :disposable_income_summary,
-               assessment:
+        create :assessment, proceedings: proceeding_hash,
+                            submission_date: Date.new(2022, 6, 6)
       end
       let(:codes) { pt_results.keys }
       let(:pt_results) do
@@ -101,7 +97,7 @@ module Decorators
       let(:income_contribution) { 75 }
 
       subject(:decorator) do
-        described_class.new(summary, assessment.applicant_gross_income_summary, employment_income_subtotals,
+        described_class.new(employment_income_subtotals,
                             income_contribution: 75,
                             disposable_income_subtotals: instance_double(PersonDisposableIncomeSubtotals,
                                                                          partner_allowance: 191.41,

@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Collators
   RSpec.describe GrossIncomeCollator, :calls_bank_holiday do
-    let(:assessment) { create :assessment, :with_gross_income_summary, proceedings: proceeding_type_codes }
+    let(:assessment) { create :assessment, proceedings: proceeding_type_codes }
     let(:employments) { [] }
     let(:other_income_payments) { [] }
     let(:person) do
@@ -109,7 +109,7 @@ module Collators
         end
 
         context "bank and cash transactions" do
-          let(:assessment) { create :assessment, :with_gross_income_summary }
+          let(:assessment) { create :assessment }
           let(:irregular_income_payments) { [] }
 
           it "updates with totals for all categories based on bank and cash transactions" do
@@ -147,7 +147,7 @@ module Collators
 
         context "gross_employment_income" do
           let(:irregular_income_payments) { [] }
-          let(:assessment) { create :assessment, :with_gross_income_summary_and_employment, :with_disposable_income_summary }
+          let(:assessment) { create :assessment }
           let(:disposable_income_summary) { assessment.disposable_income_summary }
           let(:employments) do
             build_list(:employment, 1,

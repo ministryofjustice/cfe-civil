@@ -1,1 +1,0 @@
-class ApplicantDisposableIncomeSummary < DisposableIncomeSummary; end

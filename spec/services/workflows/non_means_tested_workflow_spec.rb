@@ -5,7 +5,6 @@ module Workflows
     let(:proceedings_hash) { [%w[DA003 A], %w[SE013 I]] }
     let(:assessment) do
       create :assessment,
-             :with_everything,
              proceedings: proceedings_hash
     end
 

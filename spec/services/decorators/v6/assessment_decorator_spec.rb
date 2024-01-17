@@ -3,14 +3,8 @@ require "rails_helper"
 module Decorators
   module V6
     RSpec.describe AssessmentDecorator do
-      before do
-        create(:partner_gross_income_summary, assessment:)
-      end
-
       let(:assessment) do
-        create :assessment,
-               :with_gross_income_summary,
-               :with_disposable_income_summary
+        create :assessment
       end
       let(:version) { "6" }
       let(:calculation_output) do
@@ -102,10 +96,6 @@ module Decorators
           let(:partner) do
             build(:person_data,
                   details: build(:applicant))
-          end
-
-          before do
-            create(:partner_disposable_income_summary, assessment:)
           end
 
           it "includes partner information" do

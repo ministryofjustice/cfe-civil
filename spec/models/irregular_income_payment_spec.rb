@@ -1,8 +1,7 @@
 require "rails_helper"
 
 RSpec.describe IrregularIncomePayment, type: :model do
-  let!(:gross_income_summary) { create :gross_income_summary }
-  let!(:payment) { create :irregular_income_payment, gross_income_summary: }
+  let!(:payment) { create :irregular_income_payment }
 
   context "validations" do
     context "invalid income type" do

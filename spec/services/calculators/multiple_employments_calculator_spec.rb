@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe MultipleEmploymentsCalculator, :vcr do
-    let(:assessment) { create :assessment, :with_gross_income_summary, :with_disposable_income_summary }
+    let(:assessment) { create :assessment }
     let(:employments) { build_list(:employment, 2, :with_monthly_payments, submission_date: assessment.submission_date) }
     let(:result) do
       described_class.call(submission_date: assessment.submission_date,
