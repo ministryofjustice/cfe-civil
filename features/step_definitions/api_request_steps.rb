@@ -147,17 +147,14 @@ Given("I add outgoing details for {string} of {int} per month") do |outgoing_typ
                                   payments: the_payments] }
 end
 
-Given("I add the following capital details for {string} in the current assessment:") do |string, table|
-  capitals_data = { string.to_s => table.hashes.map { cast_values(_1) } }
-  @capitals_data.merge! capitals_data
+Given("I add {int} capital of type {string}") do |amount, capital_type|
+  @capitals_data[capital_type.to_sym] ||= []
+  @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
 end
 
-Given("I add the following statutory sick pay details for the client:") do |table|
-  @employments = [{ "name": "A",
-                    "client_id": "B",
-                    "receiving_only_statutory_sick_or_maternity_pay": true,
-                    "payments": table.hashes.map { cast_values(_1) } }]
-  @applicant_data.merge! employed: true
+Given("I add {int} disputed capital of type {string}") do |amount, capital_type|
+  @capitals_data[capital_type.to_sym] ||= []
+  @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount, subject_matter_of_dispute: true }
 end
 
 Given("I add the following employment details:") do |table|

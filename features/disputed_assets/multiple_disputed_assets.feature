@@ -11,9 +11,7 @@ Feature:
       | date_of_purchase          | 2018-11-23 |
       | in_regular_use            | false      |
       | subject_matter_of_dispute | true       |
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 5000.0  | true                      |
+    And I add 5000 disputed capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following "main property" details:
       | attribute                  | value    |

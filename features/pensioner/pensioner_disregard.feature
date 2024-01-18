@@ -31,9 +31,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
     And I add employment income of 300 per month
-    And I add the following capital details for "non_liquid_capital" in the current assessment:
-      | description    | value   | subject_matter_of_dispute |
-      | Investment     | 10000.0 | false                     |
+    And I add 10000 capital of type "non_liquid_capital"
     And I add the following additional property details for the partner in the current assessment:
       | value                       | 170000.00 |
       | outstanding_mortgage        | 100000.00 |

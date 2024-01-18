@@ -5,12 +5,8 @@ Feature:
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
     And I add employment income of 290 per month
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 91000.0 | true                      |
-    And I add the following capital details for "non_liquid_capital" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Jewelry      | 12000.0 | true                      |
+    And I add 91000 disputed capital of type "bank_accounts"
+    And I add 12000 disputed capital of type "non_liquid_capital"
     When I retrieve the final assessment
     Then I should see the following "capital summary" details:
       | attribute                           | value    |

@@ -13,11 +13,9 @@ Feature:
             | income_type  | frequency | amount |
             | student_loan | annual    | 120.00 |
         And I add outgoing details for "rent_or_mortgage" of 10 per month
-        And I add the following capital details for "bank_accounts" in the current assessment:
-            | description | value  |
-            | Bank acc 1  | 2999.0 |
-            | Bank acc 2  | 0      |
-            | Bank acc 3  | 0      |
+        And I add 2999 capital of type "bank_accounts"
+        And I add 0 capital of type "bank_accounts"
+        And I add 0 capital of type "bank_accounts"
         When I retrieve the final assessment
 
         Then I should see the following overall summary:

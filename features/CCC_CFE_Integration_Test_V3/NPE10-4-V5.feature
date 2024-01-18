@@ -14,9 +14,7 @@ Feature:
       | income_type  | frequency | amount  |
       | student_loan | annual    | 1200.00 |
     And I add outgoing details for "child_care" of 200 per month
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description | value  |
-      | Bank acc 1  | 3002.0 |
+    And I add 3002 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value                 |

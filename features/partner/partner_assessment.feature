@@ -38,9 +38,7 @@ Feature:
 Scenario: An applicant and partner's combined capital is over the lower threshold
   Given I am undertaking a certificated assessment
   And An applicant who receives passporting benefits
-  And I add the following capital details for "bank_accounts" in the current assessment:
-    | description  | value   | subject_matter_of_dispute |
-    | Bank account | 2000.0  | false                     |
+  And I add 2000 capital of type "bank_accounts"
   And I add the following capital details for "bank_accounts" for the partner:
     | description  | value   |
     | Bank account | 2000.0  |

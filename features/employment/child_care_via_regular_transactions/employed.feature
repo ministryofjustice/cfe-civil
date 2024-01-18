@@ -5,11 +5,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And I have a dependant aged 2
     And I add "child_care" regular_transactions of 200 per month
-    And I add the following statutory sick pay details for the client:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income  |
-      |     C     |  2022-07-22  | 500.50 |       0           | 0.00 |       0.0           |        500.50          |
-      |     C     |  2022-08-22  | 500.50 |       0           | 0.00 |       0.0           |        500.50          |
-      |     C     |  2022-09-22  | 500.50 |       0           | 0.00 |       0.0           |        500.50          |
+    And The "client" earns 500 per month in statatory sick pay
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                 | value  |

@@ -39,9 +39,7 @@ Feature:
 
   Scenario: Capital is below threshold
     Given I am undertaking a controlled assessment
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 7000.0  | false                     |
+    And I add 7000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value    |
@@ -49,9 +47,7 @@ Feature:
 
   Scenario: Capital is above threshold
     Given I am undertaking a controlled assessment
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 9000.0  | false                     |
+    And I add 9000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value      |
@@ -60,9 +56,7 @@ Feature:
   Scenario: Immigration case with capital above threshold
     Given I am undertaking a controlled assessment
     And A first tier immigration case
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 6000.0  | false                     |
+    And I add 6000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value      |
@@ -71,9 +65,7 @@ Feature:
   Scenario: Immigration case with capital below threshold
     Given I am undertaking a controlled assessment
     And A first tier immigration case
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 3000.0  | false                     |
+    And I add 3000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value      |
@@ -82,9 +74,7 @@ Feature:
   Scenario: Asylum case with capital above threshold
     Given I am undertaking a controlled assessment
     And A first tier asylum case
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 8001.0  | false                     |
+    And I add 8001 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value      |
@@ -93,9 +83,7 @@ Feature:
   Scenario: Asylum case with capital below threshold
     Given I am undertaking a controlled assessment
     And A first tier asylum case
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 8000.0  | false                     |
+    And I add 8000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value      |
