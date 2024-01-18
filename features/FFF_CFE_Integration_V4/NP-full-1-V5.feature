@@ -7,9 +7,7 @@ Feature:
             | ccms_code | client_involvement_type |
             | DA001     | A                       |
             | SE013     | A                       |
-        And I add the following dependent details for the current assessment:
-            | date_of_birth | in_full_time_education | relationship   | monthly_income | assets_value |
-            | 2018-12-20    | FALSE                  | child_relative | 0.00           | 0.00         |
+        And I have a dependant aged 2
         And I add other income "friends_or_family" of 100 per month
         And I add the following irregular_income details in the current assessment:
             | income_type  | frequency | amount |

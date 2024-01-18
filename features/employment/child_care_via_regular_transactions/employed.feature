@@ -3,7 +3,7 @@ Feature:
 
   Scenario: The client is receiving statutory sick pay only
     Given I am undertaking a certificated assessment
-    And I have 1 dependant children
+    And I have a dependant aged 2
     And I add "child_care" regular_transactions of 200 per month
     And I add the following statutory sick pay details for the client:
       | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income  |
@@ -19,7 +19,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And I add employment income of 500 per month
     And I add "child_care" regular_transactions of 200 per month
-    And I have 1 dependant children
+    And I have a dependant aged 2
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |
@@ -29,7 +29,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And I add employment income of 0 per month
     And I add "child_care" regular_transactions of 200 per month
-    And I have 1 dependant children
+    And I have a dependant aged 2
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |

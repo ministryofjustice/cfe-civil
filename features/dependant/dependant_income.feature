@@ -3,10 +3,8 @@ Feature:
 
   Scenario: Dependant has not supplied any income
     Given I am undertaking a certificated assessment
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   |
-      | 2015-02-11    | FALSE                  | child_relative |
-      | 2004-06-11    | FALSE                  | child_relative |
+    And I have a dependant aged 2
+    And I have a dependant aged 17
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
@@ -15,10 +13,8 @@ Feature:
 
   Scenario: Dependant has non-zero monthly income below the allowance threshold
     Given I am undertaking a certificated assessment
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   | income_amount | income_frequency |
-      | 2015-02-11    | FALSE                  | child_relative | 100           | monthly          |
-      | 2004-06-11    | FALSE                  | child_relative | 100           | monthly          |
+    And I have a dependant aged 2 with monthly income of 100
+    And I have a dependant aged 17 with monthly income of 100
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
@@ -27,10 +23,8 @@ Feature:
 
   Scenario: Dependant has non-zero monthly income that exceeds allowance threshold
     Given I am undertaking a certificated assessment
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   | income_amount | income_frequency |
-      | 2015-02-11    | FALSE                  | child_relative | 400           | monthly          |
-      | 2004-06-11    | FALSE                  | child_relative | 400           | monthly          |
+    And I have a dependant aged 2 with monthly income of 400
+    And I have a dependant aged 17 with monthly income of 400
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |
@@ -39,10 +33,8 @@ Feature:
 
   Scenario: Dependant has non-zero weekly income that exceeds allowance threshold
     Given I am undertaking a certificated assessment
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   | income_amount | income_frequency |
-      | 2015-02-11    | FALSE                  | child_relative | 200           | weekly           |
-      | 2004-06-11    | FALSE                  | child_relative | 200           | weekly           |
+    And I have a dependant aged 2 with "weekly" income of 200
+    And I have a dependant aged 17 with "weekly" income of 200
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                         | value   |

@@ -8,7 +8,7 @@ Feature:
             | DA001     | A                       |
             | SE013     | A                       |
             | SE003     | A                       |
-        And I have 1 dependant children
+        And I have a dependant aged 2
         And I add other income "friends_or_family" of 100 per month
         And I add the following irregular_income details in the current assessment:
             | income_type  | frequency | amount |

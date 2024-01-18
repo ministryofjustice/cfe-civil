@@ -9,7 +9,7 @@ Feature:
     And I add the following proceeding types in the current assessment:
       | ccms_code | client_involvement_type |
       | DA001     | A                       |
-    And I have 1 dependant children
+    And I have a dependant aged 2
     And I add the following irregular_income details in the current assessment:
       | income_type  | frequency | amount  |
       | student_loan | annual    | 1200.00 |

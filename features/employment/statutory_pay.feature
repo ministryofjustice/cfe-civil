@@ -21,7 +21,7 @@ Feature:
             |     C     |  2022-08-22  | 500.50 |       0           | 0.00 |       0.0           |        500.50          |
             |     C     |  2022-09-22  | 500.50 |       0           | 0.00 |       0.0           |        500.50          |
         And I add outgoing details for "child_care" of 200 per month
-        And I have 1 dependant children
+        And I have a dependant aged 2
         When I retrieve the final assessment
         Then I should see the following "disposable income" details:
             | attribute                      | value      |
@@ -33,7 +33,7 @@ Feature:
             | frequency | gross    | benefits_in_kind | tax  | national_insurance  | receiving_only_statutory_sick_or_maternity_pay |
             | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
         And I add outgoing details for "child_care" of 200 per month
-        And I have 1 dependant children
+        And I have a dependant aged 2
         When I retrieve the final assessment
         Then I should see the following "disposable income" details:
             | attribute                      | value      |
@@ -48,7 +48,7 @@ Feature:
             | frequency | gross    | benefits_in_kind |  tax | national_insurance | receiving_only_statutory_sick_or_maternity_pay |
             | monthly   | 600.00  | 0                |  -50 | -30                | true                                           |
         And I add outgoing details for "child_care" of 200 per month
-        And I have 1 dependant children
+        And I have a dependant aged 2
         When I retrieve the final assessment
         Then I should see the following "disposable income" details:
             | attribute                      | value      |

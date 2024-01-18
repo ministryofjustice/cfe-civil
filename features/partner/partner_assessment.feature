@@ -108,7 +108,7 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: A partner case on or after 10th April 2023
     Given I am undertaking a certificated assessment
     And A submission date of "2023-04-10"
-    And I have 1 dependant children
+    And I have a dependant aged 2
     And I add the following capital details for "bank_accounts" for the partner:
       | description  | value   |
       | Bank account | 2000.0  |

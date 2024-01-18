@@ -4,11 +4,9 @@ Feature:
   Scenario: Single with dependants
     Given I am undertaking a certificated assessment
     And A submission date of "2525-12-31"
-    And I add the following dependent details for the current assessment:
-      | desc     | date_of_birth | in_full_time_education | relationship   |
-      | under 14 | 2515-02-11    | FALSE                  | child_relative |
-      | under 16 | 2510-02-11    | FALSE                  | child_relative |
-      | adult    | 2500-06-11    | FALSE                  | child_relative |
+    And I have a dependant aged 13
+    And I have a dependant aged 15
+    And I have a dependant aged 20
     When I retrieve the final assessment
     Then I should see the following "disposable_income_summary" details:
       | attribute                        | value  |
@@ -30,9 +28,7 @@ Feature:
     And I add the following "partner" employment details in the current assessment:
       | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
       | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-    And I add the following dependent details for the current assessment:
-      | desc     | date_of_birth | in_full_time_education | relationship   |
-      | under 14 | 2515-02-11    | FALSE                  | child_relative |
+    And I have a dependant aged 13
     When I retrieve the final assessment
     Then I should see the following "disposable_income_summary" details:
       | attribute                        | value  |

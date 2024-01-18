@@ -12,6 +12,7 @@ Given("I am undertaking a certificated assessment") do
   @employments = []
   @api_version = 6
   @capitals_data = {}
+  @dependant_data = { dependants: [] }
 end
 
 Given("An applicant who receives passporting benefits") do
@@ -79,31 +80,31 @@ Given("A first tier asylum case") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
-Given("I have {int} dependant children") do |child_count|
-  deps = 1.upto(child_count).map { { date_of_birth: "2015-02-11", in_full_time_education: true, relationship: "child_relative" } }
-  @dependant_data = {
-    "dependants": deps,
+Given("I have a dependant aged {int}") do |age|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << { date_of_birth: date_of_birth.to_s, in_full_time_education: true, relationship: "child_relative" }
+end
+
+Given("I have a dependant aged {int} with monthly income of {int}") do |age, income|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    monthly_income: income,
+    relationship: "child_relative",
   }
 end
 
-Given("I add the following dependent details for the current assessment:") do |table|
-  data = table.hashes.map do |h|
-    amount = h["income_amount"]
-    frequency = h["income_frequency"]
-    if amount.present? && frequency.present?
-      h = cast_values(h)
-      h["income"] = { "amount" => amount.to_f, "frequency" => frequency }
-      h.except("income_amount", "income_frequency")
-    else
-      cast_values(h)
-    end
-  end
-  deps = data.map do |d|
-    d.symbolize_keys.slice(:date_of_birth, :in_full_time_education,
-                           :relationship, :income, :monthly_income, :income_frequency, :assets_value)
-  end
-  @dependant_data = {
-    "dependants": deps,
+Given("I have a dependant aged {int} with {string} income of {int}") do |age, frequency, income|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    income: {
+      amount: income,
+      frequency:,
+    },
+    relationship: "child_relative",
   }
 end
 
