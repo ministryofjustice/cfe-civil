@@ -47,6 +47,8 @@ env:
         key: sentry-dsn
   - name: RAILS_ENV
     value: production
+  - name: RUBY_YJIT_ENABLE
+    value: '1'
   - name: RAILS_LOG_TO_STDOUT
     value: 'true'
   - name: USE_TEST_THRESHOLD_DATA

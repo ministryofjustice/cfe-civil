@@ -36,6 +36,7 @@ executors:
           - PGHOST=localhost
           - PGUSER=user
           - TZ: "Europe/London"
+          - RUBY_YJIT_ENABLE: "1"
       - image: cimg/postgres:14.8
         environment:
           - POSTGRES_USER=user
