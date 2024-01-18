@@ -475,15 +475,6 @@ workflows:
           filters:
             branches:
               only: main
-      - build_and_push_production:
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
-          filters:
-            branches:
-              only: main
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
@@ -499,10 +490,20 @@ workflows:
             branches:
               only:
                 - main
+      - build_and_push_production:
+          requires:
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
+            - end2end_tests
+          filters:
+            branches:
+              only: main
       - deploy_production_approval:
           type: approval
           requires:
-            - end2end_tests
+            - build_and_push_production
           filters:
             branches:
               only:
