@@ -59,6 +59,8 @@ RSpec.describe Threshold do
         end
 
         context "ENV['USE_TEST_THRESHOLD_DATA'] is absent" do
+          before { allow(Rails.configuration.x).to receive(:use_test_threshold_data).and_return("false") }
+
           context "date before date of test only file" do
             let(:time) { Time.zone.parse("1-Dec-2020 12:33") }
 
