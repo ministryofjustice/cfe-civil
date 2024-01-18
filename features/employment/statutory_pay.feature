@@ -29,9 +29,7 @@ Feature:
 
     Scenario: The client is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
         Given I am undertaking a certificated assessment
-        And I add the following "client" employment details in the current assessment:
-            | frequency | gross    | benefits_in_kind | tax  | national_insurance  | receiving_only_statutory_sick_or_maternity_pay |
-            | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
+        And The "client" earns 1200 per month in statatory sick pay
         And I add outgoing details for "child_care" of 200 per month
         And I have a dependant aged 2
         When I retrieve the final assessment
@@ -41,12 +39,8 @@ Feature:
 
     Scenario: The partner is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
         Given I am undertaking a certificated assessment
-        And I add the following "client" employment details in the current assessment:
-            | frequency | gross    | benefits_in_kind | tax  | national_insurance  | receiving_only_statutory_sick_or_maternity_pay |
-            | monthly   | 600.00  | 0                |  -50 | -30                 | false                                           |
-        And I add the following "partner" employment details in the current assessment:
-            | frequency | gross    | benefits_in_kind |  tax | national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-            | monthly   | 600.00  | 0                |  -50 | -30                | true                                           |
+        And The "client" earns 600 per month
+        And The "partner" earns 600 per month in statatory sick pay
         And I add outgoing details for "child_care" of 200 per month
         And I have a dependant aged 2
         When I retrieve the final assessment
