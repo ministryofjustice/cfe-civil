@@ -4,7 +4,7 @@ Feature:
   Scenario: Non-passported pensioner with highest capital disregard (100k)
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 270 per month
     And I add a non-disputed main property of value 250000 and mortgage 36000
     When I retrieve the final assessment
@@ -25,7 +25,7 @@ Feature:
   Scenario: Non-passported pensioner with second highest capital disregard (65k)
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 280 per month
     And I add a non-disputed main property of value 250000 and mortgage 16000
     When I retrieve the final assessment
@@ -46,7 +46,7 @@ Feature:
   Scenario: Non-passported pensioner with third highest capital disregard (35k)
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 485 per month
     And I add a non-disputed main property of value 250000 and mortgage 16000
     When I retrieve the final assessment
@@ -67,7 +67,7 @@ Feature:
   Scenario: Non-passported pensioner with zero capital disregard (0k)
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 695 per month
     And I add a non-disputed main property of value 250000 and mortgage 56000
     When I retrieve the final assessment

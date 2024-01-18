@@ -3,7 +3,6 @@ Feature:
 
   Scenario: Pre-MTR Asylum Support asylum case - eligible
     Given I am undertaking upper tribunal certificated asylum assessment
-    And A submission date of "2023-04-10"
     And The applicant is receiving asylum support
     And I add employment income of 3000 per month
     When I retrieve the final assessment
@@ -13,7 +12,7 @@ Feature:
 
   Scenario: Post-MTR Asylum Support asylum case - still eligible
     Given I am undertaking upper tribunal certificated asylum assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And The applicant is receiving asylum support
     And I add employment income of 3000 per month
     When I retrieve the final assessment
@@ -23,7 +22,6 @@ Feature:
 
   Scenario: pre-MTR asylum support ineligible as non asylum case
     Given I am undertaking a certificated assessment
-    And A submission date of "2023-04-10"
     And The applicant is receiving asylum support
     And I add employment income of 3000 per month
     When I retrieve the final assessment
@@ -33,7 +31,7 @@ Feature:
 
   Scenario: post-MTR asylum support eligible for non asylum case
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And The applicant is receiving asylum support
     And I add employment income of 3000 per month
     When I retrieve the final assessment

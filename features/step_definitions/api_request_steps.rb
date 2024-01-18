@@ -52,6 +52,10 @@ Given("A submission date of {string}") do |date|
   @assessment_data.merge! submission_date: date
 end
 
+Given("A submission date post-mtr") do
+  @assessment_data.merge! submission_date: "2526-04-10"
+end
+
 Given("I am undertaking a controlled assessment") do
   StateBenefitType.find_or_create_by! label: "housing_benefit" do |sbt|
     sbt.name = "Housing benefit"

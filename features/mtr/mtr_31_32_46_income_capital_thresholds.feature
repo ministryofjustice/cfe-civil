@@ -3,7 +3,7 @@ Feature:
 
   Scenario: Above gross threshold after MTR
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2950 per month
     And I add outgoing details for "rent_or_mortgage" of 2200 per month
     When I retrieve the final assessment
@@ -14,7 +14,7 @@ Feature:
 
   Scenario: Below gross threshold after MTR
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2200 per month
     When I retrieve the final assessment
@@ -29,7 +29,7 @@ Feature:
 
   Scenario: Below lower disposable threshold after MTR
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
     When I retrieve the final assessment
@@ -45,7 +45,7 @@ Feature:
   Scenario: Between disposable thresholds post MTR
 #  band zero extends up to £622, plus £20 minimum makes lower threshold look high
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2160 per month
     When I retrieve the final assessment
@@ -63,7 +63,7 @@ Feature:
 
   Scenario: Above disposable thresholds post MTR
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 1860 per month
     When I retrieve the final assessment
@@ -78,7 +78,7 @@ Feature:
 
   Scenario: Below lower disposable threshold after MTR, above capital lower threshold
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
     And I add a non-disputed main property of value 400000 and mortgage 130000
@@ -98,7 +98,7 @@ Feature:
 
   Scenario: Below lower disposable threshold after MTR, above capital upper threshold
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
     And I add a non-disputed main property of value 400000 and mortgage 126000
