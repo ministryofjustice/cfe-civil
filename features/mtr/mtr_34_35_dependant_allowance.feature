@@ -18,7 +18,7 @@ Feature:
 
   Scenario: Single without dependants
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     When I retrieve the final assessment
     Then I should see the following "disposable_income_summary" details:
       | attribute                        | value  |
@@ -26,7 +26,7 @@ Feature:
 
   Scenario: With a partner and dependants
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add the following "partner" employment details in the current assessment:
       | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
       | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |

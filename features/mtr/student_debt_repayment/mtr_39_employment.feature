@@ -3,7 +3,7 @@ Feature:
 
     Scenario: The client is employed, and receiving a student debt repayment
       Given I am undertaking a certificated assessment
-      And A submission date of "2525-01-10"
+      And A submission date post-mtr
       And I add the following applicant details for the current assessment:
           | date_of_birth               | 1979-12-20 |
           | involvement_type            | applicant  |
@@ -18,8 +18,8 @@ Feature:
         Then I should see the following "employment" details:
             | attribute                  | value  |
             | gross_income               | 500.0  |
-            | fixed_employment_deduction | -45.0  |
+            | fixed_employment_deduction | -66.0  |
             | tax                        | -55.0  |
             | national_insurance         | -25.0  |
             | student_debt_repayment     | -50.0  |
-            | net_employment_income      | 325.0  |
+            | net_employment_income      | 304.0  |

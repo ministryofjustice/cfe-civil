@@ -20,7 +20,7 @@ Feature:
 
   Scenario: The housing cost cap is removed under MTR rules
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add the following outgoing details for "rent_or_mortgage" in the current assessment:
       | payment_date | client_id | amount  | housing_cost_type |
       | 2020-02-29   | og-id1    | 1200.00 | rent              |

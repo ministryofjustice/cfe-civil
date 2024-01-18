@@ -3,7 +3,6 @@ Feature:
 
   Scenario: Asylum case before MTR
     Given I am undertaking upper tribunal certificated asylum assessment
-    And A submission date of "2023-04-10"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -14,7 +13,7 @@ Feature:
 
   Scenario: Asylum case after MTR
     Given I am undertaking upper tribunal certificated asylum assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -25,7 +24,6 @@ Feature:
 
   Scenario: Immigration case before MTR
     Given I am undertaking upper tribunal certificated immigration assessment
-    And A submission date of "2023-04-10"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -36,7 +34,7 @@ Feature:
 
   Scenario: Immigration case after MTR
     Given I am undertaking upper tribunal certificated immigration assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -47,7 +45,6 @@ Feature:
 
   Scenario: Immigration controlled case before MTR
     Given I am undertaking first tier controlled immigration assessment
-    And A submission date of "2023-04-10"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -58,7 +55,7 @@ Feature:
 
   Scenario: Immigration controlled case after MTR
     Given I am undertaking first tier controlled immigration assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -69,7 +66,6 @@ Feature:
 
   Scenario: Asylum case before MTR
     Given I am undertaking first tier controlled asylum assessment
-    And A submission date of "2023-04-10"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |
@@ -80,7 +76,7 @@ Feature:
 
   Scenario: Asylum case after MTR
     Given I am undertaking first tier controlled asylum assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                    | value   |

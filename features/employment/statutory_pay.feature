@@ -3,7 +3,6 @@ Feature:
 
     Scenario: The client is receiving statutory sick pay only
         Given I am undertaking a certificated assessment
-        And A submission date of "2023-01-10"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -24,7 +23,6 @@ Feature:
 
     Scenario: The client is receiving statutory sick pay only but has entered childcare costs
         Given I am undertaking a certificated assessment
-        And A submission date of "2023-07-26"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -54,7 +52,6 @@ Feature:
 
     Scenario: The client is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
         Given I am undertaking a certificated assessment
-        And A submission date of "2023-07-06"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |
@@ -82,7 +79,6 @@ Feature:
 
     Scenario: The partner is receiving statutory sick pay, input via the newer "employment_details" section, but has entered childcare costs
         Given I am undertaking a certificated assessment
-        And A submission date of "2023-07-06"
         And I add the following applicant details for the current assessment:
             | date_of_birth               | 1979-12-20 |
             | involvement_type            | applicant  |

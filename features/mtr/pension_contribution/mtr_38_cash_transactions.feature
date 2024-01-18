@@ -19,7 +19,7 @@ Feature:
 
   Scenario: Case after MTR data, when pension contribution applied is greater than 5% of the total gross income
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 1200 per month
     And I add "pension_contribution" cash_transactions of 70 per month
     When I retrieve the final assessment

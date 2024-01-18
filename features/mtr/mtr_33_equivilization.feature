@@ -3,7 +3,7 @@ Feature:
 
   Scenario: 1 dependant under 14
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add the following dependent details for the current assessment:
       | date_of_birth | in_full_time_education | relationship   |
       | 2515-02-11    | FALSE                  | child_relative |
@@ -15,7 +15,7 @@ Feature:
 
   Scenario: 1 dependant over 14
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add the following dependent details for the current assessment:
       | date_of_birth | in_full_time_education | relationship   |
       | 2500-02-11    | FALSE                  | child_relative |
@@ -27,7 +27,7 @@ Feature:
 
   Scenario: 1 dependants under 14, 1 over 14
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add the following dependent details for the current assessment:
       | date_of_birth | in_full_time_education | relationship   |
       | 2515-02-11    | FALSE                  | child_relative |
