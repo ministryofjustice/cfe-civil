@@ -165,51 +165,15 @@ Given("I add the following employment details:") do |table|
 end
 
 Given("I add employment income of {int} per month") do |monthly_income|
-  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
-    {
-      client_id: "client_id",
-      date:,
-      gross: monthly_income,
-      benefits_in_kind: 0,
-      tax: 0.00,
-      national_insurance: 0.0,
-    }
-  end
-  @employments << { "name": "A",
-                    "client_id": "B",
-                    "payments": payments }
+  @employments << employment_payments_from_income(monthly_income)
 end
 
 Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
-  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
-    {
-      client_id: "client_id",
-      date:,
-      gross: monthly_income,
-      benefits_in_kind: benefits,
-      tax: -tax,
-      national_insurance: -ni,
-    }
-  end
-  @employments << { "name": "A",
-                    "client_id": "B",
-                    "payments": payments }
+  @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
 end
 
 Given("I add partner employment income of {int} per month") do |monthly_income|
-  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
-    {
-      client_id: "client_id",
-      date:,
-      gross: monthly_income,
-      benefits_in_kind: 0,
-      tax: 0.00,
-      national_insurance: 0.0,
-    }
-  end
-  @partner_employments = [{ "name": "A",
-                            "client_id": "B",
-                            "payments": payments }]
+  @partner_employments = [employment_payments_from_income(monthly_income)]
 end
 
 Given("I add {string} outgoings of {int} per month") do |name, amount|
