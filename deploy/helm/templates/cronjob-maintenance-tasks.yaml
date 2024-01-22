@@ -27,9 +27,9 @@ spec:
 {{ include "app.envs" . | nindent 12 }}
             resources:
               limits:
-                cpu: 200m
+                cpu: 500m
                 memory: 2048Mi
               requests:
-                cpu: 100m
+                cpu: 200m
                 memory: 1024Mi
           restartPolicy: Never
