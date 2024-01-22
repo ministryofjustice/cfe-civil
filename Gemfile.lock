@@ -580,7 +580,7 @@ DEPENDENCIES
   puma (~> 6.4)
   rack-mini-profiler
   rails (> 7.1, < 7.2)
-  roo (~> 2.10.1)
+  roo (~> 2.10.0)
   rspec-rails (~> 6.1)
   rspec_junit_formatter
   rswag-api
