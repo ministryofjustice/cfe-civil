@@ -5,7 +5,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And I have a dependant aged 2
     And I add "child_care" regular_transactions of 200 per month
-    And The "client" earns 500 per month in statatory sick pay
+    And The "client" earns 500 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                 | value  |
@@ -14,8 +14,8 @@ Feature:
   Scenario: The client is employed, child care submitted as regular_transactions, gross income > 0
     Given I am undertaking a certificated assessment
     And I add employment income of 500 per month
-    And I add "child_care" regular_transactions of 200 per month
     And I have a dependant aged 2
+    And I add "child_care" regular_transactions of 200 per month
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |
@@ -24,8 +24,8 @@ Feature:
   Scenario: The client is employed, child care submitted as regular_transactions, gross = 0
     Given I am undertaking a certificated assessment
     And I add employment income of 0 per month
-    And I add "child_care" regular_transactions of 200 per month
     And I have a dependant aged 2
+    And I add "child_care" regular_transactions of 200 per month
     When I retrieve the final assessment
     Then I should see the following "disposable income" details:
       | attribute                      | value      |

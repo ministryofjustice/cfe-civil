@@ -46,7 +46,7 @@ Given("The {string} earns {int} per month") do |client_or_partner, income|
   }
 end
 
-Given("The {string} earns {int} per month in statatory sick pay") do |client_or_partner, income|
+Given("The {string} earns {int} per month in statutory sick pay") do |client_or_partner, income|
   raise ArgumentError, client_or_partner unless client_or_partner.in? %w[client partner]
 
   @employment_details ||= { client: [], partner: [] }

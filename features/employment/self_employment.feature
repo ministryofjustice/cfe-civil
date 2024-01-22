@@ -11,7 +11,7 @@ Feature:
 
   Scenario: 2 The single client is employed, has 1 job and is receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And The "client" earns 1200 per month in statatory sick pay
+    And The "client" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -20,7 +20,7 @@ Feature:
   Scenario: 3 The single client is employed, has 2 jobs and is receiving SSP/SMP for one of them
     Given I am undertaking a controlled assessment
     And The "client" earns 1200 per month
-    And The "client" earns 1200 per month in statatory sick pay
+    And The "client" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -52,7 +52,7 @@ Feature:
 
   Scenario: 7 The single client is employed (receiving SSP/SMP) & self-employed
     Given I am undertaking a controlled assessment
-    And The "client" earns 1200 per month in statatory sick pay
+    And The "client" earns 1200 per month in statutory sick pay
     And The "client" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
@@ -69,7 +69,7 @@ Feature:
 
   Scenario: 9 The partner is employed, has 1 job and is receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And The "partner" earns 1200 per month in statatory sick pay
+    And The "partner" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -78,7 +78,7 @@ Feature:
   Scenario: 10: The partner is employed, has 2 jobs and is receiving SSP/SMP for one of them
     Given I am undertaking a controlled assessment
     And The "partner" earns 1200 per month
-    And The "partner" earns 1200 per month in statatory sick pay
+    And The "partner" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "partner_employment" details:
       | attribute                  | value    |
@@ -125,7 +125,7 @@ Feature:
 
   Scenario: 14: The partner is employed (receiving SSP/SMP) & self-employed
     Given I am undertaking a controlled assessment
-    And The "partner" earns 1200 per month in statatory sick pay
+    And The "partner" earns 1200 per month in statutory sick pay
     And The "partner" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
