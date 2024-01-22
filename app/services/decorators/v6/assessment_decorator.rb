@@ -3,7 +3,7 @@ module Decorators
     class AssessmentDecorator
       attr_reader :assessment
 
-      def initialize(assessment:, calculation_output:, applicant:, partner:, version:, eligibility_result:, remarks:, proceeding_types:)
+      def initialize(assessment:, calculation_output:, applicant:, partner:, version:, eligibility_result:, remarks:, proceeding_types:, explicit_remarks:)
         @assessment = assessment
         @calculation_output = calculation_output
         @applicant = applicant
@@ -12,6 +12,7 @@ module Decorators
         @eligibility_result = eligibility_result
         @remarks = remarks
         @proceeding_types = proceeding_types
+        @explicit_remarks = explicit_remarks
       end
 
       def as_json
@@ -42,7 +43,7 @@ module Decorators
             state_benefits: @calculation_output.gross_income_subtotals.applicant_gross_income_subtotals.state_benefits,
           ),
           capital: CapitalDecorator.new(@calculation_output.capital_subtotals.applicant_capital_subtotals),
-          remarks: RemarksDecorator.new(assessment.explicit_remarks, @remarks, @eligibility_result.summarized_assessment_result),
+          remarks: RemarksDecorator.new(@explicit_remarks, @remarks, @eligibility_result.summarized_assessment_result),
         }
         if @partner.present?
           details.merge(partner_gross_income:, partner_disposable_income:, partner_capital:)

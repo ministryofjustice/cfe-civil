@@ -26,7 +26,7 @@ module Decorators
           end
           all_remarks.merge!(remarks_hash.transform_keys { |key| "#{applicant_type}_#{key}".to_sym })
         end
-        all_remarks.merge! @explicit_remarks.by_category
+        all_remarks.merge! ExplicitRemark.by_category(@explicit_remarks)
         all_remarks.symbolize_keys
       end
     end

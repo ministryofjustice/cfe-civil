@@ -5,8 +5,8 @@ module V6
     EmploymentOrSelfEmploymentDetails = Data.define(:income, :client_reference)
 
     def create
-      create = Creators::FullAssessmentCreator.call(remote_ip: request.remote_ip,
-                                                    params: full_assessment_params)
+      create = Creators::AssessmentCreator.call(remote_ip: request.remote_ip,
+                                                assessment_params: full_assessment_params[:assessment])
       if create.success?
         assessment = create.assessment
 
@@ -64,7 +64,9 @@ module V6
         render json: assessment_decorator_class.new(assessment:,
                                                     proceeding_types:,
                                                     calculation_output: full.workflow_result.calculation_output,
-                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
+                                                    applicant:, partner:, version:, eligibility_result: full.eligibility_result,
+                                                    explicit_remarks: parse_explicit_remarks(full_assessment_params.fetch(:explicit_remarks, [])),
+                                                    remarks: full.workflow_result.remarks).as_json
       else
         render_unprocessable(create.errors)
       end
@@ -74,6 +76,16 @@ module V6
 
     def assessment_decorator_class
       Decorators::V6::AssessmentDecorator
+    end
+
+    def parse_explicit_remarks(explicit_remarks_params)
+      x = explicit_remarks_params.map do |remark_category|
+        remark_category[:details].map do |detail|
+          ExplicitRemark.new(category: remark_category[:category],
+                             remark: detail)
+        end
+      end
+      x.flatten
     end
 
     def parse_dependants(input_params, submission_date)

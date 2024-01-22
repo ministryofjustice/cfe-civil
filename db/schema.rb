@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_24_080500) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_24_160216) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -22,12 +22,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_24_080500) do
     t.date "updated_at", null: false
     t.date "submission_date", null: false
     t.index ["client_reference_id"], name: "index_assessments_on_client_reference_id"
-  end
-
-  create_table "explicit_remarks", force: :cascade do |t|
-    t.uuid "assessment_id"
-    t.string "category"
-    t.string "remark"
   end
 
   create_table "request_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

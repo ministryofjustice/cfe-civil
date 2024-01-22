@@ -4,19 +4,13 @@ RSpec.describe ExplicitRemark, type: :model do
   let(:assessment2) { create :assessment }
   let(:assessment1) { create :assessment }
 
-  it { is_expected.to belong_to(:assessment) }
-
   describe "#by_category" do
-    before do
-      create :explicit_remark, assessment: assessment2, remark: "Remark no. 2"
-      create :explicit_remark, assessment: assessment2, remark: "Remark no. 3"
-      create :explicit_remark, assessment: assessment2, remark: "Remark no. 1"
-    end
-
-    context "no remarks for specified assessment" do
-      it "returns an empty hash" do
-        expect(assessment1.explicit_remarks.by_category).to eq({})
-      end
+    let(:remarks) do
+      [
+        build(:explicit_remark, remark: "Remark no. 2"),
+        build(:explicit_remark, remark: "Remark no. 3"),
+        build(:explicit_remark, remark: "Remark no. 1"),
+      ]
     end
 
     context "remarks exist for specified assessment" do
@@ -31,7 +25,7 @@ RSpec.describe ExplicitRemark, type: :model do
       end
 
       it "returns the results in alphabetical order" do
-        expect(assessment2.explicit_remarks.by_category).to eq(expected_results)
+        expect(described_class.by_category(remarks)).to eq(expected_results)
       end
     end
   end
