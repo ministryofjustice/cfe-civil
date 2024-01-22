@@ -4,12 +4,7 @@ Feature:
   Scenario: A property where the main home equity is smaller than the capped disregard figure
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
-    And I add the following main property details for the current assessment:
-      | value                      | 150000 |
-      | outstanding_mortgage       | 100000 |
-      | percentage_owned           |     50 |
-      | shared_with_housing_assoc  | false  |
-      | subject_matter_of_dispute  | false  |
+    And I add a non-disputed 50 percent share main property of value 150000 and mortgage 100000
     When I retrieve the final assessment
     Then I should see the following "main property" details:
       | attribute                  | value    |

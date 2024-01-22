@@ -6,30 +6,16 @@ Feature:
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
     And A submission date of "2020-04-27"
-    And I add the following applicant details for the current assessment:
-      | date_of_birth               | 1972-12-20 |
-      | involvement_type            | applicant  |
-      | has_partner_opponent        | false      |
-      | receives_qualifying_benefit | false      |
     And I add the following proceeding types in the current assessment:
       | ccms_code | client_involvement_type |
       | DA001     | A                       |
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   | monthly_income | assets_value |
-      | 2008-12-20    | TRUE                   | child_relative | 0.00           | 0.00         |
+    And I have a dependant aged 2
     And I add the following irregular_income details in the current assessment:
       | income_type  | frequency | amount  |
       | student_loan | annual    | 1200.00 |
-    And I add the following outgoing details for "child_care" in the current assessment:
-      | payment_date | client_id | amount |
-      | 2020-02-29   | og-id1    | 200.00 |
-      | 2020-03-27   | og-id2    | 200.00 |
-      | 2020-04-26   | og-id3    | 200.00 |
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description | value  |
-      | Bank acc 1  | 3002.0 |
+    And I add outgoing details for "child_care" of 200 per month
+    And I add 3002 capital of type "bank_accounts"
     When I retrieve the final assessment
-
     Then I should see the following overall summary:
       | attribute                    | value                 |
       | assessment_result            | contribution_required |

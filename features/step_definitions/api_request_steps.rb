@@ -12,6 +12,7 @@ Given("I am undertaking a certificated assessment") do
   @employments = []
   @api_version = 6
   @capitals_data = {}
+  @dependant_data = { dependants: [] }
 end
 
 Given("An applicant who receives passporting benefits") do
@@ -27,16 +28,32 @@ Given("An Applicant of {int} years old") do |int|
   @applicant_data.merge! date_of_birth:
 end
 
-Given("I add disputed main property of value {int}") do |value|
-  @main_home = { subject_matter_of_dispute: true, value:, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
+Given("I add a disputed main property of value {int} and mortgage {int}") do |value, mortgage|
+  @main_home = { subject_matter_of_dispute: true, value:, outstanding_mortgage: mortgage, percentage_owned: 100, shared_with_housing_assoc: false }
+end
+
+Given("I add a disputed {int} percent share main property of value {int} and mortgage {int}") do |share, value, mortgage|
+  @main_home = { subject_matter_of_dispute: true, value:, outstanding_mortgage: mortgage, percentage_owned: share, shared_with_housing_assoc: false }
 end
 
 Given("I add a non-disputed main property of value {int}") do |value|
   @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: 0, percentage_owned: 100, shared_with_housing_assoc: false }
 end
 
+Given("I add a non-disputed main property of value {int} and mortgage {int}") do |value, mortgage|
+  @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: mortgage, percentage_owned: 100, shared_with_housing_assoc: false }
+end
+
+Given("I add a non-disputed {int} percent share main property of value {int} and mortgage {int}") do |share, value, mortgage|
+  @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: mortgage, percentage_owned: share, shared_with_housing_assoc: false }
+end
+
 Given("A submission date of {string}") do |date|
   @assessment_data.merge! submission_date: date
+end
+
+Given("A submission date post-mtr") do
+  @assessment_data.merge! submission_date: "2526-04-10"
 end
 
 Given("I am undertaking a controlled assessment") do
@@ -67,48 +84,32 @@ Given("A first tier asylum case") do
   @proceeding_type_data = { "proceeding_types": [{ ccms_code: CFEConstants::ASYLUM_PROCEEDING_TYPE_CCMS_CODE, client_involvement_type: "A" }] }
 end
 
-Given("I create an assessment with the following details:") do |table|
-  data = table.rows_hash
-
-  if data.key?("proceeding_types")
-    data["proceeding_types"] = { 'ccms_codes': data["proceeding_types"].split(";") }
-  end
-
-  @assessment_data = data.symbolize_keys
+Given("I have a dependant aged {int}") do |age|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << { date_of_birth: date_of_birth.to_s, in_full_time_education: true, relationship: "child_relative" }
 end
 
-Given("I add the following applicant details for the current assessment:") do |table|
-  @applicant_data.merge! cast_values(table.rows_hash)
-end
-
-Given("I add the following dependent details for the current assessment:") do |table|
-  data = table.hashes.map do |h|
-    amount = h["income_amount"]
-    frequency = h["income_frequency"]
-    if amount.present? && frequency.present?
-      h = cast_values(h)
-      h["income"] = { "amount" => amount.to_f, "frequency" => frequency }
-      h.except("income_amount", "income_frequency")
-    else
-      cast_values(h)
-    end
-  end
-  deps = data.map do |d|
-    d.symbolize_keys.slice(:date_of_birth, :in_full_time_education,
-                           :relationship, :income, :monthly_income, :income_frequency, :assets_value)
-  end
-  @dependant_data = {
-    "dependants": deps,
+Given("I have a dependant aged {int} with monthly income of {int}") do |age, income|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    monthly_income: income,
+    relationship: "child_relative",
   }
 end
 
-Given("I add the following other_income details for {string} in the current assessment:") do |string, table|
-  @other_incomes_data = { "other_incomes": [{ "source": string, "payments": table.hashes.map { cast_values(_1) } }] }
-end
-
-Given("I add the following housing benefit details for the applicant:") do |table|
-  @benefits_data = { state_benefits: [{ "name": "housing_benefit",
-                                        "payments": table.hashes.map { cast_values(_1) } }] }
+Given("I have a dependant aged {int} with {string} income of {int}") do |age, frequency, income|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    income: {
+      amount: income,
+      frequency:,
+    },
+    relationship: "child_relative",
+  }
 end
 
 Given("I add housing benefit of {int} per month") do |monthly_housing_benefit|
@@ -133,40 +134,27 @@ Given("I add the following irregular_income details in the current assessment:")
   @irregular_income_data = { "payments": table.hashes.map { cast_values(_1) } }
 end
 
-Given("I add the following outgoing details for {string} in the current assessment:") do |string, table|
-  @outgoings_data = { "outgoings": ["name": string, "payments": table.hashes.map { cast_values(_1) }] }
-end
-
 Given("I add outgoing details for {string} of {int} per month") do |outgoing_type, monthly_amount|
-  dates = %w[2021-05-10 2021-04-10 2021-03-10]
+  dates = %w[2020-03-10 2020-02-10 2020-01-10]
 
-  payments = if outgoing_type == "rent_or_mortgage"
-               dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount, housing_cost_type: "rent" } }
-             else
-               dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
-             end
+  the_payments = if outgoing_type == "rent_or_mortgage"
+                   dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount, housing_cost_type: "rent" } }
+                 else
+                   dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
+                 end
 
   @outgoings_data = { outgoings: [name: outgoing_type,
-                                  payments:] }
+                                  payments: the_payments] }
 end
 
-Given("I add the following capital details for {string} in the current assessment:") do |string, table|
-  capitals_data = { string.to_s => table.hashes.map { cast_values(_1) } }
-  @capitals_data.merge! capitals_data
+Given("I add {int} capital of type {string}") do |amount, capital_type|
+  @capitals_data[capital_type.to_sym] ||= []
+  @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
 end
 
-Given("I add the following statutory sick pay details for the client:") do |table|
-  @employments = [{ "name": "A",
-                    "client_id": "B",
-                    "receiving_only_statutory_sick_or_maternity_pay": true,
-                    "payments": table.hashes.map { cast_values(_1) } }]
-  @applicant_data.merge! employed: true
-end
-
-Given("I add the following employment details for the partner:") do |table|
-  @partner_employments = [{ "name": "A",
-                            "client_id": "B",
-                            "payments": table.hashes.map { cast_values(_1) } }]
+Given("I add {int} disputed capital of type {string}") do |amount, capital_type|
+  @capitals_data[capital_type.to_sym] ||= []
+  @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount, subject_matter_of_dispute: true }
 end
 
 Given("I add the following employment details:") do |table|
@@ -177,35 +165,15 @@ Given("I add the following employment details:") do |table|
 end
 
 Given("I add employment income of {int} per month") do |monthly_income|
-  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
-    {
-      client_id: "client_id",
-      date:,
-      gross: monthly_income,
-      benefits_in_kind: 0,
-      tax: 0.00,
-      national_insurance: 0.0,
-    }
-  end
-  @employments << { "name": "A",
-                    "client_id": "B",
-                    "payments": payments }
+  @employments << employment_payments_from_income(monthly_income)
+end
+
+Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
+  @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
 end
 
 Given("I add partner employment income of {int} per month") do |monthly_income|
-  payments = %w[2012-06-22 2012-07-22 2012-08-22].map do |date|
-    {
-      client_id: "client_id",
-      date:,
-      gross: monthly_income,
-      benefits_in_kind: 0,
-      tax: 0.00,
-      national_insurance: 0.0,
-    }
-  end
-  @partner_employments = [{ "name": "A",
-                            "client_id": "B",
-                            "payments": payments }]
+  @partner_employments = [employment_payments_from_income(monthly_income)]
 end
 
 Given("I add {string} outgoings of {int} per month") do |name, amount|
@@ -244,20 +212,17 @@ Given("I add {string} regular_transactions of {int} per month") do |category, am
   }]
 end
 
-Given("I add the following regular_transaction details for the partner:") do |table|
-  @partner_regular_transactions = table.hashes.map { cast_values(_1) }
-end
-
-Given("I add the following regular_transaction details:") do |table|
-  @regular_transactions = table.hashes.map { cast_values(_1) }
+Given("I add {string} partner regular_transactions of {int} per month") do |category, amount|
+  @partner_regular_transactions = [{
+    category:,
+    frequency: "monthly",
+    operation: "debit",
+    amount:,
+  }]
 end
 
 Given("I add the following additional property details for the partner in the current assessment:") do |table|
   @partner_property = [cast_values(table.rows_hash)]
-end
-
-Given("I add the following main property details for the current assessment:") do |table|
-  @main_home = { percentage_owned: 100, shared_with_housing_assoc: false }.merge(cast_values(table.rows_hash))
 end
 
 Given("I add the following additional property details for the current assessment:") do |table|

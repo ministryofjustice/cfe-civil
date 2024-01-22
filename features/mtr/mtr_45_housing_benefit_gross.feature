@@ -21,7 +21,7 @@ Feature:
 
   Scenario: Housing benefit causes gross income threshold to be exceeded
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 2600 per month
     And I add "rent_or_mortgage" outgoings of 2200 per month
     And I add housing benefit of 350 per month

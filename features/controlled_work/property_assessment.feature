@@ -4,12 +4,7 @@ Feature:
   Scenario: An applicant has property and sale costs are not disregarded
     Given I am undertaking a controlled assessment
     And An applicant who receives passporting benefits
-    And I add the following main property details for the current assessment:
-      | value                     | 163000 |
-      | outstanding_mortgage      | 13000  |
-      | percentage_owned          | 100    |
-      | shared_with_housing_assoc | false  |
-      | subject_matter_of_dispute | false  |
+    And I add a non-disputed main property of value 163000 and mortgage 13000
     When I retrieve the final assessment
     Then I should see the following "main property" details:
       | attribute                  | value    |

@@ -3,8 +3,7 @@ Feature:
 
   Scenario: SMOD Disregard Cap is applied
     Given I am undertaking a certificated assessment
-    And A submission date of "2023-04-10"
-    And I add disputed main property of value 200000
+    And I add a disputed main property of value 200000 and mortgage 0
     When I retrieve the final assessment
     Then I should see the following "capital summary" details:
       | attribute                  | value    |
@@ -12,8 +11,8 @@ Feature:
 
   Scenario: SMOD Disregard Cap is removed under MTR rules
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
-    And I add disputed main property of value 200000
+    And A submission date post-mtr
+    And I add a disputed main property of value 200000 and mortgage 0
     When I retrieve the final assessment
     Then I should see the following "capital summary" details:
       | attribute                  | value    |
@@ -21,8 +20,7 @@ Feature:
 
   Scenario: SMOD Disregard Cap is applied
     Given I am undertaking a controlled assessment
-    And A submission date of "2023-04-10"
-    And I add disputed main property of value 200000
+    And I add a disputed main property of value 200000 and mortgage 0
     When I retrieve the final assessment
     Then I should see the following "capital summary" details:
       | attribute                  | value    |
@@ -30,9 +28,9 @@ Feature:
 
   Scenario: SMOD Disregard Cap is removed under MTR rules, gross income above lower threshold
     Given I am undertaking a controlled assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add employment income of 1000 per month
-    And I add disputed main property of value 200000
+    And I add a disputed main property of value 200000 and mortgage 0
     When I retrieve the final assessment
     Then I should see the following "capital summary" details:
       | attribute                           |  value   |

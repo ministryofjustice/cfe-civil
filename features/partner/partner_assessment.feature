@@ -5,12 +5,7 @@ Feature:
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
     And A domestic abuse case
-    And I add the following main property details for the current assessment:
-      | value                     | 150000 |
-      | outstanding_mortgage      | 145000 |
-      | percentage_owned          | 100    |
-      | shared_with_housing_assoc | false  |
-      | subject_matter_of_dispute | true   |
+    And I add a disputed main property of value 150000 and mortgage 145000
     And I add the following additional property details for the partner in the current assessment:
       | value                       | 170000.00 |
       | outstanding_mortgage        | 100000.00 |
@@ -43,9 +38,7 @@ Feature:
 Scenario: An applicant and partner's combined capital is over the lower threshold
   Given I am undertaking a certificated assessment
   And An applicant who receives passporting benefits
-  And I add the following capital details for "bank_accounts" in the current assessment:
-    | description  | value   | subject_matter_of_dispute |
-    | Bank account | 2000.0  | false                     |
+  And I add 2000 capital of type "bank_accounts"
   And I add the following capital details for "bank_accounts" for the partner:
     | description  | value   |
     | Bank account | 2000.0  |
@@ -58,32 +51,24 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: An unemployed applicant with an employed partner
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details for the partner:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
-      |     C     |  2022-07-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-08-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-09-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
+    And I add partner employment income of 590 per month
     When I retrieve the final assessment
     Then I should see the following "overall_disposable_income" details:
       | attribute                        | value   |
-      | total_disposable_income          | 545.5   |
+      | total_disposable_income          | 545.0   |
     And I should see the following "disposable_income_summary" details:
       | attribute                        | value   |
-      | combined_total_disposable_income | 354.09  |
+      | combined_total_disposable_income | 353.59  |
     And I should see the following overall summary:
       | attribute                  | value                 |
       | assessment_result          | contribution_required |
-      | income contribution        | 15.08                 |
+      | income contribution        | 14.91                 |
       | capital contribution       | 0.0                   |
 
   Scenario: A applicant with a partner with capital and both pensioners
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details for the partner:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
-      |     C     |  2022-07-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-08-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-09-22  | 500.50 |       0           | 75.00 |       15.0         |        410.5          |
+    And I add partner employment income of 590 per month
     And I add the following additional property details for the partner in the current assessment:
       | value                       | 170000.00 |
       | outstanding_mortgage        | 100000.00 |
@@ -94,21 +79,15 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
     And I should see the following overall summary:
       | attribute                  | value                 |
       | assessment_result          | ineligible            |
-      | income contribution        | 15.08                 |
+      | income contribution        | 14.91                 |
       | capital contribution       | 61900.0               |
 
   Scenario: A applicant with housing benefit and a partner with housing costs
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
     And A domestic abuse case
-    And I add the following housing benefit details for the applicant:
-      | client_id |     date     |  amount |
-      |     C     |  2021-07-22  | 500.0   |
-      |     C     |  2021-08-22  | 500.0   |
-      |     C     |  2021-09-22  | 500.0   |
-    And I add the following regular_transaction details for the partner:
-      | operation | category         | frequency | amount |
-      | debit     | rent_or_mortgage | monthly   | 600.0  |
+    And I add housing benefit of 500 per month
+    And I add "rent_or_mortgage" partner regular_transactions of 600 per month
     When I retrieve the final assessment
     And I should see the following overall summary:
       | attribute                      | value    |
@@ -118,11 +97,7 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: An applicant with an employed partner who is over the gross income threshold
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details for the partner:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
-      |     C     |  2022-07-22  | 5000.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-08-22  | 5000.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-09-22  | 5000.50 |       0           | 75.00 |       15.0         |        410.5          |
+    And I add partner employment income of 5090 per month
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute                  | value                 |
@@ -131,9 +106,7 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
   Scenario: A partner case on or after 10th April 2023
     Given I am undertaking a certificated assessment
     And A submission date of "2023-04-10"
-    And I add the following dependent details for the current assessment:
-      | date_of_birth | in_full_time_education | relationship   | monthly_income | assets_value |
-      | 2008-12-20    | TRUE                   | child_relative | 0.00           | 0.00         |
+    And I have a dependant aged 2
     And I add the following capital details for "bank_accounts" for the partner:
       | description  | value   |
       | Bank account | 2000.0  |

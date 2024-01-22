@@ -37,3 +37,17 @@ def blank_main_home
     subject_matter_of_dispute: false,
   }
 end
+
+def employment_payments_from_income(monthly_income, benefits: 0, tax: 0, national_insurance: 0)
+  payments = %w[2012-06-21 2012-07-21 2012-08-21].map do |date|
+    {
+      client_id: "client_id",
+      date:,
+      gross: monthly_income,
+      benefits_in_kind: benefits,
+      tax: -tax,
+      national_insurance: -national_insurance,
+    }
+  end
+  { "name": "A", "client_id": "B", "payments": payments }
+end

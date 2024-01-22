@@ -3,7 +3,7 @@ Feature:
 
   Scenario: Just above the contribution threshold (so zero)
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 1234 per month
     When I retrieve the final assessment
@@ -18,7 +18,7 @@ Feature:
 
   Scenario: A bit more above the contribution threshold
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 1204 per month
     When I retrieve the final assessment
@@ -32,7 +32,7 @@ Feature:
 
   Scenario: Band B
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 1126 per month
     When I retrieve the final assessment
@@ -46,7 +46,7 @@ Feature:
 
   Scenario: Band C
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 1018 per month
     When I retrieve the final assessment
@@ -60,7 +60,7 @@ Feature:
 
   Scenario: Above Band C
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 910 per month
     When I retrieve the final assessment
@@ -74,7 +74,7 @@ Feature:
   Scenario: Above Band C Domestic abuse case - contributions continue at 80%
     Given I am undertaking a certificated assessment
     And A domestic abuse case
-    And A submission date of "2525-12-31"
+    And A submission date post-mtr
     And I add employment income of 1952 per month
     And I add outgoing details for "rent_or_mortgage" of 910 per month
     When I retrieve the final assessment

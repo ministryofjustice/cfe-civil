@@ -3,9 +3,7 @@ Feature:
 
   Scenario: 1 The single client is employed, has 1 job and is not receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax | national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                | -50 | -30                | false                                          |
+    And I add employment income of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -13,9 +11,7 @@ Feature:
 
   Scenario: 2 The single client is employed, has 1 job and is receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax  | national_insurance  | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
+    And The "client" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -23,10 +19,8 @@ Feature:
 
   Scenario: 3 The single client is employed, has 2 jobs and is receiving SSP/SMP for one of them
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax  |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
+    And The "client" earns 1200 per month
+    And The "client" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -41,9 +35,7 @@ Feature:
 
   Scenario: 5 The single client is self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" self employment details in the current assessment:
-      | frequency | gross    |  tax |  national_insurance |
-      | monthly   | 1200.00  |  -50 | -30                 |
+    And The "client" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -51,12 +43,8 @@ Feature:
 
   Scenario: 6 The single client is employed & self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-    And I add the following "client" self employment details in the current assessment:
-      | frequency | gross    | tax |  national_insurance |
-      | monthly   | 1200.00  | -50 | -30                 |
+    And I add employment income of 1200 per month
+    And The "client" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -64,12 +52,8 @@ Feature:
 
   Scenario: 7 The single client is employed (receiving SSP/SMP) & self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
-    And I add the following "client" self employment details in the current assessment:
-      | frequency | gross    |  tax |  national_insurance |
-      | monthly   | 1200.00  |  -50 | -30                 |
+    And The "client" earns 1200 per month in statutory sick pay
+    And The "client" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -77,9 +61,7 @@ Feature:
 
   Scenario: 8 The partner is employed, has 1 job and not receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And The "partner" earns 1200 per month
     When I retrieve the final assessment
     Then I should see the following "partner_employment" details:
       | attribute                  | value    |
@@ -87,9 +69,7 @@ Feature:
 
   Scenario: 9 The partner is employed, has 1 job and is receiving SSP/SMP
     Given I am undertaking a controlled assessment
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax | national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                | true                                           |
+    And The "partner" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -97,10 +77,8 @@ Feature:
 
   Scenario: 10: The partner is employed, has 2 jobs and is receiving SSP/SMP for one of them
     Given I am undertaking a controlled assessment
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And The "partner" earns 1200 per month
+    And The "partner" earns 1200 per month in statutory sick pay
     When I retrieve the final assessment
     Then I should see the following "partner_employment" details:
       | attribute                  | value    |
@@ -124,9 +102,7 @@ Feature:
 
   Scenario: 12: The partner is self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "partner" self employment details in the current assessment:
-      | frequency | gross    |  tax |  national_insurance |
-      | monthly   | 1200.00  |  -50 | -30                 |
+    And The "partner" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -137,12 +113,8 @@ Feature:
 
   Scenario: 13: The partner is employed & self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-    And I add the following "partner" self employment details in the current assessment:
-      | frequency | gross    |  tax |  national_insurance |
-      | monthly   | 1200.00  |  -50 | -30                 |
+    And The "partner" earns 1200 per month
+    And The "partner" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -153,12 +125,8 @@ Feature:
 
   Scenario: 14: The partner is employed (receiving SSP/SMP) & self-employed
     Given I am undertaking a controlled assessment
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | true                                           |
-    And I add the following "partner" self employment details in the current assessment:
-      | frequency | gross    |  tax |  national_insurance |
-      | monthly   | 1200.00  |  -50 | -30                 |
+    And The "partner" earns 1200 per month in statutory sick pay
+    And The "partner" has self employment earnings of 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -169,12 +137,8 @@ Feature:
 
   Scenario: 15 - The client and partner are both employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind | tax  |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And I add employment income of 1200 per month
+    And The "partner" earns 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |
@@ -185,13 +149,9 @@ Feature:
 
   Scenario: 16 - The client is employed, has 2 jobs and the partner is also employed
     Given I am undertaking a controlled assessment
-    And I add the following "client" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
-    And I add the following "partner" employment details in the current assessment:
-      | frequency | gross    | benefits_in_kind |  tax |  national_insurance | receiving_only_statutory_sick_or_maternity_pay |
-      | monthly   | 1200.00  | 0                |  -50 | -30                 | false                                          |
+    And The "client" earns 1200 per month
+    And The "client" earns 1200 per month
+    And The "partner" earns 1200 per month
     When I retrieve the final assessment
     Then I should see the following "employment" details:
       | attribute                  | value    |

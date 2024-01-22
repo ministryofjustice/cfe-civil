@@ -3,7 +3,6 @@ Feature:
 
   Scenario: pre-MTR - Housing benefit treated specially
     Given I am undertaking a certificated assessment
-    And A submission date of "2023-04-10"
     And I add other income "friends_or_family" of 100 per month
     And I add "rent_or_mortgage" outgoings of 50 per month
     And I add housing benefit of 10 per month
@@ -26,7 +25,7 @@ Feature:
 
   Scenario: Post MTR - Housing benefit included in allowed housing costs / Disposable Income
     Given I am undertaking a certificated assessment
-    And A submission date of "2525-04-10"
+    And A submission date post-mtr
     And I add other income "friends_or_family" of 100 per month
     And I add "rent_or_mortgage" outgoings of 50 per month
     And I add housing benefit of 10 per month

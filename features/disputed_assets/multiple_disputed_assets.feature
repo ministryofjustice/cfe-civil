@@ -4,21 +4,14 @@ Feature:
   Scenario: A client with disputed property and vehicle
     Given I am undertaking a certificated assessment
     And An applicant who receives passporting benefits
-    And I add the following main property details for the current assessment:
-      | value                     | 150000 |
-      | outstanding_mortgage      | 100000 |
-      | percentage_owned          | 100    |
-      | shared_with_housing_assoc | false  |
-      | subject_matter_of_dispute | true   |
+    And I add a disputed main property of value 150000 and mortgage 100000
     And I add the following vehicle details for the current assessment:
       | value                     | 18000      |
       | loan_amount_outstanding   | 0          |
       | date_of_purchase          | 2018-11-23 |
       | in_regular_use            | false      |
       | subject_matter_of_dispute | true       |
-    And I add the following capital details for "bank_accounts" in the current assessment:
-      | description  | value   | subject_matter_of_dispute |
-      | Bank account | 5000.0  | true                      |
+    And I add 5000 disputed capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following "main property" details:
       | attribute                  | value    |

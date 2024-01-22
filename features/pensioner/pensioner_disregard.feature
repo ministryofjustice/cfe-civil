@@ -4,21 +4,9 @@ Feature:
   Scenario: An applicant over 60 with enough disposable income to reduce the pensioner disregard
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance | net_employment_income |
-      |     C     |  2022-07-22  | 900.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-08-22  | 900.50 |       0           | 75.00 |       15.0         |        410.5          |
-      |     C     |  2022-09-22  | 900.50 |       0           | 75.00 |       15.0         |        410.5          |
-    And I add the following outgoing details for "maintenance_out" in the current assessment:
-      | payment_date | client_id | amount  |
-      | 2022-05-10   | id7       | 550.00  |
-      | 2022-04-10   | id8       | 550.00  |
-      | 2022-03-10   | id9       | 550.00  |
-    And I add the following main property details for the current assessment:
-      | value                     | 140000 |
-      | outstanding_mortgage      | 16000  |
-      | percentage_owned          | 100    |
-      | shared_with_housing_assoc | false  |
+    And I add employment income of 1000 per month
+    And I add outgoing details for "maintenance_out" of 550 per month
+    And I add a non-disputed main property of value 140000 and mortgage 16000
     And I add the following capital details for "bank_accounts" for the partner:
       | description  | value   |
       | Bank account | 2000.0  |
@@ -42,14 +30,8 @@ Feature:
   Scenario: A pensioner applicant with a partner - pensioner disregard applies across combined capital
     Given I am undertaking a certificated assessment
     And An applicant who is a pensioner
-    And I add the following employment details:
-      | client_id |     date     |  gross | benefits_in_kind  | tax   | national_insurance |
-      |     C     |  2022-07-22  | 200.50 |       0           | 75.00 |       15.0         |
-      |     C     |  2022-08-22  | 200.50 |       0           | 75.00 |       15.0         |
-      |     C     |  2022-09-22  | 200.50 |       0           | 75.00 |       15.0         |
-    And I add the following capital details for "non_liquid_capital" in the current assessment:
-      | description    | value   | subject_matter_of_dispute |
-      | Investment     | 10000.0 | false                     |
+    And I add employment income of 300 per month
+    And I add 10000 capital of type "non_liquid_capital"
     And I add the following additional property details for the partner in the current assessment:
       | value                       | 170000.00 |
       | outstanding_mortgage        | 100000.00 |

@@ -7,15 +7,6 @@ Feature:
 
   Scenario: The client is employed, but received a tax refund during the calculation period
     Given I am undertaking a certificated assessment
-    And A submission date of "2023-01-10"
-    And I add the following applicant details for the current assessment:
-      | date_of_birth               | 1979-12-20 |
-      | involvement_type            | applicant  |
-      | has_partner_opponent        | false      |
-      | receives_qualifying_benefit | false      |
-    And I add the following proceeding types in the current assessment:
-      | ccms_code | client_involvement_type |
-      | SE013     | A                       |
     And I add the following employment details:
       | client_id |     date     |  gross  | benefits_in_kind  | tax    | national_insurance  |
       | C         | 2022-06-22   | -200.00 | 0                 |-30.00  |-25.00               |
@@ -23,18 +14,18 @@ Feature:
       | C         | 2022-08-22   | -200.00 | 0                 |-30.00  |-25.00               |
     When I retrieve the final assessment
     Then I should see the following "employment" details:
-      | attribute                  | value  |
-      | gross_income               | 33.33  |
-      | benefits_in_kind           | 33.33  |
-      | fixed_employment_deduction | -45.0  |
-      | tax                        | 13.33  |
-      | national_insurance         |   0.0  |
-      | net_employment_income      | 34.99  |
+      | attribute                       | value  |
+      | gross_income                    | 33.33  |
+      | benefits_in_kind                | 33.33  |
+      | fixed_employment_deduction      | -45.0  |
+      | tax                             | 13.33  |
+      | national_insurance              |   0.0  |
+      | net_employment_income           | 34.99  |
     And I should see the following remarks indicating caseworker referral
-      | type                       |  issue           |
-      | client_employment_tax             | refunds          |
-      | client_employment_nic             | refunds          |
-      | client_employment_gross_income    | amount_variation |
+      | type                            |  issue           |
+      | client_employment_tax           | refunds          |
+      | client_employment_nic           | refunds          |
+      | client_employment_gross_income  | amount_variation |
 
 #  When there are multiple employments, HMRC does not provide unique identifiers tying each pay period to a specific employment
 #  Therefore once again the calculation in (1) cannot be achieved but for a different reason/s.
@@ -45,15 +36,6 @@ Feature:
 #
   Scenario: The client is employed, but has more than one job
     Given I am undertaking a certificated assessment
-    And A submission date of "2023-01-10"
-    And I add the following applicant details for the current assessment:
-      | date_of_birth               | 1979-12-20 |
-      | involvement_type            | applicant  |
-      | has_partner_opponent        | false      |
-      | receives_qualifying_benefit | false      |
-    And I add the following proceeding types in the current assessment:
-      | ccms_code | client_involvement_type |
-      | SE013     | A                       |
     And I add the following employment details:
       | client_id |     date     |  gross  | benefits_in_kind  | tax    | national_insurance |
       | C         |  2022-06-22  |  500    |0                  |-55     |-25                 |
@@ -74,5 +56,5 @@ Feature:
       | national_insurance         |   0.0  |
       | net_employment_income      | -45.0  |
     And I should see the following remarks indicating caseworker referral
-      | type         |          issue          |
+      | type                |          issue          |
       | client_employment   |   multiple_employments  |
