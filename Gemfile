@@ -49,7 +49,7 @@ gem "descriptive_statistics", require: "descriptive_statistics/safe"
 gem "google_drive", ">= 3.0.7"
 
 # parse spreadsheets
-gem "roo", "~> 2.10.0"
+gem "roo", "~> 2.10.1"
 
 # Required following upgrade to ruby 3.1.0
 gem "net-imap"
