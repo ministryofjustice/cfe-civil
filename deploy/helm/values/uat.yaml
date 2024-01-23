@@ -7,9 +7,9 @@ replicaCount: 2
 resources:
   limits:
     cpu: 500m
-    memory: 1G
+    memory: 500Mi
   requests:
-    cpu: 10m
+    cpu: 50m
     memory: 125Mi
 
 ingress:
