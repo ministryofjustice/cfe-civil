@@ -2,16 +2,20 @@ require "rails_helper"
 
 module Creators
   RSpec.describe DisposableIncomeEligibilityCreator do
-    let(:proceeding_types) { assessment.proceeding_types }
-    let(:proceeding_hash) { [%w[DA002 A], %w[SE013 Z], %w[IM030 A]] }
+    let(:proceeding_types) do
+      [
+        build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "Z"),
+        build(:proceeding_type, :with_unwaived_thresholds, ccms_code: "IM030", client_involvement_type: "A"),
+      ]
+    end
 
     let(:creator) do
-      described_class.call(proceeding_types: assessment.proceeding_types, submission_date: assessment.submission_date,
+      described_class.call(proceeding_types:, submission_date: assessment.submission_date,
                            level_of_help: assessment.level_of_help, total_disposable_income: 0)
     end
     let(:assessment) do
       create :assessment,
-             proceedings: proceeding_hash,
              level_of_help:
     end
 
@@ -26,14 +30,14 @@ module Creators
         let(:level_of_help) { "certificated" }
 
         it "creates eligibilty record with correct waived thresholds" do
-          pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
+          pt = proceeding_types.detect { _1.ccms_code == "DA002" && _1.client_involvement_type == "A" }
           elig = creator.detect { |p| p.proceeding_type.ccms_code == "DA002" }
           expect(elig.upper_threshold).to eq pt.disposable_income_upper_threshold
           expect(elig.lower_threshold).to eq 315.0
         end
 
         it "creates eligibilty record with correct un-waived thresholds" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
+          pt = proceeding_types.detect { _1.ccms_code == "SE013" && _1.client_involvement_type == "Z" }
           elig = creator.detect { |p| p.proceeding_type.ccms_code == "SE013" }
           expect(elig.upper_threshold).to eq pt.disposable_income_upper_threshold
           expect(elig.lower_threshold).to eq 315.0
@@ -49,7 +53,7 @@ module Creators
         let(:level_of_help) { "controlled" }
 
         it "uses controlled lower threshold" do
-          pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
+          pt = proceeding_types.detect { _1.ccms_code == "SE013" && _1.client_involvement_type == "Z" }
           elig = creator.detect { |p| p.proceeding_type.ccms_code == "SE013" }
           expect(elig.upper_threshold).to eq pt.disposable_income_upper_threshold
           expect(elig.lower_threshold).to eq 733.0

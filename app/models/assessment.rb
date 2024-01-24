@@ -14,10 +14,4 @@ class Assessment < ApplicationRecord
   }
 
   has_many :explicit_remarks, dependent: :destroy
-  has_many :proceeding_types,
-           dependent: :destroy
-
-  def proceeding_type_codes
-    proceeding_types.order(:ccms_code).map(&:ccms_code)
-  end
 end

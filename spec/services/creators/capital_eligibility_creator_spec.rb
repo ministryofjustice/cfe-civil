@@ -4,8 +4,15 @@ module Creators
   RSpec.describe CapitalEligibilityCreator do
     let(:assessment) do
       create :assessment,
-             level_of_help:,
-             proceedings: [%w[DA002 A], %w[SE013 Z], %w[IM030 A], %w[IA031 A]]
+             level_of_help:
+    end
+    let(:proceeding_types) do
+      [
+        build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "Z"),
+        build(:proceeding_type, ccms_code: "IM030", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "IA031", client_involvement_type: "A"),
+      ]
     end
 
     describe "lower_capital_threshold" do
@@ -13,7 +20,7 @@ module Creators
 
       context "with many proceeding types" do
         let(:lower_threshold) do
-          described_class.lower_capital_threshold(proceeding_types: assessment.proceeding_types,
+          described_class.lower_capital_threshold(proceeding_types:,
                                                   level_of_help: assessment.level_of_help,
                                                   submission_date: assessment.submission_date)
         end
@@ -39,13 +46,12 @@ module Creators
     describe "#call" do
       let(:summary) { assessment.applicant_capital_summary }
       let(:creator) do
-        described_class.call(proceeding_types: assessment.proceeding_types,
+        described_class.call(proceeding_types:,
                              level_of_help: assessment.level_of_help,
                              assessed_capital: 0,
                              submission_date: assessment.submission_date).index_by { |p| p.proceeding_type.ccms_code }
       end
       let(:eligibilities) { assessment.applicant_capital_summary.eligibilities }
-      let(:proceeding_types) { assessment.proceeding_types }
 
       before do
         Utilities::ProceedingTypeThresholdPopulator.certificated proceeding_types:,
@@ -67,14 +73,14 @@ module Creators
           end
 
           it "creates eligibility record with correct waived thresholds" do
-            pt = proceeding_types.find_by!(ccms_code: "DA002", client_involvement_type: "A")
+            pt = proceeding_types.detect { |p| p.ccms_code == "DA002" && p.client_involvement_type == "A" }
             elig = creator.fetch("DA002")
             expect(elig.upper_threshold).to eq pt.capital_upper_threshold
             expect(elig.lower_threshold).to eq 3_000.0
           end
 
           it "creates eligibility record with correct un-waived thresholds" do
-            pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
+            pt = proceeding_types.detect { |p| p.ccms_code == "SE013" && p.client_involvement_type == "Z" }
             elig = creator.fetch("SE013")
             expect(elig.upper_threshold).to eq pt.capital_upper_threshold
             expect(elig.lower_threshold).to eq 3_000.0
@@ -97,7 +103,7 @@ module Creators
           let(:level_of_help) { "controlled" }
 
           it "uses controlled lower threshold" do
-            pt = proceeding_types.find_by!(ccms_code: "SE013", client_involvement_type: "Z")
+            pt = proceeding_types.detect { |p| p.ccms_code == "SE013" && p.client_involvement_type == "Z" }
             elig = creator.fetch("SE013")
             expect(elig.upper_threshold).to eq pt.capital_upper_threshold
             expect(elig.lower_threshold).to eq 8_000.0

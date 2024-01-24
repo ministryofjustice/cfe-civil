@@ -5,21 +5,17 @@ module Utilities
         waiver_data = retrieve_waiver_data(proceeding_types)
         proceeding_types.each do |proceeding_type|
           waivers = waiver_data.fetch(proceeding_type.ccms_code, {})
-          proceeding_type.update!(
-            gross_income_upper_threshold: determine_threshold_for(:gross_income_upper, waivers[:gross_income_upper], submission_date),
-            disposable_income_upper_threshold: determine_threshold_for(:disposable_income_upper, waivers[:disposable_income_upper], submission_date),
-            capital_upper_threshold: determine_threshold_for(:capital_upper, waivers[:capital_upper], submission_date),
-          )
+          proceeding_type.gross_income_upper_threshold = determine_threshold_for(:gross_income_upper, waivers[:gross_income_upper], submission_date)
+          proceeding_type.disposable_income_upper_threshold = determine_threshold_for(:disposable_income_upper, waivers[:disposable_income_upper], submission_date)
+          proceeding_type.capital_upper_threshold = determine_threshold_for(:capital_upper, waivers[:capital_upper], submission_date)
         end
       end
 
       def controlled(proceeding_types:, submission_date:)
         proceeding_types.each do |proceeding_type|
-          proceeding_type.update!(
-            gross_income_upper_threshold: standard_value(:gross_income_upper, submission_date),
-            disposable_income_upper_threshold: standard_value(:disposable_income_upper, submission_date),
-            capital_upper_threshold: standard_value(:capital_upper, submission_date),
-          )
+          proceeding_type.gross_income_upper_threshold = standard_value(:gross_income_upper, submission_date)
+          proceeding_type.disposable_income_upper_threshold = standard_value(:disposable_income_upper, submission_date)
+          proceeding_type.capital_upper_threshold = standard_value(:capital_upper, submission_date)
         end
       end
 
@@ -34,7 +30,7 @@ module Utilities
       end
 
       def proceeding_type_details(proceeding_types)
-        proceeding_types.order(:ccms_code).map do |pt|
+        proceeding_types.sort_by(&:ccms_code).map do |pt|
           { ccms_code: pt.ccms_code, client_involvement_type: pt.client_involvement_type }
         end
       end

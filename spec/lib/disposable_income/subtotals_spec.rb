@@ -9,7 +9,8 @@ module DisposableIncome
     end
 
     let(:submission_date) { Date.new(2525, 4, 25) }
-    let(:assessment) { create(:assessment, submission_date:) }
+    let(:assessment) { build(:assessment, submission_date:) }
+    let(:proceeding_types) { build_list(:proceeding_type, 1, :with_unwaived_thresholds) }
     let(:subtotals) do
       described_class.new(
         partner_disposable_income_subtotals: PersonDisposableIncomeSubtotals.blank,
@@ -28,7 +29,7 @@ module DisposableIncome
 
     context "when income contribution under £20" do
       it "returns eligible" do
-        expect(subtotals.summarized_assessment_result(assessment.proceeding_types)).to eq(:eligible)
+        expect(subtotals.summarized_assessment_result(proceeding_types)).to eq(:eligible)
       end
     end
   end

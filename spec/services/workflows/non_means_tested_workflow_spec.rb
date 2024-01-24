@@ -2,10 +2,14 @@ require "rails_helper"
 
 module Workflows
   RSpec.describe NonMeansTestedWorkflow do
-    let(:proceedings_hash) { [%w[DA003 A], %w[SE013 I]] }
+    let(:proceeding_types) do
+      [
+        build(:proceeding_type, ccms_code: "DA003", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "I"),
+      ]
+    end
     let(:assessment) do
-      create :assessment,
-             proceedings: proceedings_hash
+      create :assessment
     end
 
     context "applicant is asylum_supported" do
@@ -20,12 +24,12 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(false)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(false)
           end
         end
 
         context "before MTR changes, require proceeding type check" do
-          let(:proceedings_hash) { [%w[IM030 A]] }
+          let(:proceeding_types) { build_list(:proceeding_type, 1, ccms_code: "IM030", client_involvement_type: "A") }
 
           it "is not means tested" do
             expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
@@ -34,7 +38,7 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(true)
           end
         end
 
@@ -52,7 +56,7 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: assessment.proceeding_types.map(&:ccms_code))).to eq(true)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(true)
           end
         end
       end

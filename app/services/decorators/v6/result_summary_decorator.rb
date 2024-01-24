@@ -3,16 +3,17 @@ module Decorators
     class ResultSummaryDecorator
       attr_reader :assessment
 
-      def initialize(assessment:, calculation_output:, partner_present:, eligibility_result:)
+      def initialize(assessment:, calculation_output:, partner_present:, eligibility_result:, proceeding_types:)
         @assessment = assessment
         @calculation_output = calculation_output
         @partner_present = partner_present
         @eligibility_result = eligibility_result
+        @proceeding_types = proceeding_types
       end
 
       def as_json
-        capital_contribution = @calculation_output.capital_subtotals.capital_contribution(assessment.proceeding_types).to_f
-        income_contribution = @calculation_output.income_contribution(assessment.proceeding_types)
+        capital_contribution = @calculation_output.capital_subtotals.capital_contribution(@proceeding_types).to_f
+        income_contribution = @calculation_output.income_contribution(@proceeding_types)
 
         assessment_results = @eligibility_result.assessment_results.map do |proceeding_type, result|
           {

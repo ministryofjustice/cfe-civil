@@ -62,6 +62,7 @@ module Decorators
           described_class.new(assessment: assessment.reload, calculation_output:,
                               applicant:,
                               partner:,
+                              proceeding_types: [],
                               eligibility_result:,
                               version:,
                               remarks:).as_json

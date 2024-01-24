@@ -4,9 +4,9 @@ module Workflows
   RSpec.describe NonPassportedWorkflow do
     let(:assessment) do
       create :assessment,
-             submission_date: Date.new(2022, 6, 7),
-             proceedings: proceeding_type_codes.map { |p| [p, "A"] }, level_of_help:
+             submission_date: Date.new(2022, 6, 7), level_of_help:
     end
+    let(:proceeding_types) { proceeding_type_codes.map { |p| build(:proceeding_type, :with_unwaived_thresholds, ccms_code: p, client_involvement_type: "A") } }
     let(:partner) { nil }
     let(:applicant) { build(:applicant, employed:, dependants:) }
     let(:employments) { [] }
@@ -53,19 +53,19 @@ module Workflows
                                                                                        additional_properties: partner_additional_properties))
 
                described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                            proceeding_types: assessment.proceeding_types,
+                                            proceeding_types:,
                                             applicant: applicant_data,
                                             partner: partner_data).calculation_output
-               EligibilityResults.with_partner(proceeding_types: assessment.proceeding_types,
+               EligibilityResults.with_partner(proceeding_types:,
                                                submission_date: assessment.submission_date,
                                                applicant: applicant_data,
                                                partner: partner_data,
                                                level_of_help: assessment.level_of_help)
              else
                described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                               proceeding_types: assessment.proceeding_types,
+                                               proceeding_types:,
                                                applicant: applicant_data).calculation_output
-               EligibilityResults.without_partner(proceeding_types: assessment.proceeding_types,
+               EligibilityResults.without_partner(proceeding_types:,
                                                   submission_date: assessment.submission_date,
                                                   applicant: applicant_data,
                                                   level_of_help: assessment.level_of_help)
@@ -83,7 +83,7 @@ module Workflows
           let(:calculation_output) do
             assessment.reload
             described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                            proceeding_types: assessment.proceeding_types,
+                                            proceeding_types:,
                                             applicant: build(:person_data, details: build(:applicant),
                                                                            self_employments:,
                                                                            capitals_data: build(:capitals_data, main_home:, additional_properties:))).calculation_output
@@ -315,6 +315,7 @@ module Workflows
           context "with housing costs" do
             let(:employed) { true }
             let(:dependants) { [] }
+            let(:proceeding_types) { proceeding_type_codes.map { |p| build(:proceeding_type, :with_waived_thresholds, ccms_code: p, client_involvement_type: "A") } }
             let(:proceeding_type_codes) { %w[DA001] }
             let(:employments) { build_list(:employment, 1, :with_monthly_payments, submission_date: assessment.submission_date, gross_monthly_income: 3_000) }
 
