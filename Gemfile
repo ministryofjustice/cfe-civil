@@ -46,11 +46,6 @@ gem "dibber"
 # Adds Statistical methods to objects such as arrays
 gem "descriptive_statistics", require: "descriptive_statistics/safe"
 
-gem "google_drive", ">= 3.0.7"
-
-# parse spreadsheets
-gem "roo", "~> 2.10.1"
-
 # Required following upgrade to ruby 3.1.0
 gem "net-imap"
 gem "net-pop"
@@ -82,6 +77,11 @@ group :development, :test do
   gem "rswag-specs"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
+
+  # download spreadsheets
+  gem "google_drive", ">= 3.0.7"
+  # parse spreadsheets
+  gem "roo", "~> 2.10.0"
 
   # This is needed to allow IntelliJ to run cucumber scenarios individually without producing
   # strange errors and not running the feature.
