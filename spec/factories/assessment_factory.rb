@@ -10,11 +10,5 @@ FactoryBot.define do
       # use :with_child_dependants: 2 to create 2 children for the assessment
       with_child_dependants { 0 }
     end
-
-    trait :with_gross_income_summary_and_employment do
-      after(:create) do |assessment|
-        create :gross_income_summary, assessment:
-      end
-    end
   end
 end
