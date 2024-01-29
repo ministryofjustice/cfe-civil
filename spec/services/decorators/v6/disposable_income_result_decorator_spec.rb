@@ -5,8 +5,8 @@ module Decorators
     RSpec.describe ApplicantDisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do
-        create :assessment, proceedings: proceeding_hash,
-                            submission_date: Date.new(2022, 6, 6)
+        create :assessment,
+               submission_date: Date.new(2022, 6, 6)
       end
       let(:codes) { pt_results.keys }
       let(:pt_results) do
@@ -17,7 +17,14 @@ module Decorators
           SE014: [315, 733, "ineligible"],
         }
       end
-      let(:proceeding_hash) { [%w[DA003 A], %w[DA005 A], %w[SE003 A], %w[SE014 A]] }
+      let(:proceeding_types) do
+        [
+          build(:proceeding_type, :with_waived_thresholds, ccms_code: "DA003", client_involvement_type: "A"),
+          build(:proceeding_type, :with_waived_thresholds, ccms_code: "DA005", client_involvement_type: "A"),
+          build(:proceeding_type, :with_unwaived_thresholds, ccms_code: "SE003", client_involvement_type: "A"),
+          build(:proceeding_type, :with_unwaived_thresholds, ccms_code: "SE014", client_involvement_type: "A"),
+        ]
+      end
       let(:expected_result) do
         {
           dependant_allowance: 220.21,
@@ -115,7 +122,7 @@ module Decorators
                             eligibilities: Creators::DisposableIncomeEligibilityCreator.call(submission_date: assessment.submission_date,
                                                                                              level_of_help: assessment.level_of_help,
                                                                                              total_disposable_income: 900.0,
-                                                                                             proceeding_types: assessment.proceeding_types),
+                                                                                             proceeding_types:),
                             combined_total_outgoings_and_allowances: 400.32).as_json
       end
 

@@ -29,7 +29,6 @@ module Creators
           creator
           assessment = Assessment.first
           expect(assessment.remote_ip).to eq "127.0.0.1"
-          expect(assessment.proceeding_type_codes).to eq []
           expect(creator.assessment.level_of_help).to eq "certificated"
         end
 

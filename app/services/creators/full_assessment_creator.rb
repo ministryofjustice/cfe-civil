@@ -24,10 +24,6 @@ module Creators
 
       CREATE_FUNCTIONS = [
         lambda { |assessment, params|
-          Creators::ProceedingTypesCreator.call(assessment:,
-                                                proceeding_types_params: { proceeding_types: params.fetch(:proceeding_types, []) })
-        },
-        lambda { |assessment, params|
           if params[:explicit_remarks]
             Creators::ExplicitRemarksCreator.call(assessment:,
                                                   explicit_remarks_params: { explicit_remarks: params[:explicit_remarks] })

@@ -3,8 +3,7 @@ require "rails_helper"
 module Workflows
   RSpec.describe PassportedWorkflow do
     let!(:assessment) do
-      create :assessment,
-             proceedings: [%w[DA003 A], %w[SE014 Z]]
+      create :assessment
     end
     let(:applicant) { build :applicant, :with_qualifying_benefits }
     let(:unassessed_capital) do

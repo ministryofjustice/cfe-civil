@@ -2,11 +2,15 @@ require "rails_helper"
 
 module Workflows
   RSpec.describe MainWorkflow do
-    let(:proceedings_hash) { [%w[DA003 A], %w[SE013 I]] }
+    let(:proceeding_types) do
+      [
+        build(:proceeding_type, ccms_code: "DA003", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "I"),
+      ]
+    end
     let(:bank_holiday_response) { %w[2015-01-01 2015-04-03 2015-04-06] }
     let(:assessment) do
-      create :assessment,
-             proceedings: proceedings_hash
+      create :assessment
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
@@ -31,7 +35,7 @@ module Workflows
         subject(:workflow_call) do
           described_class.without_partner(submission_date: assessment.submission_date,
                                           level_of_help: assessment.level_of_help,
-                                          proceeding_types: assessment.proceeding_types,
+                                          proceeding_types:,
                                           applicant: build(:person_data, details: applicant))
         end
 
@@ -51,7 +55,7 @@ module Workflows
 
         subject(:workflow_call) do
           described_class.with_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                       proceeding_types: assessment.proceeding_types,
+                                       proceeding_types:,
                                        applicant: build(:person_data, details: applicant),
                                        partner: build(:person_data, details: partner))
         end
@@ -75,7 +79,7 @@ module Workflows
 
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                        proceeding_types: assessment.proceeding_types,
+                                        proceeding_types:,
                                         applicant: build(:person_data, details: applicant))
       end
 
@@ -87,14 +91,13 @@ module Workflows
 
     context "version 6" do
       let(:assessment) do
-        create :assessment,
-               proceedings: proceedings_hash
+        create :assessment
       end
       let(:applicant) { build :applicant, :without_qualifying_benefits }
 
       subject(:workflow_call) do
         described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
-                                        proceeding_types: assessment.proceeding_types,
+                                        proceeding_types:,
                                         applicant: build(:person_data, details: applicant))
       end
 
@@ -117,7 +120,7 @@ module Workflows
         end
 
         it "creates the eligibility records" do
-          allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:certificated).with(proceeding_types: assessment.proceeding_types,
+          allow(Utilities::ProceedingTypeThresholdPopulator).to receive(:certificated).with(proceeding_types:,
                                                                                             submission_date: assessment.submission_date)
           allow(NonPassportedWorkflow).to receive(:without_partner).and_return(non_passported_result)
           allow(RemarkGenerators::Orchestrator).to receive(:call).with(employments: [],

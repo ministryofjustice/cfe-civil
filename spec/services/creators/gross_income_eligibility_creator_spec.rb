@@ -3,12 +3,17 @@ require "rails_helper"
 module Creators
   RSpec.describe GrossIncomeEligibilityCreator, :calls_lfa do
     let(:summary) { assessment.applicant_gross_income_summary }
-    let(:assessment) { create :assessment, proceedings: [%w[DA002 A], %w[SE013 Z]] }
-    let(:proceeding_types) { assessment.proceeding_types }
+    let(:assessment) { create :assessment }
+    let(:proceeding_types) do
+      [
+        build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A"),
+        build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "Z"),
+      ]
+    end
     let(:submission_date) { assessment.submission_date.to_date }
 
     before do
-      Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
+      Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types:,
                                                                submission_date: assessment.submission_date)
     end
 

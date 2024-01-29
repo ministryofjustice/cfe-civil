@@ -1,7 +1,5 @@
 FactoryBot.define do
   factory :proceeding_type do
-    assessment
-
     sequence(:ccms_code) { |n| CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES[n % CFEConstants::VALID_PROCEEDING_TYPE_CCMS_CODES.size] }
     client_involvement_type { ProceedingType::VALID_CLIENT_INVOLVEMENT_TYPES.sample }
 

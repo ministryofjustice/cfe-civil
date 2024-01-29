@@ -3,11 +3,17 @@ require "rails_helper"
 module Decorators
   module V6
     RSpec.describe ProceedingTypesResultDecorator do
-      let(:proceeding_types) { [%w[DA003 A], %w[DA005 Z], %w[SE013 W]] }
-      let(:assessment) { create :assessment, proceedings: proceeding_types }
+      let(:proceeding_types) do
+        [
+          build(:proceeding_type, ccms_code: "DA003", client_involvement_type: "A"),
+          build(:proceeding_type, ccms_code: "DA005", client_involvement_type: "Z"),
+          build(:proceeding_type, ccms_code: "SE013", client_involvement_type: "W"),
+        ]
+      end
+      let(:assessment) { create :assessment }
 
       let(:results) do
-        assessment.proceeding_types.map do |pt|
+        proceeding_types.map do |pt|
           Eligibility::DisposableIncome.new proceeding_type: pt, assessment_result: "eligible", upper_threshold: 27, lower_threshold: 14
         end
       end

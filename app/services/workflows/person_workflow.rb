@@ -1,12 +1,12 @@
 module Workflows
   class PersonWorkflow
     class << self
-      def without_partner(assessment:, applicant:)
+      def without_partner(assessment:, applicant:, proceeding_types:)
         result = Workflows::MainWorkflow.without_partner(submission_date: assessment.submission_date,
                                                          level_of_help: assessment.level_of_help,
-                                                         proceeding_types: assessment.proceeding_types,
+                                                         proceeding_types:,
                                                          applicant:)
-        lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types: assessment.proceeding_types,
+        lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types:,
                                                                                               level_of_help: assessment.level_of_help,
                                                                                               submission_date: assessment.submission_date)
         assessed_capital = result.calculation_output.combined_assessed_capital
@@ -30,7 +30,7 @@ module Workflows
                                       sections: result.sections,
                                       assessment_result: result.assessment_result
         er = EligibilityResults.without_partner(
-          proceeding_types: assessment.proceeding_types,
+          proceeding_types:,
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,
@@ -38,13 +38,13 @@ module Workflows
         ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
 
-      def with_partner(assessment:, applicant:, partner:)
+      def with_partner(assessment:, applicant:, partner:, proceeding_types:)
         part = Workflows::MainWorkflow.with_partner(submission_date: assessment.submission_date,
                                                     level_of_help: assessment.level_of_help,
-                                                    proceeding_types: assessment.proceeding_types,
+                                                    proceeding_types:,
                                                     applicant:,
                                                     partner:)
-        lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types: assessment.proceeding_types,
+        lower_capital_threshold = Creators::CapitalEligibilityCreator.lower_capital_threshold(proceeding_types:,
                                                                                               level_of_help: assessment.level_of_help,
                                                                                               submission_date: assessment.submission_date)
         assessed_capital = part.calculation_output.combined_assessed_capital
@@ -79,7 +79,7 @@ module Workflows
                                              },
                                              sections: part.sections
         er = EligibilityResults.with_partner(
-          proceeding_types: assessment.proceeding_types,
+          proceeding_types:,
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,

@@ -10,6 +10,8 @@ module V6
       if create.success?
         assessment = create.assessment
 
+        proceeding_types = full_assessment_params.fetch(:proceeding_types, []).map { |c| ProceedingType.new(c) }
+
         applicant = person_data(input_params: full_assessment_params,
                                 model_params: full_assessment_params.fetch(:applicant, {}),
                                 irregular_income_params: full_assessment_params.fetch(:irregular_incomes, {}),
@@ -18,7 +20,7 @@ module V6
                                 submission_date: assessment.submission_date) || return
 
         assessment_params = full_assessment_params.fetch(:assessment)
-        full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: assessment.proceeding_types.pluck(:ccms_code),
+        full = if Workflows::NonMeansTestedWorkflow.non_means_tested?(proceeding_type_codes: proceeding_types.map(&:ccms_code),
                                                                       level_of_help: assessment.level_of_help,
                                                                       controlled_legal_representation: assessment.controlled_legal_representation,
                                                                       not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
@@ -27,16 +29,16 @@ module V6
                                                                       submission_date: assessment.submission_date)
                  Workflows::NonMeansTestedWorkflow.blank_calculation_result(submission_date: assessment.submission_date,
                                                                             level_of_help: assessment.level_of_help,
-                                                                            proceeding_types: assessment.proceeding_types)
+                                                                            proceeding_types:)
                else
-                 return render_unprocessable("This assessment is not non-means, so requires a proceeding_type") if assessment.proceeding_types.blank?
+                 return render_unprocessable("This assessment is not non-means, so requires a proceeding_type") if proceeding_types.blank?
 
                  if assessment.level_of_help == "certificated"
 
-                   Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types: assessment.proceeding_types,
+                   Utilities::ProceedingTypeThresholdPopulator.certificated(proceeding_types:,
                                                                             submission_date: assessment.submission_date)
                  else
-                   Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types: assessment.proceeding_types,
+                   Utilities::ProceedingTypeThresholdPopulator.controlled(proceeding_types:,
                                                                           submission_date: assessment.submission_date)
                  end
 
@@ -48,9 +50,9 @@ module V6
                                                   submission_date: assessment.submission_date,
                                                   main_home_params: nil,
                                                   additional_properties_params: partner_params) || return
-                            Workflows::PersonWorkflow.with_partner(assessment:, applicant:, partner:)
+                            Workflows::PersonWorkflow.with_partner(assessment:, applicant:, partner:, proceeding_types:)
                           else
-                            Workflows::PersonWorkflow.without_partner(assessment:, applicant:)
+                            Workflows::PersonWorkflow.without_partner(assessment:, applicant:, proceeding_types:)
                           end
                  eligibility_result = ResultWrapper.new(result: result.eligibility_result,
                                                         gross_section: assessment_params.fetch(:section_gross_income, "complete"),
@@ -60,6 +62,7 @@ module V6
                end
 
         render json: assessment_decorator_class.new(assessment:,
+                                                    proceeding_types:,
                                                     calculation_output: full.workflow_result.calculation_output,
                                                     applicant:, partner:, version:, eligibility_result: full.eligibility_result, remarks: full.workflow_result.remarks).as_json
       else

@@ -47,7 +47,6 @@ RSpec.describe CullStaleAssessmentsService do
   def associated_models
     [
       ExplicitRemark,
-      ProceedingType,
     ]
   end
 

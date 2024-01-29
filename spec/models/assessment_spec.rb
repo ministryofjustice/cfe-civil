@@ -35,12 +35,4 @@ RSpec.describe Assessment, type: :model do
       expect(assessment.errors.full_messages).to include("Remote ip can't be blank")
     end
   end
-
-  describe "#proceeding_type_codes" do
-    it "returns the codes from the associated proceeding type records" do
-      assessment = create :assessment, proceedings: [%w[DA005 A], %w[SE014 Z]]
-
-      expect(assessment.reload.proceeding_type_codes).to eq %w[DA005 SE014]
-    end
-  end
 end
