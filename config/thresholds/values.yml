@@ -8,4 +8,5 @@
 2023-04-10: config/thresholds/2023-04-10.yml
 # This should (eventually) be set to the start date of the MTR changes
 # MTR is marked as 'test mode' so this date can be made more realistic
-2026-04-01: config/thresholds/mtr-2026.yml
+# hack for apply to test MTR changes
+2024-01-29: config/thresholds/mtr-2026.yml

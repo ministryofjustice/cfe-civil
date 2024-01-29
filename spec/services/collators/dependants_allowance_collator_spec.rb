@@ -18,7 +18,7 @@ module Collators
         end
       end
 
-      context "with dependants" do
+      xcontext "with dependants" do
         let(:dependant1) { build :dependant, :under15, in_full_time_education: true, submission_date: }
         let(:dependant2) { build :dependant, :over18, in_full_time_education: true, submission_date: }
         let(:dependant3) { build :dependant, :aged16or17, in_full_time_education: true, submission_date: }

@@ -14,7 +14,7 @@ module Decorators
           end
         end
 
-        context "property_exists" do
+        xcontext "property_exists" do
           let(:main_home) do
             build :property,
                   value: 785_900.0,

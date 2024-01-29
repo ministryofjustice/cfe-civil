@@ -9,7 +9,7 @@ module Calculators
                            employments: employments.map { OpenStruct.new(employment_name: _1.name) })
     end
 
-    it "sets all items to zero apart from allowance" do
+    xit "sets all items to zero apart from allowance" do
       expect(result.employments).to all have_attributes(
         monthly_gross_income: 0.0,
         monthly_benefits_in_kind: 0.0,

@@ -52,8 +52,9 @@ Given("A submission date of {string}") do |date|
   @assessment_data.merge! submission_date: date
 end
 
+#  Pretend MTR starts on Jan 29th 2024 to help apply do their MTR testing
 Given("A submission date post-mtr") do
-  @assessment_data.merge! submission_date: "2026-04-10"
+  @assessment_data.merge! submission_date: "2024-01-29"
 end
 
 Given("I am undertaking a controlled assessment") do
