@@ -9,9 +9,5 @@ class Assessment < ApplicationRecord
             :submission_date,
             presence: true
 
-  validates :submission_date, date: {
-    before: proc { Time.zone.tomorrow }, message: :not_in_the_future
-  }
-
   has_many :explicit_remarks, dependent: :destroy
 end
