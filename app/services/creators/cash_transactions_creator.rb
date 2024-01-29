@@ -28,14 +28,6 @@ module Creators
         Result.new(errors: [], records: records_hash.values.reduce([], &:+))
       end
 
-      def validate_category(category:, cash_transactions:, submission_date:)
-        if cash_transactions.size != 3
-          "There must be exactly 3 payments for category #{category}"
-        end
-
-        validate_payment_dates(category:, cash_transactions:, submission_date:)
-      end
-
       def validate_payment_dates(category:, cash_transactions:, submission_date:)
         dates = cash_transactions.map(&:date).compact.sort
         return if dates == first_three_valid_dates(submission_date) || dates == last_three_valid_dates(submission_date)
