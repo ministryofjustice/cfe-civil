@@ -78,6 +78,7 @@ Feature:
 
   Scenario: Below lower disposable threshold after MTR, above capital lower threshold
     Given I am undertaking a certificated assessment
+    And An applicant who is a pensioner
     And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
@@ -98,6 +99,7 @@ Feature:
 
   Scenario: Below lower disposable threshold after MTR, above capital upper threshold
     Given I am undertaking a certificated assessment
+    And An applicant who is a pensioner
     And A submission date post-mtr
     And I add employment income of 2900 per month
     And I add outgoing details for "rent_or_mortgage" of 2600 per month
