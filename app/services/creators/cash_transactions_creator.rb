@@ -4,7 +4,7 @@ module Creators
 
     class << self
       def call(submission_date:, cash_transaction_params:)
-        create_records submission_date:, cash_transaction_params:
+        create_records _submission_date: submission_date, cash_transaction_params:
       end
 
     private
@@ -19,7 +19,7 @@ module Creators
         ]
       end
 
-      def create_records(submission_date:, cash_transaction_params:)
+      def create_records(_submission_date:, cash_transaction_params:)
         incomes = income_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :credit) }.reduce({}) { _1.merge(_2) }
         outgoings = outgoings_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :debit) }.reduce({}) { _1.merge(_2) }
 
