@@ -25,16 +25,15 @@ module Creators
 
         records_hash = incomes.merge(outgoings)
 
-        errors = records_hash.map { |category, cash_transactions| validate_category(category:, cash_transactions:, _submission_date: submission_date) }.compact
-        Result.new(errors:, records: records_hash.values.reduce([], &:+))
+        Result.new(errors: [], records: records_hash.values.reduce([], &:+))
       end
 
-      def validate_category(category:, cash_transactions:, _submission_date:)
+      def validate_category(category:, cash_transactions:, submission_date:)
         if cash_transactions.size != 3
           "There must be exactly 3 payments for category #{category}"
         end
 
-        # validate_payment_dates(category:, cash_transactions:, submission_date:)
+        validate_payment_dates(category:, cash_transactions:, submission_date:)
       end
 
       def validate_payment_dates(category:, cash_transactions:, submission_date:)
