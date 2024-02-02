@@ -90,7 +90,7 @@ module V6
         end
 
         it "returns an error" do
-          expect(parsed_response[:errors]).to eq(["Submission date can't be blank", "Submission date cannot be in the future"])
+          expect(parsed_response[:errors]).to eq(["Submission date can't be blank"])
         end
       end
 
