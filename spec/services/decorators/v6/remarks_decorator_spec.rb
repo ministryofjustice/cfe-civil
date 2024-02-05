@@ -19,9 +19,9 @@ module Decorators
         }
       end
 
-      before { create :explicit_remark, remark: "test remark", assessment: }
+      let(:explicit_remarks) { [build(:explicit_remark, remark: "test remark")] }
 
-      subject(:remarks_decorator) { described_class.new(assessment.explicit_remarks, remarks, assessment_result) }
+      subject(:remarks_decorator) { described_class.new(explicit_remarks, remarks, assessment_result) }
       describe "#as_json" do
         context "assessment_result is contribution_required" do
           let(:assessment_result) { :contribution_required }

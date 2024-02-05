@@ -63,6 +63,7 @@ module Decorators
                               applicant:,
                               partner:,
                               proceeding_types: [],
+                              explicit_remarks: [],
                               eligibility_result:,
                               version:,
                               remarks:).as_json

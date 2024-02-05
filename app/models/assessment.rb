@@ -8,6 +8,4 @@ class Assessment < ApplicationRecord
   validates :remote_ip,
             :submission_date,
             presence: true
-
-  has_many :explicit_remarks, dependent: :destroy
 end
