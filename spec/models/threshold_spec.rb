@@ -121,13 +121,25 @@ RSpec.describe Threshold do
   end
 
   context "MTR" do
-    context "when future test file active" do
-      before { allow(Rails.configuration.x).to receive(:future_test_data_file).and_return("mtr-2026.yml") }
+    context "when setting future test file" do
+      before { allow(Rails.configuration.x).to receive(:future_test_data_file).and_return(override_filename) }
 
       let(:submission_date) { Time.zone.today }
 
-      it "invokes the MTR config early regardless of submission date" do
-        expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
+      context "when future test file active" do
+        let(:override_filename) { "mtr-2026.yml" }
+
+        it "invokes the MTR config early regardless of submission date" do
+          expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
+        end
+      end
+
+      context "when future test file inactive" do
+        let(:override_filename) { "" }
+
+        it "doesnt invoke MTR threshold" do
+          expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 45.0
+        end
       end
     end
 
