@@ -48,6 +48,8 @@ module CfeCivil
     config.x.use_test_threshold_data = ENV["USE_TEST_THRESHOLD_DATA"]
 
     config.x.legal_framework_api_host = ENV["LEGAL_FRAMEWORK_API_HOST"]
+
+    config.x.future_test_data_file = ENV["FUTURE_THRESHOLD_FILE"]
   end
 end
 
