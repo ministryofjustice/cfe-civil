@@ -19,6 +19,7 @@ spec:
         app: {{ template "app.name" . }}
         release: {{ .Release.Name }}
     spec:
+      serviceAccountName: cfe-civil-staging-irsa
       containers:
         - name: api
           image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
