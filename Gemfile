@@ -22,6 +22,8 @@ gem "puma", "~> 6.4"
 
 gem "faraday", "~> 1.10"
 
+gem 'prometheus-client'
+
 gem "sentry-rails", ">= 5.8.0"
 gem "sentry-ruby"
 
