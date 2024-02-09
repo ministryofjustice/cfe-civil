@@ -245,14 +245,15 @@ Obtain the `.env` file from 1Password - look in the folder `LAA-Eligibility-Plat
 
 Environment variables:
 
-| Name | Value examples & commentary |
-| ---- | --------------------------- |
-| GOOGLE_SHEETS_PRIVATE_KEY_ID | (secret) |
-| GOOGLE_SHEETS_PRIVATE_KEY | (secret) |
-| GOOGLE_SHEETS_CLIENT_EMAIL | (secret) |
-| GOOGLE_SHEETS_CLIENT_ID | (secret) |
-| RUNNING_AS_GITHUB_WORKFLOW | `TRUE` / `FALSE` |
-| LEGAL_FRAMEWORK_API_HOST | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
+| Name                         | Value examples & commentary                                                             |
+|------------------------------|-----------------------------------------------------------------------------------------|
+| GOOGLE_SHEETS_PRIVATE_KEY_ID | (secret)                                                                                |
+| GOOGLE_SHEETS_PRIVATE_KEY    | (secret)                                                                                |
+| GOOGLE_SHEETS_CLIENT_EMAIL   | (secret)                                                                                |
+| GOOGLE_SHEETS_CLIENT_ID      | (secret)                                                                                |
+| RUNNING_AS_GITHUB_WORKFLOW   | `TRUE` / `FALSE`                                                                        |
+| LEGAL_FRAMEWORK_API_HOST     | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
+| FUTURE_THRESHOLD_FILE        | 'mtr-2026.yml' - allows (e.g. MTR) a future dated file to be activated (for testing)    |
 
 #### Running RSpec tests
 

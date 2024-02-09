@@ -2,21 +2,16 @@ require "rails_helper"
 
 RSpec.describe Threshold do
   context "using test data files" do
-    let(:threshold_test_data_folder) { Rails.root.join("spec/data/thresholds") }
+    let(:threshold_test_data_folder) { "spec/data/thresholds" }
+    let(:thresholds) { described_class.new(threshold_test_data_folder) }
 
     describe ".value_for" do
-      around do |example|
-        described_class.data_folder_path = threshold_test_data_folder
-        example.run
-        described_class.data_folder_path = nil
-      end
-
       let(:time) { Time.zone.parse("9-June-2019 12:35") }
       let(:test_data_file) { "#{threshold_test_data_folder}/2019-04-08.yml" }
       let(:data) { YAML.load_file(test_data_file).deep_symbolize_keys }
 
       it "returns the expected value" do
-        expect(described_class.value_for(:capital_lower_certificated, at: time)).to eq(data[:capital_lower_certificated])
+        expect(thresholds.value_for(:capital_lower_certificated, at: time)).to eq(data[:capital_lower_certificated])
       end
 
       context "for dates before oldest" do
@@ -25,7 +20,7 @@ RSpec.describe Threshold do
         let(:data) { YAML.load_file("#{threshold_test_data_folder}/2018-04-08.yml").deep_symbolize_keys }
 
         it "returns the value from oldest file" do
-          expect(described_class.value_for(:capital_lower_certificated, at: time)).to eq(data[:capital_lower_certificated])
+          expect(thresholds.value_for(:capital_lower_certificated, at: time)).to eq(data[:capital_lower_certificated])
         end
       end
 
@@ -37,7 +32,7 @@ RSpec.describe Threshold do
             let(:time) { Time.zone.parse("1-Dec-2020 12:33") }
 
             it "returns value from the April 2020 file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
+              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
             end
           end
 
@@ -45,7 +40,7 @@ RSpec.describe Threshold do
             let(:time) { Time.zone.parse("15-Dec-2020 11:48") }
 
             it "returns mortgage allowance Test file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 888_888_888_888
+              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 888_888_888_888
             end
           end
 
@@ -53,7 +48,7 @@ RSpec.describe Threshold do
             let(:time) { Time.zone.parse("1-Jan-2030 12:33") }
 
             it "returns value from the Jan 2021 file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 999_999_999_999
+              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 999_999_999_999
             end
           end
         end
@@ -65,7 +60,7 @@ RSpec.describe Threshold do
             let(:time) { Time.zone.parse("1-Dec-2020 12:33") }
 
             it "returns value from the April 2020 file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
+              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
             end
           end
 
@@ -73,7 +68,7 @@ RSpec.describe Threshold do
             let(:time) { Time.zone.parse("15-Dec-2020 11:48") }
 
             it "returns value from the April 2020 file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
+              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
             end
           end
 
@@ -126,6 +121,28 @@ RSpec.describe Threshold do
   end
 
   context "MTR" do
+    context "when setting future test file" do
+      before { allow(Rails.configuration.x).to receive(:future_test_data_file).and_return(override_filename) }
+
+      let(:submission_date) { Time.zone.today }
+
+      context "when future test file active" do
+        let(:override_filename) { "mtr-2026.yml" }
+
+        it "invokes the MTR config early regardless of submission date" do
+          expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
+        end
+      end
+
+      context "when future test file inactive" do
+        let(:override_filename) { "" }
+
+        it "doesnt invoke MTR threshold" do
+          expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 45.0
+        end
+      end
+    end
+
     context "with MTR" do
       let(:submission_date) { Date.new(2525, 4, 20) }
 
