@@ -224,11 +224,18 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "avg(http_server_request_duration_seconds_sum{namespace='$namespace',path='/v6/assessments'}/http_server_request_duration_seconds_count{namespace='$namespace',path='/v6/assessments'})",
+              "expr": "1000 * avg(http_server_request_duration_seconds_sum{namespace='$namespace',path='/v6/assessments'}/http_server_request_duration_seconds_count{namespace='$namespace',path='/v6/assessments'})",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "Average Request time",
+              "legendFormat": "Average Req time(milli seconds)",
               "refId": "D"
+            },
+            {
+              "expr": "avg(http_server_requests_total{namespace='$namespace',path='/v6/assessments'})",
+              "format": "time_series",
+              "intervalFactor": 2,
+              "legendFormat": "Requests/sec",
+              "refId": "E"
             }
           ],
           "thresholds": [],
@@ -252,7 +259,7 @@ data:
           "yaxes": [
             {
               "decimals": null,
-              "format": "bytes",
+              "format": "short",
               "label": null,
               "logBase": 1,
               "max": null,
