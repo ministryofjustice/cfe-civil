@@ -224,14 +224,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "1000 * avg(http_server_request_duration_seconds_sum{namespace='$namespace',path='/v6/assessments'}/http_server_request_duration_seconds_count{namespace='$namespace',path='/v6/assessments'})",
+              "expr": "avg(http_server_request_duration_seconds_sum{namespace='$namespace',path='/v6/assessments'}/http_server_request_duration_seconds_count{namespace='$namespace',path='/v6/assessments'})",
               "format": "time_series",
               "intervalFactor": 2,
-              "legendFormat": "Request time(ms)",
+              "legendFormat": "Request time(sec)",
               "refId": "D"
             },
             {
-              "expr": "3600 * rate(http_server_requests_total{namespace='$namespace',path='/v6/assessments'}[15m])",
+              "expr": "rate(http_server_requests_total{namespace='$namespace',path='/v6/assessments'}[1m])",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "{{pod}}",
@@ -242,7 +242,7 @@ data:
           "timeFrom": null,
           "timeRegions": [],
           "timeShift": null,
-          "title": "Requests per Hour",
+          "title": "Requests / Sec",
           "tooltip": {
             "shared": true,
             "sort": 0,
