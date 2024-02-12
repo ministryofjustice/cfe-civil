@@ -108,7 +108,8 @@ GEM
     coderay (1.1.3)
     concurrent-ruby (1.2.3)
     connection_pool (2.4.1)
-    crack (0.4.5)
+    crack (1.0.0)
+      bigdecimal
       rexml
     crass (1.0.6)
     cucumber (9.0.2)
@@ -527,7 +528,7 @@ GEM
     unicode-display_width (2.5.0)
     uniform_notifier (1.16.0)
     vcr (6.2.0)
-    webmock (3.19.1)
+    webmock (3.20.0)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
