@@ -1,0 +1,44 @@
+# Default values for cfe-civil staging
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 300Mi
+  requests:
+    cpu: 50m
+    memory: 125Mi
+
+ingress:
+  className: modsec
+  hosts:
+    - cfe-civil-staging-mtr.cloud-platform.service.justice.gov.uk
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: "cfe-civil-cfe-civil-staging-mtr-green"
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      SecRuleEngine On
+
+deploy:
+  host: cfe-civil-staging-mtr.cloud-platform.service.justice.gov.uk
+
+postgresql:
+  enabled: false
+
+threshold:
+  useTestData: 'true'
+  futureFile: 'mtr-2026.yml'
+
+legalFrameworkApi:
+  host: http://legal-framework-api.legal-framework-api-production.svc.cluster.local
+
+sentry:
+  enabled: enabled
+
+notifications:
+  errorMessageTemplateId: e6d49396-455c-4aca-aab0-16f8411e76f5
+  recipient: stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk

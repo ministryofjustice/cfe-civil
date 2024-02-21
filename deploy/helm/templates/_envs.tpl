@@ -51,6 +51,8 @@ env:
     value: '1'
   - name: RAILS_LOG_TO_STDOUT
     value: 'true'
+  - name: FUTURE_THRESHOLD_FILE
+    value: {{ .Values.threshold.futureFile | quote }}
   - name: USE_TEST_THRESHOLD_DATA
     value: {{ .Values.threshold.useTestData | quote }}
   - name: HOST
