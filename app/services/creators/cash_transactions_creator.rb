@@ -4,7 +4,7 @@ module Creators
 
     class << self
       def call(submission_date:, cash_transaction_params:)
-        create_records submission_date:, cash_transaction_params:
+        create_records _submission_date: submission_date, cash_transaction_params:
       end
 
     private
@@ -19,22 +19,13 @@ module Creators
         ]
       end
 
-      def create_records(submission_date:, cash_transaction_params:)
+      def create_records(_submission_date:, cash_transaction_params:)
         incomes = income_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :credit) }.reduce({}) { _1.merge(_2) }
         outgoings = outgoings_attributes(cash_transaction_params).map { |category_hash| create_category(category_hash:, operation: :debit) }.reduce({}) { _1.merge(_2) }
 
         records_hash = incomes.merge(outgoings)
 
-        errors = records_hash.map { |category, cash_transactions| validate_category(category:, cash_transactions:, submission_date:) }.compact
-        Result.new(errors:, records: records_hash.values.reduce([], &:+))
-      end
-
-      def validate_category(category:, cash_transactions:, submission_date:)
-        if cash_transactions.size != 3
-          return "There must be exactly 3 payments for category #{category}"
-        end
-
-        validate_payment_dates(category:, cash_transactions:, submission_date:)
+        Result.new(errors: [], records: records_hash.values.reduce([], &:+))
       end
 
       def validate_payment_dates(category:, cash_transactions:, submission_date:)

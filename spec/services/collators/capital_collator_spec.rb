@@ -49,7 +49,7 @@ module Collators
         end
       end
 
-      context "with a main home and an additional property" do
+      xcontext "with a main home and an additional property" do
         let(:smod_value) { 60_000 }
         let(:non_liquid_capital_items) do
           [

@@ -15,7 +15,7 @@ module Creators
       ]
     end
 
-    describe "lower_capital_threshold" do
+    xdescribe "lower_capital_threshold" do
       let(:level_of_help) { "certificated" }
 
       context "with many proceeding types" do

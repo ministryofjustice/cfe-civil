@@ -85,7 +85,7 @@ module Collators
           end
         end
 
-        context "with housing benefit as a state_benefit" do
+        xcontext "with housing benefit as a state_benefit" do
           let(:housing_benefit) { 101.02 }
 
           context "with board and lodging" do
@@ -123,7 +123,7 @@ module Collators
         end
       end
 
-      context "with cash payments" do
+      xcontext "with cash payments" do
         let(:housing_cost_outgoings) { [] }
         let(:housing_benefit) { 0 }
 

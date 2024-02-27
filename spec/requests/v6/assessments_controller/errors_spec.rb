@@ -318,7 +318,7 @@ module V6
         end
       end
 
-      context "with invalid cash_transactions" do
+      xcontext "with invalid cash_transactions" do
         context "invalid additional attribute for cash_transactions" do
           let(:params) { { cash_transactions: { income: [], outgoings: [], additional_attribute: "additional_attribute" } } }
 

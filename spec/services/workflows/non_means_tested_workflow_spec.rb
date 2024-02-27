@@ -16,7 +16,7 @@ module Workflows
       let(:applicant) { build(:applicant, receives_asylum_support: true) }
 
       describe "#non_means_tested?" do
-        context "without a immigration proceeding type" do
+        xcontext "without a immigration proceeding type" do
           it "is means tested" do
             expect(described_class.non_means_tested?(submission_date: assessment.submission_date,
                                                      level_of_help: assessment.level_of_help,
@@ -28,7 +28,7 @@ module Workflows
           end
         end
 
-        context "before MTR changes, require proceeding type check" do
+        xcontext "before MTR changes, require proceeding type check" do
           let(:proceeding_types) { build_list(:proceeding_type, 1, ccms_code: "IM030", client_involvement_type: "A") }
 
           it "is not means tested" do

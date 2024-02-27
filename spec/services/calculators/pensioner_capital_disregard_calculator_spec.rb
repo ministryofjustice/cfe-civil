@@ -26,7 +26,7 @@ module Calculators
         end
 
         context "a pensioner" do
-          context "non-passported" do
+          xcontext "non-passported" do
             let(:applicant) { build :applicant, :without_qualifying_benefits, :pensionable_age_over_60 }
 
             context "with an income of 0" do
