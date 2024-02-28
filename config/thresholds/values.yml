@@ -6,6 +6,6 @@
 2021-04-12: config/thresholds/2021-04-12.yml
 2022-04-11: config/thresholds/2022-04-11.yml
 2023-04-10: config/thresholds/2023-04-10.yml
-# This should (eventually) be set to the start date of the MTR changes
-# MTR is marked as 'test mode' so this date can be made more realistic
+# MTR is under development, so marked 'test_only'.
+# MTR implementation date is just a placeholder for now.
 2026-04-01: config/thresholds/mtr-2026.yml
