@@ -122,8 +122,8 @@ references:
   restore_gems_cache: &restore_gems_cache
     restore_cache:
       keys:
-        - cfe-civil-gems-{{ checksum "Gemfile.lock" }}
-        - cfe-civil-gems
+        - cfe-civil-v2-gems-{{ checksum "Gemfile.lock" }}
+        - cfe-civil-v2-gems
 
   install_gems: &install_gems
     run:
@@ -137,7 +137,7 @@ references:
 
   save_gems_cache: &save_gems_cache
     save_cache:
-      key: cfe-civil-gems-{{ checksum "Gemfile.lock" }}
+      key: cfe-civil-v2-gems-{{ checksum "Gemfile.lock" }}
       paths:
         - vendor/bundle
 
@@ -225,13 +225,10 @@ jobs:
           name: Run ruby tests
           command: |
             bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec/rspec.xml
-#      Disable undercover due to strange error only on circle
-#      /home/circleci/project/vendor/bundle/ruby/3.3.0/gems/undercover-0.5.0/lib/undercover/changeset.rb:27:in `each_patch':
-#  object not found - cannot read header for (edb67ef595741ed89a58df6a941a0272f2d4b218) (Rugged::OdbError)
-#      - run:
-#          name: Check coverage with undercover
-#          command: |
-#            bundle exec undercover -c origin/main -l coverage/lcov.info
+      - run:
+          name: Check coverage with undercover
+          command: |
+            bundle exec undercover -c origin/main -l coverage/lcov.info
       - store_test_results:
           path: /tmp/test-results/rspec
       - store_artifacts:
