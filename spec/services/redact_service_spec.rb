@@ -2,7 +2,7 @@ require "rails_helper"
 
 describe RedactService do
   describe "redact_dob" do
-    it "works on 29th February" do
+    it "really works on 29th February" do
       expect(described_class.redact_dob("2024-2-29", "1952-05-03")).to eq("1952-03-01")
     end
   end
