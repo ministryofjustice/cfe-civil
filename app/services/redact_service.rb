@@ -31,11 +31,15 @@ class RedactService
       dob = safe_parse_date date_of_birth
       # don't redact if we're on the person's birthday as there is nothing to do
       if now.present? && dob.present? && (now.month != dob.month || now.day != dob.day)
-        redacted = Date.new(dob.year, now.month, now.day)
-        if redacted > dob
-          (redacted - 1.year + 1.day).to_s
+        if now.month == 2 && now.day == 29
+          Date.new(dob.year, 3, 1).to_s
         else
-          (redacted + 1.day).to_s
+          redacted = Date.new(dob.year, now.month, now.day)
+          if redacted > dob
+            (redacted - 1.year + 1.day).to_s
+          else
+            (redacted + 1.day).to_s
+          end
         end
       else
         date_of_birth
