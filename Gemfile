@@ -88,7 +88,7 @@ group :development, :test do
   # This is needed to allow IntelliJ to run cucumber scenarios individually without producing
   # strange errors and not running the feature.
   gem "spring"
-  gem "undercover"
+  gem "undercover", "< 0.5"
 end
 
 group :development do
