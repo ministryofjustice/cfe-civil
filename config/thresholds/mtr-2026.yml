@@ -1,7 +1,9 @@
 ---
-# MTR (Means Test Review) config file - start date TBD
-# Mark test-only so that it can't be loaded into production
+# MTR (Means Test Review) config
+
+# Under development, so marked 'test_only' to prevent this file from being loaded in production
 test_only: true
+
 gross_income_upper: 2912.50
 gross_income_lower_controlled: 946
 infinite_gross_income_upper: 999_999_999_999

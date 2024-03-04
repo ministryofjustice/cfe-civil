@@ -206,14 +206,9 @@ The file `values.yml` details the start dates for each set of thresholds, and th
 
 ### Test threshold data
 
-**NB This is deprecated functionality** - instead we can put future thresholds into the YAML and access them by passing appropriate dates.
+Whilst developing a thresholds .yml file, intended for a future date, you should include in it: `test_only: true`. This causes it *not* to be activated unless `FUTURE_THRESHOLD_FILE` is set to the same .yml filename. This is a protection against the thresholds file being used for actual assessments, in normal environments, where `FUTURE_THRESHOLD_FILE` is not set by default.
 
-If a file has the key `test_only` with a value of true, then that file will only be read if the
-`USE_TEST_THRESHOLD_DATA` environment variable is set to true.  This is the default for staging and UAT, and it is
-false for production.
-
-This allows the insertion of test data on an arbitrary date specified in the `values.yml` file to be used
-for testing new thresholds before they come into affect on production.
+**NB 'USE_TEST_THRESHOLD_DATA' is deprecated functionality in this area**
 
 ## Tests
 
@@ -253,7 +248,7 @@ Environment variables:
 | GOOGLE_SHEETS_CLIENT_ID      | (secret)                                                                                |
 | RUNNING_AS_GITHUB_WORKFLOW   | `TRUE` / `FALSE`                                                                        |
 | LEGAL_FRAMEWORK_API_HOST     | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
-| FUTURE_THRESHOLD_FILE        | 'mtr-2026.yml' - allows (e.g. MTR) a future dated file to be activated (for testing)    |
+| FUTURE_THRESHOLD_FILE        | `mtr-2026.yml` - activates the specified thresholds file, as of today's date, overriding the date specified in values.yml. The thresholds file is activated even if it contains: `test_only: True`, as is likely |
 
 #### Running RSpec tests
 
