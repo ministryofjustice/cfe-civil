@@ -226,13 +226,10 @@ jobs:
           name: Run ruby tests
           command: |
             bundle exec rspec --format progress --format RspecJunitFormatter -o /tmp/test-results/rspec/rspec.xml
-#      Disable undercover due to strange error only on circle
-#      /home/circleci/project/vendor/bundle/ruby/3.3.0/gems/undercover-0.5.0/lib/undercover/changeset.rb:27:in `each_patch':
-#  object not found - cannot read header for (edb67ef595741ed89a58df6a941a0272f2d4b218) (Rugged::OdbError)
-#      - run:
-#          name: Check coverage with undercover
-#          command: |
-#            bundle exec undercover -c origin/main -l coverage/lcov.info
+      - run:
+          name: Check coverage with undercover
+          command: |
+            bundle exec undercover -c origin/main -l coverage/lcov.info
       - store_test_results:
           path: /tmp/test-results/rspec
       - store_artifacts:
