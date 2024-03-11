@@ -216,12 +216,15 @@ jobs:
   unit_tests:
     executor: test-executor
     steps:
+      # Circle's checkout step no longer works here
+      # it is effectively undocumented and unconfigurable, so its behaviour is unknown
+      # using it here makes the undercover step fail
       - run:
           environment:
             GIT_SSH_COMMAND: ssh -o StrictHostKeyChecking=accept-new
           name: Checkout code
           command: |
-            git clone --progress -b "$CIRCLE_BRANCH" "$CIRCLE_REPOSITORY_URL" .
+            git clone -b "$CIRCLE_BRANCH" "$CIRCLE_REPOSITORY_URL" .
       - *install_packages_for_testing
       - *restore_gems_cache
       - *install_gems
