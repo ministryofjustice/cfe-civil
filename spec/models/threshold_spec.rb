@@ -134,6 +134,10 @@ RSpec.describe Threshold do
       it "picks up the values from the 2024-04-08 file" do
         expect(described_class.value_for(:dependant_allowances, at: time)).to eq expected_dependant_allowances
       end
+
+      it "has a new partner allowance" do
+        expect(described_class.value_for(:partner_allowance, at: time)).to eq(224.87)
+      end
     end
   end
 
