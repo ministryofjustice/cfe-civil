@@ -216,7 +216,7 @@ jobs:
   unit_tests:
     executor: test-executor
     steps:
-      # Circle's checkout step no longer works here
+      # Not using Circle's own `checkout` step, because of a subtle incompatibility with undercover
       # it is effectively undocumented and unconfigurable, so its behaviour is unknown
       # using it here makes the undercover step fail
       - run:
