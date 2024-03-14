@@ -18,9 +18,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-      serviceAccountName: "cd-serviceaccount"
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: metabase
           image: metabase/metabase:v0.48.8
@@ -42,6 +39,6 @@ spec:
             - name: MB_DB_CONNECTION_URI
               valueFrom:
                 secretKeyRef:
-                  name: rds-postgresql-read-replica-output
+                  name: rds-postgresql-instance-output
                   key: jdbc_url
 {{- end }}
