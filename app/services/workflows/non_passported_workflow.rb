@@ -89,7 +89,7 @@ module Workflows
         capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
         if gross_income_subtotals.ineligible?(proceeding_types)
           if capital_result == :ineligible
-            InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:gross, :capital])
+            InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: %i[gross capital])
           else
             InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:gross])
           end
