@@ -86,12 +86,16 @@ module Workflows
                                                    gross_income_subtotals:,
                                                    disposable_income_subtotals:,
                                                    capital_subtotals:)
+        capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
         if gross_income_subtotals.ineligible?(proceeding_types)
-          InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:gross])
+          if capital_result == :ineligible
+            InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: %i[gross capital])
+          else
+            InternalResult.new(calculation_output:, assessment_result: :ineligible, sections: [:gross])
+          end
         elsif gross_income_subtotals.below_the_lower_controlled_threshold?
           InternalResult.new(calculation_output:, assessment_result: :eligible, sections: [:gross])
         else
-          capital_result = capital_subtotals.summarized_assessment_result(proceeding_types)
           disposable_result = disposable_income_subtotals.summarized_assessment_result(proceeding_types)
           if disposable_income_subtotals.ineligible? proceeding_types
             if capital_result == :ineligible
