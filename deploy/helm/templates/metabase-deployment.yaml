@@ -19,26 +19,26 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
-        - name: metabase
-          image: metabase/metabase:v0.48.8
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - containerPort: 3000
-          resources:
-            requests:
-              cpu: 25m
-              memory: 1Gi
-            limits:
-              cpu: 500m
-              memory: 3Gi
-          securityContext:
-            allowPrivilegeEscalation: false
-            runAsUser: 1000
-            runAsGroup: 1000
-          env:
-            - name: MB_DB_CONNECTION_URI
-              valueFrom:
-                secretKeyRef:
-                  name: rds-postgresql-instance-output
-                  key: jdbc_url
+      - name: metabase
+        image: metabase/metabase:v0.48.8
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: 3000
+        resources:
+          requests:
+            cpu: 25m
+            memory: 1Gi
+          limits:
+            cpu: 500m
+            memory: 3Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 1000
+          runAsGroup: 1000
+        env:
+          - name: MB_DB_CONNECTION_URI
+            valueFrom:
+              secretKeyRef:
+                name: rds-postgresql-instance-output
+                key: jdbc_url
 {{- end }}
