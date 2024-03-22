@@ -32,3 +32,15 @@ spec:
                 port:
                   name: http
   {{- end }}
+    {{- if .Values.metabase.enabled }}
+    - host: "cfe-civil-dashboard-{{ .Values.metabase.environment_name }}.cloud-platform.service.justice.gov.uk"
+      http:
+        paths:
+          - path: "/"
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $fullName }}-metabase-service
+                port:
+                  number: 80
+    {{- end }}
