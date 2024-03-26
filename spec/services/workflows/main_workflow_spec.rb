@@ -10,7 +10,7 @@ module Workflows
     end
     let(:bank_holiday_response) { %w[2015-01-01 2015-04-03 2015-04-06] }
     let(:assessment) do
-      create :assessment
+      build :assessment
     end
     let(:calculation_output) do
       instance_double(CalculationOutput,
@@ -91,7 +91,7 @@ module Workflows
 
     context "version 6" do
       let(:assessment) do
-        create :assessment
+        build :assessment
       end
       let(:applicant) { build :applicant, :without_qualifying_benefits }
 

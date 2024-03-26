@@ -3,7 +3,7 @@ require "rails_helper"
 module Creators
   RSpec.describe GrossIncomeEligibilityCreator, :calls_lfa do
     let(:summary) { assessment.applicant_gross_income_summary }
-    let(:assessment) { create :assessment }
+    let(:assessment) { build :assessment }
     let(:proceeding_types) do
       [
         build(:proceeding_type, ccms_code: "DA002", client_involvement_type: "A"),

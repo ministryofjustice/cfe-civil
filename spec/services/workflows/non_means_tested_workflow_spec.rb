@@ -9,7 +9,7 @@ module Workflows
       ]
     end
     let(:assessment) do
-      create :assessment
+      build :assessment
     end
 
     context "applicant is asylum_supported" do

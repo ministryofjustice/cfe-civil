@@ -9,7 +9,7 @@ module RemarkGenerators
     end
 
     let(:submission_date) { Date.new(2023, 4, 20) }
-    let(:assessment) { create :assessment, submission_date: }
+    let(:assessment) { build :assessment, submission_date: }
     let(:state_benefits) do
       [StateBenefit.new(state_benefit_payments: build_list(:state_benefit_payment, 1),
                         state_benefit_name: "anything",

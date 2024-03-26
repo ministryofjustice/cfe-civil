@@ -3,8 +3,8 @@ require "rails_helper"
 module Workflows
   RSpec.describe NonPassportedWorkflow do
     let(:assessment) do
-      create :assessment,
-             submission_date: Date.new(2022, 6, 7), level_of_help:
+      build :assessment,
+            submission_date: Date.new(2022, 6, 7), level_of_help:
     end
     let(:proceeding_types) { proceeding_type_codes.map { |p| build(:proceeding_type, :with_unwaived_thresholds, ccms_code: p, client_involvement_type: "A") } }
     let(:partner) { nil }
@@ -46,7 +46,6 @@ module Workflows
       end
 
       subject(:assessment_result) do
-        assessment.reload
         co = if partner.present?
                partner_data = build(:person_data, details: partner, employments: partner_employments,
                                                   capitals_data: build(:capitals_data, main_home: partner_main_home,
@@ -81,7 +80,6 @@ module Workflows
         describe "self employed" do
           let(:applicant) { build :applicant }
           let(:calculation_output) do
-            assessment.reload
             described_class.without_partner(submission_date: assessment.submission_date, level_of_help: assessment.level_of_help,
                                             proceeding_types:,
                                             applicant: build(:person_data, details: build(:applicant),

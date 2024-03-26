@@ -3,11 +3,7 @@ require "rails_helper"
 module Decorators
   module V6
     RSpec.describe GrossIncomeDecorator do
-      before do
-        create :assessment
-      end
-
-      let(:assessment) { Assessment.last }
+      let(:assessment) { build(:assessment) }
 
       let(:irregular_income_payments) do
         [build(:unspecified_source_payment, amount: 423.35),
