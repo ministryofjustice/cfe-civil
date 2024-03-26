@@ -118,6 +118,27 @@ RSpec.describe Threshold do
         expect(described_class.value_for(:dependant_allowances, at: time)).to eq expected_dependant_allowances
       end
     end
+
+    context "8th April 2024" do
+      let(:time) { Time.zone.parse("08-Apr-2024") }
+      let(:expected_dependant_allowances) do
+        {
+          child_under_15: 361.70,
+          child_aged_15: 361.70,
+          child_16_and_over: 361.70,
+          adult: 361.70,
+          adult_capital_threshold: 8_000,
+        }
+      end
+
+      it "picks up the values from the 2024-04-08 file" do
+        expect(described_class.value_for(:dependant_allowances, at: time)).to eq expected_dependant_allowances
+      end
+
+      it "has a new partner allowance" do
+        expect(described_class.value_for(:partner_allowance, at: time)).to eq(224.87)
+      end
+    end
   end
 
   context "MTR" do
