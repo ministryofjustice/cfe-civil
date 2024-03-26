@@ -280,7 +280,7 @@ jobs:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: dev
+          docker_tag: uat
 
   build_and_push_staging:
     executor: aws-ecr/default
@@ -293,14 +293,14 @@ jobs:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: latest
+          docker_tag: staging_mtr
       - notify_slack_on_failure
 
   build_and_push_production:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: latest
+          docker_tag: production
       - notify_slack_on_failure
 
   deploy_uat: &deploy_uat
