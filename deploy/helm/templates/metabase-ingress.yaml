@@ -1,0 +1,23 @@
+{{- if .Values.metabase.enabled }}
+{{- $fullName := include "app.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-metabase-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-metabase-ingress-cfe-civil-staging-green
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+spec:
+  ingressClassName: default
+  rules:
+    - host: "cfe-civil-dashboard-{{ .Values.metabase.environment_name }}.cloud-platform.service.justice.gov.uk"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-metabase
+                port:
+                  number: 80
+{{- end }}
