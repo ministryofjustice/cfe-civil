@@ -5,7 +5,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}-metabase-ingress
   annotations:
-    external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-metabase-ingress-cfe-civil-staging-green
+    external-dns.alpha.kubernetes.io/set-identifier: {{ $fullName }}-metabase-ingress-cfe-civil-{{ .Values.metabase.environment_name }}-green
     external-dns.alpha.kubernetes.io/aws-weight: "100"
 spec:
   ingressClassName: default
