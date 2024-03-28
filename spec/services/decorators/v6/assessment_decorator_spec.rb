@@ -4,7 +4,7 @@ module Decorators
   module V6
     RSpec.describe AssessmentDecorator do
       let(:assessment) do
-        create :assessment
+        build :assessment
       end
       let(:version) { "6" }
       let(:calculation_output) do
@@ -59,7 +59,7 @@ module Decorators
         let(:partner) { nil }
 
         subject(:decorator) do
-          described_class.new(assessment: assessment.reload, calculation_output:,
+          described_class.new(assessment:, calculation_output:,
                               applicant:,
                               partner:,
                               proceeding_types: [],

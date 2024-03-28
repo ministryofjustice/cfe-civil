@@ -21,13 +21,8 @@ module Creators
           expect(creator.success?).to eq true
         end
 
-        it "creates an Assessment record" do
-          expect { creator }.to change(Assessment, :count).by(1)
-        end
-
         it "populates the assessment record with expected values" do
-          creator
-          assessment = Assessment.first
+          assessment = creator.assessment
           expect(assessment.remote_ip).to eq "127.0.0.1"
           expect(creator.assessment.level_of_help).to eq "certificated"
         end
@@ -64,10 +59,6 @@ module Creators
 
         it "is not successful" do
           expect(creator.success?).to be false
-        end
-
-        it "does not create an Assessment record" do
-          expect { creator }.not_to change(Assessment, :count)
         end
 
         it "has errors" do

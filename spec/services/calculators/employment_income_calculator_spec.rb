@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe EmploymentIncomeCalculator, :vcr do
-    let(:assessment) { create :assessment }
+    let(:assessment) { build :assessment }
     let(:employment1) { OpenStruct.new(entitles_employment_allowance?: entitles_employment_allowance) }
     let(:gross) { BigDecimal(rand(2022.35...3096.52), 2) }
     let(:tax) { (gross * 0.23).round(2) * -1 }

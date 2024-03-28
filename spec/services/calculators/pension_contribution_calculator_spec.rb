@@ -9,8 +9,8 @@ RSpec.describe "Calculators::PensionContributionCalculator", :calls_bank_holiday
 
   let(:submission_date) { Date.new(2525, 4, 20) }
   let(:assessment) do
-    create(:assessment,
-           submission_date:)
+    build(:assessment,
+          submission_date:)
   end
   let(:pension) do
     Calculators::PensionContributionCalculator.call(

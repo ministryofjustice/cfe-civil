@@ -4,8 +4,8 @@ module Calculators
   RSpec.describe HousingCostsCalculator, :calls_bank_holiday do
     let(:housing_benefit_type) { create :state_benefit_type, label: "housing_benefit" }
     let(:assessment) do
-      create :assessment,
-             submission_date:
+      build :assessment,
+            submission_date:
     end
 
     subject(:calculator) do

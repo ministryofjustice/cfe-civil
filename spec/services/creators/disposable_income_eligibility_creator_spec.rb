@@ -15,8 +15,8 @@ module Creators
                            level_of_help: assessment.level_of_help, total_disposable_income: 0)
     end
     let(:assessment) do
-      create :assessment,
-             level_of_help:
+      build :assessment,
+            level_of_help:
     end
 
     context "without MTR" do

@@ -5,8 +5,8 @@ module Decorators
     RSpec.describe ApplicantDisposableIncomeResultDecorator, :vcr do
       let(:unlimited) { 999_999_999_999.0 }
       let(:assessment) do
-        create :assessment,
-               submission_date: Date.new(2022, 6, 6)
+        build :assessment,
+              submission_date: Date.new(2022, 6, 6)
       end
       let(:codes) { pt_results.keys }
       let(:pt_results) do

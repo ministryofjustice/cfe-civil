@@ -10,7 +10,7 @@ module Utilities
           build(:proceeding_type, ccms_code: "SE014", client_involvement_type: "A"),
         ]
       end
-      let(:assessment) { create :assessment, submission_date: Date.new(2022, 7, 12) }
+      let(:assessment) { build :assessment, submission_date: Date.new(2022, 7, 12) }
       let(:response) do
         {
           request_id: "ba7de3c7-cfbe-43de-89b6-8afa2fbe4193",
