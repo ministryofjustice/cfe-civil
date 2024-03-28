@@ -231,7 +231,7 @@ jobseekers_allowance:
 new_style_jsa:
   :name: New-style Job Seeker’s Allowance
   :exclude_from_gross_income: false
-  :dwp_code: JSA2
+  :dwp_code:
   :category:
 maternity_allowance:
   :name: Maternity Allowance
