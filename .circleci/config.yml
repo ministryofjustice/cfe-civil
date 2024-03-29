@@ -73,8 +73,8 @@ executors:
 commands:
   build_and_push:
     parameters:
-      docker_tag:
-        description: Destination docker_tag
+      docker_tag_prefix:
+        description: Docker repository tag prefix
         type: string
     steps:
       - checkout
@@ -89,7 +89,7 @@ commands:
       - aws-ecr/build_image:
           push_image: true
           account_id: $AWS_ECR_REGISTRY_ID
-          tag: ${CIRCLE_SHA1},<< parameters.docker_tag >>
+          tag: ${CIRCLE_SHA1},<< parameters.docker_tag_prefix >>-${CIRCLE_SHA1}  # add a suffix to make it unique, since a tag can point at only one image at a time
           region: $ECR_REGION # this will use the env var
           repo: $ECR_REPOSITORY # this will use the env var
 
@@ -280,27 +280,27 @@ jobs:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: uat
+          docker_tag_prefix: uat
 
   build_and_push_staging:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: staging
+          docker_tag_prefix: staging
       - notify_slack_on_failure
 
   build_and_push_staging_mtr:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: staging_mtr
+          docker_tag_prefix: staging_mtr
       - notify_slack_on_failure
 
   build_and_push_production:
     executor: aws-ecr/default
     steps:
       - build_and_push:
-          docker_tag: production
+          docker_tag_prefix: production
       - notify_slack_on_failure
 
   deploy_uat: &deploy_uat
