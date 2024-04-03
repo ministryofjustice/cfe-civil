@@ -40,7 +40,7 @@ gem "business", "~> 2.3"
 gem "date_validator"
 
 gem "api_error_handler"
-gem "json-schema", "~> 4.2.0"
+gem "json-schema", "~> 4.3.0"
 
 # Seeding tools
 gem "dibber"
