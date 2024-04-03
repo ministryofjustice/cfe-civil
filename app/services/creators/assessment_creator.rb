@@ -19,7 +19,7 @@ module Creators
           }
 
         new_assessment = create_new_assessment_and_summary_records assessment_hash
-        if new_assessment.save
+        if new_assessment.valid?
           CreationResult.new(errors: [], assessment: new_assessment).freeze
         else
           CreationResult.new(errors: new_assessment.errors.full_messages).freeze

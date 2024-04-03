@@ -95,7 +95,7 @@ module RemarkGenerators
     end
 
     context "when checking employment_payments" do
-      let(:assessment) { create(:assessment) }
+      let(:assessment) { build(:assessment) }
       let(:amount) { 277.67 }
 
       let(:collection) { employment.employment_payments }

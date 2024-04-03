@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Calculators
   RSpec.describe PropertyCalculator do
-    let(:assessment) { create :assessment, submission_date: }
+    let(:assessment) { build :assessment, submission_date: }
     let(:submission_date) { Time.zone.local(2020, 10, 10) }
     let(:additional_properties) { [] }
 
