@@ -2,7 +2,7 @@ require "rails_helper"
 
 module Collators
   RSpec.describe DependantsAllowanceCollator do
-    let(:submission_date) { Date.current }
+    let(:submission_date) { Date.new(2024, 4, 4) }
 
     subject(:collator) do
       described_class.call(dependants:,
