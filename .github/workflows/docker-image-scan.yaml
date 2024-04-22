@@ -1,4 +1,4 @@
-name: Scan docker image
+name: Docker image scan by Snyk
 
 on:
   schedule:
