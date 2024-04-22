@@ -2,6 +2,11 @@ name: Docker image scan by Snyk
 
 on:
   workflow_dispatch:  # allow manual trigger
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
   schedule:
     - cron:  '15 5 * * *'
 
