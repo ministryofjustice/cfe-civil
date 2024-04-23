@@ -1,6 +1,7 @@
-name: Scan docker image
+name: Docker image scan by Snyk
 
 on:
+  workflow_dispatch:  # allow manual trigger
   schedule:
     - cron:  '15 5 * * *'
 
@@ -25,8 +26,9 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           image: cfe-civil:scan
-          args: --file=Dockerfile
+          args: --file=Dockerfile --sarif-file-output=snyk.sarif
 
+      # Updates Snyk project: https://app.snyk.io/org/legal-aid-agency/project/9b5968c5-fd2c-46b4-a761-7300fe400d13
       - name: Monitor docker image using Snyk
         uses: snyk/actions/docker@master
         env:
@@ -35,6 +37,15 @@ jobs:
           command: monitor
           image: cfe-civil:scan
           args: --file=Dockerfile
+
+      # Fix/hack for Snyk's sarif file to avoid this error uploading to GitHub:
+      # `could not convert rules: invalid security severity value, is not a number: null`
+      # Replaces any "undefined" security severity values with 0. The undefined value is used in the case
+      # of license-related findings, which do not do not indicate a security vulnerability.
+      # See https://github.com/github/codeql-action/issues/2187 for more context.
+      - name: Post-process sarif output
+        run: |
+          sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
 
       - name: Upload result to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v3
