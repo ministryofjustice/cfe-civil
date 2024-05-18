@@ -77,7 +77,7 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.1"
   gem "rswag-specs"
-  gem "rubocop-govuk", require: false
+  gem "rubocop-govuk", ">= 4.17.0", require: false
   gem "rubocop-performance"
 
   # download spreadsheets
