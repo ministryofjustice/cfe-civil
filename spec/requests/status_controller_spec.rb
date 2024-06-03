@@ -29,6 +29,7 @@ RSpec.describe StatusController, type: :request do
     context "when everything is ok" do
       before do
         allow(ActiveRecord::Base.connection).to receive(:active?).and_return(true)
+        create(:request_log)
 
         get "/healthcheck"
       end
