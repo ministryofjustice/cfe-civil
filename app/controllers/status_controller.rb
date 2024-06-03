@@ -19,7 +19,7 @@ private
 
   def database_alive?
     ActiveRecord::Base.connection.active?
-    RequestLog.count.is_a? Numeric
+    RequestLog.first.present?
   rescue PG::ConnectionBad, PG::UndefinedTable
     false
   end
