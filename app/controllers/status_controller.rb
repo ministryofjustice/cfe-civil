@@ -24,6 +24,8 @@ private
   end
 
   def database_migrations_run?
-    ActiveRecord::Base.connection.table_exists?(RequestLog.table_name)
+    table = RequestLog.table_name
+    ActiveRecord::Base.connection.schema_cache.clear_data_source_cache!(table)
+    ActiveRecord::Base.connection.table_exists?(table)
   end
 end
