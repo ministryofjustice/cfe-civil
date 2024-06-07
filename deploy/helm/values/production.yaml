@@ -43,5 +43,5 @@ notifications:
   recipient: stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
 
 metabase:
-  enabled: true
+  enabled: false
   environment_name: production
