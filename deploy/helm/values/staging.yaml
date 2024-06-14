@@ -29,9 +29,6 @@ deploy:
 postgresql:
   enabled: false
 
-threshold:
-  useTestData: 'true'
-
 legalFrameworkApi:
   host: http://legal-framework-api.legal-framework-api-production.svc.cluster.local
 
