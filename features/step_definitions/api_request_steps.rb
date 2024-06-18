@@ -48,6 +48,10 @@ Given("I add a non-disputed {int} percent share main property of value {int} and
   @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: mortgage, percentage_owned: share, shared_with_housing_assoc: false }
 end
 
+Given("I add a non-disputed {float} percent share with a housing association on a main property of value {int} and mortgage {int}") do |share, value, mortgage|
+  @main_home = { subject_matter_of_dispute: false, value:, outstanding_mortgage: mortgage, percentage_owned: share, shared_with_housing_assoc: true }
+end
+
 Given("A submission date of {string}") do |date|
   @assessment_data.merge! submission_date: date
 end
