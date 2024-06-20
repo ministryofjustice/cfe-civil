@@ -51,3 +51,6 @@ legalFrameworkApi:
 metabase:
   enabled: false
   environment_name: uat
+
+threshold:
+  futureFile: ''

@@ -42,3 +42,6 @@ notifications:
 metabase:
   enabled: true
   environment_name: staging
+
+threshold:
+  futureFile: ''

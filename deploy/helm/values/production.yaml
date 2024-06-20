@@ -42,3 +42,6 @@ notifications:
 metabase:
   enabled: false
   environment_name: production
+
+threshold:
+  futureFile: ''
