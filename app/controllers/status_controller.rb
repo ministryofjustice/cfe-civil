@@ -18,9 +18,14 @@ class StatusController < ApplicationController
 private
 
   def database_alive?
-    ActiveRecord::Base.connection.active?
-    RequestLog.first.present?
+    ActiveRecord::Base.connection.active? && database_migrations_run?
   rescue PG::ConnectionBad, PG::UndefinedTable
     false
+  end
+
+  def database_migrations_run?
+    table = RequestLog.table_name
+    ActiveRecord::Base.connection.schema_cache.clear_data_source_cache!(table)
+    ActiveRecord::Base.connection.table_exists?(table)
   end
 end
