@@ -30,7 +30,6 @@ postgresql:
   enabled: false
 
 threshold:
-  useTestData: 'true'
   futureFile: 'mtr-2026.yml'
 
 legalFrameworkApi:

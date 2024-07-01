@@ -23,64 +23,6 @@ RSpec.describe Threshold do
           expect(thresholds.value_for(:capital_lower_certificated, at: time)).to eq(data[:capital_lower_certificated])
         end
       end
-
-      context "file is marked as test_only: true" do
-        context "ENV['USE_TEST_THRESHOLD_DATA'] is set to 'true'" do
-          before { allow(Rails.configuration.x).to receive(:use_test_threshold_data).and_return("true") }
-
-          context "date before date of test only file" do
-            let(:time) { Time.zone.parse("1-Dec-2020 12:33") }
-
-            it "returns value from the April 2020 file" do
-              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
-            end
-          end
-
-          context "date after date of test only file" do
-            let(:time) { Time.zone.parse("15-Dec-2020 11:48") }
-
-            it "returns mortgage allowance Test file" do
-              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 888_888_888_888
-            end
-          end
-
-          context "date after most recent file" do
-            let(:time) { Time.zone.parse("1-Jan-2030 12:33") }
-
-            it "returns value from the Jan 2021 file" do
-              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 999_999_999_999
-            end
-          end
-        end
-
-        context "ENV['USE_TEST_THRESHOLD_DATA'] is absent" do
-          before { allow(Rails.configuration.x).to receive(:use_test_threshold_data).and_return("false") }
-
-          context "date before date of test only file" do
-            let(:time) { Time.zone.parse("1-Dec-2020 12:33") }
-
-            it "returns value from the April 2020 file" do
-              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
-            end
-          end
-
-          context "date after date of test only file" do
-            let(:time) { Time.zone.parse("15-Dec-2020 11:48") }
-
-            it "returns value from the April 2020 file" do
-              expect(thresholds.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 666_666_666_666
-            end
-          end
-
-          context "date after most recent file" do
-            let(:time) { Time.zone.parse("1-Jan-2030 12:33") }
-
-            it "returns value from the Jan 2021 file" do
-              expect(described_class.value_for(:property_maximum_mortgage_allowance, at: time)).to eq 999_999_999_999
-            end
-          end
-        end
-      end
     end
   end
 
