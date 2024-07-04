@@ -24,7 +24,7 @@ gem "faraday", "~> 1.10"
 
 gem "prometheus-client"
 
-gem "sentry-rails", ">= 5.8.0"
+gem "sentry-rails", ">= 5.18.0"
 gem "sentry-ruby"
 
 # Use Capistrano for deployment
@@ -77,7 +77,7 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "rspec-rails", "~> 6.1"
   gem "rswag-specs"
-  gem "rubocop-govuk", require: false
+  gem "rubocop-govuk", ">= 5.0.0", require: false
   gem "rubocop-performance"
 
   # download spreadsheets
