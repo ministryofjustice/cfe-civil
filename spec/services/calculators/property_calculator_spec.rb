@@ -225,13 +225,13 @@ module Calculators
         let(:additional_properties_result) do
           properties_result.reject { |p| p.property.main_home }.map(&:result)
         end
-        let(:additional_properties) { [ap1, ap2] }
+        let(:additional_properties) { [first_ap, second_ap] }
 
         let(:main_home_result) { properties_result.detect { |p| p.property.main_home }.result }
-        let(:ap1_result) { properties_result.detect { |p| p.property.value == 350_000 }.result }
-        let(:ap2_result) { properties_result.detect { |p| p.property.value == 270_000 }.result }
+        let(:first_ap_result) { properties_result.detect { |p| p.property.value == 350_000 }.result }
+        let(:second_ap_result) { properties_result.detect { |p| p.property.value == 270_000 }.result }
 
-        let(:ap1) do
+        let(:first_ap) do
           build :property,
                 :additional_property,
                 :not_shared_ownership,
@@ -241,7 +241,7 @@ module Calculators
                 main_home: false
         end
 
-        let(:ap2) do
+        let(:second_ap) do
           build :property,
                 :additional_property,
                 :not_shared_ownership,
@@ -274,7 +274,7 @@ module Calculators
             let(:submission_date) { Time.zone.local(2021, 1, day) }
 
             it "deducts outstanding_mortgage instead of mortgage cap" do
-              expect(ap1_result)
+              expect(first_ap_result)
                 .to have_attributes(
                   { transaction_allowance: 10_500.0,
                     net_value: 284_500.0,
@@ -283,7 +283,7 @@ module Calculators
                     assessed_equity: 284_500.0 },
                 )
 
-              expect(ap2_result)
+              expect(second_ap_result)
                 .to have_attributes(
                   { transaction_allowance: 8_100.0,
                     net_value: 221_900.0,
@@ -306,7 +306,7 @@ module Calculators
       end
 
       context "additional property but no main dwelling" do
-        let(:ap1) do
+        let(:first_ap) do
           build :property,
                 :additional_property,
                 :not_shared_ownership,
@@ -316,7 +316,7 @@ module Calculators
         end
         let(:additional_property) { properties_result.map(&:result).first }
 
-        let(:additional_properties) { [ap1] }
+        let(:additional_properties) { [first_ap] }
         let(:main_home) { nil }
 
         it "calculates the additional property correctly" do
@@ -332,7 +332,7 @@ module Calculators
         context "on or after 28th Jan 2021" do
           let(:day) { [28, 30].sample }
           let(:submission_date) { Time.zone.local(2021, 1, day) }
-          let(:ap1) do
+          let(:first_ap) do
             build :property,
                   :additional_property,
                   :not_shared_ownership,

@@ -19,7 +19,7 @@ module Calculators
 
         context "with no dependants, an employed applicant and no partner" do
           it "returns false" do
-            expect(calculated_result).to eq false
+            expect(calculated_result).to be false
           end
         end
 
@@ -27,7 +27,7 @@ module Calculators
           let(:dependants) { [instance_double(Dependant, becomes_16_on: submission_date + 1.year)] }
 
           it "returns true" do
-            expect(calculated_result).to eq true
+            expect(calculated_result).to be true
           end
         end
 
@@ -38,7 +38,7 @@ module Calculators
           end
 
           it "returns true" do
-            expect(calculated_result).to eq true
+            expect(calculated_result).to be true
           end
         end
 
@@ -46,7 +46,7 @@ module Calculators
           let(:dependants) { [OpenStruct.new(becomes_16_on: submission_date - 1.year)] }
 
           it "returns false" do
-            expect(calculated_result).to eq false
+            expect(calculated_result).to be false
           end
         end
       end
@@ -61,7 +61,7 @@ module Calculators
           end
 
           it "returns true" do
-            expect(calculated_result).to eq true
+            expect(calculated_result).to be true
           end
         end
 
@@ -72,7 +72,7 @@ module Calculators
           end
 
           it "returns false" do
-            expect(calculated_result).to eq false
+            expect(calculated_result).to be false
           end
         end
       end

@@ -1,9 +1,6 @@
 require "rails_helper"
 
 RSpec.describe ExplicitRemark, type: :model do
-  let(:assessment2) { create :assessment }
-  let(:assessment1) { create :assessment }
-
   describe "#by_category" do
     let(:remarks) do
       [

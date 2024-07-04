@@ -10,9 +10,9 @@ module V6
       let(:log_record) { RequestLog.last }
       let(:current_date) { Date.new(2022, 6, 6) }
       let(:submission_date_params) { { submission_date: current_date.to_s } }
-      let(:month1) { current_date.beginning_of_month - 3.months }
-      let(:month2) { current_date.beginning_of_month - 2.months }
-      let(:month3) { current_date.beginning_of_month - 1.month }
+      let(:second_month) { current_date.beginning_of_month - 3.months }
+      let(:third_month) { current_date.beginning_of_month - 2.months }
+      let(:fourth_month) { current_date.beginning_of_month - 1.month }
       let(:dob) { "2001-02-02" }
       let(:redacted_message) { CFEConstants::REDACTED_MESSAGE }
       let(:client_ref) { "3000-01-01" }
@@ -112,26 +112,26 @@ module V6
           attributes_for(:dependant, relationship: "child_relative", in_full_time_education: true, income: { amount: 400, frequency: "monthly" }, date_of_birth: "2004-06-11").except(:income_amount, :income_frequency),
         ]
       end
-      let(:bank_1) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
-      let(:bank_2) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
+      let(:first_bank_account) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
+      let(:second_bank_account) { "#{Faker::Bank.name} #{Faker::Bank.account_number(digits: 8)}" }
       let(:bank_account_params) do
         [
           {
-            description: bank_1,
+            description: first_bank_account,
             value: 28.34,
           },
           {
-            description: bank_2,
+            description: second_bank_account,
             value: 67.23,
           },
         ]
       end
-      let(:asset_1) { "R.J.Ewing Trust" }
-      let(:asset_2) { "Ming Vase" }
+      let(:first_asset) { "R.J.Ewing Trust" }
+      let(:second_asset) { "Ming Vase" }
       let(:non_liquid_params) do
         [
-          { description: asset_1, value: 17.12 },
-          { description: asset_2, value: 6.19 },
+          { description: first_asset, value: 17.12 },
+          { description: second_asset, value: 6.19 },
         ]
       end
       let(:irregular_income_payments) do
@@ -250,7 +250,7 @@ module V6
         end
 
         it "returns false for has_partner_opponent" do
-          expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to eq(false)
+          expect(parsed_response.dig(:assessment, :applicant, :has_partner_opponent)).to be(false)
         end
       end
 
@@ -339,53 +339,47 @@ module V6
 
         it "redacts income client_ids" do
           expect(cash_transaction_log.fetch(:income))
-            .to match_array(
-              [{ category: "maintenance_in",
-                 payments: [{ date: month2.to_s, amount: 1033.44, client_id: redacted_message },
-                            { date: month3.to_s, amount: 1033.44, client_id: redacted_message },
-                            { date: month1.to_s, amount: 1033.44, client_id: redacted_message }] },
-               { category: "friends_or_family",
-                 payments: [{ date: month2.to_s, amount: 250.0, client_id: redacted_message },
-                            { date: month3.to_s, amount: 250.0, client_id: redacted_message },
-                            { date: month1.to_s, amount: 250.0, client_id: redacted_message }] },
-               { category: "benefits",
-                 payments: [{ date: month2.to_s, amount: 65.12, client_id: redacted_message },
-                            { date: month3.to_s, amount: 65.12, client_id: redacted_message },
-                            { date: month1.to_s, amount: 65.12, client_id: redacted_message }] },
-               { category: "property_or_lodger",
-                 payments: [{ date: month2.to_s, amount: 91.87, client_id: redacted_message },
-                            { date: month3.to_s, amount: 91.87, client_id: redacted_message },
-                            { date: month1.to_s, amount: 91.87, client_id: redacted_message }] },
-               { category: "pension",
-                 payments: [{ date: month2.to_s, amount: 34.12, client_id: redacted_message },
-                            { date: month3.to_s, amount: 34.12, client_id: redacted_message },
-                            { date: month1.to_s, amount: 34.12, client_id: redacted_message }] }],
-            )
+            .to contain_exactly({ category: "maintenance_in",
+                                  payments: [{ date: third_month.to_s, amount: 1033.44, client_id: redacted_message },
+                                             { date: fourth_month.to_s, amount: 1033.44, client_id: redacted_message },
+                                             { date: second_month.to_s, amount: 1033.44, client_id: redacted_message }] }, { category: "friends_or_family",
+                                                                                                                             payments: [{ date: third_month.to_s, amount: 250.0, client_id: redacted_message },
+                                                                                                                                        { date: fourth_month.to_s, amount: 250.0, client_id: redacted_message },
+                                                                                                                                        { date: second_month.to_s, amount: 250.0, client_id: redacted_message }] }, { category: "benefits",
+                                                                                                                                                                                                                      payments: [{ date: third_month.to_s, amount: 65.12, client_id: redacted_message },
+                                                                                                                                                                                                                                 { date: fourth_month.to_s, amount: 65.12, client_id: redacted_message },
+                                                                                                                                                                                                                                 { date: second_month.to_s, amount: 65.12, client_id: redacted_message }] }, { category: "property_or_lodger",
+                                                                                                                                                                                                                                                                                                               payments: [{ date: third_month.to_s, amount: 91.87, client_id: redacted_message },
+                                                                                                                                                                                                                                                                                                                          { date: fourth_month.to_s, amount: 91.87, client_id: redacted_message },
+                                                                                                                                                                                                                                                                                                                          { date: second_month.to_s, amount: 91.87, client_id: redacted_message }] }, { category: "pension",
+                                                                                                                                                                                                                                                                                                                                                                                                        payments: [{ date: third_month.to_s, amount: 34.12, client_id: redacted_message },
+                                                                                                                                                                                                                                                                                                                                                                                                                   { date: fourth_month.to_s, amount: 34.12, client_id: redacted_message },
+                                                                                                                                                                                                                                                                                                                                                                                                                   { date: second_month.to_s, amount: 34.12, client_id: redacted_message }] })
         end
 
         it "redacts outgoings client ids in the log" do
           expect(cash_transaction_log.fetch(:outgoings))
             .to eq(
               [{ category: "maintenance_out",
-                 payments: [{ date: month2.to_s, amount: 256.0, client_id: redacted_message },
-                            { date: month3.to_s, amount: 256.0, client_id: redacted_message },
-                            { date: month1.to_s, amount: 256.0, client_id: redacted_message }] },
+                 payments: [{ date: third_month.to_s, amount: 256.0, client_id: redacted_message },
+                            { date: fourth_month.to_s, amount: 256.0, client_id: redacted_message },
+                            { date: second_month.to_s, amount: 256.0, client_id: redacted_message }] },
                { category: "child_care",
-                 payments: [{ date: month2.to_s, amount: 257.0, client_id: redacted_message },
-                            { date: month3.to_s, amount: 257.0, client_id: redacted_message },
-                            { date: month1.to_s, amount: 257.0, client_id: redacted_message }] },
+                 payments: [{ date: third_month.to_s, amount: 257.0, client_id: redacted_message },
+                            { date: fourth_month.to_s, amount: 257.0, client_id: redacted_message },
+                            { date: second_month.to_s, amount: 257.0, client_id: redacted_message }] },
                { category: "legal_aid",
-                 payments: [{ date: month2.to_s, amount: 44.54, client_id: redacted_message },
-                            { date: month3.to_s, amount: 44.54, client_id: redacted_message },
-                            { date: month1.to_s, amount: 44.54, client_id: redacted_message }] },
+                 payments: [{ date: third_month.to_s, amount: 44.54, client_id: redacted_message },
+                            { date: fourth_month.to_s, amount: 44.54, client_id: redacted_message },
+                            { date: second_month.to_s, amount: 44.54, client_id: redacted_message }] },
                { category: "rent_or_mortgage",
-                 payments: [{ date: month2.to_s, amount: 87.54, client_id: redacted_message },
-                            { date: month3.to_s, amount: 87.54, client_id: redacted_message },
-                            { date: month1.to_s, amount: 87.54, client_id: redacted_message }] },
+                 payments: [{ date: third_month.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: fourth_month.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: second_month.to_s, amount: 87.54, client_id: redacted_message }] },
                { category: "pension_contribution",
-                 payments: [{ date: month2.to_s, amount: 87.54, client_id: redacted_message },
-                            { date: month3.to_s, amount: 87.54, client_id: redacted_message },
-                            { date: month1.to_s, amount: 87.54, client_id: redacted_message }] }],
+                 payments: [{ date: third_month.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: fourth_month.to_s, amount: 87.54, client_id: redacted_message },
+                            { date: second_month.to_s, amount: 87.54, client_id: redacted_message }] }],
             )
         end
 
@@ -413,7 +407,7 @@ module V6
       end
 
       def cash_transactions(amount)
-        [month2, month3, month1].map do |p|
+        [third_month, fourth_month, second_month].map do |p|
           {
             date: p.strftime("%F"),
             amount:,
@@ -430,13 +424,13 @@ module V6
             capitals: {
               bank_accounts: [
                 {
-                  description: bank_1,
+                  description: first_bank_account,
                   value: "28.34",
                 },
               ],
               non_liquid_capital: [
                 {
-                  description: asset_1,
+                  description: first_asset,
                   value: 17.12,
                 },
               ],
@@ -446,16 +440,12 @@ module V6
 
         it "has liquid" do
           expect(capital_items.fetch(:liquid))
-            .to match_array(
-              [{ description: bank_1, value: 28.34 }],
-            )
+            .to contain_exactly({ description: first_bank_account, value: 28.34 })
         end
 
         it "has non_liquid" do
           expect(capital_items.fetch(:non_liquid))
-            .to match_array(
-              [{ description: "R.J.Ewing Trust", value: 17.12 }],
-            )
+            .to contain_exactly({ description: "R.J.Ewing Trust", value: 17.12 })
         end
       end
 
@@ -474,16 +464,12 @@ module V6
 
           it "has liquid" do
             expect(capital_items.fetch(:liquid))
-              .to match_array(
-                [{ description: bank_1, value: 28.34 }, { description: bank_2, value: 67.23 }],
-              )
+              .to contain_exactly({ description: first_bank_account, value: 28.34 }, { description: second_bank_account, value: 67.23 })
           end
 
           it "has non_liquid" do
             expect(capital_items.fetch(:non_liquid))
-              .to match_array(
-                [{ description: "R.J.Ewing Trust", value: 17.12 }, { description: "Ming Vase", value: 6.19 }],
-              )
+              .to contain_exactly({ description: "R.J.Ewing Trust", value: 17.12 }, { description: "Ming Vase", value: 6.19 })
           end
         end
       end
@@ -554,40 +540,34 @@ module V6
 
             it "zeroes the tax and NICs in gross income" do
               expect(gross_employment_income_payments.first)
-                .to match_array(
-                  [
-                    {
-                      date: "2022-05-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                    {
-                      date: "2022-04-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                    {
-                      date: "2022-03-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                  ],
-                )
+                .to contain_exactly({
+                  date: "2022-05-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                }, {
+                  date: "2022-04-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                }, {
+                  date: "2022-03-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                })
             end
           end
 
@@ -643,70 +623,61 @@ module V6
 
             it "zeroes the tax and NICs in gross income" do
               expect(gross_employment_income_payments.flatten)
-                .to match_array(
-                  [
-                    {
-                      date: "2022-05-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                    {
-                      date: "2022-04-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                    {
-                      date: "2022-03-30",
-                      gross: 846.0,
-                      benefits_in_kind: 16.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 862.6,
-                    },
-                    {
-                      date: "2022-05-30",
-                      gross: 746.0,
-                      benefits_in_kind: 6.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 752.6,
-                    },
-                    {
-                      date: "2022-04-30",
-                      gross: 746.0,
-                      benefits_in_kind: 6.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 752.6,
-                    },
-                    {
-                      date: "2022-03-30",
-                      gross: 746.0,
-                      benefits_in_kind: 6.6,
-                      tax: 0.0,
-                      national_insurance: 0.0,
-                      prisoner_levy: 0.0,
-                      student_debt_repayment: 0.0,
-                      net_employment_income: 752.6,
-                    },
-                  ],
-                )
+                .to contain_exactly({
+                  date: "2022-05-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                }, {
+                  date: "2022-04-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                }, {
+                  date: "2022-03-30",
+                  gross: 846.0,
+                  benefits_in_kind: 16.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 862.6,
+                }, {
+                  date: "2022-05-30",
+                  gross: 746.0,
+                  benefits_in_kind: 6.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 752.6,
+                }, {
+                  date: "2022-04-30",
+                  gross: 746.0,
+                  benefits_in_kind: 6.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 752.6,
+                }, {
+                  date: "2022-03-30",
+                  gross: 746.0,
+                  benefits_in_kind: 6.6,
+                  tax: 0.0,
+                  national_insurance: 0.0,
+                  prisoner_levy: 0.0,
+                  student_debt_repayment: 0.0,
+                  net_employment_income: 752.6,
+                })
             end
           end
         end
@@ -856,27 +827,24 @@ module V6
         end
 
         it "has employments in the response" do
-          expect(employment_incomes).to match_array([
-            { client_reference: "54321",
-              monthly_income: {
-                gross: 220.0,
-                tax: -131.50,
-                national_insurance: -17.0,
-                prisoner_levy: 0.0,
-                student_debt_repayment: 0.0,
-                benefits_in_kind: 20.0,
-              } },
-            {
-              monthly_income: {
-                gross: 220.0,
-                tax: -131.50,
-                national_insurance: -17.0,
-                prisoner_levy: 0.0,
-                student_debt_repayment: 0.0,
-                benefits_in_kind: 20.0,
-              },
-            },
-          ])
+          expect(employment_incomes).to contain_exactly({ client_reference: "54321",
+                                                          monthly_income: {
+                                                            gross: 220.0,
+                                                            tax: -131.50,
+                                                            national_insurance: -17.0,
+                                                            prisoner_levy: 0.0,
+                                                            student_debt_repayment: 0.0,
+                                                            benefits_in_kind: 20.0,
+                                                          } }, {
+                                                            monthly_income: {
+                                                              gross: 220.0,
+                                                              tax: -131.50,
+                                                              national_insurance: -17.0,
+                                                              prisoner_levy: 0.0,
+                                                              student_debt_repayment: 0.0,
+                                                              benefits_in_kind: 20.0,
+                                                            },
+                                                          })
         end
       end
 
@@ -985,12 +953,12 @@ module V6
 
         let(:client_ids) { %w[1 2 3] }
 
-        let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
-        let(:state_benefit_type2) { create :state_benefit_type, exclude_from_gross_income: false }
+        let(:benefit_type_excluded) { create :state_benefit_type, exclude_from_gross_income: true }
+        let(:benefit_type_included) { create :state_benefit_type, exclude_from_gross_income: false }
         let(:state_benefit_params) do
           [
             {
-              name: state_benefit_type1.label,
+              name: benefit_type_excluded.label,
               payments: %w[2022-11-01 2022-10-01 2022-09-01].map.with_index do |date, index|
                 {
                   date:, amount: 1033.44, client_id: "sb1-m#{index}"
@@ -998,7 +966,7 @@ module V6
               end,
             },
             {
-              name: state_benefit_type2.label,
+              name: benefit_type_included.label,
               payments: %w[2022-11-01 2022-10-01 2022-09-01].map.with_index do |date, index|
                 {
                   date:, amount: 266.02, client_id: "sb2-m#{index}"
@@ -1315,12 +1283,12 @@ module V6
 
             it "has client_other_income_payment remark from friends and family" do
               expect(remarks.dig(:client_other_income_payment, :amount_variation))
-                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1"])
+                .to contain_exactly("ffi-m-3", "ffi-m-2", "ffi-m-1")
             end
 
             it "has partner_other_income_payment remark from friends and family" do
               expect(remarks.dig(:partner_other_income_payment, :amount_variation))
-                .to match_array(["ffi-m-3", "ffi-m-2", "ffi-m-1"])
+                .to contain_exactly("ffi-m-3", "ffi-m-2", "ffi-m-1")
             end
 
             it "has client_outgoings_housing_cost" do
@@ -1365,12 +1333,7 @@ module V6
               let(:monthly_equivalents) { gross_income.dig(:state_benefits, :monthly_equivalents) }
 
               it "has bank transactions" do
-                expect(monthly_equivalents.fetch(:bank_transactions)).to match_array(
-                  [
-                    { name: state_benefit_type1.label, monthly_value: 1033.44, excluded_from_income_assessment: true },
-                    { name: state_benefit_type2.label, monthly_value: 266.02, excluded_from_income_assessment: false },
-                  ],
-                )
+                expect(monthly_equivalents.fetch(:bank_transactions)).to contain_exactly({ name: benefit_type_excluded.label, monthly_value: 1033.44, excluded_from_income_assessment: true }, { name: benefit_type_included.label, monthly_value: 266.02, excluded_from_income_assessment: false })
               end
             end
 
@@ -1461,12 +1424,7 @@ module V6
               end
 
               it "has bank_transactions" do
-                expect(state_benefits.fetch(:bank_transactions).map { |g| g.except(:name) }).to match_array(
-                  [
-                    { monthly_value: 1033.44, excluded_from_income_assessment: true },
-                    { monthly_value: 266.02, excluded_from_income_assessment: false },
-                  ],
-                )
+                expect(state_benefits.fetch(:bank_transactions).map { |g| g.except(:name) }).to contain_exactly({ monthly_value: 1033.44, excluded_from_income_assessment: true }, { monthly_value: 266.02, excluded_from_income_assessment: false })
               end
             end
 
@@ -1618,40 +1576,35 @@ module V6
 
                 it "has additional properties" do
                   expect(properties.fetch(:additional_properties))
-                    .to match_array(
-                      [
-                        {
-                          value: 1000.0,
-                          outstanding_mortgage: 0.0,
-                          percentage_owned: 99.0,
-                          main_home: false,
-                          shared_with_housing_assoc: false,
-                          transaction_allowance: 30.0,
-                          allowable_outstanding_mortgage: 0.0,
-                          net_value: 970.0,
-                          net_equity: 960.3,
-                          main_home_equity_disregard: 0.0,
-                          assessed_equity: 960.3,
-                          smod_allowance: 0.0,
-                          subject_matter_of_dispute: false,
-                        },
-                        {
-                          value: 10_000.0,
-                          outstanding_mortgage: 40.0,
-                          percentage_owned: 80.0,
-                          main_home: false,
-                          shared_with_housing_assoc: true,
-                          transaction_allowance: 300.0,
-                          allowable_outstanding_mortgage: 40.0,
-                          net_value: 9660.0,
-                          net_equity: 7660.0,
-                          main_home_equity_disregard: 0.0,
-                          assessed_equity: 7660.0,
-                          smod_allowance: 0.0,
-                          subject_matter_of_dispute: false,
-                        },
-                      ],
-                    )
+                    .to contain_exactly({
+                      value: 1000.0,
+                      outstanding_mortgage: 0.0,
+                      percentage_owned: 99.0,
+                      main_home: false,
+                      shared_with_housing_assoc: false,
+                      transaction_allowance: 30.0,
+                      allowable_outstanding_mortgage: 0.0,
+                      net_value: 970.0,
+                      net_equity: 960.3,
+                      main_home_equity_disregard: 0.0,
+                      assessed_equity: 960.3,
+                      smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
+                    }, {
+                      value: 10_000.0,
+                      outstanding_mortgage: 40.0,
+                      percentage_owned: 80.0,
+                      main_home: false,
+                      shared_with_housing_assoc: true,
+                      transaction_allowance: 300.0,
+                      allowable_outstanding_mortgage: 40.0,
+                      net_value: 9660.0,
+                      net_equity: 7660.0,
+                      main_home_equity_disregard: 0.0,
+                      assessed_equity: 7660.0,
+                      smod_allowance: 0.0,
+                      subject_matter_of_dispute: false,
+                    })
                 end
               end
             end
@@ -1662,12 +1615,12 @@ module V6
 
             it "has liquid" do
               expect(partner_capital.fetch(:liquid).map { |x| x.except(:description) })
-                .to match_array([{ value: 28.34 }, { value: 67.23 }])
+                .to contain_exactly({ value: 28.34 }, { value: 67.23 })
             end
 
             it "has non_liquid" do
               expect(partner_capital.fetch(:non_liquid).map { |x| x.except(:description) })
-                .to match_array([{ value: 17.12 }, { value: 6.19 }])
+                .to contain_exactly({ value: 17.12 }, { value: 6.19 })
             end
 
             it "has vehicles" do
@@ -1693,40 +1646,35 @@ module V6
 
             it "has properties" do
               expect(partner_capital.dig(:properties, :additional_properties))
-                .to match_array(
-                  [
-                    {
-                      value: 1000.0,
-                      outstanding_mortgage: 0.0,
-                      percentage_owned: 99.0,
-                      main_home: false,
-                      shared_with_housing_assoc: false,
-                      transaction_allowance: 30.0,
-                      allowable_outstanding_mortgage: 0.0,
-                      net_value: 970.0,
-                      net_equity: 960.3,
-                      main_home_equity_disregard: 0.0,
-                      assessed_equity: 960.3,
-                      smod_allowance: 0.0,
-                      subject_matter_of_dispute: false,
-                    },
-                    {
-                      value: 10_000.0,
-                      outstanding_mortgage: 40.0,
-                      percentage_owned: 80.0,
-                      main_home: false,
-                      shared_with_housing_assoc: true,
-                      transaction_allowance: 300.0,
-                      allowable_outstanding_mortgage: 40.0,
-                      net_value: 9660.0,
-                      net_equity: 7660.0,
-                      main_home_equity_disregard: 0.0,
-                      assessed_equity: 7660.0,
-                      smod_allowance: 0.0,
-                      subject_matter_of_dispute: false,
-                    },
-                  ],
-                )
+                .to contain_exactly({
+                  value: 1000.0,
+                  outstanding_mortgage: 0.0,
+                  percentage_owned: 99.0,
+                  main_home: false,
+                  shared_with_housing_assoc: false,
+                  transaction_allowance: 30.0,
+                  allowable_outstanding_mortgage: 0.0,
+                  net_value: 970.0,
+                  net_equity: 960.3,
+                  main_home_equity_disregard: 0.0,
+                  assessed_equity: 960.3,
+                  smod_allowance: 0.0,
+                  subject_matter_of_dispute: false,
+                }, {
+                  value: 10_000.0,
+                  outstanding_mortgage: 40.0,
+                  percentage_owned: 80.0,
+                  main_home: false,
+                  shared_with_housing_assoc: true,
+                  transaction_allowance: 300.0,
+                  allowable_outstanding_mortgage: 40.0,
+                  net_value: 9660.0,
+                  net_equity: 7660.0,
+                  main_home_equity_disregard: 0.0,
+                  assessed_equity: 7660.0,
+                  smod_allowance: 0.0,
+                  subject_matter_of_dispute: false,
+                })
             end
           end
         end
@@ -1777,7 +1725,7 @@ module V6
               let(:params) { { assessment: {} } }
 
               it "doesn't redact the client reference" do
-                expect(log_record.request["assessment"]["client_reference_id"]).to eq(nil)
+                expect(log_record.request["assessment"]["client_reference_id"]).to be_nil
               end
             end
           end
@@ -1809,7 +1757,7 @@ module V6
         end
       end
 
-      context "redact assessment.remarks in response " do
+      context "redact assessment.remarks in response" do
         context "with successful submission" do
           let(:params) do
             {

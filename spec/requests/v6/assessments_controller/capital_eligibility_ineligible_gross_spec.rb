@@ -5,9 +5,9 @@ module V6
     let(:user_agent) { Faker::ProgrammingLanguage.name }
     let(:headers) { { "CONTENT_TYPE" => "application/json", "Accept" => "application/json", 'HTTP_USER_AGENT': user_agent } }
     let(:current_date) { Date.new(2024, 3, 6) }
-    let(:month1) { current_date.beginning_of_month - 3.months }
-    let(:month2) { current_date.beginning_of_month - 2.months }
-    let(:month3) { current_date.beginning_of_month - 1.month }
+    let(:first_month) { current_date.beginning_of_month - 3.months }
+    let(:second_month) { current_date.beginning_of_month - 2.months }
+    let(:third_month) { current_date.beginning_of_month - 1.month }
 
     around do |example|
       travel_to current_date
@@ -16,7 +16,7 @@ module V6
     end
 
     def cash_transactions(amount)
-      [month2, month3, month1].map do |p|
+      [second_month, third_month, first_month].map do |p|
         {
           date: p.strftime("%F"),
           amount:,
@@ -70,7 +70,7 @@ module V6
       end
 
       it "has no errors" do
-        expect(parsed_response[:errors]).to eq(nil)
+        expect(parsed_response[:errors]).to be_nil
       end
 
       it "returns everything ineligible" do

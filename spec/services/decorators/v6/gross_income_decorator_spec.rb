@@ -16,7 +16,7 @@ module Decorators
           state_benefits:,
           employment_income_subtotals: instance_double(EmploymentIncomeSubtotals,
                                                        payment_based_employments: [
-                                                         OpenStruct.new(employment_name: employment1.name, employment_payments: employment1.employment_payments),
+                                                         OpenStruct.new(employment_name: first_employment.name, employment_payments: first_employment.employment_payments),
                                                          OpenStruct.new(employment_name: employment2.name, employment_payments: employment2.employment_payments),
                                                        ],
                                                        self_employment_details: [],
@@ -31,7 +31,7 @@ module Decorators
         )
       end
 
-      let(:employment1) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
+      let(:first_employment) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
       let(:employment2) { build :employment, :with_monthly_payments, submission_date: assessment.submission_date }
       let(:universal_credit) { create :state_benefit_type, :universal_credit }
       let(:child_benefit) { create :state_benefit_type, :child_benefit }
@@ -40,7 +40,7 @@ module Decorators
         {
           employment_income: [
             {
-              name: employment1.name,
+              name: first_employment.name,
               payments: [
                 {
                   date: Time.zone.today.strftime("%Y-%m-%d"),
@@ -169,7 +169,7 @@ module Decorators
         end
 
         subject(:decorator) do
-          described_class.new([employment1, employment2], subtotals).as_json
+          described_class.new([first_employment, employment2], subtotals).as_json
         end
 
         it "returns the expected structure" do

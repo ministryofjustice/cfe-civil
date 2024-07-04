@@ -1,8 +1,8 @@
 require "swagger_helper"
 
-RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :request, swagger_doc: "v6/swagger.yaml" do
+RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, swagger_doc: "v6/swagger.yaml", type: :request do
   path "/v6/assessments" do
-    let(:state_benefit_type1) { create :state_benefit_type, exclude_from_gross_income: true }
+    let(:benefit_type_excluded) { create :state_benefit_type, exclude_from_gross_income: true }
 
     post("create") do
       tags "Perform assessment with single call"
@@ -320,7 +320,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :reques
             proceeding_types: [{ ccms_code: "SE013", client_involvement_type: "A" }],
             state_benefits: [
               {
-                name: state_benefit_type1.label,
+                name: benefit_type_excluded.label,
                 payments: [
                   { date: "2022-11-01", amount: 33.44, client_id: SecureRandom.uuid, flags: { multi_benefit: true } },
                   { date: "2022-10-01", amount: 55.44, client_id: SecureRandom.uuid, flags: {} },

@@ -18,7 +18,7 @@ module Creators
 
       context "valid request when level of representation is missing" do
         it "is successful" do
-          expect(creator.success?).to eq true
+          expect(creator.success?).to be true
         end
 
         it "populates the assessment record with expected values" do
@@ -39,7 +39,7 @@ module Creators
           let(:level_of_help) { "controlled" }
 
           it "sets the level appropriately" do
-            expect(creator.success?).to eq true
+            expect(creator.success?).to be true
             expect(creator.assessment.level_of_help).to eq "controlled"
           end
         end
@@ -48,7 +48,7 @@ module Creators
           let(:level_of_help) { "certificated" }
 
           it "sets the level appropriately" do
-            expect(creator.success?).to eq true
+            expect(creator.success?).to be true
             expect(creator.assessment.level_of_help).to eq "certificated"
           end
         end

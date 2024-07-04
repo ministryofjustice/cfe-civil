@@ -50,7 +50,7 @@ module V6
         end
 
         it "has no errors" do
-          expect(parsed_response[:errors]).to eq(nil)
+          expect(parsed_response[:errors]).to be_nil
         end
 
         it "returns eligible even though capital is ineligible" do

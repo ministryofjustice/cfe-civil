@@ -84,15 +84,17 @@ module Decorators
           expect(decorator[:assessment].keys).to match_array expected_keys
         end
 
+        # rubocop:disable RSpec/NoExpectationExample
         it "calls the decorators for associated records" do
-          allow(::Decorators::V6::ApplicantDecorator).to receive(:new).and_return(instance_double("ad", as_json: nil))
-          allow(::Decorators::V6::GrossIncomeDecorator).to receive(:new).and_return(instance_double("gisd", as_json: nil))
-          allow(::Decorators::V6::DisposableIncomeDecorator).to receive(:new).and_return(instance_double("disd", as_json: nil))
-          allow(::Decorators::V6::CapitalDecorator).to receive(:new).and_return(instance_double("csd", as_json: nil))
-          allow(::Decorators::V6::RemarksDecorator).to receive(:new).and_return(instance_double("rmk", as_json: nil))
-          allow(::Decorators::V6::ResultSummaryDecorator).to receive(:new).and_return(instance_double("rsd", as_json: nil))
+          allow(::Decorators::V6::ApplicantDecorator).to receive(:new).and_return(instance_double(ApplicantDecorator, as_json: nil))
+          allow(::Decorators::V6::GrossIncomeDecorator).to receive(:new).and_return(instance_double(GrossIncomeDecorator, as_json: nil))
+          allow(::Decorators::V6::DisposableIncomeDecorator).to receive(:new).and_return(instance_double(DisposableIncomeDecorator, as_json: nil))
+          allow(::Decorators::V6::CapitalDecorator).to receive(:new).and_return(instance_double(CapitalDecorator, as_json: nil))
+          allow(::Decorators::V6::RemarksDecorator).to receive(:new).and_return(instance_double(RemarksDecorator, as_json: nil))
+          allow(::Decorators::V6::ResultSummaryDecorator).to receive(:new).and_return(instance_double(ResultSummaryDecorator, as_json: nil))
           decorator
         end
+        # rubocop:enable RSpec/NoExpectationExample
 
         context "with partner" do
           let(:partner) do
