@@ -4,10 +4,10 @@ describe Creators::CashTransactionsCreator do
   describe ".call" do
     let(:assessment) { build :assessment }
     let(:cash_transaction_params) { params }
-    let(:month0) { assessment.submission_date.beginning_of_month - 4.months }
-    let(:month1) { assessment.submission_date.beginning_of_month - 3.months }
-    let(:month2) { assessment.submission_date.beginning_of_month - 2.months }
-    let(:month3) { assessment.submission_date.beginning_of_month - 1.month }
+    let(:first_month) { assessment.submission_date.beginning_of_month - 4.months }
+    let(:second_month) { assessment.submission_date.beginning_of_month - 3.months }
+    let(:third_month) { assessment.submission_date.beginning_of_month - 2.months }
+    let(:fourth_month) { assessment.submission_date.beginning_of_month - 1.month }
 
     subject(:creator) do
       described_class.call(cash_transaction_params:, submission_date: assessment.submission_date)
@@ -25,9 +25,9 @@ describe Creators::CashTransactionsCreator do
         trx_details = cat.sort_by(&:date).map { [_1.date, _1.amount, _1.client_id] }
         expect(trx_details).to eq(
           [
-            [month1, 256.0, "ec7b707b-d795-47c2-8b39-ccf022eae33b"],
-            [month2, 257.0, "ee7b707b-d795-47c2-8b39-ccf022eae33b"],
-            [month3, 258.0, "ff7b707b-d795-47c2-8b39-ccf022eae33b"],
+            [second_month, 256.0, "ec7b707b-d795-47c2-8b39-ccf022eae33b"],
+            [third_month, 257.0, "ee7b707b-d795-47c2-8b39-ccf022eae33b"],
+            [fourth_month, 258.0, "ff7b707b-d795-47c2-8b39-ccf022eae33b"],
           ],
         )
       end
@@ -66,17 +66,17 @@ describe Creators::CashTransactionsCreator do
             category: :maintenance_in,
             payments: [
               {
-                date: month1.strftime("%F"),
+                date: second_month.strftime("%F"),
                 amount: 1046.44,
                 client_id: "05459c0f-a620-4743-9f0c-b3daa93e5711",
               },
               {
-                date: month2.strftime("%F"),
+                date: third_month.strftime("%F"),
                 amount: 1034.33,
                 client_id: "10318f7b-289a-4fa5-a986-fc6f499fecd0",
               },
               {
-                date: month3.strftime("%F"),
+                date: fourth_month.strftime("%F"),
                 amount: 1033.44,
                 client_id: "5cf62a12-c92b-4cc1-b8ca-eeb4efbcce21",
               },
@@ -86,17 +86,17 @@ describe Creators::CashTransactionsCreator do
             category: :friends_or_family,
             payments: [
               {
-                date: month2.strftime("%F"),
+                date: third_month.strftime("%F"),
                 amount: 250.0,
                 client_id: "e47b707b-d795-47c2-8b39-ccf022eae33b",
               },
               {
-                date: month3.strftime("%F"),
+                date: fourth_month.strftime("%F"),
                 amount: 266.02,
                 client_id: "b0c46cc7-8478-4658-a7f9-85ec85d420b1",
               },
               {
-                date: month1.strftime("%F"),
+                date: second_month.strftime("%F"),
                 amount: 250.0,
                 client_id: "f3ec68a3-8748-4ed5-971a-94d133e0efa0",
               },
@@ -109,17 +109,17 @@ describe Creators::CashTransactionsCreator do
               category: :maintenance_out,
               payments: [
                 {
-                  date: month2.strftime("%F"),
+                  date: third_month.strftime("%F"),
                   amount: 256.0,
                   client_id: "347b707b-d795-47c2-8b39-ccf022eae33b",
                 },
                 {
-                  date: month3.strftime("%F"),
+                  date: fourth_month.strftime("%F"),
                   amount: 256.0,
                   client_id: "722b707b-d795-47c2-8b39-ccf022eae33b",
                 },
                 {
-                  date: month1.strftime("%F"),
+                  date: second_month.strftime("%F"),
                   amount: 256.0,
                   client_id: "abcb707b-d795-47c2-8b39-ccf022eae33b",
                 },
@@ -129,17 +129,17 @@ describe Creators::CashTransactionsCreator do
               category: :child_care,
               payments: [
                 {
-                  date: month3.strftime("%F"),
+                  date: fourth_month.strftime("%F"),
                   amount: 258.0,
                   client_id: "ff7b707b-d795-47c2-8b39-ccf022eae33b",
                 },
                 {
-                  date: month2.strftime("%F"),
+                  date: third_month.strftime("%F"),
                   amount: 257.0,
                   client_id: "ee7b707b-d795-47c2-8b39-ccf022eae33b",
                 },
                 {
-                  date: month1.strftime("%F"),
+                  date: second_month.strftime("%F"),
                   amount: 256.0,
                   client_id: "ec7b707b-d795-47c2-8b39-ccf022eae33b",
                 },
@@ -163,7 +163,7 @@ describe Creators::CashTransactionsCreator do
 
     def invalid_params_not_consecutive_months
       params = valid_params.clone
-      params[:income].first[:payments].first[:date] = month0.strftime("%F")
+      params[:income].first[:payments].first[:date] = first_month.strftime("%F")
       params
     end
   end

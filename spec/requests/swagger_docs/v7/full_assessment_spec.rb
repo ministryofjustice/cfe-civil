@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, type: :request, swagger_doc: "v7/swagger.yaml" do
+RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, swagger_doc: "v7/swagger.yaml", type: :request do
   path "/v7/assessments" do
     post("create") do
       tags "Perform assessment with single call"

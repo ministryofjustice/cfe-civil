@@ -24,7 +24,7 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(false)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to be(false)
           end
         end
 
@@ -38,7 +38,7 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(true)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to be(true)
           end
         end
 
@@ -56,7 +56,7 @@ module Workflows
                                                      not_aggregated_no_income_low_capital: assessment.not_aggregated_no_income_low_capital,
                                                      applicant_under_18_years_old: applicant.under_18_years_old?(assessment.submission_date),
                                                      receives_asylum_support: applicant.receives_asylum_support,
-                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to eq(true)
+                                                     proceeding_type_codes: proceeding_types.map(&:ccms_code))).to be(true)
           end
         end
       end

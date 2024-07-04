@@ -12,8 +12,8 @@ Dir[Rails.root.join("lib/integration_helpers/**/*.rb")].sort.each { |f| require 
 # (show details of all payloads and responses)
 #
 #    bin/ispec -h # show help text
-#
-RSpec.describe "IntegrationTests::TestRunner", :vcr, :calls_bank_holiday, type: :request do
+# rubocop:disable RSpec/NoExpectationExample
+RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, :vcr, type: :request do
   let(:spreadsheet_title) { "CFE Integration Test V3" }
   let(:target_worksheet) { ENV["TARGET_WORKSHEET"] }
   let(:verbosity_level) { (ENV["VERBOSE"] || "0").to_i }
@@ -125,3 +125,4 @@ RSpec.describe "IntegrationTests::TestRunner", :vcr, :calls_bank_holiday, type: 
     end
   end
 end
+# rubocop:enable RSpec/NoExpectationExample

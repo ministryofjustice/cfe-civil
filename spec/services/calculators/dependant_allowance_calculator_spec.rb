@@ -79,7 +79,7 @@ module Calculators
           context "in full time education" do
             let(:assessment) { build(:assessment) }
 
-            context "with  no income" do
+            context "with no income" do
               let(:dependant) { build :dependant, :aged16or17, income_amount: 0.0, in_full_time_education: true, submission_date: }
 
               it "returns the child 16 or over allowance with no income deduction" do
@@ -105,7 +105,7 @@ module Calculators
           end
 
           context "not in full time education" do
-            context "with  no income" do
+            context "with no income" do
               let(:dependant) { build :dependant, :aged16or17, income_amount: 0.0, in_full_time_education: false, submission_date: }
 
               it "returns the adult allowance with no income deduction" do

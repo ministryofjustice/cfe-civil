@@ -18,7 +18,7 @@ module Utilities
     context "variance less than £60" do
       let(:amounts) { [2000.0, 1941.0, 1966.0, 1996.0] }
 
-      it "is  true" do
+      it "is true" do
         expect(result).to be true
       end
     end

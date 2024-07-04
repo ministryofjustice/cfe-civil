@@ -19,10 +19,11 @@ module Collators
       end
 
       context "with dependants" do
-        let(:dependant1) { build :dependant, :under15, in_full_time_education: true, submission_date: }
-        let(:dependant2) { build :dependant, :over18, in_full_time_education: true, submission_date: }
-        let(:dependant3) { build :dependant, :aged16or17, in_full_time_education: true, submission_date: }
-        let(:dependants) { [dependant1, dependant2, dependant3] }
+        let(:dependants) do
+          [build(:dependant, :under15, in_full_time_education: true, submission_date:),
+           build(:dependant, :over18, in_full_time_education: true, submission_date:),
+           build(:dependant, :aged16or17, in_full_time_education: true, submission_date:)]
+        end
 
         it "returns the under_16s / over_16s grouped together" do
           expect(collator).to have_attributes(under_16: 338.9, over_16: 338.9 + 338.9)

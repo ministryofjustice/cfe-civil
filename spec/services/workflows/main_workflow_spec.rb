@@ -1,6 +1,7 @@
 require "rails_helper"
 
 module Workflows
+  # rubocop:disable RSpec/NoExpectationExample
   RSpec.describe MainWorkflow do
     let(:proceeding_types) do
       [
@@ -140,4 +141,5 @@ module Workflows
       end
     end
   end
+  # rubocop:enable RSpec/NoExpectationExample
 end

@@ -2,7 +2,11 @@ require "rails_helper"
 
 RSpec.describe StateBenefitTypeController, type: :request do
   describe "GET state benefit types" do
-    let!(:state_benefit_type1) { create :state_benefit_type }
+    before do
+      create :state_benefit_type
+    end
+
+    let(:state_benefit_type1) { StateBenefitType.last }
 
     it "returns http success" do
       get state_benefit_type_index_path
