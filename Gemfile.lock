@@ -75,8 +75,8 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    addressable (2.8.6)
-      public_suffix (>= 2.0.2, < 6.0)
+    addressable (2.8.7)
+      public_suffix (>= 2.0.2, < 7.0)
     api_error_handler (0.2.1)
       actionpack (>= 5.0)
       activesupport (>= 5.0)
@@ -266,7 +266,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.7.2)
-    json-schema (4.3.0)
+    json-schema (4.3.1)
       addressable (>= 2.8)
     jwt (2.7.0)
     language_server-protocol (3.17.0.3)
@@ -343,7 +343,7 @@ GEM
       pry (~> 0.13)
     psych (5.1.2)
       stringio
-    public_suffix (5.0.5)
+    public_suffix (6.0.0)
     puma (6.4.2)
       nio4r (~> 2.0)
     racc (1.8.0)
@@ -569,7 +569,7 @@ DEPENDENCIES
   guard-rubocop
   guard-shell
   hashdiff
-  json-schema (~> 4.3.0)
+  json-schema (~> 4.3.1)
   listen (>= 3.0.5, < 3.10)
   lograge
   net-imap
