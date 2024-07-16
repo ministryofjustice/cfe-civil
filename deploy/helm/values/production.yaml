@@ -29,9 +29,6 @@ deploy:
 postgresql:
   enabled: false
 
-threshold:
-  useTestData: 'false'
-
 legalFrameworkApi:
   host: http://legal-framework-api.legal-framework-api-production.svc.cluster.local
 
@@ -45,3 +42,6 @@ notifications:
 metabase:
   enabled: false
   environment_name: production
+
+threshold:
+  futureFile: ''

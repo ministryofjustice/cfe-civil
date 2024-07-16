@@ -53,8 +53,6 @@ env:
     value: 'true'
   - name: FUTURE_THRESHOLD_FILE
     value: {{ .Values.threshold.futureFile | quote }}
-  - name: USE_TEST_THRESHOLD_DATA
-    value: {{ .Values.threshold.useTestData | quote }}
   - name: HOST
     value: {{ .Values.deploy.host }}
   - name: LEGAL_FRAMEWORK_API_HOST

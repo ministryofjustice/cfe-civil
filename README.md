@@ -208,8 +208,6 @@ The file `values.yml` details the start dates for each set of thresholds, and th
 
 Whilst developing a thresholds .yml file, intended for a future date, you should include in it: `test_only: true`. This causes it *not* to be activated unless `FUTURE_THRESHOLD_FILE` is set to the same .yml filename. This is a protection against the thresholds file being used for actual assessments, in normal environments, where `FUTURE_THRESHOLD_FILE` is not set by default.
 
-**NB 'USE_TEST_THRESHOLD_DATA' is deprecated functionality in this area**
-
 ## Tests
 
 CFE-Civil has several kinds of tests:
