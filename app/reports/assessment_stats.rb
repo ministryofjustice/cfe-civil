@@ -1,4 +1,9 @@
 # RequestLog filtering to generate stats based on https://docs.google.com/spreadsheets/d/1YB_JDQJpq_ZqYRbJ-FH53orLgIcuyBplgrDRl8BgY8M/edit#gid=0
+# request_logs = AssessmentStats.all_request_logs("ccq%(production)")
+# responses = AssessmentStats.filter_request_logs(request_logs: request_logs, level_of_help: "controlled", partner: false, passported: false)
+# count = AssessmentStats.count_gross_results(responses: responses, outcome: "ineligible")
+# AssessmentStats.output_counts(row_count: count, total_count: request_logs.count)
+
 class AssessmentStats
   class Statuses
     def initialize(response, outcome)
@@ -92,8 +97,3 @@ class AssessmentStats
     end
   end
 end
-
-# request_logs = AssessmentStats.all_request_logs("ccq%(production)")
-# responses = AssessmentStats.filter_request_logs(request_logs: request_logs, level_of_help: "controlled", partner: false, passported: false)
-# count = AssessmentStats.count_gross_results(responses: responses, outcome: "ineligible")
-# AssessmentStats.output_counts(row_count: count, total_count: request_logs.count)
