@@ -19,8 +19,7 @@ class PersonCapitalSubtotals
                  total_mortgage_allowance:,
                  pensioner_capital_disregard:,
                  maximum_subject_matter_of_dispute_disregard:)
-    @disputed_vehicles = vehicles.select { |v| v.vehicle.subject_matter_of_dispute }
-    @undisputed_vehicles = vehicles.reject { |v| v.vehicle.subject_matter_of_dispute }
+    @vehicle_handler = VehicleHandler.new(vehicles)
     @total_mortgage_allowance = total_mortgage_allowance
     @pensioner_capital_disregard = pensioner_capital_disregard
     @properties = properties
@@ -31,7 +30,8 @@ class PersonCapitalSubtotals
 
   attr_reader :total_mortgage_allowance,
               :pensioner_capital_disregard,
-              :maximum_subject_matter_of_dispute_disregard
+              :maximum_subject_matter_of_dispute_disregard,
+              :vehicle_handler
 
   def total_liquid
     @liquid_capital_items.map(&:result).sum(&:value)
@@ -41,18 +41,11 @@ class PersonCapitalSubtotals
     @non_liquid_capital_items.map(&:result).sum(&:value)
   end
 
-  def vehicles
-    @disputed_vehicles + @undisputed_vehicles
-  end
-
-  def total_vehicle
-    vehicles.map(&:result).sum(&:assessed_value)
-  end
-
   def assessed_capital
     [total_capital_with_smod - pensioner_capital_disregard, 0].max
   end
 
+  # relevant to this capital class
   def total_capital_with_smod
     total_capital - disputed_non_property_disregard
   end
@@ -61,8 +54,9 @@ class PersonCapitalSubtotals
     [pensioner_capital_disregard, total_capital_with_smod].min
   end
 
+  # this is relevant to the capital class
   def total_capital
-    total_liquid + total_non_liquid + total_vehicle + total_property
+    total_liquid + total_non_liquid + vehicle_handler.total_vehicle + total_property
   end
 
   def subject_matter_of_dispute_disregard
@@ -87,20 +81,21 @@ class PersonCapitalSubtotals
     @properties.reject { |p| p.property.subject_matter_of_dispute }.map(&:result).sum(&:assessed_equity) +
       undisputed_liquid_items.sum(&:value) +
       undisputed_non_liquid_items.sum(&:value) +
-      @undisputed_vehicles.map(&:result).sum(&:assessed_value)
+      vehicle_handler.undisputed_result.sum(&:assessed_value)
   end
 
   def total_disputed_capital
     @properties.select { |p| p.property.subject_matter_of_dispute }.map(&:result).sum(&:assessed_equity) +
       disputed_liquid_items.sum(&:value) +
       disputed_non_liquid_items.sum(&:value) +
-      @disputed_vehicles.map(&:result).sum(&:assessed_value) - disputed_non_property_disregard
+      vehicle_handler.disputed_result.sum(&:assessed_value) - disputed_non_property_disregard
   end
 
+  # can beloing in this capital class
   def disputed_non_property_disregard
     Calculators::SubjectMatterOfDisputeDisregardCalculator.call(
       disputed_capital_items: disputed_liquid_items + disputed_non_liquid_items,
-      disputed_vehicles: @disputed_vehicles.map(&:result),
+      disputed_vehicles: vehicle_handler.disputed_result,
       maximum_disregard: maximum_smod_disregard,
     )
   end

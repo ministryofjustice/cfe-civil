@@ -95,7 +95,7 @@ module Collators
         end
 
         it "instantiates and calls the Vehicle Assesment service" do
-          expect(collator.total_vehicle).to eq 2_500.0
+          expect(collator.vehicle_handler.total_vehicle).to eq 2_500.0
         end
       end
 
@@ -139,7 +139,7 @@ module Collators
 
           expect(collator.total_liquid.to_f).to eq 145.83
           expect(collator.total_non_liquid).to eq 500
-          expect(collator.total_vehicle).to eq 2_500
+          expect(collator.vehicle_handler.total_vehicle).to eq 2_500
           expect(collator.total_property).to eq 23_000
           expect(collator.total_mortgage_allowance).to eq 999_999_999_999
           expect(collator.total_capital.to_f).to eq 26_145.83
