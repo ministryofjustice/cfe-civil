@@ -33,7 +33,7 @@ module Collators
         end
 
         it "calls LiquidCapitalAssessment and updates capital summary with the result" do
-          expect(collator.total_liquid).to eq 145.83
+          expect(collator.other_assets_handler.total_liquid).to eq 145.83
         end
       end
 
@@ -107,7 +107,7 @@ module Collators
         end
 
         it "instantiates and calls NonLiquidCapitalAssessment" do
-          expect(collator.total_non_liquid).to eq 500.0
+          expect(collator.other_assets_handler.total_non_liquid).to eq 500.0
         end
       end
 
@@ -137,8 +137,8 @@ module Collators
           property_data = instance_double(Calculators::PropertyCalculator::PropertyData, result: instance_double(Calculators::PropertyCalculator::Result, smod_allowance: 0, assessed_equity: 23_000))
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_data])
 
-          expect(collator.total_liquid.to_f).to eq 145.83
-          expect(collator.total_non_liquid).to eq 500
+          expect(collator.other_assets_handler.total_liquid.to_f).to eq 145.83
+          expect(collator.other_assets_handler.total_non_liquid).to eq 500
           expect(collator.vehicle_handler.total_vehicle).to eq 2_500
           expect(collator.property_handler.total_property).to eq 23_000
           expect(collator.property_handler.total_mortgage_allowance).to eq 999_999_999_999

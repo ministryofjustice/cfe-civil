@@ -34,11 +34,11 @@ module Decorators
       end
 
       def liquid_items
-        @capital_subtotals.liquid_capital_items.map { |i| CapitalItemDecorator.new(i).as_json }
+        @capital_subtotals.other_assets_handler.liquid_capital_items.map { |i| CapitalItemDecorator.new(i).as_json }
       end
 
       def non_liquid_items
-        @capital_subtotals.non_liquid_capital_items.map { |ni| CapitalItemDecorator.new(ni).as_json }
+        @capital_subtotals.other_assets_handler.non_liquid_capital_items.map { |ni| CapitalItemDecorator.new(ni).as_json }
       end
 
       def additional_properties
