@@ -1,8 +1,10 @@
-class OtherAssetsHandler
+class OtherAssetsHandler < SubtotalsBase
+  # rubocop:disable Lint/MissingSuper
   def initialize(liquid_capital_items:, non_liquid_capital_items:)
     @liquid_capital_items = liquid_capital_items
     @non_liquid_capital_items = non_liquid_capital_items
   end
+  # rubocop:enable Lint/MissingSuper
 
   def total_liquid
     @liquid_capital_items.map(&:result).sum(&:value)

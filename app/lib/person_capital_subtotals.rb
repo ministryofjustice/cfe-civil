@@ -15,6 +15,7 @@ class PersonCapitalSubtotals
     @vehicle_subtotals = vehicles
     @property_subtotals = properties
     @other_assets_handler = OtherAssetsHandler.new(liquid_capital_items:, non_liquid_capital_items:)
+    @subtotals = [@vehicle_subtotals, @property_subtotals, @other_assets_handler]
     @pensioner_capital_disregard = pensioner_capital_disregard
     @maximum_subject_matter_of_dispute_disregard = maximum_subject_matter_of_dispute_disregard
   end
@@ -46,9 +47,7 @@ class PersonCapitalSubtotals
   end
 
   def total_non_disputed_capital
-    property_subtotals.total_undisputed +
-      other_assets_handler.total_undisputed +
-      vehicle_subtotals.undisputed_result.sum(&:assessed_value)
+    @subtotals.sum(&:total_undisputed)
   end
 
   def total_disputed_capital
