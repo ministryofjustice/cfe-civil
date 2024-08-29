@@ -51,7 +51,7 @@ module Collators
                                                              submission_date:,
                                                              allow_negative_net:)
 
-        legal_aid_bank = Collators::LegalAidCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::LegalAid) })
+        legal_aid_bank = Collators::LegalAidCollator.call(select_outgoings(outgoings, Outgoings::LegalAid))
 
         pension_contribution = Calculators::PensionContributionCalculator.call(
           outgoings: select_outgoings(outgoings, Outgoings::PensionContribution),
