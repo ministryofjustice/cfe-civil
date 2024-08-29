@@ -6,12 +6,12 @@ module Workflows
                                                          level_of_help: assessment.level_of_help,
                                                          proceeding_types:,
                                                          applicant:)
+
         lower_capital_threshold = calculate_lower_capital_threshold(
           proceeding_types:,
           level_of_help: assessment.level_of_help,
           submission_date: assessment.submission_date,
         )
-
         assessed_capital = result.calculation_output.combined_assessed_capital
 
         applicant_remarks = generate_remarks(
@@ -22,26 +22,20 @@ module Workflows
           child_care_bank: result.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
         )
 
-        # workflow = WorkflowResult.new calculation_output: result.calculation_output,
-        #                               remarks: {
-        #                                 client: (result.remarks[:client] + applicant_remarks),
-        #                                 partner: [],
-        #                               },
-        #                               sections: result.sections,
-        #                               assessment_result: result.assessment_result
-        workflow_result = build_workflow_result(
-          result: result,
-          client_remarks: result.remarks[:client] + applicant_remarks,
-          partner_remarks: []
-        )
-
+        workflow = WorkflowResult.new calculation_output: result.calculation_output,
+                                      remarks: {
+                                        client: (result.remarks[:client] + applicant_remarks),
+                                        partner: [],
+                                      },
+                                      sections: result.sections,
+                                      assessment_result: result.assessment_result
         er = EligibilityResults.without_partner(
           proceeding_types:,
           submission_date: assessment.submission_date,
           applicant:,
           level_of_help: assessment.level_of_help,
         )
-        ResultAndEligibility.new workflow_result:, eligibility_result: er
+        ResultAndEligibility.new workflow_result: workflow, eligibility_result: er
       end
 
       def with_partner(assessment:, applicant:, partner:, proceeding_types:)
@@ -50,6 +44,7 @@ module Workflows
                                                     proceeding_types:,
                                                     applicant:,
                                                     partner:)
+
         lower_capital_threshold = calculate_lower_capital_threshold(
           proceeding_types:,
           level_of_help: assessment.level_of_help,
@@ -63,7 +58,7 @@ module Workflows
           assessment:,
           lower_capital_threshold:,
           assessed_capital:,
-          child_care_bank: result.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
+          child_care_bank: part.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
         )
 
         partner_remarks = generate_remarks(
@@ -71,22 +66,15 @@ module Workflows
           assessment:,
           lower_capital_threshold:,
           assessed_capital:,
-          child_care_bank: result.calculation_output.partner_disposable_income_subtotals.child_care_bank,
+          child_care_bank: part.calculation_output.partner_disposable_income_subtotals.child_care_bank,
         )
-
-        # workflow_result = WorkflowResult.new calculation_output: part.calculation_output,
-        #                                      assessment_result: part.assessment_result,
-        #                                      remarks: {
-        #                                        client: (part.remarks[:client] + applicant_remarks),
-        #                                        partner: (part.remarks[:partner] + partner_remarks),
-        #                                      },
-        #                                      sections: part.sections
-        workflow_result = build_workflow_result(
-          result: result,
-          client_remarks: result.remarks[:client] + applicant_remarks,
-          partner_remarks: result.remarks[:partner] + partner_remarks
-        )
-
+        workflow_result = WorkflowResult.new calculation_output: part.calculation_output,
+                                             assessment_result: part.assessment_result,
+                                             remarks: {
+                                               client: (part.remarks[:client] + applicant_remarks),
+                                               partner: (part.remarks[:partner] + partner_remarks),
+                                             },
+                                             sections: part.sections
         er = EligibilityResults.with_partner(
           proceeding_types:,
           submission_date: assessment.submission_date,
@@ -120,18 +108,6 @@ module Workflows
           lower_capital_threshold:,
           child_care_bank:,
           assessed_capital:,
-        )
-      end
-
-      def build_workflow_result(result:, client_remarks:, partner_remarks:)
-        WorkflowResult.new(
-          calculation_output: result.calculation_output,
-          remarks: {
-            client: client_remarks,
-            partner: partner_remarks
-          },
-          sections: result.sections,
-          assessment_result: result.assessment_result
         )
       end
     end
