@@ -8,7 +8,7 @@ module Capital
     end
 
     def partner_capital_subtotals
-      PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
+      PersonCapitalSubtotals.unassessed(vehicles: VehicleSubtotals.new([]), properties: PropertySubtotals.new(properties: []))
     end
 
     def summarized_assessment_result(proceeding_types)

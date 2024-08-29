@@ -15,8 +15,8 @@ module Decorators
 
       let(:subtotals) do
         instance_double(PersonCapitalSubtotals,
-                        vehicle_handler: some_vehicle,
-                        property_handler: some_property,
+                        vehicle_subtotals: some_vehicle,
+                        property_subtotals: some_property,
                         other_assets_handler: some_other_asset,
                         total_capital: 860_908.45,
                         subject_matter_of_dispute_disregard: 8454,
@@ -30,12 +30,12 @@ module Decorators
       end
 
       let(:some_vehicle) do
-        instance_double(VehicleHandler,
+        instance_double(VehicleSubtotals,
                         total_vehicle: 3500)
       end
 
       let(:some_property) do
-        instance_double(PropertyHandler,
+        instance_double(PropertySubtotals,
                         total_property: 835_500,
                         total_mortgage_allowance: 750_000,
                         disputed_property_disregard: 3_000)

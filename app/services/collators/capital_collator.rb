@@ -12,13 +12,14 @@ module Collators
                                                                    smod_cap: maximum_subject_matter_of_dispute_disregard,
                                                                    level_of_help:)
         assessed_vehicles = Calculators::VehicleCalculator.call(capitals_data.vehicles, submission_date)
+        veh = VehicleSubtotals.new(assessed_vehicles)
+        prop = PropertySubtotals.new(properties: assessed_properties, total_mortgage_allowance: property_maximum_mortgage_allowance_threshold(submission_date))
 
         PersonCapitalSubtotals.new(
-          vehicles: assessed_vehicles,
-          properties: assessed_properties,
+          vehicles: veh,
+          properties: prop,
           liquid_capital_items: liquid_capital_result,
           non_liquid_capital_items: non_liquid_capital_result,
-          total_mortgage_allowance: property_maximum_mortgage_allowance_threshold(submission_date),
           pensioner_capital_disregard:,
           maximum_subject_matter_of_dispute_disregard:,
         )
