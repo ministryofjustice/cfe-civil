@@ -22,13 +22,12 @@ module Workflows
           child_care_bank: result.calculation_output.applicant_disposable_income_subtotals.child_care_bank,
         )
 
-        workflow = WorkflowResult.new calculation_output: result.calculation_output,
-                                      remarks: {
-                                        client: (result.remarks[:client] + applicant_remarks),
-                                        partner: [],
-                                      },
-                                      sections: result.sections,
-                                      assessment_result: result.assessment_result
+        workflow = build_workflow_result(
+          result:,
+          client_remarks: result.remarks[:client] + applicant_remarks,
+          partner_remarks: [],
+        )
+
         er = EligibilityResults.without_partner(
           proceeding_types:,
           submission_date: assessment.submission_date,
@@ -68,13 +67,13 @@ module Workflows
           assessed_capital:,
           child_care_bank: part.calculation_output.partner_disposable_income_subtotals.child_care_bank,
         )
-        workflow_result = WorkflowResult.new calculation_output: part.calculation_output,
-                                             assessment_result: part.assessment_result,
-                                             remarks: {
-                                               client: (part.remarks[:client] + applicant_remarks),
-                                               partner: (part.remarks[:partner] + partner_remarks),
-                                             },
-                                             sections: part.sections
+
+        workflow_result = build_workflow_result(
+          result: part,
+          client_remarks: part.remarks[:client] + applicant_remarks,
+          partner_remarks: part.remarks[:partner] + partner_remarks,
+        )
+
         er = EligibilityResults.with_partner(
           proceeding_types:,
           submission_date: assessment.submission_date,
@@ -108,6 +107,18 @@ module Workflows
           lower_capital_threshold:,
           child_care_bank:,
           assessed_capital:,
+        )
+      end
+
+      def build_workflow_result(result:, client_remarks:, partner_remarks:)
+        WorkflowResult.new(
+          calculation_output: result.calculation_output,
+          remarks: {
+            client: client_remarks,
+            partner: partner_remarks,
+          },
+          sections: result.sections,
+          assessment_result: result.assessment_result,
         )
       end
     end
