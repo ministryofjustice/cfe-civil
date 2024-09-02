@@ -528,7 +528,8 @@ GEM
       rugged (>= 0.27, < 1.8)
     unicode-display_width (2.5.0)
     uniform_notifier (1.16.0)
-    vcr (6.2.0)
+    vcr (6.3.1)
+      base64
     webmock (3.23.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
