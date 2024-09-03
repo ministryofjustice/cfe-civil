@@ -1,7 +1,7 @@
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.4
 
-FROM ruby:$RUBY_VERSION-alpine3.18 as base
+FROM ruby:$RUBY_VERSION-alpine3.20 as base
 # Chose alpine for the lower image size (lower attack surface and start-up speed):
 # ruby:3.2.2-alpine3.18 is 80MB
 # ruby:3.2.2-slim is 205MB (debian-based)
