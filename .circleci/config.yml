@@ -199,8 +199,7 @@ jobs:
           name: Setup CCQ ready to execute tests
           working_directory: ~/project/ccq
           command: |
-            bundle config --local without test:development 
-            bundle install
+            BUNDLE_WITHOUT=development bundle install
       - run:
           name: Setup CCQ database and test env
           working_directory: ~/project/ccq
