@@ -18,7 +18,7 @@ executors:
           GITHUB_TEAM_NAME_SLUG: laa-estimate-eligibility
   linting-executor:
     docker:
-      - image: cimg/ruby:3.3.0-node
+      - image: cimg/ruby:3.3.4-node
         environment:
           - RAILS_ENV=test
           - TZ: "Europe/London"
