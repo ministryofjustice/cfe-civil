@@ -30,7 +30,7 @@ executors:
     resource_class: small
   test-executor:
     docker:
-      - image: cimg/ruby:3.3.0-node
+      - image: cimg/ruby:3.3.4-node
         environment:
           - RAILS_ENV=test
           - PGHOST=localhost
@@ -41,6 +41,7 @@ executors:
         environment:
           - POSTGRES_USER=user
           - POSTGRES_DB=cfe_civil_test
+#  this test executor will need to be updated when CCQ is updated in EL-1695
   ccq-executor:
     docker:
       - image: cimg/ruby:3.3.1-browsers
