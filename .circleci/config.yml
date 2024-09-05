@@ -41,10 +41,9 @@ executors:
         environment:
           - POSTGRES_USER=user
           - POSTGRES_DB=cfe_civil_test
-#  this test executor will need to be updated when CCQ is updated in EL-1695
   ccq-executor:
     docker:
-      - image: cimg/ruby:3.3.1-browsers
+      - image: cimg/ruby:3.3.4-browsers
         environment:
           VCR_RECORD_MODE: none
           COVERAGE: true
