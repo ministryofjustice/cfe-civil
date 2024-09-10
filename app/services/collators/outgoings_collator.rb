@@ -24,7 +24,7 @@ module Collators
         child_care = if eligible_for_childcare
                        Collators::ChildcareCollator.call(
                          cash_transactions: cash_transactions.select(&:child_care_payment?),
-                         childcare_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::Childcare) },
+                         childcare_outgoings: select_outgoings(outgoings, Outgoings::Childcare),
                        )
                      else
                        Collators::ChildcareCollator::Result.blank
@@ -43,7 +43,7 @@ module Collators
 
         housing_benefit = HousingBenefitsCollator.call(regular_transactions:, state_benefits:)
 
-        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: outgoings.select { |o| o.instance_of?(Outgoings::HousingCost) },
+        housing_costs = Collators::HousingCostsCollator.call(housing_cost_outgoings: select_outgoings(outgoings, Outgoings::HousingCost),
                                                              regular_transactions:,
                                                              person:,
                                                              housing_benefit:,
@@ -51,10 +51,10 @@ module Collators
                                                              submission_date:,
                                                              allow_negative_net:)
 
-        legal_aid_bank = Collators::LegalAidCollator.call(outgoings.select { |o| o.instance_of?(Outgoings::LegalAid) })
+        legal_aid_bank = Collators::LegalAidCollator.call(select_outgoings(outgoings, Outgoings::LegalAid))
 
         pension_contribution = Calculators::PensionContributionCalculator.call(
-          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PensionContribution) },
+          outgoings: select_outgoings(outgoings, Outgoings::PensionContribution),
           cash_transactions: cash_transactions.select(&:pension_contribution?),
           regular_transactions: regular_transactions.select(&:pension_contribution?),
           total_gross_income:,
@@ -62,14 +62,14 @@ module Collators
         )
 
         council_tax = Calculators::CouncilTaxCalculator.call(
-          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::CouncilTax) },
+          outgoings: select_outgoings(outgoings, Outgoings::CouncilTax),
           cash_transactions: cash_transactions.select(&:council_tax_payment?),
           regular_transactions: regular_transactions.select(&:council_tax_payment?),
           submission_date:,
         )
 
         priority_debt_repayment = Calculators::PriorityDebtRepaymentCalculator.call(
-          outgoings: outgoings.select { |o| o.instance_of?(Outgoings::PriorityDebtRepayment) },
+          outgoings: select_outgoings(outgoings, Outgoings::PriorityDebtRepayment),
           cash_transactions: cash_transactions.select(&:priority_debt_repayment?),
           regular_transactions: regular_transactions.select(&:priority_debt_repayment?),
           submission_date:,
@@ -85,6 +85,12 @@ module Collators
                    pension_contribution:,
                    council_tax:,
                    priority_debt_repayment:)
+      end
+
+    private
+
+      def select_outgoings(outgoings, klass)
+        outgoings.select { |o| o.instance_of?(klass) }
       end
     end
   end
