@@ -28,25 +28,25 @@ module Decorators
 
       def properties
         {
-          main_home: PropertyDecorator.new(@capital_subtotals.main_home.property, @capital_subtotals.main_home.result).as_json,
+          main_home: PropertyDecorator.new(@capital_subtotals.property_subtotals.main_home.property, @capital_subtotals.property_subtotals.main_home.result).as_json,
           additional_properties:,
         }
       end
 
       def liquid_items
-        @capital_subtotals.liquid_capital_items.map { |i| CapitalItemDecorator.new(i).as_json }
+        @capital_subtotals.other_assets_handler.liquid_capital_items.map { |i| CapitalItemDecorator.new(i).as_json }
       end
 
       def non_liquid_items
-        @capital_subtotals.non_liquid_capital_items.map { |ni| CapitalItemDecorator.new(ni).as_json }
+        @capital_subtotals.other_assets_handler.non_liquid_capital_items.map { |ni| CapitalItemDecorator.new(ni).as_json }
       end
 
       def additional_properties
-        @capital_subtotals.additional_properties.map { |p| PropertyDecorator.new(p.property, p.result).as_json }
+        @capital_subtotals.property_subtotals.additional_properties.map { |p| PropertyDecorator.new(p.property, p.result).as_json }
       end
 
       def vehicles
-        @capital_subtotals.vehicles.map { |v| VehicleDecorator.new(v.vehicle, v.result).as_json }
+        @capital_subtotals.vehicle_subtotals.all_vehicles.map { |v| VehicleDecorator.new(v.vehicle, v.result).as_json }
       end
     end
   end

@@ -33,7 +33,7 @@ module Collators
         end
 
         it "calls LiquidCapitalAssessment and updates capital summary with the result" do
-          expect(collator.total_liquid).to eq 145.83
+          expect(collator.other_assets_handler.total_liquid).to eq 145.83
         end
       end
 
@@ -45,7 +45,7 @@ module Collators
         it "instantiates and calls the Property Assessment service" do
           property_data = instance_double(Calculators::PropertyCalculator::PropertyData, result: instance_double(Calculators::PropertyCalculator::Result, smod_allowance: 0, assessed_equity: 23_000))
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_data])
-          expect(collator.total_property).to eq 23_000.0
+          expect(collator.property_subtotals.total_property).to eq 23_000.0
         end
       end
 
@@ -95,7 +95,7 @@ module Collators
         end
 
         it "instantiates and calls the Vehicle Assesment service" do
-          expect(collator.total_vehicle).to eq 2_500.0
+          expect(collator.vehicle_subtotals.total_vehicle).to eq 2_500.0
         end
       end
 
@@ -107,7 +107,7 @@ module Collators
         end
 
         it "instantiates and calls NonLiquidCapitalAssessment" do
-          expect(collator.total_non_liquid).to eq 500.0
+          expect(collator.other_assets_handler.total_non_liquid).to eq 500.0
         end
       end
 
@@ -137,11 +137,11 @@ module Collators
           property_data = instance_double(Calculators::PropertyCalculator::PropertyData, result: instance_double(Calculators::PropertyCalculator::Result, smod_allowance: 0, assessed_equity: 23_000))
           allow(Calculators::PropertyCalculator).to receive(:call).and_return([property_data])
 
-          expect(collator.total_liquid.to_f).to eq 145.83
-          expect(collator.total_non_liquid).to eq 500
-          expect(collator.total_vehicle).to eq 2_500
-          expect(collator.total_property).to eq 23_000
-          expect(collator.total_mortgage_allowance).to eq 999_999_999_999
+          expect(collator.other_assets_handler.total_liquid.to_f).to eq 145.83
+          expect(collator.other_assets_handler.total_non_liquid).to eq 500
+          expect(collator.vehicle_subtotals.total_vehicle).to eq 2_500
+          expect(collator.property_subtotals.total_property).to eq 23_000
+          expect(collator.property_subtotals.total_mortgage_allowance).to eq 999_999_999_999
           expect(collator.total_capital.to_f).to eq 26_145.83
           expect(collator.pensioner_capital_disregard).to eq 100_000
           expect(collator.subject_matter_of_dispute_disregard).to eq 0

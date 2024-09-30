@@ -7,7 +7,7 @@ module Workflows
     end
     let(:applicant) { build :applicant, :with_qualifying_benefits }
     let(:unassessed_capital) do
-      PersonCapitalSubtotals.unassessed(vehicles: [], properties: [])
+      PersonCapitalSubtotals.unassessed(vehicles: VehicleSubtotals.new([]), properties: PropertySubtotals.new(properties: []))
     end
     let(:no_capital) do
       CapitalsData.new(vehicles: [], liquid_capital_items: [], non_liquid_capital_items: [], main_home: nil, additional_properties: [])
