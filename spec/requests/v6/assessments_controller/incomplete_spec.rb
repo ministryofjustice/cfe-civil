@@ -90,10 +90,18 @@ module V6
           end
         end
 
-        context "when above upper threshold" do
+        context "when it equals the upper threshold" do
           let(:monthly_gross_income) { 2657 }
 
-          it "is ineligible as once the threshold is hit it can only get worse" do
+          it "is not_yet_known as they are only ineligible if they exceed the threshold" do
+            expect([overall_result, gross_result]).to eq(%i[not_yet_known not_yet_known])
+          end
+        end
+
+        context "when above upper threshold" do
+          let(:monthly_gross_income) { 2658 }
+
+          it "is ineligible as once the threshold is exceeded it can only get worse" do
             expect([overall_result, gross_result]).to eq(%i[ineligible ineligible])
           end
         end

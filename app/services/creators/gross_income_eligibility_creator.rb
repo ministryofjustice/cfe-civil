@@ -46,7 +46,7 @@ module Creators
       # There is no 'lower threshold' for gross income calculations -
       # it doesn't make sense to calculate a contribution based on gross anyway
       def result_from_threshold(total_gross_income:, upper_threshold:)
-        total_gross_income < upper_threshold ? "eligible" : "ineligible"
+        total_gross_income <= upper_threshold ? "eligible" : "ineligible"
       end
 
       def upper_threshold(dependants:, proceeding_type:, submission_date:)
