@@ -480,10 +480,10 @@ GEM
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
     rugged (1.7.1)
-    sentry-rails (5.19.0)
+    sentry-rails (5.20.1)
       railties (>= 5.0)
-      sentry-ruby (~> 5.19.0)
-    sentry-ruby (5.19.0)
+      sentry-ruby (~> 5.20.1)
+    sentry-ruby (5.20.1)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
     shellany (0.0.1)
