@@ -72,12 +72,8 @@ RSpec.configure do |config|
   config.include RequestHelpers, type: :request
   config.include ActiveSupport::Testing::TimeHelpers
 
-  config.before(:suite) do
-    Faker::Config.locale = "en-GB"
-    DatabaseCleaner.clean_with :truncation
-  end
-  config.after(:suite) do
-    DatabaseCleaner.clean_with :truncation
+  RSpec.configure do |test|
+    test.use_transactional_fixtures = true
   end
 
   config.before(:each, :calls_bank_holiday) do
