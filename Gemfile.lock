@@ -588,7 +588,7 @@ DEPENDENCIES
   pry-byebug
   pry-rescue
   pry-stack_explorer
-  puma (~> 6.4)
+  puma (~> 6.4, >= 6.4.3)
   rack-mini-profiler
   rails (> 7.2, < 7.3)
   roo (~> 2.10.0)
