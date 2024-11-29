@@ -28,6 +28,8 @@ module LegalFrameworkAPI
           "Domestic abuse"
         when /^SE/
           "Children - section 8"
+        when /^PBM/
+          "Public Law Family"
         else
           raise "Unrecognised CCMS code: #{pt_detail.ccms_code}"
         end
