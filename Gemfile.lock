@@ -267,7 +267,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.8.2)
-    json-schema (5.0.1)
+    json-schema (5.1.0)
       addressable (~> 2.8)
     jwt (2.8.2)
       base64
@@ -569,7 +569,7 @@ DEPENDENCIES
   guard-rubocop
   guard-shell
   hashdiff
-  json-schema (~> 5.0.1)
+  json-schema (~> 5.1.0)
   listen (>= 3.0.5, < 3.10)
   lograge
   net-imap
