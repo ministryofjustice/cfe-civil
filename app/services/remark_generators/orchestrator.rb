@@ -3,7 +3,6 @@ module RemarkGenerators
     class << self
       def call(employments:, outgoings:, child_care_bank:, other_income_payments:, cash_transactions:, regular_transactions:,
                assessed_capital:, lower_capital_threshold:, liquid_capital_items:, state_benefits:, submission_date:)
-
         remarks_data = []
         remarks_data << check_amount_variations(state_benefits:,
                                                 other_income_payments:,
