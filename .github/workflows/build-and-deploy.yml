@@ -1,0 +1,218 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+
+env:
+  RAILS_ENV: test
+  TZ: "Europe/London"
+  RUBY_YJIT_ENABLE: "1"
+  POSTGRES_USER: postgres
+  POSTGRES_DB: cfe_civil_test
+  ECR_REGION: ${{ secrets.ECR_REGION }}
+  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  AWS_ECR_REGISTRY_ID: ${{ secrets.AWS_ECR_REGISTRY_ID }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: cimg/ruby:3.3.4-node
+      env:
+        RAILS_ENV: test
+        TZ: "Europe/London"
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+          bundler-cache: true
+      
+      - name: Run Rubocop
+        run: bundle exec rubocop
+
+  unit_tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: cimg/postgres:14.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cfe_civil_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client cmake
+
+      - name: Setup Database
+        run: |
+          bundle exec rake db:schema:load
+          bundle exec rake db:migrate
+
+      - name: Run tests
+        run: bundle exec rake spec
+
+      - name: Check coverage
+        run: bundle exec undercover -c origin/main -l coverage/lcov.info
+
+  integration_tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: cimg/postgres:14.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cfe_civil_test
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+          bundler-cache: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client cmake
+
+      - name: Setup Database
+        run: |
+          bundle exec rake db:schema:load
+          bundle exec rake db:migrate
+
+      - name: Run cucumber tests
+        run: bundle exec cucumber --format html --out report.html --format pretty
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: cucumber-report
+          path: report.html
+
+  check_swagger:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: cimg/postgres:14.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: cfe_civil_test
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.4'
+          bundler-cache: true
+
+      - name: Check swagger docs
+        run: bundle exec rails check_swaggerization
+
+  build_and_push:
+    needs: [lint, unit_tests, integration_tests, check_swagger]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.ECR_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.AWS_ECR_REGISTRY_ID }}.dkr.ecr.${{ env.ECR_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            ${{ env.AWS_ECR_REGISTRY_ID }}.dkr.ecr.${{ env.ECR_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:production-${{ github.sha }}
+
+  deploy_staging:
+    needs: build_and_push
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: staging
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CERT }}" | base64 -d > ./ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials github-actions --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }} --user=github-actions --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
+
+      - name: Deploy to staging
+        run: |
+          helm upgrade cfe-civil ./deploy/helm/. \
+            --install --wait \
+            --namespace=${{ secrets.KUBE_NAMESPACE }} \
+            --values ./deploy/helm/values/staging.yaml \
+            --set image.repository="${{ env.AWS_ECR_REGISTRY_ID }}.dkr.ecr.${{ env.ECR_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}" \
+            --set image.tag="${{ github.sha }}"
+
+  deploy_production:
+    needs: deploy_staging
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        run: |
+          echo "${{ secrets.KUBE_CERT }}" | base64 -d > ./ca.crt
+          kubectl config set-cluster ${{ secrets.KUBE_CLUSTER }} --certificate-authority=./ca.crt --server=https://${{ secrets.KUBE_CLUSTER }}
+          kubectl config set-credentials github-actions --token=${{ secrets.KUBE_TOKEN }}
+          kubectl config set-context ${{ secrets.KUBE_CLUSTER }} --cluster=${{ secrets.KUBE_CLUSTER }} --user=github-actions --namespace=${{ secrets.KUBE_NAMESPACE }}
+          kubectl config use-context ${{ secrets.KUBE_CLUSTER }}
+
+      - name: Deploy to production
+        run: |
+          helm upgrade cfe-civil ./deploy/helm/. \
+            --install --wait \
+            --namespace=${{ secrets.KUBE_NAMESPACE }} \
+            --values ./deploy/helm/values/production.yaml \
+            --set image.repository="${{ env.AWS_ECR_REGISTRY_ID }}.dkr.ecr.${{ env.ECR_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}" \
+            --set image.tag="${{ github.sha }}"
