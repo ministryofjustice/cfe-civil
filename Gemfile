@@ -49,7 +49,7 @@ gem "dibber"
 gem "descriptive_statistics", require: "descriptive_statistics/safe"
 
 # Required following upgrade to ruby 3.1.0
-gem "net-imap"
+gem "net-imap", ">= 0.5.6"
 gem "net-pop"
 gem "net-smtp"
 
