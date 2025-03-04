@@ -1,8 +1,8 @@
 Feature:
-  ""PASSPORTED & BELOW LOWER THRESHOLDS
-  1) Capital test = Passed
-  2) Overall Result = Passed
-  3) Applicant in Non-Mol so all thresholds are waived.""
+  ""Certificated domestic abuse assessment which is passported.
+  Capital includes bank accounts, non-liquid capital and a main home
+  (that is nil due to 3% sale costs and disregard). Assessed capital
+  below the lower threshold so the result is eligible.""
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
