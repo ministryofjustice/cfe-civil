@@ -22,9 +22,7 @@ module TestCase
       }
     end
 
-    def empty?
-      @outgoings.empty?
-    end
+    delegate :empty?, to: :@outgoings
 
   private
 

@@ -15,9 +15,7 @@ module TestCase
       }
     end
 
-    def empty?
-      @dependants.empty?
-    end
+    delegate :empty?, to: :@dependants
 
   private
 

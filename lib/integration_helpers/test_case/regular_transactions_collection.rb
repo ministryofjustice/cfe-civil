@@ -17,9 +17,7 @@ module TestCase
       }
     end
 
-    def empty?
-      @collection.empty?
-    end
+    delegate :empty?, to: :@collection
 
   private
 

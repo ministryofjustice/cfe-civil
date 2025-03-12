@@ -15,9 +15,7 @@ module TestCase
       }
     end
 
-    def empty?
-      @benefits.empty?
-    end
+    delegate :empty?, to: :@benefits
 
   private
 

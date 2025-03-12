@@ -15,9 +15,7 @@ module TestCase
       }
     end
 
-    def empty?
-      @employment_earnings.empty?
-    end
+    delegate :empty?, to: :@employment_earnings
 
   private
 

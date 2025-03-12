@@ -35,9 +35,7 @@ class PersonDisposableIncomeSubtotals
      monthly_cash_transactions_total].sum - @disposable_employment_deductions + @partner_allowance + lone_parent_allowance
   end
 
-  def lone_parent_allowance
-    @outgoings.lone_parent_allowance
-  end
+  delegate :lone_parent_allowance, to: :@outgoings
 
   def dependant_allowance_over_16
     @outgoings.dependant_allowance.over_16
@@ -75,13 +73,9 @@ class PersonDisposableIncomeSubtotals
     @outgoings.housing_costs.housing_costs
   end
 
-  def legal_aid_bank
-    @outgoings.legal_aid_bank
-  end
+  delegate :legal_aid_bank, to: :@outgoings
 
-  def legal_aid_cash
-    @disposable.legal_aid_cash
-  end
+  delegate :legal_aid_cash, to: :@disposable
 
   def pension_contribution_all_sources
     @outgoings.pension_contribution.all_sources
@@ -135,9 +129,7 @@ class PersonDisposableIncomeSubtotals
     legal_aid_bank + legal_aid_cash + @regular.legal_aid_regular
   end
 
-  def housing_benefit
-    @outgoings.housing_benefit
-  end
+  delegate :housing_benefit, to: :@outgoings
 
   def housing_costs
     @outgoings.housing_costs.housing_costs
@@ -147,13 +139,9 @@ class PersonDisposableIncomeSubtotals
     @outgoings.housing_costs.allowed_housing_costs
   end
 
-  def maintenance_out_bank
-    @outgoings.maintenance_out_bank
-  end
+  delegate :maintenance_out_bank, to: :@outgoings
 
-  def maintenance_out_cash
-    @disposable.maintenance_out_cash
-  end
+  delegate :maintenance_out_cash, to: :@disposable
 
   def maintenance_out_all_sources
     maintenance_out_bank + maintenance_out_cash + @regular.maintenance_out_regular
