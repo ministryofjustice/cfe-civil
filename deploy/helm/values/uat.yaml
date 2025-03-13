@@ -53,4 +53,4 @@ metabase:
   environment_name: uat
 
 threshold:
-  futureFile: ''
+  futureFile: '2025-04-07.yml'
