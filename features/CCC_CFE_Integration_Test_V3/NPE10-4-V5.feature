@@ -17,12 +17,11 @@ Feature:
     And I add 3002 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
-      | attribute                    | value                 |
-      | assessment_result            | contribution_required |
-      | capital_lower_threshold      | 3000.0                |
+      | attribute               | value                 |
+      | assessment_result       | contribution_required |
+      | capital_lower_threshold |                3000.0 |
     And I should see the following "disposable_income_summary" details:
-      | attribute                      | value    |
-      | dependant_allowance            |  296.65  |
-      | total_outgoings_and_allowances |  496.65  |
-      | total_disposable_income        | -396.65  |
-
+      | attribute                      | value   |
+      | dependant_allowance            |  296.65 |
+      | total_outgoings_and_allowances |  496.65 |
+      | total_disposable_income        | -396.65 |
