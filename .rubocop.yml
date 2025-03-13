@@ -63,3 +63,6 @@ Rails/FilePath:
 Rake/Desc:
   Exclude:
     - 'lib/tasks/cucumber.rake'
+
+Rails/Delegate:
+  Enabled: false
