@@ -588,7 +588,7 @@ DEPENDENCIES
   json-schema (~> 5.1.1)
   listen (>= 3.0.5, < 3.10)
   lograge
-  net-imap
+  net-imap (>= 0.5.6)
   net-pop
   net-smtp
   pg (< 1.6)
