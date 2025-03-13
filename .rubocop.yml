@@ -1,4 +1,4 @@
-require:
+  plugins:
   - rubocop-performance
 
 inherit_gem:
@@ -30,6 +30,11 @@ RSpec/EmptyExampleGroup:
 RSpec/ScatteredSetup:
     Exclude:
     - spec/requests/swagger_docs/**/*
+
+# When this method is enabled it updates many of the integration_helpers and then
+# undercover does not recognise these as having test coverage
+Style/RedundantDelegate:
+  Enabled: false
 
 # ****
 # **** Removing this will break specs.  It removes all the explicit subject declarations that it thinks aren't necessary, but doesn't always get it right.
