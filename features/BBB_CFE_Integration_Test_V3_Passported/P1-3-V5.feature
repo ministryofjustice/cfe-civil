@@ -16,13 +16,12 @@ Feature:
     And I add a non-disputed main property of value 120000 and mortgage 16400
     When I retrieve the final assessment
     Then I should see the following overall summary:
-      | attribute                    | value                 |
-      | assessment_result            | eligible              |
-      | capital_lower_threshold      | 3000.0                |
+      | attribute               | value    |
+      | assessment_result       | eligible |
+      | capital_lower_threshold |   3000.0 |
     Then I should see the following "capital summary" details:
-      | attribute                           | value    |
-      | total_mortgage_allowance            | 100000.0 |
-      | total_non_liquid                    | 1000.0   |
-      | total_liquid                        | 1100.0   |
-      | assessed_capital                    | 2100.0   |
-
+      | attribute                | value    |
+      | total_mortgage_allowance | 100000.0 |
+      | total_non_liquid         |   1000.0 |
+      | total_liquid             |   1100.0 |
+      | assessed_capital         |   2100.0 |
