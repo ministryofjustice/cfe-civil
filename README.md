@@ -206,7 +206,7 @@ The file `values.yml` details the start dates for each set of thresholds, and th
 
 ### Test threshold data
 
-Whilst developing a thresholds .yml file, intended for a future date, you should include in it: `test_only: true`. This causes it *not* to be activated unless `FUTURE_THRESHOLD_FILE` is set to the same .yml filename. This is a protection against the thresholds file being used for actual assessments, in normal environments, where `FUTURE_THRESHOLD_FILE` is not set by default.
+Whilst developing a thresholds .yml file, intended for a future date, you should include in it: `test_only: true`. This causes it *not* to be activated. This is a protection against the thresholds file being used for actual assessments, in production environments.
 
 For running locally, to activate the specified threshold file, as of today's date, and overriding the date specified in values.yml add the following to your .env file.
 
@@ -214,7 +214,11 @@ For running locally, to activate the specified threshold file, as of today's dat
 FUTURE_THRESHOLD_FILE=mtr-2026.yml
 ```
 
-The thresholds file is activated even if it contains: `test_only: True`, as is likely.
+Similarly, a new threshold file can similarly be activated for testing purposes in UAT (as of today's date, and overriding the date specified in values.yml) by adding something like the following to uat.yaml
+
+```sh
+futureFile: '2025-04-07.yml'
+```
 
 ## Tests
 
