@@ -28,9 +28,10 @@ module CFEConstants
 
   # Income categories
   #
-  VALID_INCOME_CATEGORIES = %w[benefits friends_or_family maintenance_in property_or_lodger pension].freeze
-  VALID_REGULAR_INCOME_CATEGORIES = VALID_INCOME_CATEGORIES + %w[housing_benefit].freeze
-  HUMANIZED_INCOME_CATEGORIES = (VALID_INCOME_CATEGORIES + VALID_INCOME_CATEGORIES.map(&:humanize)).freeze
+  INCOME_CATEGORIES = %w[friends_or_family maintenance_in property_or_lodger pension].freeze
+  VALID_INCOME_CATEGORIES = (%w[benefits] + INCOME_CATEGORIES).freeze
+  VALID_REGULAR_INCOME_CATEGORIES = (VALID_INCOME_CATEGORIES + %w[housing_benefit]).freeze
+  OTHER_INCOME_CATEGORIES = (INCOME_CATEGORIES + INCOME_CATEGORIES.map(&:humanize)).freeze
 
   # Outgoings categories
   #
