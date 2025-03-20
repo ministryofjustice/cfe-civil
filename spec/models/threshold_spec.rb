@@ -83,6 +83,27 @@ RSpec.describe Threshold do
     end
   end
 
+  context "7th April 2025" do
+    let(:time) { Time.zone.parse("07-Apr-2025") }
+    let(:expected_dependant_allowances) do
+      {
+        child_under_15: 367.87,
+        child_aged_15: 367.87,
+        child_16_and_over: 367.87,
+        adult: 367.87,
+        adult_capital_threshold: 8_000,
+      }
+    end
+
+    it "picks up the values from the 2025-04-07 file" do
+      expect(described_class.value_for(:dependant_allowances, at: time)).to eq expected_dependant_allowances
+    end
+
+    it "has a new partner allowance" do
+      expect(described_class.value_for(:partner_allowance, at: time)).to eq(228.56)
+    end
+  end
+
   context "MTR" do
     context "when setting future test file" do
       before { allow(Rails.configuration.x).to receive(:future_test_data_file).and_return(override_filename) }
