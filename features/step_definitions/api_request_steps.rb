@@ -221,6 +221,15 @@ Given("I add {string} partner regular_transactions of {int} per month") do |cate
   }]
 end
 
+Given("I add a benefits regular_transactions of {float} per month of credit") do |amount|
+  @regular_transactions = [{
+    category: "benefits",
+    frequency: "monthly",
+    operation: "credit",
+    amount:,
+  }]
+end
+
 Given("I add the following additional property details for the partner in the current assessment:") do |table|
   @partner_property = [cast_values(table.rows_hash)]
 end
