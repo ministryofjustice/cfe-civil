@@ -9,5 +9,5 @@
 2024-04-08: config/thresholds/2024-04-08.yml
 # MTR is under development, so marked 'test_only'.
 # MTR implementation date is just a placeholder for now.
+2026-03-01: config/thresholds/remove_housing_cap.yml
 2026-04-01: config/thresholds/mtr-2026.yml
-2027-04-01: config/thresholds/remove_housing_cap.yml
