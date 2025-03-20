@@ -116,3 +116,17 @@ Scenario: An applicant and partner's combined capital is over the lower threshol
       | assessment_result              | eligible |
       | partner allowance              | 211.32   |
       | dependant allowance            | 338.9    |
+
+  Scenario: A partner case on or after 7th April 2025
+    Given I am undertaking a certificated assessment
+    And A submission date of "2025-04-07"
+    And I have a dependant aged 2
+    And I add the following capital details for "bank_accounts" for the partner:
+      | description  | value   |
+      | Bank account | 2000.0  |
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                      | value    |
+      | assessment_result              | eligible |
+      | partner allowance              | 228.56   |
+      | dependant allowance            | 367.87   |
