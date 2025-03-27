@@ -130,6 +130,14 @@ Given("I add other income {string} of {int} per month") do |income_type, monthly
                                           payments:] }
 end
 
+Given("I add other income {string} of {int} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
+  dates = [date1, date2, date3]
+  payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
+
+  @other_incomes_data = { other_incomes: [source: income_type,
+                                          payments:] }
+end
+
 Given("I add the following irregular_income details in the current assessment:") do |table|
   @irregular_income_data = { "payments": table.hashes.map { cast_values(_1) } }
 end
@@ -145,6 +153,20 @@ Given("I add outgoing details for {string} of {int} per month") do |outgoing_typ
 
   @outgoings_data = { outgoings: [name: outgoing_type,
                                   payments: the_payments] }
+end
+
+Given("I add multiple outgoing details including {string} of {int} per month, with bespoke dates: {string} {string} {string}") do |outgoing_type, monthly_amount, date1, date2, date3|
+  dates = [date1, date2, date3]
+
+  the_payments = if outgoing_type == "rent_or_mortgage"
+                   dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount, housing_cost_type: "rent" } }
+                 else
+                   dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
+                 end
+
+  # this allows for multiple outgoings to be added rather than first overriding the other
+  @outgoings_data ||= { outgoings: [] }
+  @outgoings_data[:outgoings] << { name: outgoing_type, payments: the_payments }
 end
 
 Given("I add {int} capital of type {string}") do |amount, capital_type|
@@ -225,6 +247,15 @@ Given("I add a benefits regular_transactions of {float} per month of credit") do
   @regular_transactions = [{
     category: "benefits",
     frequency: "monthly",
+    operation: "credit",
+    amount:,
+  }]
+end
+
+Given("I add a benefits regular_transactions of {float} every 4 weeks of credit") do |amount|
+  @regular_transactions = [{
+    category: "benefits",
+    frequency: "four_weekly",
     operation: "credit",
     amount:,
   }]
