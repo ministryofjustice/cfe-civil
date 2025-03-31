@@ -326,7 +326,7 @@ GEM
     os (1.1.4)
     ostruct (0.6.1)
     parallel (1.26.3)
-    parser (3.3.7.2)
+    parser (3.3.7.4)
       ast (~> 2.4.1)
       racc
     patience_diff (1.2.0)
@@ -492,7 +492,7 @@ GEM
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.4.1)
-    rugged (1.7.2)
+    rugged (1.9.0)
     securerandom (0.4.1)
     sentry-rails (5.23.0)
       railties (>= 5.0)
@@ -533,11 +533,12 @@ GEM
     tzinfo-data (1.2025.2)
       tzinfo (>= 1.0.0)
     uber (0.1.0)
-    undercover (0.6.3)
+    undercover (0.6.4)
+      base64
       bigdecimal
       imagen (>= 0.2.0)
       rainbow (>= 2.1, < 4.0)
-      rugged (>= 0.27, < 1.8)
+      rugged (>= 0.27, < 1.10)
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
