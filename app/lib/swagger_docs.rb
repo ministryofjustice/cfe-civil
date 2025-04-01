@@ -577,9 +577,9 @@ class SwaggerDocs
               properties: {
                 source: {
                   type: :string,
-                  enum: CFEConstants::HUMANIZED_INCOME_CATEGORIES,
+                  enum: CFEConstants::OTHER_INCOME_CATEGORIES,
                   description: "Source of other regular income",
-                  example: CFEConstants::HUMANIZED_INCOME_CATEGORIES.first,
+                  example: CFEConstants::OTHER_INCOME_CATEGORIES.first,
                 },
                 payments: {
                   type: :array,
