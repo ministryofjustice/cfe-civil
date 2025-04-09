@@ -110,6 +110,9 @@ RSpec.describe Threshold do
 
       let(:submission_date) { Time.zone.today }
 
+      # This test will fail if it is ran on the same date as the effective date of another threshold file in config/thresholds/values.yml.
+      # This is because the test assigns both files the same effective date and the values in whichever file is listed first are applied.
+      # To (temporarily) skip this test on that date change context below to xcontext.
       context "when future test file active" do
         let(:override_filename) { "mtr-2026.yml" }
 
