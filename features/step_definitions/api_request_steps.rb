@@ -169,11 +169,6 @@ Given("I add multiple outgoing details including {string} of {int} per month, wi
   @outgoings_data[:outgoings] << { name: outgoing_type, payments: the_payments }
 end
 
-# Given("I add {int} capital of type {string}") do |amount, capital_type|
-#   @capitals_data[capital_type.to_sym] ||= []
-#   @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
-# end
-
 Given("I add {float} capital of type {string}") do |amount, capital_type|
   @capitals_data[capital_type.to_sym] ||= []
   @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
@@ -194,10 +189,6 @@ end
 Given("I add employment income of {int} per month") do |monthly_income|
   @employments << employment_payments_from_income(monthly_income)
 end
-
-# Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
-#   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
-# end
 
 Given("I add employment income of {float} per month with {float} benefits_in_kind, {float} tax and {float} national insurance") do |monthly_income, benefits, tax, ni|
   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
@@ -226,7 +217,7 @@ Given("I add employment income of {float} per week with {float} benefits_in_kind
   @employments << employment_payments_from_income(monthly_income, benefits: monthly_benefits, tax: monthly_tax, national_insurance: monthly_ni)
 end
 
-Given("I add {word} employment income with the following payments:") do |frequency, table|
+Given("I add {frequency} employment income with the following payments:") do |frequency, table|
   conversion_method = case frequency.downcase
                       when "weekly" then ->(value) { (value * 52 / 12).round(2) }
                       when "four-weekly" then ->(value) { (value / 4 * 52 / 12).round(2) }
@@ -248,7 +239,6 @@ Given("I add {word} employment income with the following payments:") do |frequen
     }
   end
 
-  # Spread the 3 payments over 3 dates to conform with your existing structure
   payments = monthly_incomes.first(3).each_with_index.map do |payment, index|
     payment.merge(date: %w[2012-06-21 2012-07-21 2012-08-21][index])
   end
@@ -256,10 +246,9 @@ Given("I add {word} employment income with the following payments:") do |frequen
   @employments << {
     name: "A",
     client_id: "B",
-    payments: payments
+    payments: payments,
   }
 end
-
 
 Given("I add partner employment income of {int} per month") do |monthly_income|
   @partner_employments = [employment_payments_from_income(monthly_income)]

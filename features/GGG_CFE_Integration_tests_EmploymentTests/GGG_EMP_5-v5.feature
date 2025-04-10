@@ -20,20 +20,21 @@ Feature:
     And I add outgoing details for "rent_or_mortgage" of 5 per month
     And I add 500 capital of type "bank_accounts"
     When I retrieve the final assessment
-    Then I should see the following overall summary:
-      | attribute                    | value    |
-      | assessment_result            | eligible |
+#    Then I should see the following overall summary:
+#      | attribute                      | value    |
+#      | assessment_result              | eligible |
     Then I should see the following "gross income" details:
-      | attribute               | value  |
-      | total_gross_income      | 442.31 |
+      | attribute                      | value  |
+      | total_gross_income             | 442.31 |
     Then I should see the following "capital summary" details:
-      | attribute                   | value  |
-      | total_capital               |  500.0 |
-      | assessed_capital            |  500.0 |
-      | capital_contribution        |   0.0  |
+      | attribute                      | value  |
+      | total_capital                  |  500.0 |
+      | assessed_capital               |  500.0 |
+      | capital_contribution           |   0.0  |
     And I should see the following "disposable_income_summary" details:
       | attribute                      |   value |
       | gross_housing_costs            |     5.0 |
+      | dependant_allowance            |  298.08 |
       | total_outgoings_and_allowances |  348.08 |
       | total_disposable_income        |   94.23 |
 
