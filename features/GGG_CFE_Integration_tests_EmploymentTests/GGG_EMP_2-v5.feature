@@ -1,5 +1,5 @@
 Feature:
-  "Employed Multiple Incomes test"
+  "Employed 4 weekly Incomes test"
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment

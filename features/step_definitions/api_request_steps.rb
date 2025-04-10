@@ -226,6 +226,41 @@ Given("I add employment income of {float} per week with {float} benefits_in_kind
   @employments << employment_payments_from_income(monthly_income, benefits: monthly_benefits, tax: monthly_tax, national_insurance: monthly_ni)
 end
 
+Given("I add {word} employment income with the following payments:") do |frequency, table|
+  conversion_method = case frequency.downcase
+                      when "weekly" then ->(value) { (value * 52 / 12).round(2) }
+                      when "four-weekly" then ->(value) { (value / 4 * 52 / 12).round(2) }
+                      else raise "Unsupported frequency: #{frequency}"
+                      end
+
+  monthly_incomes = table.hashes.map do |row|
+    gross = conversion_method.call(row["income"].to_f)
+    tax = conversion_method.call(row["tax"].to_f)
+    ni = conversion_method.call(row["ni"].to_f)
+
+    {
+      gross: gross,
+      tax: -tax,
+      national_insurance: -ni,
+      benefits_in_kind: 0,
+      client_id: "client_id",
+      date: "2022-06-21",
+    }
+  end
+
+  # Spread the 3 payments over 3 dates to conform with your existing structure
+  payments = monthly_incomes.first(3).each_with_index.map do |payment, index|
+    payment.merge(date: %w[2012-06-21 2012-07-21 2012-08-21][index])
+  end
+
+  @employments << {
+    name: "A",
+    client_id: "B",
+    payments: payments
+  }
+end
+
+
 Given("I add partner employment income of {int} per month") do |monthly_income|
   @partner_employments = [employment_payments_from_income(monthly_income)]
 end
