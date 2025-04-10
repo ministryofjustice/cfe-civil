@@ -3,7 +3,7 @@ Feature:
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
-    And A submission date of "2022-01-24"
+    And A submission date of "2022-01-12"
     And I add the following proceeding types in the current assessment:
       | ccms_code | client_involvement_type |
       | DA001     | A                       |
