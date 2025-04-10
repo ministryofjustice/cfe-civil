@@ -169,7 +169,7 @@ Given("I add multiple outgoing details including {string} of {int} per month, wi
   @outgoings_data[:outgoings] << { name: outgoing_type, payments: the_payments }
 end
 
-Given("I add {int} capital of type {string}") do |amount, capital_type|
+Given("I add {float} capital of type {string}") do |amount, capital_type|
   @capitals_data[capital_type.to_sym] ||= []
   @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
 end
@@ -190,8 +190,64 @@ Given("I add employment income of {int} per month") do |monthly_income|
   @employments << employment_payments_from_income(monthly_income)
 end
 
-Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
+Given("I add employment income of {float} per month with {float} benefits_in_kind, {float} tax and {float} national insurance") do |monthly_income, benefits, tax, ni|
   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
+end
+
+Given("I add employment income of {float} every 4 weeks with {float} benefits_in_kind, {float} tax and {float} national insurance") do |four_weekly_income, four_weekly_benefits, four_weekly_tax, four_weekly_ni|
+  monthly_income   = (four_weekly_income / 4 * 52 / 12).round(2)
+  monthly_benefits = (four_weekly_benefits / 4 * 52 / 12).round(2)
+  monthly_tax      = (four_weekly_tax / 4 * 52 / 12).round(2)
+  monthly_ni       = (four_weekly_ni / 4 * 52 / 12).round(2)
+
+  @employments << employment_payments_from_income(
+    monthly_income,
+    benefits: monthly_benefits,
+    tax: monthly_tax,
+    national_insurance: monthly_ni,
+  )
+end
+
+Given("I add employment income of {float} per week with {float} benefits_in_kind, {float} tax and {float} national insurance") do |weekly_income, weekly_benefits, weekly_tax, weekly_ni|
+  monthly_income   = (weekly_income * 52 / 12).round(2)
+  monthly_benefits = (weekly_benefits * 52 / 12).round(2)
+  monthly_tax      = (weekly_tax * 52 / 12).round(2)
+  monthly_ni       = (weekly_ni * 52 / 12).round(2)
+
+  @employments << employment_payments_from_income(monthly_income, benefits: monthly_benefits, tax: monthly_tax, national_insurance: monthly_ni)
+end
+
+Given("I add {word} employment income with the following payments:") do |frequency, table|
+  frequency = frequency.downcase.strip.tr("-", "_").to_sym
+
+  incomes = table.hashes.map { |row| row["income"].to_f }
+  taxes   = table.hashes.map { |row| row["tax"].to_f }
+  nis     = table.hashes.map { |row| row["ni"].to_f }
+
+  average_income = incomes.sum / incomes.size
+  average_tax    = taxes.sum / taxes.size
+  average_ni     = nis.sum / nis.size
+
+  monthly_income = Utilities::MonthlyAmountConverter.call(frequency, average_income)
+  monthly_tax    = Utilities::MonthlyAmountConverter.call(frequency, average_tax)
+  monthly_ni     = Utilities::MonthlyAmountConverter.call(frequency, average_ni)
+
+  payments = %w[2023-06-01 2023-07-01 2023-08-01].map do |date|
+    {
+      client_id: "client_id",
+      date: date,
+      gross: monthly_income,
+      tax: -monthly_tax,
+      national_insurance: -monthly_ni,
+      benefits_in_kind: 0,
+    }
+  end
+
+  @employments << {
+    name: "A",
+    client_id: "B",
+    payments: payments,
+  }
 end
 
 Given("I add partner employment income of {int} per month") do |monthly_income|
