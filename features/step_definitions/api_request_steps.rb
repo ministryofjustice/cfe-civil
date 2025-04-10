@@ -169,10 +169,10 @@ Given("I add multiple outgoing details including {string} of {int} per month, wi
   @outgoings_data[:outgoings] << { name: outgoing_type, payments: the_payments }
 end
 
-Given("I add {int} capital of type {string}") do |amount, capital_type|
-  @capitals_data[capital_type.to_sym] ||= []
-  @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
-end
+# Given("I add {int} capital of type {string}") do |amount, capital_type|
+#   @capitals_data[capital_type.to_sym] ||= []
+#   @capitals_data[capital_type.to_sym] << { description: "Some Capital", value: amount }
+# end
 
 Given("I add {float} capital of type {string}") do |amount, capital_type|
   @capitals_data[capital_type.to_sym] ||= []
@@ -195,9 +195,9 @@ Given("I add employment income of {int} per month") do |monthly_income|
   @employments << employment_payments_from_income(monthly_income)
 end
 
-Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
-  @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
-end
+# Given("I add employment income of {int} per month with {int} benefits_in_kind, {int} tax and {int} national insurance") do |monthly_income, benefits, tax, ni|
+#   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
+# end
 
 Given("I add employment income of {float} per month with {float} benefits_in_kind, {float} tax and {float} national insurance") do |monthly_income, benefits, tax, ni|
   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
