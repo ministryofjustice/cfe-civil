@@ -11,18 +11,22 @@ Feature:
       | DA001     | A                       |
       | DA004     | A                       |
     And I have a dependant aged 3
-    And I add four-weekly employment income with the following payments:
-      | period   | income | tax   | ni   |
-      | period 1 | 272.0  | 80.20 | 0    |
-      | period 2 | 304.73 | 115.81| 0    |
-      | period 3 | 429.41 | 215.21| 0    |
-      | period 4 | 935.56 | 416.18| 23.95|
-    And I add weekly employment income with the following payments:
-      | period   | income | tax   | ni  |
-      | week 1   | 142.56 | 28.40 | 0   |
-      | week 2   | 142.56 | 28.40 | 0   |
-      | week 3   | 142.56 | 28.40 | 0   |
-      | week 4   | 89.10  | 17.80 | 0   |
+    And I add the following employment details:
+      | client_id |     date     |  gross   | benefits_in_kind |   tax    | national_insurance  |
+      |     C     |  2021-12-17  |   272.04 |      0           |    80.20 |          0.0        |
+      |     C     |  2021-11-19  |   304.73 |      0           |   115.81 |          0.0        |
+      |     C     |  2021-10-22  |   429.41 |      0           |   215.21 |          0.0        |
+      |     C     |  2021-09-24  |   935.56 |      0           |   416.18 |        23.95        |
+    And I add the following employment details:
+      | client_id |     date     |  gross   | benefits_in_kind |   tax    | national_insurance  |
+      |     C     |  2021-11-17  |   142.56 |      0           |    28.40 |          0.0        |
+      |     C     |  2021-11-10  |   142.56 |      0           |    28.40 |          0.0        |
+      |     C     |  2021-11-03  |   142.56 |      0           |    28.40 |          0.0        |
+      |     C     |  2021-10-27  |    89.10 |      0           |    17.80 |          0.0        |
+      |     C     |  2021-11-20  |      0.0 |      0           |      0.0 |          0.0        |
+      |     C     |  2021-11-13  |      0.0 |      0           |      0.0 |          0.0        |
+      |     C     |  2021-10-06  |   142.56 |      0           |    28.40 |          0.0        |
+      |     C     |  2021-09-29  |      0.0 |      0           |      0.0 |          0.0        |
     And I add other income "friends_or_family" of 300 per month
     And I add outgoing details for "rent_or_mortgage" of 5 per month
     And I add 10000 capital of type "bank_accounts"
