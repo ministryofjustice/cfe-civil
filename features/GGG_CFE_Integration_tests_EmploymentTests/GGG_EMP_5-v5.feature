@@ -20,9 +20,9 @@ Feature:
     And I add outgoing details for "rent_or_mortgage" of 5 per month
     And I add 500 capital of type "bank_accounts"
     When I retrieve the final assessment
-#    Then I should see the following overall summary:
-#      | attribute                      | value    |
-#      | assessment_result              | eligible |
+    Then I should see the following overall summary:
+      | attribute                      | value    |
+      | assessment_result              | eligible |
     Then I should see the following "gross income" details:
       | attribute                      | value  |
       | total_gross_income             | 442.31 |
