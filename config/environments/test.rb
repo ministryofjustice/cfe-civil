@@ -14,6 +14,11 @@ Rails.application.configure do
     Bullet.raise = true # raise an error if n+1 query occurs
   end
 
+  # we add this now to suppress a warning in the terminal for dev/test, this behaviour becomes standard in Rails 8.1
+  # we can add this to config/application.rb if we want this to work across all envs, our dev deployments run as production
+  # so we can test that this works in UAT but I dont expect any issues as we do not do anything TimeZone dependent in this service
+  config.active_support.to_time_preserves_timezone = :zone
+
   # Configure 'rails notes' to inspect Cucumber files
   config.annotations.register_directories("features")
   config.annotations.register_extensions("feature") { |tag| /#\s*(#{tag}):?\s*(.*)$/ }
