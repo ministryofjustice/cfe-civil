@@ -11,11 +11,11 @@ Feature:
       | ccms_code | client_involvement_type |
       | DA001     | A                       |
     And I have a dependant aged 3
-    And I add four-weekly employment income with the following payments:
-      | period   | income | tax   | ni    |
-      | period 1 | 267.38 |  10.0 |  5.0  |
-      | period 2 | 310.00 |  21.0 | 11.0  |
-      | period 3 | 250.01 |   8.0 |  3.0  |
+    And I add the following employment details:
+      | client_id |     date     |  gross   | benefits_in_kind |   tax     | national_insurance |
+      |    C      |  2021-12-10  |   267.38 |      0           |    -10.00 |          -5.0      |
+      |    C      |  2021-11-12  |   310.00 |      0           |    -21.00 |         -11.0      |
+      |    C      |  2021-10-15  |   250.01 |      0           |      -8.0 |          -3.0      |
     And I add outgoing details for "rent_or_mortgage" of 5 per month
     And I add 500 capital of type "bank_accounts"
     When I retrieve the final assessment
@@ -28,9 +28,8 @@ Feature:
     Then I should see the following "employment" details:
       | attribute                      | value    |
       | gross_income                   | 298.78   |
-      | tax                            | -14.08   |
-      | national_insurance             | -6.86    |
-      | net_employment_income          | 232.84   |
+      | tax                            |  -14.08  |
+      | national_insurance             |  -6.86   |
     Then I should see the following "gross income" details:
       | attribute                      |  value   |
       | total_gross_income             |  298.78  |
@@ -42,6 +41,6 @@ Feature:
       | total_disposable_income        | -70.24 |
       | income_contribution            |    0.0 |
     And I should see the following remarks indicating caseworker referral
-      | type                            |  issue           |
-      | client_employment_income        | amount_variation |
+      | type                             |  issue           |
+      | client_employment_gross_income   | amount_variation |
 

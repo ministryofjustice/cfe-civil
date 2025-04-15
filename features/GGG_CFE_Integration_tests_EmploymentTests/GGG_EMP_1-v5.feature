@@ -11,9 +11,9 @@ Feature:
     And I have a dependant aged 2
     And I add employment income of 2550.33 per month with 0.0 benefits_in_kind, 745.31 tax and 144.06 national insurance
     And I add the following employment details:
-      | client_id |     date     |  gross   | benefits_in_kind |   tax  | national_insurance  |
-      |     C     |  2021-12-07  |   250.00 |      0           |   80.0 |          0.0        |
-      |     C     |  2021-12-14  |   250.00 |      0           |   80.0 |          0.0        |
+      | client_id |     date     |  gross   | benefits_in_kind |   tax   | national_insurance  |
+      |     C     |  2021-12-07  |   250.00 |      0           |   -80.0 |          0.0        |
+      |     C     |  2021-12-14  |   250.00 |      0           |   -80.0 |          0.0        |
     And I add outgoing details for "rent_or_mortgage" of 550 per month
     And I add 1215.44 capital of type "bank_accounts"
     When I retrieve the final assessment
