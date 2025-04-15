@@ -1,0 +1,35 @@
+Feature:
+  " NON-PASSPORTED
+  Defendant x 2
+  Above all upper thresholds
+  Ineligible "
+
+  Scenario: Test that the correct output is produced for the following set of data.
+    Given I am undertaking a certificated assessment
+    And A submission date of "2022-01-24"
+    And I add the following proceeding types in the current assessment:
+      | ccms_code | client_involvement_type |
+      | DA001     | D                       |
+      | SE013     | D                       |
+    And I have a dependant aged 41
+    And I add employment income of 2700 per month with 0 benefits_in_kind, 0 tax and 0 national insurance
+    And I add outgoing details for "rent_or_mortgage" of 1700 per month
+    And I add 500 capital of type "bank_accounts"
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                      | value      |
+      | assessment_result              | ineligible |
+    Then I should see the following "capital summary" details:
+      | attribute                      |   value  |
+      | total_liquid                   |   500.0  |
+    Then I should see the following "gross income" details:
+      | attribute                      |  value   |
+      | total_gross_income             |  2700.0  |
+    Then I should see the following "employment" details:
+      | attribute                      | value   |
+      | gross_income                   | 2700.0  |
+    And I should see the following "disposable_income_summary" details:
+      | attribute                      |   value  |
+      | gross_housing_costs            |  1700.0  |
+
+
