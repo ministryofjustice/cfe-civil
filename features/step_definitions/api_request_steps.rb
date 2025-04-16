@@ -194,6 +194,15 @@ Given("I add employment income of {float} per month with {float} benefits_in_kin
   @employments << employment_payments_from_income(monthly_income, benefits:, tax:, national_insurance: ni)
 end
 
+Given("I add employment income of {float} per week with {float} benefits_in_kind, {float} tax and {float} national insurance") do |weekly_income, weekly_benefits, weekly_tax, weekly_ni|
+  monthly_income   = (weekly_income * 52 / 12).round(2)
+  monthly_benefits = (weekly_benefits * 52 / 12).round(2)
+  monthly_tax      = (weekly_tax * 52 / 12).round(2)
+  monthly_ni       = (weekly_ni * 52 / 12).round(2)
+
+  @employments << employment_payments_from_income(monthly_income, benefits: monthly_benefits, tax: monthly_tax, national_insurance: monthly_ni)
+end
+
 Given("I add partner employment income of {int} per month") do |monthly_income|
   @partner_employments = [employment_payments_from_income(monthly_income)]
 end
