@@ -1,7 +1,5 @@
 Feature:
-  " 1. Most recent (within £60 tolerance)
-    2. Variations - MOST RECENT
-    3. 1 weekly "
+  " Referred to a caseworker for employment "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
