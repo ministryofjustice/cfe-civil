@@ -1,6 +1,6 @@
 Feature:
-  " PASSPORTED
-  Defendant x 2
+  " PASSPORTED s8 only
+  Subject x 2
   Above upper capital
   Ineligible "
 

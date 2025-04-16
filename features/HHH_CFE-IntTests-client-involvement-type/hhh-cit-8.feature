@@ -1,8 +1,7 @@
 Feature:
-  " PASSPORTED
-  Defendant x 2
-  Above upper capital
-  Ineligible "
+  " PASSPORTED s8 only
+  Subject x 2
+  Below upper capital contribution "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment

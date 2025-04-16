@@ -8,11 +8,11 @@ Feature:
     And A submission date of "2022-01-24"
     And I add the following proceeding types in the current assessment:
       | ccms_code | client_involvement_type |
+      | DA003     | W                       |
+      | SE014     | I                       |
+      | SE003     | Z                       |
       | DA004     | A                       |
       | SE013     | D                       |
-      | SE014     | I                       |
-      | DA003     | W                       |
-      | SE003     | Z                       |
     And I have a dependant aged 1
     And I add employment income of 900 per month with 0 benefits_in_kind, 0 tax and 0 national insurance
     And I add outgoing details for "rent_or_mortgage" of 520 per month

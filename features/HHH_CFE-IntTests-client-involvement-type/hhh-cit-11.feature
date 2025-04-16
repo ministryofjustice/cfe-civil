@@ -1,8 +1,8 @@
 Feature:
   " NON-PASSPORTED S8 STANDALONE
-  Applicant & Defendant
-  Above all upper thresholds
-  Not eligible "
+  Applicant
+  NO Contributions
+  "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment

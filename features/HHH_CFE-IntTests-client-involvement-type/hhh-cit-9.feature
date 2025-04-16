@@ -1,7 +1,7 @@
 Feature:
   " NON-PASSPORTED S8 STANDALONE
   Applicant & Defendant
-  Above all upper thresholds
+  Above DI upper threshold
   Not eligible "
 
   Scenario: Test that the correct output is produced for the following set of data.
