@@ -1,8 +1,10 @@
 Feature:
-  " NON-PASSPORTED
-  Defendant x 2
+  "
+  NON-PASSPORTED
+  Applicant & Defendant
   Above all upper thresholds
-  Ineligible "
+  Partially eligible
+  "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment

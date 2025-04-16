@@ -1,8 +1,9 @@
 Feature:
   " NON-PASSPORTED
   Defendant x 2
-  Above all upper thresholds
-  Ineligible "
+  Ineligible
+  Above income gross limit only
+  "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
@@ -11,7 +12,7 @@ Feature:
       | ccms_code | client_involvement_type |
       | DA001     | D                       |
       | SE013     | D                       |
-    And I have a dependant aged 41
+    And I have a dependant aged 2
     And I add employment income of 2700 per month with 0 benefits_in_kind, 0 tax and 0 national insurance
     And I add outgoing details for "rent_or_mortgage" of 1700 per month
     And I add 500 capital of type "bank_accounts"

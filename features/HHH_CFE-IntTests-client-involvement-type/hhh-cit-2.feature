@@ -9,7 +9,7 @@ Feature:
     And A submission date of "2022-01-24"
     And I add the following proceeding types in the current assessment:
       | ccms_code | client_involvement_type |
-      | DA001     | A                       |
+      | DA001     | D                       |
       | SE013     | D                       |
     And I have a dependant aged 1
     And I add employment income of 2700 per month with 0 benefits_in_kind, 0 tax and 0 national insurance
@@ -17,8 +17,8 @@ Feature:
     And I add 10000 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following overall summary:
-      | attribute                      | value              |
-      | assessment_result              | partially_eligible |
+      | attribute                      | value      |
+      | assessment_result              | ineligible |
     Then I should see the following "capital summary" details:
       | attribute                      |   value  |
       | total_liquid                   | 10000.0  |
