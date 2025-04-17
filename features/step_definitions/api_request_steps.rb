@@ -243,7 +243,7 @@ Given("I add {string} regular_transactions of {int} per month") do |category, am
   }]
 end
 
-Given("I add {string} of multiple regular_transactions, of {float} per month") do |category, amount|
+Given("I add {string} of multiple regular_transactions, of {float} per month of debit") do |category, amount|
   @regular_transactions ||= []
   @regular_transactions << {
     category:,
