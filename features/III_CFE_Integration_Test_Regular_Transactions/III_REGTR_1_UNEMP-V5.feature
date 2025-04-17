@@ -16,10 +16,10 @@ Feature:
     And I add "maintenance_in" which are part of multiple regular_transactions, of 55.55 per month of credit
     And I add "property_or_lodger" which are part of multiple regular_transactions, of 88.88 per month of credit
     And I add "pension" which are part of multiple regular_transactions, of 13.13 per month of credit
-    And I add "child_care" of multiple regular_transactions, of 111.11 per month
-    And I add "rent_or_mortgage" of multiple regular_transactions, of 222.22 per month
-    And I add "maintenance_out" of multiple regular_transactions, of 555.55 per month
-    And I add "legal_aid" of multiple regular_transactions, of 888.88 per month
+    And I add "child_care" of multiple regular_transactions, of 111.11 per month of debit
+    And I add "rent_or_mortgage" of multiple regular_transactions, of 222.22 per month of debit
+    And I add "maintenance_out" of multiple regular_transactions, of 555.55 per month of debit
+    And I add "legal_aid" of multiple regular_transactions, of 888.88 per month of debit
     And I add "friends_or_family" which are part of multiple regular_transactions, of 222.0 per month of credit
     When I retrieve the final assessment
     Then I should see the following overall summary:

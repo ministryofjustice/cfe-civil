@@ -12,8 +12,8 @@ Feature:
       | DA001     | A                       |
       | SE013     | A                       |
     And I have a dependant aged 20
-    And I add "child_care" of multiple regular_transactions, of 111.11 per month
-    And I add "child_care" of multiple regular_transactions, of 222 per month
+    And I add "child_care" of multiple regular_transactions, of 111.11 per month of debit
+    And I add "child_care" of multiple regular_transactions, of 222 per month of debit
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute               | value    |
