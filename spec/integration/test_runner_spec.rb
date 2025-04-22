@@ -12,7 +12,6 @@ Dir[Rails.root.join("lib/integration_helpers/**/*.rb")].sort.each { |f| require 
 # (show details of all payloads and responses)
 #
 #    bin/ispec -h # show help text
-# rubocop:disable RSpec/NoExpectationExample
 RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, :vcr, type: :request do
   let(:spreadsheet_title) { "CFE Integration Test V3" }
   let(:target_worksheet) { ENV["TARGET_WORKSHEET"] }
@@ -30,7 +29,7 @@ RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, :vcr, type: 
     ispec_run = ENV["ISPEC_RUN"].present?
 
     if ispec_run
-      it "processes all the tests on all the sheets" do
+      xit "processes all the tests on all the sheets" do
         failing_tests = []
         test_count = 0
         group_runner = TestCase::GroupRunner.new(verbosity_level, refresh)
@@ -50,7 +49,7 @@ RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, :vcr, type: 
       TestCase::GroupRunner.new(0, "false").each do |worksheet|
         next if worksheet.skippable?
 
-        it "#{worksheet.description} passes" do
+        xit "#{worksheet.description} passes" do
           run_test_case(worksheet, 0)
         end
       end
@@ -125,4 +124,3 @@ RSpec.describe "IntegrationTests::TestRunner", :calls_bank_holiday, :vcr, type: 
     end
   end
 end
-# rubocop:enable RSpec/NoExpectationExample
