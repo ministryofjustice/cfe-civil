@@ -243,12 +243,12 @@ Given("I add {string} regular_transactions of {int} per month") do |category, am
   }]
 end
 
-Given("I add {string} of multiple regular_transactions, of {float} per month of debit") do |category, amount|
+Given("I add {string} of multiple regular_transactions, of {float} per month of {string}") do |category, amount, operation|
   @regular_transactions ||= []
   @regular_transactions << {
     category:,
     frequency: "monthly",
-    operation: "debit",
+    operation:,
     amount:,
   }
 end
@@ -269,16 +269,6 @@ Given("I add a benefits regular_transactions of {float} per month of credit") do
     operation: "credit",
     amount:,
   }]
-end
-
-Given("I add {string} which are part of multiple regular_transactions, of {float} per month of credit") do |category, amount|
-  @regular_transactions ||= []
-  @regular_transactions << {
-    category:,
-    frequency: "monthly",
-    operation: "credit",
-    amount:,
-  }
 end
 
 Given("I add a benefits regular_transactions of {float} every 4 weeks of credit") do |amount|
