@@ -3,7 +3,7 @@
 
 # Check Financial Eligibility - Civil (CFE-Civil)
 
-An API that does the "civil means test" calculations i.e. whether someone's financial position makes them eligible for legal aid, for civil cases.
+An API that does the "civil means test" calculations i.e. whether someone's financial position makes them eligible for legal aid, for civil cases..
 
 ## Scope
 
