@@ -15,8 +15,8 @@ Feature:
     And I add the following irregular_income details in the current assessment:
       | income_type  | frequency | amount  |
       | student_loan | annual    | 4800.00 |
-    And I add "child_care" of multiple regular_transactions, of 111.11 per month of "debit"
-    And I add "child_care" of multiple regular_transactions, of 222.22 per month of "debit"
+    And I add "child_care" of multiple regular_transactions, of 111.11, "monthly" of "debit"
+    And I add "child_care" of multiple regular_transactions, of 222.22, "monthly" of "debit"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute               | value    |
