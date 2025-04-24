@@ -11,16 +11,16 @@ Feature:
       | DA001     | A                       |
       | SE013     | A                       |
     And I have a dependant aged 1
-    And I add "benefits" of multiple regular_transactions, of 11.11 per month of "credit"
-    And I add "friends_or_family" of multiple regular_transactions, of 22.22 per month of "credit"
-    And I add "maintenance_in" of multiple regular_transactions, of 55.55 per month of "credit"
-    And I add "property_or_lodger" of multiple regular_transactions, of 88.88 per month of "credit"
-    And I add "pension" of multiple regular_transactions, of 13.13 per month of "credit"
-    And I add "child_care" of multiple regular_transactions, of 111.11 per month of "debit"
-    And I add "rent_or_mortgage" of multiple regular_transactions, of 222.22 per month of "debit"
-    And I add "maintenance_out" of multiple regular_transactions, of 555.55 per month of "debit"
-    And I add "legal_aid" of multiple regular_transactions, of 888.88 per month of "debit"
-    And I add "friends_or_family" of multiple regular_transactions, of 222.0 per month of "credit"
+    And I add "benefits" of multiple regular_transactions, of 11.11, "monthly" of "credit"
+    And I add "friends_or_family" of multiple regular_transactions, of 22.22, "monthly" of "credit"
+    And I add "maintenance_in" of multiple regular_transactions, of 55.55, "monthly" of "credit"
+    And I add "property_or_lodger" of multiple regular_transactions, of 88.88, "monthly" of "credit"
+    And I add "pension" of multiple regular_transactions, of 13.13, "monthly" of "credit"
+    And I add "child_care" of multiple regular_transactions, of 111.11, "monthly" of "debit"
+    And I add "rent_or_mortgage" of multiple regular_transactions, of 222.22, "monthly" of "debit"
+    And I add "maintenance_out" of multiple regular_transactions, of 555.55, "monthly" of "debit"
+    And I add "legal_aid" of multiple regular_transactions, of 888.88, "monthly" of "debit"
+    And I add "friends_or_family" of multiple regular_transactions, of 222.0, "monthly" of "credit"
     When I retrieve the final assessment
     Then I should see the following overall summary:
       | attribute               | value    |
