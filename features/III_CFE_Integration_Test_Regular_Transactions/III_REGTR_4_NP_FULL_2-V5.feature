@@ -23,9 +23,9 @@ Feature:
       | attribute          | value |
       | total_gross_income | 800.0 |
     And I should see the following "capital summary" details:
-      | attribute                   | value   |
-      | total_capital               |  4000.0 |
-      | assessed_capital            |  4000.0 |
+      | attribute        | value  |
+      | total_capital    | 4000.0 |
+      | assessed_capital | 4000.0 |
     Then I should see the following "disposable_income_summary" details:
       | attribute                      | value  |
       | maintenance_allowance          |    0.0 |
@@ -35,3 +35,4 @@ Feature:
       | total_outgoings_and_allowances | 398.08 |
       | total_disposable_income        | 401.92 |
       | dependant_allowance            | 298.08 |
+      | income_contribution            |  31.82 |

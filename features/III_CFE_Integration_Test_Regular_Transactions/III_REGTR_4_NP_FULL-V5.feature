@@ -34,3 +34,6 @@ Feature:
       | total_outgoings_and_allowances |  308.08 |
       | total_disposable_income        | -198.08 |
       | dependant_allowance            |  298.08 |
+    Then I should see the following "capital summary" details:
+      | attribute    | value    |
+      | total_liquid | 2999.0 |

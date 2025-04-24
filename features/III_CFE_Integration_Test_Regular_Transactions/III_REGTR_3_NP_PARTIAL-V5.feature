@@ -34,3 +34,4 @@ Feature:
       | total_outgoings_and_allowances |  548.08 |
       | total_disposable_income        | 1551.92 |
       | dependant_allowance            |  298.08 |
+      | income_contribution            |  776.99 |
