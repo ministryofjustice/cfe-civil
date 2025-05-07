@@ -543,18 +543,16 @@ components:
           source:
             type: string
             enum:
-            - benefits
             - friends_or_family
             - maintenance_in
             - property_or_lodger
             - pension
-            - Benefits
             - Friends or family
             - Maintenance in
             - Property or lodger
             - Pension
             description: Source of other regular income
-            example: benefits
+            example: friends_or_family
           payments:
             type: array
             description: One or more other regular payment details
