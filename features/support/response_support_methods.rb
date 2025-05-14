@@ -29,6 +29,8 @@ RESPONSE_SECTION_MAPPINGS = {
     "gross_income_lower_threshold_0" => "result_summary.gross_income.proceeding_types.0.lower_threshold",
     "gross_income_lower_threshold_1" => "result_summary.gross_income.proceeding_types.1.lower_threshold",
     "gross_income_proceeding_types" => "result_summary.gross_income.proceeding_types",
+    "disposable_income_proceeding_types" => "result_summary.disposable_income.proceeding_types",
+    "capital_proceeding_types" => "result_summary.capital.proceeding_types",
     "main property" => "assessment.capital.capital_items.properties.main_home",
     "additional property" => "assessment.capital.capital_items.properties.additional_properties.0",
     "vehicle" => "assessment.capital.capital_items.vehicles.0",
@@ -38,6 +40,7 @@ RESPONSE_SECTION_MAPPINGS = {
     "partner_employment" => "result_summary.partner_disposable_income.employment_income",
     "combined_assessed_capital" => "result_summary.capital.combined_assessed_capital",
     "remarks" => "assessment.remarks",
+    "proceeding_types" => "result_summary.overall_result.proceeding_types",
   },
 }.freeze
 
