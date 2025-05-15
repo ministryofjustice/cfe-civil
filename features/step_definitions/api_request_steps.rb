@@ -99,6 +99,17 @@ Given("I have a dependant aged {int} with monthly income of {int}") do |age, inc
   }
 end
 
+Given("I have a dependant aged {int} with monthly income of {int} and capital {int}") do |age, income, capital|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    monthly_income: income,
+    relationship: "child_relative",
+    assets_value: capital
+  }
+end
+
 Given("I have a dependant aged {int} with {string} income of {int}") do |age, frequency, income|
   date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
   @dependant_data[:dependants] << {
