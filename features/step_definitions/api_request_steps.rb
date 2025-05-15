@@ -149,6 +149,14 @@ Given("I add other income {string} of {int} per month, with bespoke dates: {stri
                                           payments:] }
 end
 
+Given("I add other income {string} of: {int} {int} {int}; with bespoke dates: {string} {string} {string}") do |income_type, amount1, amount2, amount3, date1, date2, date3|
+  incomes = [{date: date1, amount: amount1}, {date: date2, amount: amount2}, {date: date3, amount: amount3}]
+  payments = []
+  incomes.each { |income| payments << {date: income[:date], client_id: SecureRandom.uuid, amount: income[:amount]} }
+  @other_incomes_data = { other_incomes: [source: income_type,
+                                          payments:] }
+end
+
 Given("I add the following irregular_income details in the current assessment:") do |table|
   @irregular_income_data = { "payments": table.hashes.map { cast_values(_1) } }
 end
