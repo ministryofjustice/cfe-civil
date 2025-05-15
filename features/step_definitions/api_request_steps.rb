@@ -250,7 +250,7 @@ Given("I add {string} cash_transactions of {int} per month") do |category, amoun
       amount:,
     }
   end
-  @cash_transactions = { "cash_transactions": { "outgoings": ["category": category, "payments": payments], "income": [] } }
+  @cash_transactions_payments = ["category": category, "payments": payments]
 end
 
 Given("I add {string} regular_transactions of {int} per month") do |category, amount|
@@ -272,7 +272,7 @@ Given("I add {string} of multiple regular_transactions, of {float}, {string} of 
   }
 end
 
-Given("I add {string} cash_transactions_income of {int} per month") do |category, amount|
+Given("I add {string} cash_transactions_income of {float} per month") do |category, amount|
   submission_date = Date.parse(@assessment_data[:submission_date])
   payments = (1..3).map do |i|
     {
@@ -281,7 +281,7 @@ Given("I add {string} cash_transactions_income of {int} per month") do |category
       amount:,
     }
   end
-  @cash_transactions = { "cash_transactions": { "income": ["category": category, "payments": payments], "outgoings": [] } }
+  @cash_transactions_income = ["category": category, "payments": payments]
 end
 
 Given("I add {string} partner regular_transactions of {int} per month") do |category, amount|
@@ -388,7 +388,11 @@ When("I retrieve the final assessment") do
   single_shot_api_data.merge!(@benefits_data) if @benefits_data
 
   single_shot_api_data.merge!(@outgoings_data) if @outgoings_data
-  single_shot_api_data.merge!(@cash_transactions) if @cash_transactions
+
+  cash_income = @cash_transactions_income || []
+  cash_payments = @cash_transactions_payments || []
+  cash_transactions = { "cash_transactions": { "outgoings": cash_payments, "income": cash_income } }
+  single_shot_api_data.merge!(cash_transactions)
 
   single_shot_api_data.merge!(main_home_data) if main_home_data
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
