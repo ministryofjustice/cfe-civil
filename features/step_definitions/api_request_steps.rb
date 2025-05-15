@@ -253,6 +253,18 @@ Given("I add {string} of multiple regular_transactions, of {float}, {string} of 
   }
 end
 
+Given("I add {string} cash_transactions_income of {int} per month") do |category, amount|
+  submission_date = Date.parse(@assessment_data[:submission_date])
+  payments = (1..3).map do |i|
+    {
+      client_id: "client_id",
+      date: (submission_date - i.months).beginning_of_month,
+      amount:,
+    }
+  end
+  @cash_transactions = { "cash_transactions": { "income": ["category": category, "payments": payments], "outgoings": [] } }
+end
+
 Given("I add {string} partner regular_transactions of {int} per month") do |category, amount|
   @partner_regular_transactions = [{
     category:,
