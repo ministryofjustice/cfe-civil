@@ -106,7 +106,7 @@ Given("I have a dependant aged {int} with monthly income of {int} and capital {i
     in_full_time_education: true,
     monthly_income: income,
     relationship: "child_relative",
-    assets_value: capital
+    assets_value: capital,
   }
 end
 
@@ -141,7 +141,7 @@ Given("I add other income {string} of {int} per month") do |income_type, monthly
                                           payments:] }
 end
 
-Given("I add other income {string} of {int} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
+Given("I add other income {string} of {float} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
   dates = [date1, date2, date3]
   payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
 
@@ -150,9 +150,9 @@ Given("I add other income {string} of {int} per month, with bespoke dates: {stri
 end
 
 Given("I add other income {string} of: {int} {int} {int}; with bespoke dates: {string} {string} {string}") do |income_type, amount1, amount2, amount3, date1, date2, date3|
-  incomes = [{date: date1, amount: amount1}, {date: date2, amount: amount2}, {date: date3, amount: amount3}]
+  incomes = [{ date: date1, amount: amount1 }, { date: date2, amount: amount2 }, { date: date3, amount: amount3 }]
   payments = []
-  incomes.each { |income| payments << {date: income[:date], client_id: SecureRandom.uuid, amount: income[:amount]} }
+  incomes.each { |income| payments << { date: income[:date], client_id: SecureRandom.uuid, amount: income[:amount] } }
   @other_incomes_data = { other_incomes: [source: income_type,
                                           payments:] }
 end
