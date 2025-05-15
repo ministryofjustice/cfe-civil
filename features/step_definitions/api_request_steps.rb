@@ -99,6 +99,17 @@ Given("I have a dependant aged {int} with monthly income of {int}") do |age, inc
   }
 end
 
+Given("I have a dependant aged {int} with monthly income of {int} and capital {int}") do |age, income, capital|
+  date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
+  @dependant_data[:dependants] << {
+    date_of_birth: date_of_birth.to_s,
+    in_full_time_education: true,
+    monthly_income: income,
+    relationship: "child_relative",
+    assets_value: capital,
+  }
+end
+
 Given("I have a dependant aged {int} with {string} income of {int}") do |age, frequency, income|
   date_of_birth = Date.parse(@assessment_data[:submission_date]) - age.years
   @dependant_data[:dependants] << {
@@ -130,10 +141,18 @@ Given("I add other income {string} of {int} per month") do |income_type, monthly
                                           payments:] }
 end
 
-Given("I add other income {string} of {int} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
+Given("I add other income {string} of {float} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
   dates = [date1, date2, date3]
   payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
 
+  @other_incomes_data = { other_incomes: [source: income_type,
+                                          payments:] }
+end
+
+Given("I add other income {string} of: {int} {int} {int}; with bespoke dates: {string} {string} {string}") do |income_type, amount1, amount2, amount3, date1, date2, date3|
+  incomes = [{ date: date1, amount: amount1 }, { date: date2, amount: amount2 }, { date: date3, amount: amount3 }]
+  payments = []
+  incomes.each { |income| payments << { date: income[:date], client_id: SecureRandom.uuid, amount: income[:amount] } }
   @other_incomes_data = { other_incomes: [source: income_type,
                                           payments:] }
 end
@@ -231,7 +250,7 @@ Given("I add {string} cash_transactions of {int} per month") do |category, amoun
       amount:,
     }
   end
-  @cash_transactions = { "cash_transactions": { "outgoings": ["category": category, "payments": payments], "income": [] } }
+  @cash_transactions_payments = ["category": category, "payments": payments]
 end
 
 Given("I add {string} regular_transactions of {int} per month") do |category, amount|
@@ -251,6 +270,18 @@ Given("I add {string} of multiple regular_transactions, of {float}, {string} of 
     operation:,
     amount:,
   }
+end
+
+Given("I add {string} cash_transactions_income of {float} per month") do |category, amount|
+  submission_date = Date.parse(@assessment_data[:submission_date])
+  payments = (1..3).map do |i|
+    {
+      client_id: "client_id",
+      date: (submission_date - i.months).beginning_of_month,
+      amount:,
+    }
+  end
+  @cash_transactions_income = ["category": category, "payments": payments]
 end
 
 Given("I add {string} partner regular_transactions of {int} per month") do |category, amount|
@@ -357,7 +388,11 @@ When("I retrieve the final assessment") do
   single_shot_api_data.merge!(@benefits_data) if @benefits_data
 
   single_shot_api_data.merge!(@outgoings_data) if @outgoings_data
-  single_shot_api_data.merge!(@cash_transactions) if @cash_transactions
+
+  cash_income = @cash_transactions_income || []
+  cash_payments = @cash_transactions_payments || []
+  cash_transactions = { "cash_transactions": { "outgoings": cash_payments, "income": cash_income } }
+  single_shot_api_data.merge!(cash_transactions)
 
   single_shot_api_data.merge!(main_home_data) if main_home_data
   single_shot_api_data.merge!(@vehicle_data) if @vehicle_data
