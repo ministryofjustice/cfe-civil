@@ -150,8 +150,8 @@ Given("I add other income {string} of {float} per month, with bespoke dates: {st
 end
 
 Given("I add other income {string} of [{string}]; with bespoke dates [{string}]") do |income_type, amounts, dates|
-  amounts = amounts.split(' ')
-  dates = dates.split(' ')
+  amounts = amounts.split(" ")
+  dates = dates.split(" ")
   payments = []
   amounts.map.with_index { |amount, index| payments << { date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_i } }
   @other_incomes_data = { other_incomes: [source: income_type,
