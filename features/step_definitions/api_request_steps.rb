@@ -149,10 +149,11 @@ Given("I add other income {string} of {float} per month, with bespoke dates: {st
                                           payments:] }
 end
 
-Given("I add other income {string} of: {int} {int} {int}; with bespoke dates: {string} {string} {string}") do |income_type, amount1, amount2, amount3, date1, date2, date3|
-  incomes = [{ date: date1, amount: amount1 }, { date: date2, amount: amount2 }, { date: date3, amount: amount3 }]
+Given("I add other income {string} of [{string}]; with bespoke dates [{string}]") do |income_type, amounts, dates|
+  amounts = amounts.split(' ')
+  dates = dates.split(' ')
   payments = []
-  incomes.each { |income| payments << { date: income[:date], client_id: SecureRandom.uuid, amount: income[:amount] } }
+  amounts.map.with_index { |amount, index| payments << { date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_i } }
   @other_incomes_data = { other_incomes: [source: income_type,
                                           payments:] }
 end
