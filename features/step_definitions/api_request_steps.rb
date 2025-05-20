@@ -3,6 +3,11 @@ Given("I am undertaking a certificated assessment") do
     sbt.name = "Housing benefit"
     sbt.exclude_from_gross_income = true
   end
+  StateBenefitType.find_or_create_by! label: "child_benefit" do |sbt|
+    sbt.name = "Child benefit"
+    sbt.exclude_from_gross_income = false
+  end
+
   @assessment_data = { client_reference_id: "N/A", submission_date: "2022-05-10" }
   @applicant_data = { date_of_birth: "1979-12-20",
                       involvement_type: "applicant",
@@ -147,6 +152,28 @@ Given("I add other income {string} of {float} per month, with bespoke dates: {st
 
   @other_incomes_data = { other_incomes: [source: income_type,
                                           payments:] }
+end
+
+Given("I add {string} benefits of [{string}]; with bespoke dates [{string}]") do |benefit_type, amounts, dates|
+  amounts = amounts.split(" ")
+  dates = dates.split(" ")
+  payments = []
+  amounts.map.with_index { |amount, index| payments << { date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_f } }
+  @benefits_data = {
+    state_benefits: [
+      { "name": benefit_type,
+        "payments": payments },
+    ],
+  }
+end
+
+Given("I add {string} outgoings of [{string}]; with bespoke dates [{string}]") do |outgoing_type, amounts, dates|
+  amounts = amounts.split(" ")
+  dates = dates.split(" ")
+  payments = []
+  amounts.map.with_index { |amount, index| payments << { payment_date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_i } }
+  @outgoings_data = { outgoings: [name: outgoing_type,
+                                  payments: payments] }
 end
 
 Given("I add other income {string} of [{string}]; with bespoke dates [{string}]") do |income_type, amounts, dates|
