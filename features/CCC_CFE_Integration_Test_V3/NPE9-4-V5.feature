@@ -1,7 +1,8 @@
 Feature:
-    "Applicant is a pensioner, with 3 child and 2 adult dependents.
+    "Applicant is a pensioner, with 3 child and 1 adult dependents.
     They are an applicant in a non-molestation order case, so all upper thresholds don’t apply.
-    Pensioner capital disregard is applied, and results in a full deduction. Outcome: capital contribution required. "
+    Applicant does not own property, but does own several valuable items. Pensioner capital disregard is applied.
+    Outcome: capital contribution required. "
 
   Scenario: Test that the correct output is produced for the following set of data.
     Given I am undertaking a certificated assessment
@@ -11,22 +12,17 @@ Feature:
     And I have a dependant aged 14
     And I have a dependant aged 11
     And I have a dependant aged 9
-    And I have a dependant aged 30
-    And I have a dependant aged 32
-    And I add other income "friends_or_family" of ["400 300 500"]; with bespoke dates ["2019-04-30 2019-03-31 2019-02-28"]
-    And I add a benefits regular_transactions of 200 every 4 weeks of credit
-    And I add multiple outgoing details including "rent_or_mortgage" of 50 per month, with bespoke dates: "2019-05-15" "2019-04-15" "2019-03-15"
-    And I add a non-disputed main property of value 500000 and mortgage 150000
-    And I add the following vehicle details for the current assessment:
-      | value                     |      14999 |
-      | loan_amount_outstanding   |          0 |
-      | date_of_purchase          | 2018-05-20 |
-      | in_regular_use            | true       |
-      | subject_matter_of_dispute | false      |
+    And I have a dependant aged 17
+    And I add other income "friends_or_family" of 1994.0 per month, with bespoke dates: "2019-04-30" "2019-03-31" "2019-02-28"
+    And I add a benefits regular_transactions of 600 every 4 weeks of credit
+    And I add multiple outgoing details including "rent_or_mortgage" of 500 per month, with bespoke dates: "2019-05-15" "2019-04-15" "2019-03-15"
+    And I add multiple outgoing details including "child_care" of 25 per month, with bespoke dates: "2019-04-01" "2019-03-01" "2019-02-01"
+    And I add 5000 capital of type "bank_accounts"
+    And I add 3020 capital of type "non_liquid_capital"
     When I retrieve the final assessment
     Then I should see the following "proceeding_types" details where "ccms_code:DA001":
-      | attribute               |              value    |
-      | client_involvement_type |              A        |
+      | attribute               | value                 |
+      | client_involvement_type | A                     |
       | result                  | contribution_required |
     And I should see the following "gross_income_proceeding_types" details where "ccms_code:DA001":
       | attribute        |        value    |
@@ -40,23 +36,23 @@ Feature:
       | lower_threshold  | 3000.0          |
       | upper_threshold  | 999999999999.0  |
     Then I should see the following overall summary:
-      | attribute               | value                 |
+      | attribute               | value    |
       | assessment_result       | contribution_required |
-      | capital_lower_threshold |                3000.0 |
+      | capital_lower_threshold |   3000.0              |
     Then I should see the following "gross income" details:
-      | attribute          | value |
-      | total_gross_income | 616.67 |
+      | attribute          | value   |
+      | total_gross_income | 2644.0  |
     Then I should see the following "capital summary" details:
       | attribute                   | value   |
-      | total_capital               | 285000.0|
-      | total_liquid                | 0.0     |
-      | total_non_liquid            | 0.0     |
+      | total_capital               | 8020.0  |
+      | total_liquid                | 5000.0  |
+      | total_non_liquid            | 3020.0  |
       | total_vehicle               | 0.0     |
-      | pensioner_capital_disregard | 100000.0|
-      | assessed_capital            | 185000.0|
-      | capital_contribution        | 182000.0|
+      | pensioner_capital_disregard | 0.0     |
+      | assessed_capital            | 8020.0  |
+      | capital_contribution        | 5020.0  |
     Then I should see the following "disposable_income_summary" details:
       | attribute                      | value  |
-      | dependant_allowance            | 1457.45|
-      | total_outgoings_and_allowances | 1507.45|
-      | total_disposable_income        | -890.78|
+      | dependant_allowance            | 1165.96|
+      | total_outgoings_and_allowances | 1665.96|
+      | total_disposable_income        | 978.04 |
