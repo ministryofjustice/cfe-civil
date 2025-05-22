@@ -13,7 +13,7 @@ Feature:
     And I add the following irregular_income details in the current assessment:
       | income_type  | frequency | amount  |
       | student_loan | annual    | 12000.00|
-    And I add multiple outgoing details including "child_care" of 200 per month, with bespoke dates: "2019-04-15" "2019-04-15" "2019-03-15"
+    And I add multiple outgoing details including "child_care" of 200 per month, with bespoke dates: "2020-04-26" "2020-03-27" "2020-02-29"
     And I add 3002 capital of type "bank_accounts"
     When I retrieve the final assessment
     Then I should see the following "proceeding_types" details where "ccms_code:DA001":
