@@ -73,10 +73,6 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   # config.action_controller.raise_on_missing_callback_actions = true
-  config.x.google_sheets.private_key_id = ENV["GOOGLE_SHEETS_PRIVATE_KEY_ID"]
-  config.x.google_sheets.private_key =  ENV["GOOGLE_SHEETS_PRIVATE_KEY"].gsub('\\n', "\n")
-  config.x.google_sheets.client_email = ENV["GOOGLE_SHEETS_CLIENT_EMAIL"]
-  config.x.google_sheets.client_id = ENV["GOOGLE_SHEETS_CLIENT_ID"]
   config.x.use_test_threshold_data = "true"
 
   config.x.legal_framework_api_host = "https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk"
