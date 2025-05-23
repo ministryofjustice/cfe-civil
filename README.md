@@ -223,7 +223,6 @@ futureFile: '2025-04-07.yml'
 CFE-Civil has several kinds of tests:
 
 * End to End (E2E) tests
-* Integration tests defined in Spreadsheets and using RSpec
 * Integration tests using Cucumber
 * Unit tests - using RSpec
 
@@ -238,11 +237,11 @@ The test cases are defined in the CCQ repo: https://github.com/ministryofjustice
 E2E tests are run by the [CircleCI config](.circleci/config.yml) - see the `end2end_tests` workflow.
 ### RSpec tests
 
-The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
+The RSpec test suite in </spec> includes "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
 #### Running RSpec tests
 
-The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
+The RSpec test suite in </spec> includes "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
 Run them with:
 
@@ -257,16 +256,6 @@ bundle exec rescue rspec
 ```
 
 #### Common errors
-
-Error:
-```ruby
-   An error occurred while loading ./spec/integration/policy_disregards_spec.rb.
-   Failure/Error: require File.expand_path("../config/environment", __dir__)
-
-   NoMethodError:
-     undefined method `gsub' for nil:NilClass
-```
-Solution: fix your .env file. See: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
 
 Error:
 ```ruby
@@ -297,7 +286,7 @@ The aim is for these to be "unit test" style - i.e. numerous tests that cover th
 Run them with:
 
 ```sh
-bundle exec rspec --exclude-pattern=spec/integration/test_runner_spec.rb
+bundle exec rspec
 ```
 
 ## Replaying live API interactions for debugging purposes

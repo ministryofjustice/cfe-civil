@@ -14,8 +14,6 @@ inherit_mode:
 Style/HashSyntax:
   Exclude:
     - 'spec/factories/gross_income_summary_factory.rb'
-    - 'spec/integration/policy_disregards_spec.rb'
-    - 'spec/integration/remarks_spec.rb'
 
 # **** LEAVE FOR NOW ****
 RSpec/ContextWording:
