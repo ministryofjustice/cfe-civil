@@ -80,11 +80,6 @@ group :development, :test do
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
 
-  # download spreadsheets
-  gem "google_drive", ">= 3.0.7"
-  # parse spreadsheets
-  gem "roo", "~> 2.10.0"
-
   # This is needed to allow IntelliJ to run cucumber scenarios individually without producing
   # strange errors and not running the feature.
   gem "spring"
