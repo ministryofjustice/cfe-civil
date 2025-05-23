@@ -110,8 +110,6 @@ LEGAL_FRAMEWORK_API_HOST=https://legal-framework-api-staging.apps.live-1.cloud-p
 
 (There used to be an option `ALLOW_FUTURE_SUBMISSION_DATE`, but now specifying a submission_date in the future is always allowed.)
 
-However for running the integration tests, you need a few more values, including secrets - see: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
-
 ## Developer Setup
 
 1.  Ensure Ruby is installed - for example using rbenv - with the version specified in `.ruby-version`
@@ -242,23 +240,6 @@ E2E tests are run by the [CircleCI config](.circleci/config.yml) - see the `end2
 
 The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
-#### Environment variables for Integration tests (spreadsheets)
-
-Before you can run the spreadsheet integration tests you will need to set up a `.env` file in the root folder of your clone of this repo.
-
-Obtain the `.env` file from 1Password - look in the folder `LAA-Eligibility-Platform`, under item `Environment variables to run CFE ISPEC (spreadsheet) tests`. If you don't have access, see: [Tech we use - 1Password](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4323606529/Tech+we+use#1Password)
-
-Environment variables:
-
-| Name                         | Value examples & commentary                                                             |
-|------------------------------|-----------------------------------------------------------------------------------------|
-| GOOGLE_SHEETS_PRIVATE_KEY_ID | (secret)                                                                                |
-| GOOGLE_SHEETS_PRIVATE_KEY    | (secret)                                                                                |
-| GOOGLE_SHEETS_CLIENT_EMAIL   | (secret)                                                                                |
-| GOOGLE_SHEETS_CLIENT_ID      | (secret)                                                                                |
-| RUNNING_AS_GITHUB_WORKFLOW   | `TRUE` / `FALSE`                                                                        |
-| LEGAL_FRAMEWORK_API_HOST     | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
-
 #### Running RSpec tests
 
 The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
@@ -297,37 +278,6 @@ Error:
 ```
 Solution: fix your database, which should have been created with `bin/setup` - see [Developer setup](developer-setup)
 
-### Integration tests (spreadsheets)
-
-A series of spreadsheets is used to provide use cases and their expected results, and are run as part of the normal `rspec` test suite, or can be run individually with more control using the script `bin/ispec` (see below).
-
-The [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) lists all the other spreadsheets to be run, as well as contain skeleton worksheets for creating new tests scenarios.  Each spreadsheet can hold multiple worksheets, each of which is a test scenario.
-
-You can run these tests, in the standard rspec way:
-
-```sh
-bundle exec rspec --pattern=spec/integration/test_runner_spec.rb -fd
-```
-
-Each worksheet is a test scenario, which is run as an rspec example.
-
-For more fine control over the amount of verbosity, to run just one test case, or to force download the google spreadsheet,
-use `bin/ispec`, the help text of which is given below.
-
-```text
-ispec - Run integration tests
-
-options:
--h        Display this help text
--r        Force refresh of Google speadsheet to local storage
--v        Set verbosity level to 1 (default is 0: silent) - produce detailed expected and actual results
--vv       Set verbosity level to 2 - display all payloads, and actual and expected results
--w XXX    Only process worksheet named XXX
-```
-
-Each worksheet has an entry `Test Active` which can be either true or false.  If set to false, the worksheet will be skipped, unless it is
-the named worksheet using the `-w` command line switch.
-
 ### Integration tests (cucumber)
 
 We are [trialling the use of cucumber for integration tests](https://dsdmoj.atlassian.net/wiki/spaces/LE/pages/4229660824/Architectural+Design+Records#Cucumber-tests-trial-in-CFE-Partner), in particular to document features added for the "[CCQ](https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid)" client. These cucumber tests are to be found in the `features` folder.
@@ -337,6 +287,8 @@ Run them with:
 ```sh
 bundle exec cucumber
 ```
+
+The CFE Integration Tests which were held in Google Spreadsheets, have been migrated to cucumber tests. For archival purposes, the [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) lists all the spreadsheets that used to run.
 
 ### Unit tests in RSpec
 
