@@ -110,8 +110,6 @@ LEGAL_FRAMEWORK_API_HOST=https://legal-framework-api-staging.apps.live-1.cloud-p
 
 (There used to be an option `ALLOW_FUTURE_SUBMISSION_DATE`, but now specifying a submission_date in the future is always allowed.)
 
-However for running the integration tests, you need a few more values, including secrets - see: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
-
 ## Developer Setup
 
 1.  Ensure Ruby is installed - for example using rbenv - with the version specified in `.ruby-version`
@@ -225,7 +223,6 @@ futureFile: '2025-04-07.yml'
 CFE-Civil has several kinds of tests:
 
 * End to End (E2E) tests
-* Integration tests defined in Spreadsheets and using RSpec
 * Integration tests using Cucumber
 * Unit tests - using RSpec
 
@@ -240,28 +237,11 @@ The test cases are defined in the CCQ repo: https://github.com/ministryofjustice
 E2E tests are run by the [CircleCI config](.circleci/config.yml) - see the `end2end_tests` workflow.
 ### RSpec tests
 
-The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
-
-#### Environment variables for Integration tests (spreadsheets)
-
-Before you can run the spreadsheet integration tests you will need to set up a `.env` file in the root folder of your clone of this repo.
-
-Obtain the `.env` file from 1Password - look in the folder `LAA-Eligibility-Platform`, under item `Environment variables to run CFE ISPEC (spreadsheet) tests`. If you don't have access, see: [Tech we use - 1Password](https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4323606529/Tech+we+use#1Password)
-
-Environment variables:
-
-| Name                         | Value examples & commentary                                                             |
-|------------------------------|-----------------------------------------------------------------------------------------|
-| GOOGLE_SHEETS_PRIVATE_KEY_ID | (secret)                                                                                |
-| GOOGLE_SHEETS_PRIVATE_KEY    | (secret)                                                                                |
-| GOOGLE_SHEETS_CLIENT_EMAIL   | (secret)                                                                                |
-| GOOGLE_SHEETS_CLIENT_ID      | (secret)                                                                                |
-| RUNNING_AS_GITHUB_WORKFLOW   | `TRUE` / `FALSE`                                                                        |
-| LEGAL_FRAMEWORK_API_HOST     | `https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk` |
+The RSpec test suite in </spec> includes "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
 #### Running RSpec tests
 
-The RSpec test suite in </spec> includes "Integration tests (spreadsheets)" and "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
+The RSpec test suite in </spec> includes "other RSpec tests", but not "Integration tests (cucumber)" or E2E tests.
 
 Run them with:
 
@@ -279,16 +259,6 @@ bundle exec rescue rspec
 
 Error:
 ```ruby
-   An error occurred while loading ./spec/integration/policy_disregards_spec.rb.
-   Failure/Error: require File.expand_path("../config/environment", __dir__)
-
-   NoMethodError:
-     undefined method `gsub' for nil:NilClass
-```
-Solution: fix your .env file. See: [Environment variables for Integration tests (spreadsheets)](#environment-variables-for-integration-tests-spreadsheets)
-
-Error:
-```ruby
    An error occurred while loading ./spec/validators/json_validator_spec.rb.
    Failure/Error: ActiveRecord::Migration.maintain_test_schema!
 
@@ -296,37 +266,6 @@ Error:
      We could not find your database: cfe_civil_test. Which can be found in the database configuration file located at config/database.yml.
 ```
 Solution: fix your database, which should have been created with `bin/setup` - see [Developer setup](developer-setup)
-
-### Integration tests (spreadsheets)
-
-A series of spreadsheets is used to provide use cases and their expected results, and are run as part of the normal `rspec` test suite, or can be run individually with more control using the script `bin/ispec` (see below).
-
-The [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) lists all the other spreadsheets to be run, as well as contain skeleton worksheets for creating new tests scenarios.  Each spreadsheet can hold multiple worksheets, each of which is a test scenario.
-
-You can run these tests, in the standard rspec way:
-
-```sh
-bundle exec rspec --pattern=spec/integration/test_runner_spec.rb -fd
-```
-
-Each worksheet is a test scenario, which is run as an rspec example.
-
-For more fine control over the amount of verbosity, to run just one test case, or to force download the google spreadsheet,
-use `bin/ispec`, the help text of which is given below.
-
-```text
-ispec - Run integration tests
-
-options:
--h        Display this help text
--r        Force refresh of Google speadsheet to local storage
--v        Set verbosity level to 1 (default is 0: silent) - produce detailed expected and actual results
--vv       Set verbosity level to 2 - display all payloads, and actual and expected results
--w XXX    Only process worksheet named XXX
-```
-
-Each worksheet has an entry `Test Active` which can be either true or false.  If set to false, the worksheet will be skipped, unless it is
-the named worksheet using the `-w` command line switch.
 
 ### Integration tests (cucumber)
 
@@ -338,6 +277,8 @@ Run them with:
 bundle exec cucumber
 ```
 
+The CFE Integration Tests which were held in Google Spreadsheets, have been migrated to cucumber tests. For archival purposes, the [Master CFE Integration Tests Spreadsheet](https://justiceuk.sharepoint.com/:x:/r/sites/laa-ccq-team/Shared%20Documents/CCQ%20%26%20CFE/CFE_%20Integration%20Tests/AAA%20-%20CFE%20Integration%20Test%20master%20spreadsheet.xlsx?d=w2c81f8026c62408596d76d39bf48ab45&csf=1&web=1&e=tgoQqk) lists all the spreadsheets that used to run (these have been converted to excel).
+
 ### Unit tests in RSpec
 
 The aim is for these to be "unit test" style - i.e. numerous tests that cover the detail of the functionality - the bottom level of the [test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html). See: [CFE-Civil Test pyramid](https://docs.google.com/drawings/d/1XADSXrS-wQ6GHWo8b5JLdnWEHjrR_OyX5xT2uB4_jI4/edit)
@@ -345,7 +286,7 @@ The aim is for these to be "unit test" style - i.e. numerous tests that cover th
 Run them with:
 
 ```sh
-bundle exec rspec --exclude-pattern=spec/integration/test_runner_spec.rb
+bundle exec rspec
 ```
 
 ## Replaying live API interactions for debugging purposes
