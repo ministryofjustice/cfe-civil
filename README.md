@@ -277,7 +277,7 @@ Run them with:
 bundle exec cucumber
 ```
 
-The CFE Integration Tests which were held in Google Spreadsheets, have been migrated to cucumber tests. For archival purposes, the [Master CFE Integration Tests Spreadsheet](https://docs.google.com/spreadsheets/d/1lkRmiqi4KpoAIxzui3hTnHddsdWgN9VquEE_Cxjy9AM/edit#gid=651307264) lists all the spreadsheets that used to run.
+The CFE Integration Tests which were held in Google Spreadsheets, have been migrated to cucumber tests. For archival purposes, the [Master CFE Integration Tests Spreadsheet](https://justiceuk.sharepoint.com/:x:/r/sites/laa-ccq-team/Shared%20Documents/CCQ%20%26%20CFE/CFE_%20Integration%20Tests/AAA%20-%20CFE%20Integration%20Test%20master%20spreadsheet.xlsx?d=w2c81f8026c62408596d76d39bf48ab45&csf=1&web=1&e=tgoQqk) lists all the spreadsheets that used to run (these have been converted to excel).
 
 ### Unit tests in RSpec
 
