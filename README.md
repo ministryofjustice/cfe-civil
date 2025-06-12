@@ -340,3 +340,11 @@ Within the `kube-secrets` k8s secret, the following keys are available:
 * sentry-dsn
 * secret-key-base
 * postgresql-postgres-password (for UAT only, as this environment has a pod running Postgres instead of an RDS instance)
+
+## port-forward-pod
+
+For the Production & Staging namespaces there is a "port-forward-pod" deployment, which forwards localhost:5432 to rds-host:5432. This allows the developer to connect to the database in the namespace, as if they were running locally, on their machine.
+
+For deployment files and for further information, please see:
+- `infrastructure/cfe-civil-production/deployment_port-forward-postgres.yaml`
+- `infrastructure/cfe-civil-staging/deployment_port-forward-postgres.yaml`
