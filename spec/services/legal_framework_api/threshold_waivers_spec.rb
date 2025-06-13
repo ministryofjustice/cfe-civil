@@ -28,8 +28,9 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
       %i[DA002 DA003 DA004 DA005].map do |code|
         {
           ccms_code: code.to_s,
-          full_s8_only: false,
-          matter_type: "Domestic abuse",
+          sca_core: false,
+          sca_related: false,
+          matter_type: "domestic abuse (DA)",
           gross_income_upper: false,
           disposable_income_upper: false,
           capital_upper: false,
@@ -44,8 +45,9 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
         proceedings: [
           {
             ccms_code: "DA001",
-            full_s8_only: false,
-            matter_type: "Domestic abuse",
+            sca_core: false,
+            sca_related: false,
+            matter_type: "domestic abuse (DA)",
             gross_income_upper: true,
             disposable_income_upper: true,
             capital_upper: true,
@@ -54,12 +56,13 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
         ] + non_waived_types + [
           {
             ccms_code: "SE014",
-            full_s8_only: false,
+            sca_core: false,
+            sca_related: false,
             client_involvement_type: "A",
             gross_income_upper: false,
             disposable_income_upper: false,
             capital_upper: false,
-            matter_type: "Children - section 8",
+            matter_type: "section 8 children (S8)",
           },
         ],
       }
