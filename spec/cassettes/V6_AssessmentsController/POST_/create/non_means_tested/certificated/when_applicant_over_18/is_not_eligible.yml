@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: post
-    uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
+    uri: https://ap-5044-remove-full-s8-legal-framework-uat.cloud-platform.service.justice.gov.uk/threshold_waivers
     body:
       encoding: UTF-8
-      string: '{"request_id":"10a128c5-4715-4c5a-ada7-83b9191953bf","proceedings":[{"ccms_code":"SE003","client_involvement_type":"I"}]}'
+      string: '{"request_id":"f6399052-8f78-4b83-9751-b686f571fe05","proceedings":[{"ccms_code":"DA005","client_involvement_type":"Z"}]}'
     headers:
       User-Agent:
-      - Faraday v1.10.3
+      - Faraday v2.13.1
       Content-Type:
       - application/json
       Accept-Encoding:
@@ -21,11 +21,11 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Fri, 08 Dec 2023 12:37:30 GMT
+      - Fri, 13 Jun 2025 07:07:09 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
-      - '275'
+      - '290'
       Connection:
       - keep-alive
       X-Frame-Options:
@@ -41,18 +41,18 @@ http_interactions:
       Vary:
       - Accept, Origin
       Etag:
-      - W/"fd98c5ee3dab7b0047996c2e714b4ee8"
+      - W/"7b5a958981b4780da1b4cd59c607479a"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - a1f80ab203b8c581b8f128d83e123dfe
+      - 7dac75909952682aa931efb20aa134ff
       X-Runtime:
-      - '0.058834'
+      - '0.011763'
       Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
+      - max-age=31536000; includeSubDomains
     body:
       encoding: UTF-8
-      string: '{"request_id":"10a128c5-4715-4c5a-ada7-83b9191953bf","success":true,"proceedings":[{"ccms_code":"SE003","full_s8_only":false,"matter_type":"Children
-        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"I"}]}'
-  recorded_at: Fri, 08 Dec 2023 12:37:30 GMT
-recorded_with: VCR 6.2.0
+      string: '{"request_id":"f6399052-8f78-4b83-9751-b686f571fe05","success":true,"proceedings":[{"ccms_code":"DA005","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"Z"}]}'
+  recorded_at: Fri, 13 Jun 2025 07:07:09 GMT
+recorded_with: VCR 6.3.1

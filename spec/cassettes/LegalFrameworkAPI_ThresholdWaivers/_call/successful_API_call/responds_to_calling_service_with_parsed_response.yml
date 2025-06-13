@@ -2,13 +2,13 @@
 http_interactions:
 - request:
     method: post
-    uri: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk/threshold_waivers
+    uri: https://ap-5044-remove-full-s8-legal-framework-uat.cloud-platform.service.justice.gov.uk/threshold_waivers
     body:
       encoding: UTF-8
       string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","proceedings":[{"ccms_code":"DA001","client_involvement_type":"A"},{"ccms_code":"DA002","client_involvement_type":"D"},{"ccms_code":"DA003","client_involvement_type":"W"},{"ccms_code":"DA004","client_involvement_type":"I"},{"ccms_code":"DA005","client_involvement_type":"Z"},{"ccms_code":"SE014","client_involvement_type":"A"}]}'
     headers:
       User-Agent:
-      - Faraday v1.10.3
+      - Faraday v2.13.1
       Content-Type:
       - application/json
       Accept-Encoding:
@@ -21,11 +21,11 @@ http_interactions:
       message: OK
     headers:
       Date:
-      - Thu, 07 Dec 2023 09:16:43 GMT
+      - Fri, 13 Jun 2025 07:07:43 GMT
       Content-Type:
       - application/json; charset=utf-8
       Content-Length:
-      - '1197'
+      - '1321'
       Connection:
       - keep-alive
       X-Frame-Options:
@@ -41,23 +41,23 @@ http_interactions:
       Vary:
       - Accept, Origin
       Etag:
-      - W/"bac93e7297adcaeba0aefbcec39c267a"
+      - W/"af80f223ab798b7955ea60ae0bc6a7d2"
       Cache-Control:
       - max-age=0, private, must-revalidate
       X-Request-Id:
-      - deb1175374e6c1a7d51b655bd5d380a1
+      - 21e54e62286747b8cc58ed26b9ce322b
       X-Runtime:
-      - '0.033459'
+      - '0.023387'
       Strict-Transport-Security:
-      - max-age=15724800; includeSubDomains
+      - max-age=31536000; includeSubDomains
     body:
       encoding: UTF-8
-      string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","success":true,"proceedings":[{"ccms_code":"DA001","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":true,"disposable_income_upper":true,"capital_upper":true,"client_involvement_type":"A"},{"ccms_code":"DA002","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"D"},{"ccms_code":"DA003","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"W"},{"ccms_code":"DA004","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"I"},{"ccms_code":"DA005","full_s8_only":false,"matter_type":"Domestic
-        abuse","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"Z"},{"ccms_code":"SE014","full_s8_only":false,"matter_type":"Children
-        - section 8","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"A"}]}'
-  recorded_at: Thu, 07 Dec 2023 09:16:43 GMT
-recorded_with: VCR 6.2.0
+      string: '{"request_id":"e76bd31f-dd62-444f-9d7d-a731b40b7eea","success":true,"proceedings":[{"ccms_code":"DA001","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":true,"disposable_income_upper":true,"capital_upper":true,"client_involvement_type":"A"},{"ccms_code":"DA002","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"D"},{"ccms_code":"DA003","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"W"},{"ccms_code":"DA004","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"I"},{"ccms_code":"DA005","sca_core":false,"sca_related":false,"matter_type":"domestic
+        abuse (DA)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"Z"},{"ccms_code":"SE014","sca_core":false,"sca_related":false,"matter_type":"section
+        8 children (S8)","gross_income_upper":false,"disposable_income_upper":false,"capital_upper":false,"client_involvement_type":"A"}]}'
+  recorded_at: Fri, 13 Jun 2025 07:07:43 GMT
+recorded_with: VCR 6.3.1
