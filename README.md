@@ -226,7 +226,7 @@ CFE-Civil has several kinds of tests:
 * Integration tests using Cucumber
 * Unit tests - using RSpec
 
-For the purpose of each type of test, see: [CFE-Civil Test pyramid](https://docs.google.com/drawings/d/1XADSXrS-wQ6GHWo8b5JLdnWEHjrR_OyX5xT2uB4_jI4/edit)
+For the purpose of each type of test, see: [CFE-Civil Test pyramid](https://justiceuk.sharepoint.com/:i:/r/sites/LAADigitalDocumentLibrary/Shared%20Documents/1.%20Access/Information%20and%20Advice/LAA%20CCQ%20Team/Technical%20-%20beta/2023-05%20CFE-Civil%20Test%20pyramid.png?csf=1&web=1&e=uYYZTU)
 
 ### End to End (E2E) tests
 
