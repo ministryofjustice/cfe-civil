@@ -281,7 +281,7 @@ The CFE Integration Tests which were held in Google Spreadsheets, have been migr
 
 ### Unit tests in RSpec
 
-The aim is for these to be "unit test" style - i.e. numerous tests that cover the detail of the functionality - the bottom level of the [test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html). See: [CFE-Civil Test pyramid](https://docs.google.com/drawings/d/1XADSXrS-wQ6GHWo8b5JLdnWEHjrR_OyX5xT2uB4_jI4/edit)
+The aim is for these to be "unit test" style - i.e. numerous tests that cover the detail of the functionality - the bottom level of the [test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html). See: [CFE-Civil Test pyramid](https://justiceuk.sharepoint.com/:i:/r/sites/LAADigitalDocumentLibrary/Shared%20Documents/1.%20Access/Information%20and%20Advice/LAA%20CCQ%20Team/Technical%20-%20beta/2023-05%20CFE-Civil%20Test%20pyramid.png?csf=1&web=1&e=uYYZTU)
 
 Run them with:
 
