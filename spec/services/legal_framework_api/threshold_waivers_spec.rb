@@ -84,7 +84,7 @@ RSpec.describe LegalFrameworkAPI::ThresholdWaivers do
         stub_request(:post, api_endpoint).with(body: request_body, headers:).to_return(body: "xxx", status: 500)
         expect {
           described_class.new(proceeding_type_details).call
-        }.to raise_error Faraday::ServerError, "the server responded with status 500"
+        }.to raise_error Faraday::ServerError, "the server responded with status 500 for POST #{api_endpoint}"
       end
     end
 
