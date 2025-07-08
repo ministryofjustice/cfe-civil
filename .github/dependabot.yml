@@ -7,6 +7,10 @@ updates:
       # Our UAT databases are down at night - so run things at 9am on Mondays instead
       day: "monday"
       time: "09:00"
+    groups:
+      bundler:
+        patterns:
+          - "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
