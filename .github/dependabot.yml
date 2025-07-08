@@ -7,6 +7,15 @@ updates:
       # Our UAT databases are down at night - so run things at 9am on Mondays instead
       day: "monday"
       time: "09:00"
+    groups:
+      rubocop:
+        patterns:
+          - "rubocop*"
+      bundler:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "rubocop*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
