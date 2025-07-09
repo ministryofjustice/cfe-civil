@@ -256,7 +256,18 @@ module V6
 
       context "with dependants" do
         context "with no income for dependants" do
-          let(:params) { { dependants: dependant_params.map { _1.except(:income) } } }
+          let(:params) do
+            {
+              dependants: dependant_params.map { _1.except(:income) },
+              self_employment_details: [{ client_reference: "12345",
+                                          income: {
+                                            gross: 480,
+                                            tax: -263,
+                                            national_insurance: -34,
+                                            frequency: "monthly",
+                                          } }],
+            }
+          end
 
           it "creates a log record" do
             expect(parsed_response.dig(:result_summary, :disposable_income)).to include(dependant_allowance_under_16: 615.28, dependant_allowance_over_16: 307.64)
