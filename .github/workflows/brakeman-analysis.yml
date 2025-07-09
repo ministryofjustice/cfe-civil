@@ -9,30 +9,20 @@ jobs:
     name: Brakeman Scan
     runs-on: ubuntu-latest
     steps:
-    # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    # Customize the ruby version depending on your needs
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: '3.1'
-
-    - name: Setup Brakeman
-      env:
-        BRAKEMAN_VERSION: '5.1.1' # SARIF support is provided in Brakeman version 4.10+
-      run: |
-        gem install brakeman --version $BRAKEMAN_VERSION
-
-    # Execute Brakeman CLI and generate a SARIF output with the security issues identified during the analysis
-    - name: Scan
-      continue-on-error: true
-      run: |
-        brakeman -f sarif -o output.sarif.json .
-
-    # Upload the SARIF file generated in the previous step
-    - name: Upload SARIF
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: output.sarif.json
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #--v4.2.2
+      - name: Set up ruby # this should inherit from your .ruby-version
+        uses: ruby/setup-ruby@c95ae3725f6ebdd095f2bd19caed7ebc14435ba5 #--v1.243.0
+      - name: Setup Brakeman
+        run: |
+          gem install brakeman
+      # Execute Brakeman CLI and generate a SARIF output with the security issues identified during the analysis
+      - name: Scan
+        continue-on-error: true
+        run: |
+          brakeman -f sarif -o output.sarif.json .
+      # Upload the SARIF file generated in the previous step
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@45775bd8235c68ba998cffa5171334d58593da47 #--v3.28.15
+        with:
+          sarif_file: output.sarif.json
