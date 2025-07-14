@@ -225,7 +225,7 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.12.2)
-    json-schema (5.1.1)
+    json-schema (5.2.1)
       addressable (~> 2.8)
       bigdecimal (~> 3.1)
     jwt (2.10.1)
@@ -309,7 +309,7 @@ GEM
     psych (5.2.6)
       date
       stringio
-    public_suffix (6.0.1)
+    public_suffix (6.0.2)
     puma (6.6.0)
       nio4r (~> 2.0)
     racc (1.8.1)
@@ -475,7 +475,7 @@ GEM
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2025.2)
       tzinfo (>= 1.0.0)
-    undercover (0.7.2)
+    undercover (0.7.4)
       base64
       bigdecimal
       imagen (>= 0.2.0)
@@ -531,7 +531,7 @@ DEPENDENCIES
   guard-rubocop
   guard-shell
   hashdiff
-  json-schema (~> 5.1.1)
+  json-schema (~> 5.2.1)
   listen (>= 3.0.5, < 3.10)
   lograge
   net-imap (>= 0.5.6)
