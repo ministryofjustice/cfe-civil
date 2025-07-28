@@ -496,18 +496,6 @@ workflows:
           filters:
             branches:
               only: main
-      - deploy_infrastructure:
-          name: deploy_infrastructure_staging
-          context: cfe-civil-staging
-          filters:
-            branches:
-              only: main
-      - deploy_infrastructure:
-          name: deploy_infrastructure_production
-          context: cfe-civil-production
-          filters:
-            branches:
-              only: main
       - create_helm_cache:
           filters:
             branches:
