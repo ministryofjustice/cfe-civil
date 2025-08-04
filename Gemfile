@@ -7,7 +7,7 @@ ruby "3.3.4"
 gem "rails", "> 7.2", "< 8.1"
 # Use postgresql as the database for Active Record
 # pg 1.5 introduces a deprecation warning that hasn't been fixed in Rails yet
-gem "pg", "< 1.6"
+gem "pg", "< 1.7"
 # Use Puma as the app server
 gem "puma", "~> 6.6"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
