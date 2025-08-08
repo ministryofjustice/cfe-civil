@@ -1,7 +1,7 @@
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.3.4
+ARG RUBY_VERSION=3.4.4
 
-FROM ruby:$RUBY_VERSION-alpine3.20 as base
+FROM ruby:$RUBY_VERSION-alpine3.21 AS base
 # Chose alpine for the lower image size (lower attack surface and start-up speed):
 # ruby:3.2.2-alpine3.18 is 80MB
 # ruby:3.2.2-slim is 205MB (debian-based)
@@ -9,14 +9,15 @@ FROM ruby:$RUBY_VERSION-alpine3.20 as base
 #
 # Throw-away build stage to reduce size of final image
 #
-FROM base as build
+FROM base AS build
 
-ENV RAILS_ENV production
+ENV RAILS_ENV=production
 
 RUN set -ex
 
 # Install packages needed to build gems
-RUN apk --no-cache add build-base \
+RUN apk --no-cache add build-base  \
+                       yaml-dev \
                        postgresql-dev
 
 # Install application gems
@@ -56,7 +57,7 @@ ENV BUILD_DATE=${BUILD_DATE}
 ENV BUILD_TAG=${BUILD_TAG}
 ENV APP_BRANCH=${APP_BRANCH}
 # allow public files to be served
-ENV RAILS_SERVE_STATIC_FILES true
+ENV RAILS_SERVE_STATIC_FILES=true
 
 # Rails entrypoint (can be overwritten at runtime)
 CMD ["docker/run"]

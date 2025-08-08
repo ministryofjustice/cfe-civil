@@ -31,7 +31,7 @@ module Decorators
         it "generates message and backtrace in the errors array" do
           error_message = decorator[:errors].first
           expect(error_message).to match(/My runtime error message/)
-          expect(error_message).to match(/decorator_spec.rb:\d{2,4}:in `generate_error'/)
+          expect(error_message).to match(/decorator_spec.rb:\d{2,4}:in.*generate_error'/)
         end
 
         def generate_error
