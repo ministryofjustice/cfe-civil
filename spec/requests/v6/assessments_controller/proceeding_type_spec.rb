@@ -31,7 +31,7 @@ module V6
         let(:level_of_help) { "certificated" }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -46,7 +46,7 @@ module V6
         let(:level_of_help) { "certificated" }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -63,7 +63,7 @@ module V6
             let(:level_of_help) { "certificated" }
 
             it "returns error" do
-              expect(response).to have_http_status(:unprocessable_entity)
+              expect(response).to have_http_status(:unprocessable_content)
             end
 
             it "returns error JSON" do
@@ -76,7 +76,7 @@ module V6
             let(:level_of_help) { "controlled" }
 
             it "returns error" do
-              expect(response).to have_http_status(:unprocessable_entity)
+              expect(response).to have_http_status(:unprocessable_content)
             end
 
             it "returns error JSON" do
