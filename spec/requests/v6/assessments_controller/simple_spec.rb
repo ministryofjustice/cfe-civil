@@ -1735,7 +1735,7 @@ module V6
           let(:params) { { assessment: { client_reference_id: client_ref } } }
 
           it "returns http error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "redacts the client reference" do

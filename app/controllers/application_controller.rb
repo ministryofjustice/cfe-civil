@@ -20,7 +20,7 @@ class ApplicationController < ActionController::API
 
   def render_unprocessable(message)
     messages = Array.wrap(message)
-    render json: { success: false, errors: messages }, status: :unprocessable_entity
+    render json: { success: false, errors: messages }, status: :unprocessable_content
   end
 
   def render_success
