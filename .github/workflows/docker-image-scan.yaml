@@ -11,7 +11,7 @@ jobs:
     name: Scan docker image in job
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build docker image
         run: |
