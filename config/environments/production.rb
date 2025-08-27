@@ -37,6 +37,9 @@ Rails.application.configure do
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
 
+  # enable lograge in production builds so that parameters are not logged into MOJ wide system logs
+  config.lograge.enabled = true
+
   # Prevent health checks from clogging up the logs.
   config.silence_healthcheck_path = "/ping"
 
