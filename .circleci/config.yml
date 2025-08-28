@@ -291,13 +291,6 @@ jobs:
           docker_tag_prefix: staging
       - notify_slack_on_failure
 
-  build_and_push_staging_mtr:
-    executor: aws-ecr/default
-    steps:
-      - build_and_push:
-          docker_tag_prefix: staging_mtr
-      - notify_slack_on_failure
-
   build_and_push_production:
     executor: aws-ecr/default
     steps:
@@ -337,25 +330,6 @@ jobs:
                           --install --wait \
                           --namespace=${K8S_NAMESPACE} \
                           --values ./deploy/helm/values/staging.yaml \
-                          --set image.repository="$ECR_ENDPOINT" \
-                          --set image.tag="${CIRCLE_SHA1}"
-      - notify_slack_on_failure
-
-  deploy_staging_mtr:
-    executor: cloud-platform-executor
-    steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - *authenticate_k8s
-      - *restore_helm_cache
-      - run:
-          name: Helm deploy CFE Civil to Staging MTR
-          command: |
-            helm upgrade cfe-civil ./deploy/helm/. \
-                          --install --wait \
-                          --namespace=${K8S_NAMESPACE} \
-                          --values ./deploy/helm/values/staging-mtr.yaml \
                           --set image.repository="$ECR_ENDPOINT" \
                           --set image.tag="${CIRCLE_SHA1}"
       - notify_slack_on_failure
@@ -473,12 +447,6 @@ workflows:
           filters:
             branches:
               only: main
-      - build_and_push_staging_mtr:
-          context: cfe-civil-staging-mtr
-          filters:
-            branches:
-              only:
-                - main
       - end2end_tests:
           filters:
             branches:
@@ -515,15 +483,6 @@ workflows:
           context: cfe-civil-staging
           requires:
             - end2end_tests
-          filters:
-            branches:
-              only:
-                - main
-      - deploy_staging_mtr:
-          context: cfe-civil-staging-mtr
-          requires:
-            - end2end_tests
-            - build_and_push_staging_mtr
           filters:
             branches:
               only:
@@ -571,12 +530,6 @@ workflows:
           filters:
             branches:
               only: main
-      - build_and_push_staging_mtr:
-          context: cfe-civil-staging-mtr
-          filters:
-            branches:
-              only:
-                - main
       - end2end_tests:
           filters:
             branches:
@@ -603,7 +556,6 @@ workflows:
             - unit_tests
             - integration_tests
             - deploy_staging
-            - deploy_staging_mtr
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
@@ -612,15 +564,6 @@ workflows:
           context: cfe-civil-staging
           requires:
             - end2end_tests
-          filters:
-            branches:
-              only:
-                - main
-      - deploy_staging_mtr:
-          context: cfe-civil-staging-mtr
-          requires:
-            - end2end_tests
-            - build_and_push_staging_mtr
           filters:
             branches:
               only:
