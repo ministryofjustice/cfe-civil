@@ -10,10 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_03_26_074735) do
+ActiveRecord::Schema[8.0].define(version: 2024_03_26_074735) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
-  enable_extension "plpgsql"
 
   create_table "request_logs", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "http_status", null: false
@@ -33,5 +33,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_03_26_074735) do
     t.index ["dwp_code"], name: "index_state_benefit_types_on_dwp_code", unique: true
     t.index ["label"], name: "index_state_benefit_types_on_label", unique: true
   end
-
 end

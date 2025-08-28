@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby "3.3.4"
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem "rails", "> 7.2", "< 8.1"
+gem "rails"
 # Use postgresql as the database for Active Record
 # pg 1.5 introduces a deprecation warning that hasn't been fixed in Rails yet
 gem "pg", "< 1.7"
