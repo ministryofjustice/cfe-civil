@@ -1,23 +1,17 @@
-https://dsdmoj.atlassian.net/browse/EL-XXXX
+## What
 
-<!-- Describe *what* you did and *why* -->
+[Link to story](https://dsdmoj.atlassian.net/browse/AP-XXX)
 
----
+Describe what you did and why.
 
-## Checklists
+## Checklist
 
-Author: (before you ask people to review this PR)
+Before you ask people to review this PR:
 
-- [ ] Diff - review it, ensuring it contains only expected changes
-- [ ] Whitespace changes - avoid if possible, because they make diffs harder to read and conflicts more likely
-- [ ] Changelog - add a line, if it meets the criteria
-- [ ] Secrets - no secrets should be added
-- [ ] Commit messages - say *why* the change was made
-- [ ] PR description - summarizes *what* changed and *why*, with a JIRA ticket ID
-- [ ] Tests pass - on CircleCI
-- [ ] Conflicts - resolve if Github reports them. e.g. with `git rebase main`
-
-Reviewers remember:
-
-- [ ] Jira ticket criteria are met
-- [ ] Migrations - test migration and rollback: `rake db:migrate && rake db:rollback`
+- Tests and rubocop should be passing: `bundle exec rake`.
+- Github should not be reporting conflicts; you should have recently run `git rebase main`.
+- The standards in the [Git Workflow document on Confluence](https://dsdmoj.atlassian.net/wiki/spaces/ATPPB/pages/4602855954/Git+Workflow) should be followed.
+- There should be no unnecessary whitespace changes. These make diffs harder to read and conflicts more likely.
+- The PR description should say what you changed and why, with a link to the JIRA story.
+- You should have looked at the diff against main and ensured that nothing unexpected is included in your changes.
+- You should have checked that the commit messages say why the change was made.
