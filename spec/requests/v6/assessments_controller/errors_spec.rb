@@ -86,7 +86,7 @@ module V6
         let(:params) { {} }
 
         it "has a correct error status" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns an error" do
@@ -205,7 +205,7 @@ module V6
           end
 
           it "errors" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "contains the error" do
@@ -257,7 +257,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -271,7 +271,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -289,7 +289,7 @@ module V6
           end
 
           it "errors" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "contains the error" do
@@ -391,7 +391,7 @@ module V6
           end
 
           it "doesnt crash" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON for '#/cash_transactions/outgoings/0/payments/0'" do
@@ -403,7 +403,7 @@ module V6
           let(:params) { { cash_transactions: { income: {}, outgoings: [] } } }
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -466,7 +466,7 @@ module V6
         let(:params) { { assessment: { client_reference_id: "3000-01-01" } } }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -478,7 +478,7 @@ module V6
         let(:params) { { proceeding_types: [{ ccms_code: "ZZ", client_involvement_type: "A" }] } }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -492,7 +492,7 @@ module V6
         let(:params) { { proceeding_types: [] } }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -506,7 +506,7 @@ module V6
         let(:params) { {} }
 
         it "returns error" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "returns error JSON" do
@@ -523,7 +523,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -540,7 +540,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -586,7 +586,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -603,7 +603,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -624,7 +624,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -644,7 +644,7 @@ module V6
           end
 
           it "returns error" do
-            expect(response).to have_http_status(:unprocessable_entity)
+            expect(response).to have_http_status(:unprocessable_content)
           end
 
           it "returns error JSON" do
@@ -672,7 +672,7 @@ module V6
         end
 
         it "errors" do
-          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response).to have_http_status(:unprocessable_content)
         end
 
         it "contains the error" do

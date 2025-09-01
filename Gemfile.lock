@@ -544,7 +544,7 @@ DEPENDENCIES
   pry-stack_explorer
   puma (~> 6.6)
   rack-mini-profiler
-  rails (> 7.2, < 8.1)
+  rails
   rspec-rails (~> 8.0)
   rspec_junit_formatter
   rswag-api
