@@ -23,8 +23,6 @@ unless ENV["NOCOVERAGE"]
   SimpleCov.start do
     add_filter "spec/"
     add_filter "config/initializers/sentry.rb"
-    add_filter "app/mailers/exception_alert_mailer.rb"
-    add_filter "app/lib/exception_notifier/templated_notifier.rb"
     add_filter "app/services/request_rerunner.rb"
     add_filter "app/reports/assessment_stats.rb"
 

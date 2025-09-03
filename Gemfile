@@ -56,9 +56,6 @@ gem "net-smtp"
 gem "rswag-api"
 gem "rswag-ui"
 
-gem "exception_notification"
-gem "govuk_notify_rails", "~> 3.0.0"
-
 # needed for diffing in re-runner tool
 gem "hashdiff"
 

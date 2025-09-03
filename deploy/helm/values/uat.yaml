@@ -41,10 +41,6 @@ postgresql:
 sentry:
   enabled: enabled
 
-notifications:
-  errorMessageTemplateId: 55ec1022-736a-40bf-b3f4-0fe85de17525
-  recipient: stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
-
 legalFrameworkApi:
   host: http://legal-framework-api.legal-framework-api-staging.svc.cluster.local
 

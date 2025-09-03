@@ -46,13 +46,6 @@ Rails.application.configure do
   # Don't log any deprecations.
   config.active_support.report_deprecations = false
 
-  unless ENV["SENTRY"]&.casecmp("enabled")&.zero?
-    # Detect unhandled exceptions and, using grouping to avoid notification overload in the case
-    # of large numbers of similar errors, use app/lib/exception_notifider/templated_notifier.rb to
-    # communicate them
-    config.middleware.use ExceptionNotification::Rack, templated: {}, error_grouping: true
-  end
-
   # Replace the default in-process memory cache store with a durable alternative.
   # config.cache_store = :mem_cache_store
 

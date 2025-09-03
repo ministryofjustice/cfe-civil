@@ -59,13 +59,4 @@ env:
     value: {{ .Values.legalFrameworkApi.host }}
   - name: SENTRY
     value: {{ .Values.sentry.enabled | quote }}
-  - name: NOTIFICATIONS_API_KEY
-    valueFrom:
-      secretKeyRef:
-        name: cfe-civil-secrets
-        key: notificationsApiKey
-  - name: NOTIFICATIONS_ERROR_MESSAGE_TEMPLATE_ID
-    value: {{ .Values.notifications.errorMessageTemplateId }}
-  - name: NOTIFICATIONS_RECIPIENT
-    value: {{ .Values.notifications.recipient }}
 {{- end }}
