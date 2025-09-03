@@ -38,13 +38,13 @@ env:
   - name: SECRET_KEY_BASE
     valueFrom:
       secretKeyRef:
-        name: kube-secrets
-        key: secret-key-base
+        name: cfe-civil-secrets
+        key: secretKeyBase
   - name: SENTRY_DSN
     valueFrom:
       secretKeyRef:
-        name: kube-secrets
-        key: sentry-dsn
+        name: cfe-civil-secrets
+        key: sentryDsn
   - name: RAILS_ENV
     value: production
   - name: RUBY_YJIT_ENABLE
@@ -62,8 +62,8 @@ env:
   - name: NOTIFICATIONS_API_KEY
     valueFrom:
       secretKeyRef:
-        name: kube-secrets
-        key: notifications-api-key
+        name: cfe-civil-secrets
+        key: notificationsApiKey
   - name: NOTIFICATIONS_ERROR_MESSAGE_TEMPLATE_ID
     value: {{ .Values.notifications.errorMessageTemplateId }}
   - name: NOTIFICATIONS_RECIPIENT

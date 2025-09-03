@@ -330,17 +330,6 @@ This app is deployed on Cloud Platform by CircleCI, using the Helm chart in depl
 
 [CircleCI pipeline for cfe-civil](https://app.circleci.com/pipelines/github/ministryofjustice/cfe-civil)
 
-## Kubernetes secrets
-
-Secrets are sourced from 1Password and deployed into an environment/namespace by manually running `kubectl create secret` commands. See: https://dsdmoj.atlassian.net/wiki/spaces/EPT/pages/4356833911/Secrets
-
-Within the `kube-secrets` k8s secret, the following keys are available:
-
-* notifications-api-key
-* sentry-dsn
-* secret-key-base
-* postgresql-postgres-password (for UAT only, as this environment has a pod running Postgres instead of an RDS instance)
-
 ## port-forward-pod
 
 For the Production & Staging namespaces there is a "port-forward-pod" deployment, which forwards localhost:5432 to rds-host:5432. This allows the developer to connect to the database in the namespace, as if they were running locally, on their machine.
