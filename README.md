@@ -329,11 +329,3 @@ d) new value (only for change and addition)
 This app is deployed on Cloud Platform by CircleCI, using the Helm chart in deploy/helm.
 
 [CircleCI pipeline for cfe-civil](https://app.circleci.com/pipelines/github/ministryofjustice/cfe-civil)
-
-## port-forward-pod
-
-For the Production & Staging namespaces there is a "port-forward-pod" deployment, which forwards localhost:5432 to rds-host:5432. This allows the developer to connect to the database in the namespace, as if they were running locally, on their machine.
-
-For deployment files and for further information, please see:
-- `infrastructure/cfe-civil-production/deployment_port-forward-postgres.yaml`
-- `infrastructure/cfe-civil-staging/deployment_port-forward-postgres.yaml`
