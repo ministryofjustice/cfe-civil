@@ -35,9 +35,5 @@ legalFrameworkApi:
 sentry:
   enabled: enabled
 
-notifications:
-  errorMessageTemplateId: e6d49396-455c-4aca-aab0-16f8411e76f5
-  recipient: stephen.p.dicks@digital.justice.gov.uk,ripan.kumar@digital.justice.gov.uk
-
 threshold:
   futureFile: ''
