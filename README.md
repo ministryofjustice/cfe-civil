@@ -316,7 +316,7 @@ on a local machine
 
 3) RAILS_ENV=remote_database SECRET_KEY_BASE=anything rake rerun:requests
 
-This currently takes around 5 minutes to run with 7500 requests from staging
+This currently takes around 5 minutes to run with 7500 requests from staging.
 The output format of the diffs is 4 fields:
 
 a) +/-/~ addition, removal, change
