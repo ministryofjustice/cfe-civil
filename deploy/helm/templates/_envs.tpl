@@ -6,9 +6,15 @@ Environment variables for web and worker containers
 env:
   {{ if .Values.postgresql.enabled }}
   - name: POSTGRES_USER
-    value: {{ .Values.postgresql.auth.username }}
+    valueFrom:
+      secretKeyRef:
+        name: cfe-civil-secrets
+        key: postgresqlUsername
   - name: POSTGRES_PASSWORD
-    value: {{ .Values.postgresql.auth.password }}
+    valueFrom:
+      secretKeyRef:
+        name: cfe-civil-secrets
+        key: postgresqlPassword
   - name: POSTGRES_HOST
     value: {{ printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" }}
   - name: POSTGRES_DATABASE

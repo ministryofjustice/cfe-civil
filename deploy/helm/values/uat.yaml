@@ -32,7 +32,9 @@ postgresql:
   auth:
     enablePostgresUser: false
     username: cfe_civil_user
-    password: cfe_civil_pass
+    existingSecret: cfe-civil-secrets
+    secretKeys:
+      userPasswordKey: postgresqlPassword
     database: cfe_civil
   primary:
     persistence:
