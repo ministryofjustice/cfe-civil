@@ -418,7 +418,7 @@ workflows:
             - check_swagger
             - unit_tests
             - integration_tests
-            - end2end_tests
+            - build_and_push_uat
           filters:
             branches:
               ignore: main
@@ -475,25 +475,24 @@ workflows:
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
-            - end2end_tests
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
           filters:
             branches:
               only: main
       - deploy_staging:
           context: cfe-civil-staging
           requires:
-            - end2end_tests
+            - deploy_main_uat
           filters:
             branches:
               only:
                 - main
       - build_and_push_production:
           requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
-            - end2end_tests
+            - deploy_staging
           filters:
             branches:
               only: main
@@ -551,19 +550,18 @@ workflows:
               only: main
       - build_and_push_production:
           requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
             - deploy_staging
       - deploy_main_uat:
           context: cfe-civil-uat
           requires:
-            - end2end_tests
+            - lint_checks
+            - check_swagger
+            - unit_tests
+            - integration_tests
       - deploy_staging:
           context: cfe-civil-staging
           requires:
-            - end2end_tests
+            - deploy_main_uat
           filters:
             branches:
               only:
@@ -571,7 +569,6 @@ workflows:
       - deploy_production:
           context: cfe-civil-production
           requires:
-            - end2end_tests
             - build_and_push_production
           filters:
             branches:
