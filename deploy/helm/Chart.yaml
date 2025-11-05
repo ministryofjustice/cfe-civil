@@ -21,9 +21,3 @@ version: 0.2.2
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 appVersion: 1.16.2
-
-dependencies:
-  - name: postgresql
-    version: ^11.0.0
-    condition: postgresql.enabled
-    repository: https://charts.bitnami.com/bitnami
