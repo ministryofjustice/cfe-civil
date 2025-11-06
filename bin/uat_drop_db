@@ -37,10 +37,10 @@ function _uat_drop_db() {
   fi
 
   echo 'Retrieve RDS credentials'
-  DB_HOST=$(kubectl get secret rds-instance-output -o jsonpath="{.data.rds_instance_address}" | base64 --decode)
-  DB_NAME=$(kubectl get secret rds-instance-output -o jsonpath="{.data.database_name}" | base64 --decode)
-  DB_USER=$(kubectl get secret rds-instance-output -o jsonpath="{.data.database_username}" | base64 --decode)
-  DB_PWD=$(kubectl get secret rds-instance-output -o jsonpath="{.data.database_password}" | base64 --decode)
+  DB_HOST=$(kubectl get secret rds-postgresql-instance-output -o jsonpath="{.data.rds_instance_address}" | base64 --decode)
+  DB_NAME=$(kubectl get secret rds-postgresql-instance-output -o jsonpath="{.data.database_name}" | base64 --decode)
+  DB_USER=$(kubectl get secret rds-postgresql-instance-output -o jsonpath="{.data.database_username}" | base64 --decode)
+  DB_PWD=$(kubectl get secret rds-postgresql-instance-output -o jsonpath="{.data.database_password}" | base64 --decode)
 
   case "$1" in
     rdsadmin | template0 | template1 | postgres | main | $DB_NAME)
@@ -51,70 +51,14 @@ function _uat_drop_db() {
       ;;
   esac
 
-  echo "Checking if port-forward-pod exists"
-  FORWADING_POD=$(kubectl get pods | grep -m4 port-forward-pod | head -n1 | cut -d' ' -f 1)
-  if [[ -z "$FORWADING_POD" ]]; then
-    echo 'Creating new port-forward-pod...'
-    kubectl run port-forward-pod \
-      --image=ministryofjustice/port-forward \
-      --port=5432 \
-      --env="REMOTE_HOST=${DB_HOST}" \
-      --env="LOCAL_PORT=5432" \
-      --env="REMOTE_PORT=5432"
+  GET_QUERY="SELECT datname FROM pg_database WHERE datname = '${UAT_RELEASE}'"
+  DATABASE_TO_DROP=$(psql postgres://"${DB_USER}":"${DB_PWD}"@localhost:5433/"${DB_NAME}" -qtc "${GET_QUERY};" | xargs) # xargs trims the spaces around the psql output of names
+  if [[ -z "${DATABASE_TO_DROP}" ]]; then
+    echo "DATABASE NOT FOUND \"${UAT_RELEASE}\"!"
+    break
+  else
+    echo "DATABASE FOUND \"${DATABASE_TO_DROP}\"!"
   fi
-
-  echo 'Waiting for port-forward-pod to be ready...'
-  kubectl wait --for=condition=ready pod port-forward-pod --timeout=32s
-
-  echo 'Starting port-forwarding as a background job'
-  kubectl port-forward port-forward-pod 5433:5432 &
-
-  # Check App/web pods deleted, as open connections to DB can cause problems
-  APP_POD=$(kubectl get pods | grep -m4 "${UAT_RELEASE}" | head -n1 | cut -d' ' -f 1)
-  if [[ ! -z "$APP_POD" ]]; then
-    echo "Terminating pod named ${UAT_RELEASE}..."
-    kubectl wait --for=delete pod/"${UAT_RELEASE}" --timeout=32s
-  fi
-
-  echo 'Sending RDS delete command...'
-  for i in {1..3}; do
-    sleep 3
-    echo "Attempt: $i"
-    GET_QUERY="SELECT datname FROM pg_database WHERE datname = '${UAT_RELEASE}'"
-    DATABASE_TO_DROP=$(psql postgres://"${DB_USER}":"${DB_PWD}"@localhost:5433/"${DB_NAME}" -qtc "${GET_QUERY};" | xargs) # xargs trims the spaces around the psql output of names
-    if [[ -z "${DATABASE_TO_DROP}" ]]; then
-      echo "DATABASE NOT FOUND \"${UAT_RELEASE}\"!"
-      break
-    else
-      echo "DATABASE FOUND \"${DATABASE_TO_DROP}\"!"
-    fi
-
-    ALTER_CONN_LIMIT="ALTER DATABASE \"${DATABASE_TO_DROP}\" CONNECTION LIMIT 0;"
-    ALTER_CONNECTIONS_OUTPUT=$(psql postgres://"${DB_USER}":"${DB_PWD}"@localhost:5433/"${DB_NAME}" -qtc "${ALTER_CONN_LIMIT};")
-
-    CLOSE_CONN_QUERY="SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${DATABASE_TO_DROP}'"
-    CLOSE_CONNECTIONS_OUTPUT=$(psql postgres://"${DB_USER}":"${DB_PWD}"@localhost:5433/"${DB_NAME}" -qtc "${CLOSE_CONN_QUERY};" | xargs)
-
-    DROP_DATABASE_CMD="DROP DATABASE \"${DATABASE_TO_DROP}\";"
-    DROP_DATABASE_OUTPUT=$(psql postgres://"${DB_USER}":"${DB_PWD}"@localhost:5433/"${DB_NAME}" -c "${DROP_DATABASE_CMD};")
-
-    DROPPED=$(echo "$DROP_DATABASE_OUTPUT" | grep -c 'DROP DATABASE')
-    if [[ $DROPPED == 1 ]]
-    then
-      DROP_DATABASE_RESULT="Dropped database ${DATABASE_TO_DROP}!"
-    else
-      DROP_DATABASE_RESULT="UAT database, ${DATABASE_TO_DROP} not dropped!"
-    fi
-
-    echo "drop-commmand-result=${DROP_DATABASE_RESULT}" >> $GITHUB_OUTPUT
-    [[ $DROPPED == 1 ]] && break
-  done
-
-  echo 'Killing port-forwarding background job'
-  kill $!
-
-  echo 'Deleting port-forwarding pod'
-  kubectl delete pod port-forward-pod --wait=false
 }
 
 _uat_drop_db $@
