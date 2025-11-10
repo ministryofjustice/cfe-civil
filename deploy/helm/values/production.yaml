@@ -26,9 +26,6 @@ ingress:
 deploy:
   host: cfe-civil.cloud-platform.service.justice.gov.uk
 
-postgresql:
-  enabled: false
-
 legalFrameworkApi:
   host: http://legal-framework-api.legal-framework-api-production.svc.cluster.local
 
@@ -37,3 +34,7 @@ sentry:
 
 threshold:
   futureFile: ''
+
+branch_builder:
+  enabled: false
+  database_name: null

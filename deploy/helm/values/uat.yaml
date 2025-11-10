@@ -20,26 +20,6 @@ ingress:
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
 
-postgresql:
-  enabled: true
-  resources:
-    limits:
-      cpu: 250m
-      memory: 256Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
-  auth:
-    enablePostgresUser: false
-    username: cfe_civil_user
-    existingSecret: cfe-civil-secrets
-    secretKeys:
-      userPasswordKey: postgresqlPassword
-    database: cfe_civil
-  primary:
-    persistence:
-      enabled: false
-
 sentry:
   enabled: enabled
 
@@ -48,3 +28,8 @@ legalFrameworkApi:
 
 threshold:
   futureFile: ''
+
+# database_name and redirect_uri value must be set by `helm --set` command when enabled
+branch_builder:
+  enabled: true
+  database_name: null

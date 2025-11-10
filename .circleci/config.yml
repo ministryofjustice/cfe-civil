@@ -142,18 +142,6 @@ references:
       paths:
         - vendor/bundle
 
-  restore_helm_cache: &restore_helm_cache
-    restore_cache:
-      keys:
-        - cfe-civil-helm-{{ checksum "deploy/helm/Chart.lock" }}
-        - cfe-civil-helm
-
-  save_helm_cache: &save_helm_cache
-    save_cache:
-      key: cfe-civil-helm-{{ checksum "deploy/helm/Chart.lock" }}
-      paths:
-        - deploy/helm/charts
-
   setup_database: &setup_database
     run:
       name: Database Setup
@@ -172,20 +160,6 @@ jobs:
       - run:
           name: Run Rubocop
           command:  bundle exec rubocop
-      - notify_slack_on_failure
-
-  create_helm_cache:
-    executor: cloud-platform-executor
-    steps:
-      - checkout
-      - *restore_helm_cache
-      - run:
-          name: Grab postgres chart from bitnami
-          working_directory: deploy/helm
-          command: |
-            helm repo add bitnami https://charts.bitnami.com/bitnami
-            helm dependency build
-      - *save_helm_cache
       - notify_slack_on_failure
 
   end2end_tests:
@@ -305,7 +279,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *restore_helm_cache
       - run:
           name: Helm deployment to UAT
           command: |
@@ -322,7 +295,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *restore_helm_cache
       - run:
           name: Helm deploy CFE Civil to Staging
           command: |
@@ -341,7 +313,6 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - *authenticate_k8s
-      - *restore_helm_cache
       - run:
           name: Helm deploy CFE Civil to Production
           command: |
@@ -387,17 +358,12 @@ workflows:
           filters:
             branches:
               ignore: main
-      - create_helm_cache:
-          filters:
-            branches:
-              ignore: main
       - end2end_tests:
           filters:
             branches:
               ignore: main
           requires:
             - build_and_push_uat
-            - create_helm_cache
       - integration_tests:
           filters:
             branches:
@@ -453,7 +419,6 @@ workflows:
               only: main
           requires:
             - build_and_push_staging
-            - create_helm_cache
       - integration_tests:
           filters:
             branches:
@@ -461,10 +426,6 @@ workflows:
       - deploy_infrastructure:
           name: deploy_infrastructure_uat
           context: cfe-civil-uat
-          filters:
-            branches:
-              only: main
-      - create_helm_cache:
           filters:
             branches:
               only: main
@@ -535,12 +496,7 @@ workflows:
               only: main
           requires:
             - build_and_push_staging
-            - create_helm_cache
       - integration_tests:
-          filters:
-            branches:
-              only: main
-      - create_helm_cache:
           filters:
             branches:
               only: main
