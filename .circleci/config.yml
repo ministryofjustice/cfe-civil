@@ -37,7 +37,7 @@ executors:
           - PGUSER=user
           - TZ: "Europe/London"
           - RUBY_YJIT_ENABLE: "1"
-      - image: cimg/postgres:17.5
+      - image: cimg/postgres:18.0
         environment:
           - POSTGRES_USER=user
           - POSTGRES_DB=cfe_civil_test
