@@ -90,7 +90,7 @@ group :development do
   gem "guard-rspec"
   gem "guard-rubocop"
   gem "guard-shell"
-  gem "listen", ">= 3.0.5", "< 3.10"
+  gem "listen", ">= 3.0.5", "< 3.11"
   gem "pry-rescue"
   gem "pry-stack_explorer"
 end
