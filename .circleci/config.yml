@@ -18,19 +18,19 @@ executors:
           GITHUB_TEAM_NAME_SLUG: laa-estimate-eligibility
   linting-executor:
     docker:
-      - image: cimg/ruby:3.4.7-node
+      - image: cimg/ruby:4.0.1-node
         environment:
           - RAILS_ENV=test
           - TZ: "Europe/London"
   notification-executor:
     docker:
-      - image: 'cibuilds/base:latest'
+      - image: "cibuilds/base:latest"
         environment:
           TERM: dumb
     resource_class: small
   test-executor:
     docker:
-      - image: cimg/ruby:3.4.7-node
+      - image: cimg/ruby:4.0.1-node
         environment:
           - RAILS_ENV=test
           - PGHOST=localhost
@@ -89,7 +89,7 @@ commands:
       - aws-ecr/build_image:
           push_image: true
           account_id: $AWS_ECR_REGISTRY_ID
-          tag: ${CIRCLE_SHA1},<< parameters.docker_tag_prefix >>-${CIRCLE_SHA1}  # add a suffix to make it unique, since a tag can point at only one image at a time
+          tag: ${CIRCLE_SHA1},<< parameters.docker_tag_prefix >>-${CIRCLE_SHA1} # add a suffix to make it unique, since a tag can point at only one image at a time
           region: $ECR_REGION # this will use the env var
           repo: $ECR_REPOSITORY # this will use the env var
 
@@ -159,7 +159,7 @@ jobs:
       - *save_gems_cache
       - run:
           name: Run Rubocop
-          command:  bundle exec rubocop
+          command: bundle exec rubocop
       - notify_slack_on_failure
 
   end2end_tests:
