@@ -277,6 +277,7 @@ GEM
       nenv (~> 0.1)
       shellany (~> 0.0)
     optimist (3.2.1)
+    ostruct (0.6.3)
     parallel (1.27.0)
     parser (3.3.10.1)
       ast (~> 2.4.1)
@@ -535,6 +536,7 @@ DEPENDENCIES
   net-imap (>= 0.5.6)
   net-pop
   net-smtp
+  ostruct
   pg (< 1.7)
   prometheus-client
   pry-byebug

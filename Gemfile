@@ -53,6 +53,7 @@ gem "net-imap", ">= 0.5.6"
 gem "net-pop"
 gem "net-smtp"
 
+gem "ostruct" # needed until rswag merge PR#872
 gem "rswag-api"
 gem "rswag-ui"
 
