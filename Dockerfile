@@ -1,5 +1,5 @@
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
-ARG RUBY_VERSION=3.4.7
+ARG RUBY_VERSION=4.0.1
 
 FROM ruby:$RUBY_VERSION-alpine3.23 AS base
 # Chose alpine for the lower image size (lower attack surface and start-up speed):
