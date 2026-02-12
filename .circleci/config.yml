@@ -43,7 +43,7 @@ executors:
           - POSTGRES_DB=cfe_civil_test
   ccq-executor:
     docker:
-      - image: cimg/ruby:3.3.4-browsers
+      - image: cimg/ruby:3.3.7-browsers
         environment:
           VCR_RECORD_MODE: none
           COVERAGE: true
