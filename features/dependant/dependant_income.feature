@@ -53,3 +53,14 @@ Feature:
       | dependant allowance under 16      | 367.87  |
       | dependant allowance over 16       | 367.87  |
 
+  Scenario: Dependant has non-zero weekly income that exceeds allowance threshold after 7/4/2025
+    Given I am undertaking a certificated assessment
+    And A submission date of "2026-04-06"
+    And I have a dependant aged 2
+    And I have a dependant aged 17
+
+    When I retrieve the final assessment
+    Then I should see the following overall summary:
+      | attribute                         | value   |
+      | dependant allowance under 16      | 381.86  |
+      | dependant allowance over 16       | 381.86  |
