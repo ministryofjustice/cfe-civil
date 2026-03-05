@@ -114,7 +114,7 @@ RSpec.describe Threshold do
       # This is because the test assigns both files the same effective date and the values in whichever file is listed first are applied.
       # To (temporarily) skip this test on that date change context below to xcontext.
       context "when future test file active" do
-        let(:override_filename) { "mtr-2026.yml" }
+        let(:override_filename) { "mtr-2027.yml" }
 
         it "invokes the MTR config early regardless of submission date" do
           expect(described_class.new.value_for(:fixed_employment_allowance, at: submission_date)).to eq 66.0
