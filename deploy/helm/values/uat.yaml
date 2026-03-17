@@ -13,7 +13,7 @@ resources:
     memory: 125Mi
 
 ingress:
-  className: modsec-non-prod
+  className: beta
   annotations:
     external-dns.alpha.kubernetes.io/aws-weight: '100'
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
