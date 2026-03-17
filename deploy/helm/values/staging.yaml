@@ -13,7 +13,7 @@ resources:
     memory: 125Mi
 
 ingress:
-  className: modsec
+  className: modsec-non-prod
   hosts:
     - cfe-civil-staging.cloud-platform.service.justice.gov.uk
   annotations:
@@ -22,6 +22,7 @@ ingress:
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
+      SecDefaultAction "phase:2,pass,log,tag:github_team=laa-apply-for-legal-aid,tag:namespace=cfe-civil-staging"
 
 deploy:
   host: cfe-civil-staging.cloud-platform.service.justice.gov.uk
