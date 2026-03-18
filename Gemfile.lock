@@ -238,7 +238,7 @@ GEM
       activesupport (>= 4)
       railties (>= 4)
       request_store (~> 1.0)
-    loofah (2.25.0)
+    loofah (2.25.1)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     lumberjack (1.4.2)
@@ -445,10 +445,10 @@ GEM
     ruby-progressbar (1.13.0)
     rugged (1.9.0)
     securerandom (0.4.1)
-    sentry-rails (6.4.1)
+    sentry-rails (6.5.0)
       railties (>= 5.2.0)
-      sentry-ruby (~> 6.4.1)
-    sentry-ruby (6.4.1)
+      sentry-ruby (~> 6.5.0)
+    sentry-ruby (6.5.0)
       bigdecimal
       concurrent-ruby (~> 1.0, >= 1.0.2)
       logger
