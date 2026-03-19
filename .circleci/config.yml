@@ -145,9 +145,7 @@ references:
   setup_database: &setup_database
     run:
       name: Database Setup
-      command: |
-        bundle exec rake db:schema:load
-        bundle exec rake db:migrate
+      command: bundle exec rails db:prepare
 
 jobs:
   lint_checks:
