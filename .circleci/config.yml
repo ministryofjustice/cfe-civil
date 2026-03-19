@@ -227,7 +227,7 @@ jobs:
       - run:
           name: Run cucumber tests
           command: |
-            bundle exec cucumber --format html --out report.html --format pretty
+            bundle exec cucumber --format html --out report.html
       - store_artifacts:
           path: ./report.html
       - notify_slack_on_failure
