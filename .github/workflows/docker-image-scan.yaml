@@ -21,7 +21,7 @@ jobs:
 
       - name: Scan docker image using Snyk
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -30,7 +30,7 @@ jobs:
 
       # Updates Snyk project: https://app.snyk.io/org/legal-aid-agency/project/9b5968c5-fd2c-46b4-a761-7300fe400d13
       - name: Monitor docker image using Snyk
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
