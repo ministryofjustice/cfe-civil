@@ -11,7 +11,7 @@ jobs:
     name: Scan docker image in job
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
 
       - name: Build docker image
         run: |
@@ -21,7 +21,7 @@ jobs:
 
       - name: Scan docker image using Snyk
         continue-on-error: true
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -30,7 +30,7 @@ jobs:
 
       # Updates Snyk project: https://app.snyk.io/org/legal-aid-agency/project/9b5968c5-fd2c-46b4-a761-7300fe400d13
       - name: Monitor docker image using Snyk
-        uses: snyk/actions/docker@master
+        uses: snyk/actions/docker@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
@@ -48,6 +48,6 @@ jobs:
           sed -i 's/"security-severity": "null"/"security-severity": "0"/g' snyk.sarif
 
       - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v4
+        uses: github/codeql-action/upload-sarif@b1bff81932f5cdfc8695c7752dcee935dcd061c8 #v4.33.0
         with:
           sarif_file: snyk.sarif
