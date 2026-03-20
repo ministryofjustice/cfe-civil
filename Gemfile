@@ -97,6 +97,7 @@ group :development do
 end
 
 group :test do
+  gem "cucumber-cucumber-expressions", ">= 17", "< 19", require: false
   gem "cucumber-rails", require: false
   gem "database_cleaner"
   gem "shoulda-matchers"
