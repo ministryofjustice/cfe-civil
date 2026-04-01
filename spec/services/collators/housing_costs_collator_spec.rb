@@ -57,6 +57,14 @@ module Collators
            build(:housing_cost_outgoing, amount: 355.44, payment_date: 2.months.ago, housing_cost_type:)]
         end
 
+        # In 2026 an error was seen here where running these tests on Monday March 30th caused an error
+        # because 1.month.ago meant Saturday 28th February.  The WorkingDayCalculator then changed it to
+        # a non weekend date, causing the dates to be 28 days apart.  This caused the PaymentPeriodAnalyser
+        # to register a four_weekly response and the values returned were inconsistent with the expected
+        # test results.  Most of this code is unchanged since 2020/2021.
+        # We discussed as a team and decided that the confluence of dates was unlikely to recur so we
+        # decided to add this comment and will review in future if more occurrences cause issues
+
         context "without housing benefit" do
           let(:housing_benefit) { 0 }
 
