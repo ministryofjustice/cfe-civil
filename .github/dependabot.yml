@@ -2,12 +2,21 @@ version: 2
 updates:
   - package-ecosystem: "bundler"
     directory: "/"
+    cooldown:
+      default-days: 7
     schedule:
       interval: "weekly"
       # Our UAT databases are down at night - so run things at 9am on Mondays instead
       day: "monday"
       time: "09:00"
     groups:
+      cucumber:
+        # cucumber was added as a separate entity in Q1 2026 as the release of
+        # v19 of cucumber-cucumber-expressions had a breaking change that had not been addressed
+        # in other parts of the cucumber ecosystem, this way we can monitor for a patch (19.0.1?)
+        # when the cucumber tests pass, this can be removed
+        patterns:
+          - "cucumber*"
       rubocop:
         patterns:
           - "rubocop*"
@@ -16,9 +25,12 @@ updates:
           - "*"
         exclude-patterns:
           - "rubocop*"
+          - "cucumber*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
+    cooldown:
+      default-days: 7
     schedule:
       interval: "weekly"
       day: "monday"
@@ -26,6 +38,8 @@ updates:
 
   - package-ecosystem: "docker"
     directory: "/"
+    cooldown:
+      default-days: 7
     schedule:
       interval: "weekly"
       day: "monday"
