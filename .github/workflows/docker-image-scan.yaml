@@ -5,9 +5,15 @@ on:
   schedule:
     - cron:  '15 5 * * *'
 
+permissions:
+  contents: read
+
 jobs:
   scan-docker-image:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # for actions/checkout to fetch code
+      security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
     name: Scan docker image in job
     steps:
       - name: Checkout
