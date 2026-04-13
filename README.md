@@ -163,6 +163,26 @@ Try this simple test, to ensure it's working:
 $ curl http://127.0.0.1:3000/healthcheck
 {"checks":{"database":true}}
 ```
+
+## Pre-commit hooks using DevSecOps
+
+We use the Ministry of Justice pre-commit hooks for scanning hardcoded secrets and credentials. More information can be found [here] (https://github.com/ministryofjustice/devsecops-hooks).
+
+To set-up locally:
+
+Install prek
+```shell
+brew install prek
+```
+
+Install the pre-commit hook
+```shell
+prek install
+```
+Launch Docker Desktop locally
+
+Now, when you commit, .pre-commit-config.yaml containing the pre-commit hook should run.
+
 ## Swagger - API schema & documentation generation
 
 Rswag is used for generating Swagger API schemas and documentation. The sections below describe how these can be modified and managed, using filenames from a recent version of the main "assessments" API as examples.
