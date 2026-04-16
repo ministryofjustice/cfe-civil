@@ -12,4 +12,4 @@ jobs:
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/brakeman.yml@768f673017edbb793cf052fa159c272d6c1f9177
+    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/brakeman.yml@7c81d37978aef9418f7185d9ecf70e3cd1c63c02
