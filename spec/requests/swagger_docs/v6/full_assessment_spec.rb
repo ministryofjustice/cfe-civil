@@ -385,20 +385,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, swagger_doc: 
               income: [],
             },
             employment_details: [
-              income: {
-                frequency: "monthly",
-                gross: 24,
-                tax: -2,
-                benefits_in_kind: 36,
-                national_insurance: -5,
-                receiving_only_statutory_sick_or_maternity_pay: false,
-              },
-            ],
-            partner: {
-              partner: {
-                date_of_birth: "1992-07-22",
-              },
-              employment_details: [
+              {
                 income: {
                   frequency: "monthly",
                   gross: 24,
@@ -406,6 +393,23 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, swagger_doc: 
                   benefits_in_kind: 36,
                   national_insurance: -5,
                   receiving_only_statutory_sick_or_maternity_pay: false,
+                },
+              },
+            ],
+            partner: {
+              partner: {
+                date_of_birth: "1992-07-22",
+              },
+              employment_details: [
+                {
+                  income: {
+                    frequency: "monthly",
+                    gross: 24,
+                    tax: -2,
+                    benefits_in_kind: 36,
+                    national_insurance: -5,
+                    receiving_only_statutory_sick_or_maternity_pay: false,
+                  },
                 },
               ],
             },

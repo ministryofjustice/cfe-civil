@@ -142,16 +142,16 @@ Given("I add other income {string} of {int} per month") do |income_type, monthly
   dates = %w[2021-05-10 2021-04-10 2021-03-10]
   payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
 
-  @other_incomes_data = { other_incomes: [source: income_type,
-                                          payments:] }
+  @other_incomes_data = { other_incomes: [{ source: income_type,
+                                            payments: }] }
 end
 
 Given("I add other income {string} of {float} per month, with bespoke dates: {string} {string} {string}") do |income_type, monthly_amount, date1, date2, date3|
   dates = [date1, date2, date3]
   payments = dates.map { { date: _1, client_id: SecureRandom.uuid, amount: monthly_amount } }
 
-  @other_incomes_data = { other_incomes: [source: income_type,
-                                          payments:] }
+  @other_incomes_data = { other_incomes: [{ source: income_type,
+                                            payments: }] }
 end
 
 Given("I add {string} benefits of [{string}]; with bespoke dates [{string}]") do |benefit_type, amounts, dates|
@@ -172,8 +172,8 @@ Given("I add {string} outgoings of [{string}]; with bespoke dates [{string}]") d
   dates = dates.split(" ")
   payments = []
   amounts.map.with_index { |amount, index| payments << { payment_date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_i } }
-  @outgoings_data = { outgoings: [name: outgoing_type,
-                                  payments: payments] }
+  @outgoings_data = { outgoings: [{ name: outgoing_type,
+                                    payments: payments }] }
 end
 
 Given("I add other income {string} of [{string}]; with bespoke dates [{string}]") do |income_type, amounts, dates|
@@ -181,8 +181,8 @@ Given("I add other income {string} of [{string}]; with bespoke dates [{string}]"
   dates = dates.split(" ")
   payments = []
   amounts.map.with_index { |amount, index| payments << { date: dates[index], client_id: SecureRandom.uuid, amount: amount.to_i } }
-  @other_incomes_data = { other_incomes: [source: income_type,
-                                          payments:] }
+  @other_incomes_data = { other_incomes: [{ source: income_type,
+                                            payments: }] }
 end
 
 Given("I add the following irregular_income details in the current assessment:") do |table|
@@ -198,8 +198,8 @@ Given("I add outgoing details for {string} of {int} per month") do |outgoing_typ
                    dates.map { |d| { payment_date: d, client_id: SecureRandom.uuid, amount: monthly_amount } }
                  end
 
-  @outgoings_data = { outgoings: [name: outgoing_type,
-                                  payments: the_payments] }
+  @outgoings_data = { outgoings: [{ name: outgoing_type,
+                                    payments: the_payments }] }
 end
 
 Given("I add multiple outgoing details including {string} of {int} per month, with bespoke dates: {string} {string} {string}") do |outgoing_type, monthly_amount, date1, date2, date3|
@@ -263,9 +263,9 @@ Given("I add {string} outgoings of {int} per month") do |name, amount|
     }
   end
   @outgoings_data = if name == "rent_or_mortgage"
-                      { "outgoings": ["name": name, "payments": payments.map { _1.merge(housing_cost_type: "rent") }] }
+                      { "outgoings": [{ "name": name, "payments": payments.map { _1.merge(housing_cost_type: "rent") } }] }
                     else
-                      { "outgoings": ["name": name, "payments": payments] }
+                      { "outgoings": [{ "name": name, "payments": payments }] }
                     end
 end
 
@@ -278,7 +278,7 @@ Given("I add {string} cash_transactions of {int} per month") do |category, amoun
       amount:,
     }
   end
-  @cash_transactions_payments = ["category": category, "payments": payments]
+  @cash_transactions_payments = [{ "category": category, "payments": payments }]
 end
 
 Given("I add {string} regular_transactions of {int} per month") do |category, amount|
@@ -309,7 +309,7 @@ Given("I add {string} cash_transactions_income of {float} per month") do |catego
       amount:,
     }
   end
-  @cash_transactions_income = ["category": category, "payments": payments]
+  @cash_transactions_income = [{ "category": category, "payments": payments }]
 end
 
 Given("I add {string} partner regular_transactions of {int} per month") do |category, amount|

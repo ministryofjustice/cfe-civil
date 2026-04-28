@@ -1967,8 +1967,10 @@ class SwaggerDocs
                   income: { "$ref": "#/components/schemas/DependantIncome" },
                   assets_value: {
                     oneOf: [
-                      oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:numeric_currency] }], # "oneOf" hack
-                      description: "Dependant's total assets value",
+                      {
+                        oneOf: [{ "$ref" => SCHEMA_COMPONENTS[:numeric_currency] }], # "oneOf" hack
+                        description: "Dependant's total assets value",
+                      },
                     ],
                     example: 0,
                   },
