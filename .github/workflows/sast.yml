@@ -1,0 +1,39 @@
+name: Static Application Security Testing
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  get-main-sha:
+    runs-on: ubuntu-latest
+
+    outputs:
+      sha: ${{ steps.main_sha.outputs.sha }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+
+      - name: Get latest main SHA
+        id: main_sha
+        run: |
+          git fetch origin main --depth=1
+          echo "sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+
+  run-sast-tooling:
+    needs: get-main-sha
+    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/sast.yml@8e0e6bbaa7d9075660c044b2e2c934a966c56570 # main as of 03/06/2026
+    permissions:
+      id-token: write
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      image_uri: ${{ format('{0}:{1}', vars.ECR_REGISTRY_URI, needs.get-main-sha.outputs.sha) }}
+    secrets:
+      SNYK_CLIENT_ID: ${{ secrets.SNYK_CLIENT_ID }}
+      SNYK_CLIENT_SECRET: ${{ secrets.SNYK_CLIENT_SECRET }}
+      ECR_ROLE_TO_ASSUME: ${{ secrets.ECR_ROLE_TO_ASSUME }}
