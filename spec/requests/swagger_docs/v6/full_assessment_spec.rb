@@ -323,7 +323,7 @@ RSpec.describe "full_assessment", :calls_bank_holiday, :calls_lfa, swagger_doc: 
                 name: benefit_type_excluded.label,
                 payments: [
                   { date: "2022-11-01", amount: 33.44, client_id: SecureRandom.uuid, flags: { multi_benefit: true } },
-                  { date: "2022-10-01", amount: 55.44, client_id: SecureRandom.uuid, flags: {} },
+                  { date: "2022-10-01", amount: 55.44, client_id: SecureRandom.uuid, flags: { multi_benefit: false } },
                   { date: "2022-09-01", amount: 77.44, client_id: SecureRandom.uuid, flags: {} },
                 ],
               },
