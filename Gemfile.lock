@@ -89,10 +89,10 @@ GEM
     bigdecimal (4.1.2)
     binding_of_caller (2.0.0)
       debug_inspector (>= 1.2.0)
-    bootsnap (1.24.5)
+    bootsnap (1.24.6)
       msgpack (~> 1.2)
     builder (3.3.0)
-    bullet (8.1.2)
+    bullet (8.1.3)
       activesupport (>= 3.0.0)
       uniform_notifier (~> 1.11)
     business (2.3.0)
@@ -223,7 +223,7 @@ GEM
       prism (>= 1.3.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.19.8)
+    json (2.19.9)
     json-schema (6.2.0)
       addressable (~> 2.8)
       bigdecimal (>= 3.1, < 5)
@@ -258,7 +258,7 @@ GEM
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
-    msgpack (1.8.1)
+    msgpack (1.8.3)
     multi_test (1.1.0)
     nenv (0.3.0)
     net-http (0.9.1)
@@ -593,10 +593,10 @@ CHECKSUMS
   benchmark (0.5.0) sha256=465df122341aedcb81a2a24b4d3bd19b6c67c1530713fd533f3ff034e419236c
   bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
   binding_of_caller (2.0.0) sha256=e53eebf8428a85587aede7b43a83e7419eb85b8b690938a96aa330d03052d517
-  bootsnap (1.24.5) sha256=36b677448524d279b470469aabd5dff4a980e3fa4931a0df68da4a500eb1b6c4
+  bootsnap (1.24.6) sha256=c60bab88c70332290f0a2636a288f675299eb4f804a02a3c085b42eca9da164a
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
-  bullet (8.1.2) sha256=67031a0d71d2b00ef1d6ed17903064d79e56bf2cddb4d4e2c54cd464c6b2b8c9
-  bundler (4.0.13) sha256=19f08be7f27022cf0b89f27da0b044ae075e8270a9ef44ad248a932614e1ca3b
+  bullet (8.1.3) sha256=c8163c527324fe1180775be48719875726891622f0a73784658b2992acf3c7cb
+  bundler (4.0.14) sha256=d09a0a965cf772266a7e49e83610be7c2f4e49e61134c42a56804bb383cc24b8
   business (2.3.0) sha256=1a98b5515ab56246346b5277b999f18ddcb299439899a897c883083932085a67
   byebug (13.0.0) sha256=d2263efe751941ca520fa29744b71972d39cbc41839496706f5d9b22e92ae05d
   capybara (3.40.0) sha256=42dba720578ea1ca65fd7a41d163dd368502c191804558f6e0f71b391054aeef
@@ -650,7 +650,7 @@ CHECKSUMS
   interception (0.5) sha256=a53818d636752a8df90d8c1bb2f7b6e13a7b828543cb02b50fbde98b849d7907
   io-console (0.8.2) sha256=d6e3ae7a7cc7574f4b8893b4fca2162e57a825b223a177b7afa236c5ef9814cc
   irb (1.18.0) sha256=de9454a0703a54704b9811a5ef31a60c86949fbf4013fcf244fabc7c775248e3
-  json (2.19.8) sha256=6354310fd76ef69b87d5bd1f38b40d730613baf90b6803d2d0a48f618d32dfaa
+  json (2.19.9) sha256=9b9025b7cdddafa38d316eca0b2358488e42d417045c1b90d216a9fefe46b79a
   json-schema (6.2.0) sha256=e8bff46ed845a22c1ab2bd0d7eccf831c01fe23bb3920caa4c74db4306813666
   language_server-protocol (3.17.0.5) sha256=fd1e39a51a28bf3eec959379985a72e296e9f9acfce46f6a79d31ca8760803cc
   lint_roller (1.1.0) sha256=2c0c845b632a7d172cb849cc90c1bce937a28c5c8ccccb50dfd46a485003cc87
@@ -667,7 +667,7 @@ CHECKSUMS
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
-  msgpack (1.8.1) sha256=3fef787cd3965fd119c08a22724a56a93ca25008c3421fc15039f603a8b7c86c
+  msgpack (1.8.3) sha256=8bda4a6428d3244e50d6bd55854d354edbada88a4e1f4f5731a39a0f86bee6a1
   multi_test (1.1.0) sha256=e9e550cdd863fb72becfe344aefdcd4cbd26ebf307847f4a6c039a4082324d10
   nenv (0.3.0) sha256=d9de6d8fb7072228463bf61843159419c969edb34b3cef51832b516ae7972765
   net-http (0.9.1) sha256=25ba0b67c63e89df626ed8fac771d0ad24ad151a858af2cc8e6a716ca4336996
