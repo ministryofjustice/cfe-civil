@@ -43,7 +43,7 @@ executors:
           - POSTGRES_DB=cfe_civil_test
   ccq-executor:
     docker:
-      - image: cimg/ruby:3.3.7-browsers
+      - image: cimg/ruby:4.0.5-browsers
         environment:
           VCR_RECORD_MODE: none
           COVERAGE: true
@@ -171,7 +171,8 @@ jobs:
           name: Setup CCQ ready to execute tests
           working_directory: ~/project/ccq
           command: |
-            bundle install --without=development
+            bundle config set without 'development'
+            bundle install
       - run:
           name: Setup CCQ database and test env
           working_directory: ~/project/ccq
