@@ -98,3 +98,54 @@ jobs:
       - name: Run tests
         run: bundle exec cucumber
 
+  check-swagger:
+    runs-on: ubuntu-latest
+    env:
+      RACK_ENV: test
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+
+    services:
+      postgres:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_DB: cfe-civil-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 #--v1.314.0
+        with:
+          bundler-cache: true
+
+      - name: Setup test database
+        run: bin/rails db:prepare
+
+      - name: Run tests
+        run: bundle exec rails check_swaggerization
+
+  build:
+    if: github.actor != 'dependabot[bot]'
+    needs: [rubocop, rspec, integration-tests, check-swagger]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Build and push
+        id: build_and_push
+        uses: ./.github/actions/build_and_push
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
