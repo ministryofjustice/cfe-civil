@@ -371,30 +371,6 @@ workflows:
           filters:
             branches:
               ignore: main
-      - build_and_push_uat:
-          context: cfe-civil-uat
-          filters:
-            branches:
-              ignore: main
-      - deploy_uat:
-          context: cfe-civil-uat
-          requires:
-            - lint_checks
-            - check_swagger
-            - unit_tests
-            - integration_tests
-            - build_and_push_uat
-          filters:
-            branches:
-              ignore: main
-      - delete_dependabot_deployment:
-          context: cfe-civil-uat
-          filters:
-            branches:
-              only:
-                - /dependabot.*/
-          requires:
-            - deploy_uat
 
   deploy_main_approval_required:
     when: << pipeline.parameters.approval_required >>

@@ -1,0 +1,91 @@
+name: "Deploy branch"
+description: 'Deploy docker image of branch to namespace with an ingress based on branch name'
+inputs:
+  ecr-repository:
+    description: "ECR repository"
+    required: true
+  ecr-region:
+    description: "ECR region"
+    required: true
+  ecr-role-to-assume:
+    description: "ECR role to assume"
+    required: true
+  kube-cert:
+    description: "Kubernetes cluster authentication certificate"
+    required: true
+  kube-token:
+    description: "Kubernetes cluster authentication token"
+    required: true
+  kube-cluster:
+    description: "Kubernetes cluster name"
+    required: true
+  kube-namespace:
+    description: "Kubernetes cluster namespace"
+    required: true
+  app-environment:
+    description: "environment to which the app is being deployed [staging, production, etc]"
+    required: true
+
+outputs:
+  branch-name:
+    description: "Extracted branch name"
+    value: ${{ steps.extract_branch.outputs.branch_name }}
+  release-name:
+    description: "Extracted release name"
+    value: ${{ steps.extract_release.outputs.release_name }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+
+    - name: Extract release name
+      id: extract_release_name
+      uses: ./.github/actions/get_release_name
+
+    - name: Authenticate to the cluster
+      uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6
+      with:
+        kube-cert: ${{ inputs.kube-cert }}
+        kube-token: ${{ inputs.kube-token }}
+        kube-cluster: ${{ inputs.kube-cluster }}
+        kube-namespace: ${{ inputs.kube-namespace }}
+
+    - name: Assume role in Cloud Platform
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 #v6.0.0
+      with:
+        role-to-assume: ${{ inputs.ecr-role-to-assume }}
+        aws-region: ${{ inputs.ecr-region }}
+
+    - name: Docker login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a #v2.1.3
+      with:
+        mask-password: 'true'
+
+    - name: Helm deployment of branch
+      shell: bash
+      env:
+        ECR_REPOSITORY: ${{ inputs.ecr-repository }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        GIT_SHA: ${{ github.sha }}
+        KUBE_NAMESPACE: ${{ inputs.kube-namespace }}
+        RELEASE_NAME: ${{ steps.extract_release_name.outputs.release-name }}
+      run: |
+        release_host="$RELEASE_NAME-$KUBE_NAMESPACE.cloud-platform.service.justice.gov.uk"
+        identifier="$RELEASE_NAME-cfe-civil-cfe-civil-uat-green"
+        is_main=$([[ $RELEASE_NAME == "main" ]] && echo true || echo false)
+
+        echo "Deploying commit: $GIT_SHA under release name: '$RELEASE_NAME' to '$release_host'..."
+
+        helm upgrade $RELEASE_NAME ./deploy/helm/. \
+          --install --wait \
+          --namespace=${KUBE_NAMESPACE} \
+          --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
+          --values ./deploy/helm/values/uat.yaml \
+          --set deploy.host="$release_host" \
+          --set image.tag="${GIT_SHA}" \
+          --set ingress.hosts="{$release_host}" \
+          --set ingress.annotations."external-dns\.alpha\.kubernetes\.io/set-identifier"="$identifier" \
+          --set branch_builder.database_name="$RELEASE_NAME"
