@@ -11,4 +11,4 @@ jobs:
   brakeman:
     permissions:
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/brakeman.yml@0a0bd8225ca8cc96e57a19223ce21f2ce7230833c # main as of 24/06/2026
+    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/brakeman.yml@df9a4a8ad625a391c27ccf81a1c1a2d7b23e6474 # main as of 24/06/2026
