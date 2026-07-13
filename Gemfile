@@ -72,8 +72,6 @@ group :development, :test do
   gem "byebug"
   gem "pry-byebug"
   gem "rack-mini-profiler", require: false
-  gem "rspec_junit_formatter"
-  gem "rspec-rails", "~> 8.0"
   gem "rswag-specs"
   gem "rubocop-govuk", require: false
   gem "rubocop-performance"
@@ -100,6 +98,11 @@ group :test do
   gem "cucumber-cucumber-expressions", ">= 17", "< 20", require: false
   gem "cucumber-rails", ">= 4.1.0", require: false
   gem "database_cleaner"
+  gem "pact", ">= 2.0.1"
+  gem "pact_broker-client"
+  gem "rspec"
+  gem "rspec_junit_formatter"
+  gem "rspec-rails", "~> 8.0"
   gem "shoulda-matchers"
   gem "simplecov"
   gem "simplecov-lcov"
