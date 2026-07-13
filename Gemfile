@@ -60,7 +60,7 @@ gem "rswag-ui"
 # needed for diffing in re-runner tool
 gem "hashdiff"
 
-gem "lograge"
+gem "lograge", ">= 0.15.0"
 
 group :development, :test do
   gem "awesome_print"
