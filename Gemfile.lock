@@ -114,30 +114,30 @@ GEM
       bigdecimal
       rexml
     crass (1.0.6)
-    cucumber (10.2.0)
+    cucumber (11.1.1)
       base64 (~> 0.2)
       builder (~> 3.2)
       cucumber-ci-environment (> 9, < 12)
-      cucumber-core (> 15, < 17)
+      cucumber-core (>= 16.2.0, < 17)
       cucumber-cucumber-expressions (> 17, < 20)
-      cucumber-html-formatter (> 21, < 23)
+      cucumber-html-formatter (> 21, < 24)
       diff-lcs (~> 1.5)
       logger (~> 1.6)
       mini_mime (~> 1.1)
       multi_test (~> 1.1)
-      sys-uname (~> 1.3)
+      sys-uname (~> 1.5)
     cucumber-ci-environment (11.0.0)
     cucumber-core (16.2.0)
       cucumber-gherkin (> 36, < 40)
       cucumber-messages (> 31, < 33)
       cucumber-tag-expressions (> 6, < 9)
-    cucumber-cucumber-expressions (18.0.1)
+    cucumber-cucumber-expressions (19.0.1)
       bigdecimal
-    cucumber-gherkin (39.0.0)
+    cucumber-gherkin (39.1.0)
       cucumber-messages (>= 31, < 33)
-    cucumber-html-formatter (22.3.0)
+    cucumber-html-formatter (23.1.0)
       cucumber-messages (> 23, < 33)
-    cucumber-messages (32.2.0)
+    cucumber-messages (32.3.1)
     cucumber-rails (4.1.0)
       capybara (>= 3.25, < 4)
       cucumber (>= 7, < 12)
@@ -178,7 +178,8 @@ GEM
       logger
     faraday-net_http (3.4.4)
       net-http (~> 0.5)
-    ffi (1.17.3)
+    ffi (1.17.4-arm64-darwin)
+    ffi (1.17.4-x86_64-linux-gnu)
     formatador (1.2.3)
       reline
     globalid (1.3.0)
@@ -254,7 +255,6 @@ GEM
     memoist3 (1.0.0)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.9)
     minitest (6.0.6)
       drb (~> 2.0)
       prism (~> 1.5)
@@ -273,8 +273,9 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.5)
-    nokogiri (1.19.4)
-      mini_portile2 (~> 2.8.2)
+    nokogiri (1.19.4-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.19.4-x86_64-linux-gnu)
       racc (~> 1.4)
     notiffany (0.1.3)
       nenv (~> 0.1)
@@ -287,7 +288,8 @@ GEM
       racc
     patience_diff (1.2.0)
       optimist (~> 3.0)
-    pg (1.6.3)
+    pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     pp (0.6.4)
       prettyprint
     prettyprint (0.2.0)
@@ -510,7 +512,8 @@ GEM
     zeitwerk (2.8.2)
 
 PLATFORMS
-  ruby
+  arm64-darwin-25
+  x86_64-linux
 
 DEPENDENCIES
   api_error_handler
@@ -519,7 +522,7 @@ DEPENDENCIES
   bullet
   business (~> 2.3)
   byebug
-  cucumber-cucumber-expressions (>= 17, < 19)
+  cucumber-cucumber-expressions (>= 17, < 20)
   cucumber-rails (>= 4.1.0)
   database_cleaner
   date_validator
@@ -596,7 +599,7 @@ CHECKSUMS
   bootsnap (1.24.6) sha256=c60bab88c70332290f0a2636a288f675299eb4f804a02a3c085b42eca9da164a
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
   bullet (8.1.3) sha256=c8163c527324fe1180775be48719875726891622f0a73784658b2992acf3c7cb
-  bundler (4.0.15) sha256=a4ceb882fe94a0e0ac63cd0813932bbfd631a14e5ac0b7975189b19a4d28d9e7
+  bundler (4.0.16) sha256=d6ca5dd440c24f9abce9844cf44cc8e18c6a553de65a47efb4544137af92c47d
   business (2.3.0) sha256=1a98b5515ab56246346b5277b999f18ddcb299439899a897c883083932085a67
   byebug (13.0.0) sha256=d2263efe751941ca520fa29744b71972d39cbc41839496706f5d9b22e92ae05d
   capybara (3.40.0) sha256=42dba720578ea1ca65fd7a41d163dd368502c191804558f6e0f71b391054aeef
@@ -605,13 +608,13 @@ CHECKSUMS
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   crack (1.0.1) sha256=ff4a10390cd31d66440b7524eb1841874db86201d5b70032028553130b6d4c7e
   crass (1.0.6) sha256=dc516022a56e7b3b156099abc81b6d2b08ea1ed12676ac7a5657617f012bd45d
-  cucumber (10.2.0) sha256=fdedbd31ecf40858b60f04853f2aa15c44f5c30bbac29c6a227fa1e7005a8158
+  cucumber (11.1.1) sha256=dedd44f4a14b50af798c13b50c3221afa41be8051f5fce666c37cd09f8564ec4
   cucumber-ci-environment (11.0.0) sha256=0df79a9e1d0b015b3d9def680f989200d96fef206f4d19ccf86a338c4f71d1e2
   cucumber-core (16.2.0) sha256=592b58a95cf42feef8e5a349f68e363784ba3b6568ffbcf6776e38e136cf970b
-  cucumber-cucumber-expressions (18.0.1) sha256=8398a0bf636af33ff3b61e459a309295eb02745b9e21bd7af0eaaa2a1e6be3e5
-  cucumber-gherkin (39.0.0) sha256=46f51d87e910f41c3c5cee3b500028ca2b2e7149a413a8280b9a58cee2593e55
-  cucumber-html-formatter (22.3.0) sha256=f9768ed05588dbd73a5f3824c2cc648bd86b00206e6972d743af8051281d0729
-  cucumber-messages (32.2.0) sha256=42c4056cccf7dd9d07bf678a28b1233efbdaf35789b76b65e071be6b7b00731a
+  cucumber-cucumber-expressions (19.0.1) sha256=648ec09045190d818fb797af46e1648148599fd67a086a34a7f0e647d9e36c8c
+  cucumber-gherkin (39.1.0) sha256=aed12a0c955d8563d80a012633c1a72075525f4d64d4cc983001df2181b379ed
+  cucumber-html-formatter (23.1.0) sha256=7789b4a792c876394b9604aeb66aa5cf4c61514473b7e712c76d5eaedcdd8cdf
+  cucumber-messages (32.3.1) sha256=ddc88e4c1cf7afb96c06005b92a4a6f221a2fa435a8b4ca04677d215fd82771c
   cucumber-rails (4.1.0) sha256=43538dddc133e79c3763ef11287f2163ea9bfd72fb2fbe782b4b7db91d8ad621
   cucumber-tag-expressions (8.1.0) sha256=9bd8c4b6654f8e5bf2a9c99329b6f32136a75e50cd39d4cfb3927d0fa9f52e21
   database_cleaner (2.1.0) sha256=1dcba26e3b1576da692fc6bac10136a4744da5bcc293d248aae19640c65d89cd
@@ -634,7 +637,8 @@ CHECKSUMS
   faker (3.8.0) sha256=c147b308df73a90f27a4fc84f18d4c22ef0ad9c2a64b2b61c86fd0ca71753efc
   faraday (2.14.3) sha256=1882247e6766615c8220b4392bf1d27f6ebb63d8e28267587cef1fb0bf37f278
   faraday-net_http (3.4.4) sha256=0e78af151747ed1b00f33e25973b4bc220d7f16c00c39676817c8b12331eb588
-  ffi (1.17.3) sha256=0e9f39f7bb3934f77ad6feab49662be77e87eedcdeb2a3f5c0234c2938563d4c
+  ffi (1.17.4-arm64-darwin) sha256=19071aaf1419251b0a46852abf960e77330a3b334d13a4ab51d58b31a937001b
+  ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   formatador (1.2.3) sha256=19fa898133c2c26cdbb5d09f6998c1e137ad9427a046663e55adfe18b950d894
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
   guard (2.20.1) sha256=ab9cd7873854e6b76080c0589f781ff3e390e441bdda20165804df54f977015a
@@ -665,7 +669,6 @@ CHECKSUMS
   memoist3 (1.0.0) sha256=686e42402cf150a362050c23143dc57b0ef88f8c344943ff8b7845792b50d56f
   method_source (1.1.0) sha256=181301c9c45b731b4769bc81e8860e72f9161ad7d66dd99103c9ab84f560f5c5
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
-  mini_portile2 (2.8.9) sha256=0cd7c7f824e010c072e33f68bc02d85a00aeb6fce05bb4819c03dfd3c140c289
   minitest (6.0.6) sha256=153ea36d1d987a62942382b61075745042a2b3123b1cd48f4c3675af9cc7d6f1
   msgpack (1.8.3) sha256=8bda4a6428d3244e50d6bd55854d354edbada88a4e1f4f5731a39a0f86bee6a1
   multi_test (1.1.0) sha256=e9e550cdd863fb72becfe344aefdcd4cbd26ebf307847f4a6c039a4082324d10
@@ -676,14 +679,16 @@ CHECKSUMS
   net-protocol (0.2.2) sha256=aa73e0cba6a125369de9837b8d8ef82a61849360eba0521900e2c3713aa162a8
   net-smtp (0.5.1) sha256=ed96a0af63c524fceb4b29b0d352195c30d82dd916a42f03c62a3a70e5b70736
   nio4r (2.7.5) sha256=6c90168e48fb5f8e768419c93abb94ba2b892a1d0602cb06eef16d8b7df1dca1
-  nokogiri (1.19.4) sha256=50c951611c92bca05c51411aef45f1cbc50f2821c4802758c5c6d34696533ab5
+  nokogiri (1.19.4-arm64-darwin) sha256=a46db9853286e6597b36ebc6953817d15acf3a299583eb3f89fdc6f91dd63527
+  nokogiri (1.19.4-x86_64-linux-gnu) sha256=379fae440b28915e3f19d752ce2dcf8465ed2b2fbefd2a7ca0dd497bc981a06a
   notiffany (0.1.3) sha256=d37669605b7f8dcb04e004e6373e2a780b98c776f8eb503ac9578557d7808738
   optimist (3.2.1) sha256=8cf8a0fd69f3aa24ab48885d3a666717c27bc3d9edd6e976e18b9d771e72e34e
   ostruct (0.6.3) sha256=95a2ed4a4bd1d190784e666b47b2d3f078e4a9efda2fccf18f84ddc6538ed912
   parallel (1.28.0) sha256=33e6de1484baf2524792d178b0913fc8eb94c628d6cfe45599ad4458c638c970
   parser (3.3.11.1) sha256=d17ace7aabe3e72c3cc94043714be27cc6f852f104d81aa284c2281aecc65d54
   patience_diff (1.2.0) sha256=f492094486af02fff4a80070fa6b4d0ebbcf4d42fb38bba29d095eef43f6822c
-  pg (1.6.3) sha256=1388d0563e13d2758c1089e35e973a3249e955c659592d10e5b77c468f628a99
+  pg (1.6.3-arm64-darwin) sha256=7240330b572e6355d7c75a7de535edb5dfcbd6295d9c7777df4d9dddfb8c0e5f
+  pg (1.6.3-x86_64-linux) sha256=5d9e188c8f7a0295d162b7b88a768d8452a899977d44f3274d1946d67920ae8d
   pp (0.6.4) sha256=dfcb0fce700c41456265922884f9fe195d7fbb0674a3578e6c0f69588e82b570
   prettyprint (0.2.0) sha256=2bc9e15581a94742064a3cc8b0fb9d45aae3d03a1baa6ef80922627a0766f193
   prism (1.9.0) sha256=7b530c6a9f92c24300014919c9dcbc055bf4cdf51ec30aed099b06cd6674ef85
@@ -770,4 +775,4 @@ RUBY VERSION
   ruby 4.0.5
 
 BUNDLED WITH
-  4.0.15
+  4.0.16
