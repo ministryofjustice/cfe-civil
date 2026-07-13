@@ -1,0 +1,68 @@
+name: "Deploy"
+description: 'Deploy docker image to namespace'
+inputs:
+  ecr-repository:
+    description: "ECR repository"
+    required: true
+  ecr-region:
+    description: "ECR region"
+    required: true
+  ecr-role-to-assume:
+    description: "ECR role to assume"
+    required: true
+  kube-cert:
+    description: "Kubernetes cluster authentication certificate"
+    required: true
+  kube-token:
+    description: "Kubernetes cluster authentication token"
+    required: true
+  kube-cluster:
+    description: "Kubernetes cluster name"
+    required: true
+  kube-namespace:
+    description: "Kubernetes cluster namespace"
+    required: true
+  app-environment:
+    description: "environment to which the app is being deployed [staging, production, etc]"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+
+    - name: Authenticate to the cluster
+      uses: ministryofjustice/laa-reusable-github-actions/.github/actions/authenticate_to_cluster@2aa2676c3cd9876ec7037ee8b3d729d0306cb7c6
+      with:
+        kube-cert: ${{ inputs.kube-cert }}
+        kube-token: ${{ inputs.kube-token }}
+        kube-cluster: ${{ inputs.kube-cluster }}
+        kube-namespace: ${{ inputs.kube-namespace }}
+
+    - name: Assume role in Cloud Platform
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 #v6.0.0
+      with:
+        role-to-assume: ${{ inputs.ecr-role-to-assume }}
+        aws-region: ${{ inputs.ecr-region }}
+
+    - name: Docker login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a #v2.1.3
+      with:
+        mask-password: 'true'
+
+    - name: Helm deployment
+      shell: bash
+      env:
+        ECR_REPOSITORY: ${{ inputs.ecr-repository }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        GIT_SHA: ${{ github.sha }}
+        KUBE_NAMESPACE: ${{ inputs.kube-namespace }}
+      run: |
+        helm upgrade cfe-civil ./deploy/helm/. \
+          --install --wait \
+          --namespace=${KUBE_NAMESPACE} \
+          --values ./deploy/helm/values/staging.yaml \
+          --set image.repository="${ECR_REGISTRY}/${ECR_REPOSITORY}" \
+          --set image.tag="${GIT_SHA}"

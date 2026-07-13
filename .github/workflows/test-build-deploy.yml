@@ -173,3 +173,29 @@ jobs:
           kube-cluster: ${{ secrets.K8S_GHA_UAT_CLUSTER_NAME }}
           kube-namespace: ${{ secrets.K8S_GHA_UAT_NAMESPACE }}
           app-environment: uat
+
+  deploy-staging:
+    # if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Deploy staging
+        id: deploy_staging
+        uses: ./.github/actions/deploy
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          kube-cert: ${{ secrets.KUBE_STAGING_CERT }}
+          kube-token: ${{ secrets.KUBE_STAGING_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_STAGING_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_STAGING_NAMESPACE }}
+          app-environment: staging
