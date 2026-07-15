@@ -98,6 +98,55 @@ jobs:
       - name: Run tests
         run: bundle exec cucumber
 
+  end2end_tests:
+    runs-on: ubuntu-latest
+    env:
+      VCR_RECORD_MODE: none
+      RACK_ENV: test
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/ccq-test"
+      CFE_HOST: http://localhost:3000
+
+    services:
+      postgres:
+        image: postgres:18.1-alpine
+        env:
+          POSTGRES_DB: ccq-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout CCQ main line
+        run: git clone https://github.com/ministryofjustice/laa-estimate-financial-eligibility-for-legal-aid.git ./project/ccq
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@9eb537ca036ebaed86729dcb9309076e4c5c3b74 #--v1.314.0
+        with:
+          ruby-version: '4.0.5'
+          bundler-cache: true
+
+      - name: Setup CCQ ready to execute tests
+        working-directory: ./project/ccq
+        run: |
+            bundle config set without 'development'
+            bundle install
+
+      - name: Setup test database
+        working-directory: ./project/ccq
+        run: bin/rails db:prepare
+
+      - name: Compile assets
+        working-directory: ./project/ccq
+        run: bundle exec rails assets:precompile
+
+      - name: CFE/CCQ end2end specs
+        working-directory: ./project/ccq
+        run: |
+            COVERAGE=false bundle exec rspec -t end2end --format documentation spec/**/*_spec.rb
+
   check-swagger:
     runs-on: ubuntu-latest
     env:
@@ -133,7 +182,7 @@ jobs:
 
   build:
     if: github.actor != 'dependabot[bot]'
-    needs: [rubocop, rspec, integration-tests, check-swagger]
+    needs: [rubocop, rspec, integration-tests, check-swagger, end2end_tests]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
