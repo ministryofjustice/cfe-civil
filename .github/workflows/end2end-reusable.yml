@@ -1,0 +1,183 @@
+name: end-to-end tests between CFE (provider) and CCQ (consumer).
+
+on:
+  workflow_call:
+    inputs:
+      cfe-image:
+        description: Full CFE image URI, including tag
+        required: true
+        type: string
+
+      database-name:
+        description: Shared PostgreSQL database name
+        required: false
+        default: end2end_test_database
+        type: string
+
+      ccq-ref:
+        description: Git ref of the CCQ repository to test
+        required: false
+        default: main
+        type: string
+
+      ruby-version:
+        description: Ruby version used by CCQ
+        required: false
+        default: "4.0.5"
+        type: string
+
+      legal-framework-api-host:
+        description: Legal Framework API endpoint used by CFE
+        required: false
+        default: https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
+        type: string
+
+      ecr-region:
+        description: AWS region of the ECR registry used to pull the CFE image
+        required: false
+        default: eu-west-2
+        type: string
+
+    secrets:
+      ecr-role-to-assume:
+        description: AWS IAM role used to pull the CFE image
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  end2end_tests:
+    name: CCQ end-to-end tests
+    runs-on: ubuntu-latest
+
+    env:
+      # needed for CCQ Test DB connection
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/${{ inputs.database-name }}
+
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ${{ inputs.database-name }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d '${{ inputs.database-name }}'"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+        with:
+          role-to-assume: ${{ secrets.ecr-role-to-assume }}
+          aws-region: ${{ inputs.ecr-region }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a
+        with:
+          mask-password: "true"
+
+      - name: Pull CFE image
+        run: docker pull "${{ inputs.cfe-image }}"
+
+      - name: Start CFE Civil
+        env:
+          CFE_IMAGE: ${{ inputs.cfe-image }}
+          LEGAL_FRAMEWORK_API_HOST: ${{ inputs.legal-framework-api-host }}
+          POSTGRES_DATABASE: ${{ inputs.database-name }}
+        run: |
+          docker run --detach \
+            --name cfe-civil \
+            --network host \
+            --env POSTGRES_USER=postgres \
+            --env POSTGRES_PASSWORD=postgres \
+            --env POSTGRES_HOST=127.0.0.1 \
+            --env POSTGRES_PORT=5432 \
+            --env POSTGRES_DATABASE="$POSTGRES_DATABASE" \
+            --env RAILS_ENV=production \
+            --env RAILS_LOGTOSTDOUT=true \
+            --env SECRET_KEY_BASE=not-a-real-secret \
+            --env LEGAL_FRAMEWORK_API_HOST="$LEGAL_FRAMEWORK_API_HOST" \
+            --env FUTURE_THRESHOLD_FILE="" \
+            --env RUBY_YJIT_ENABLE=1 \
+            --env SENTRY=false \
+            --env TZ=Europe/London \
+            "$CFE_IMAGE"
+
+      - name: Wait for CFE Civil
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for attempt in {1..60}; do
+            if curl --fail --silent --show-error \
+              http://localhost:3000/status >/dev/null; then
+              echo "CFE Civil is ready"
+              exit 0
+            fi
+
+            if ! docker inspect \
+              --format='{{.State.Running}}' \
+              cfe-civil | grep --quiet true; then
+              echo "CFE Civil stopped unexpectedly"
+              docker logs cfe-civil
+              exit 1
+            fi
+
+            echo "Waiting for CFE Civil, attempt ${attempt}/60"
+            sleep 2
+          done
+
+          echo "CFE Civil did not become ready"
+          docker logs cfe-civil
+          exit 1
+
+      - name: Checkout CCQ
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          repository: ministryofjustice/laa-check-client-qualifies
+          ref: ${{ inputs.ccq-ref }}
+          path: ccq
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9
+        with:
+          ruby-version: ${{ inputs.ruby-version }}
+          bundler-cache: true
+          working-directory: ccq
+
+      - name: Prepare CCQ test database
+        working-directory: ccq
+        run: bin/rails db:prepare
+
+      - name: Compile CCQ assets
+        working-directory: ccq
+        env:
+          SECRET_KEY_BASE_DUMMY: "1"
+        run: bin/rails assets:precompile
+
+      - name: Run CCQ end-to-end specs
+        working-directory: ccq
+        env:
+          RACK_ENV: test
+          RAILS_ENV: test
+          COVERAGE: "false"
+          CFE_HOST: http://localhost:3000
+        run: |
+          bundle exec rspec \
+            --tag end2end \
+            --format documentation
+
+      - name: Show CFE logs on failure
+        if: failure()
+        run: docker logs cfe-civil
+
+      - name: Stop CFE Civil
+        if: always()
+        run: docker rm --force cfe-civil || true

@@ -105,7 +105,7 @@ Developers need a `.env` file in the root folder of their clone of this repo.
 For running locally it should contain the following values:
 
 ```sh
-LEGAL_FRAMEWORK_API_HOST=https://legal-framework-api-staging.apps.live-1.cloud-platform.service.justice.gov.uk
+LEGAL_FRAMEWORK_API_HOST=https://legal-framework-api-staging.cloud-platform.service.justice.gov.uk
 ```
 
 (There used to be an option `ALLOW_FUTURE_SUBMISSION_DATE`, but now specifying a submission_date in the future is always allowed.)

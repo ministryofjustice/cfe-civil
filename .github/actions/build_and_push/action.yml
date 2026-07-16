@@ -11,6 +11,11 @@ inputs:
     description: "ECR repository"
     required: true
 
+outputs:
+  image:
+    description: "The docker image pushed to ECR"
+    value: ${{ steps.push_to_ecr.outputs.image }}
+
 runs:
   using: "composite"
   steps:
@@ -49,6 +54,7 @@ runs:
           --tag app .
 
     - name: Push to ECR
+      id: push_to_ecr
       shell: bash
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -62,3 +68,5 @@ runs:
           docker tag app "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
           docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
         fi
+
+        echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${GIT_SHA}" >> $GITHUB_OUTPUT
