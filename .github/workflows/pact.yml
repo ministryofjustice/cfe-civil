@@ -34,18 +34,18 @@ jobs:
     env:
       RACK_ENV: test
       RAILS_ENV: test
-      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/apply_for_legal_aid_test"
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
 
     services:
       postgres:
         image: postgres:18.1-alpine
         env:
-          POSTGRES_DB: apply_for_legal_aid_test
+          POSTGRES_DB: cfe-civil-test
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        options: --health-cmd "pg_isready -U postgres -d cfe-civil-test" --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout code
