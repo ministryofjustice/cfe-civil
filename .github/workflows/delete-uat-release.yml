@@ -1,25 +1,26 @@
 name: Delete UAT release
 
 on:
-  workflow_dispatch:  # allow manual trigger
   pull_request:
     types:
       - closed
 
+permissions: {}
+
 jobs:
   delete_uat_job:
     runs-on: ubuntu-latest
-    permissions: {}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
       - name: Delete UAT release action
         id: delete_uat
-        uses: ./.github/actions/delete-uat-release
+        uses: ministryofjustice/laa-civil-apply-delete-uat-release@23e404138cfb4442ec62d8a13dfccc5355231b17 # v1.1.0
         with:
           k8s_cluster: ${{ secrets.K8S_GHA_UAT_CLUSTER_NAME }}
           k8s_cluster_cert: ${{ secrets.K8S_GHA_UAT_CLUSTER_CERT }}
           k8s_namespace: ${{ secrets.K8S_GHA_UAT_NAMESPACE }}
           k8s_token: ${{ secrets.K8S_GHA_UAT_TOKEN }}
+          delete_all_pvc: true
 
       - name: Delete UAT RDS database
         shell: bash
@@ -29,4 +30,4 @@ jobs:
 
       - name: Result
         shell: bash
-        run: echo ${{ steps.delete_uat.outputs.delete-message }}\
+        run: echo ${{ steps.delete_uat.outputs.delete-message }}
