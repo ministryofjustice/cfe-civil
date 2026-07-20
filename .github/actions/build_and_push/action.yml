@@ -1,0 +1,72 @@
+name: "Build and push"
+description: 'builds docker image and pushes it to the specified ECR'
+inputs:
+  ecr-region:
+    description: "ECR region"
+    required: true
+  ecr-role-to-assume:
+    description: "ECR role to assume"
+    required: true
+  ecr-repository:
+    description: "ECR repository"
+    required: true
+
+outputs:
+  image:
+    description: "The docker image pushed to ECR"
+    value: ${{ steps.push_to_ecr.outputs.image }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Store current date
+      shell: bash
+      run: echo "BUILD_DATE=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+
+    - name: Assume role in Cloud Platform
+      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 #v6.0.0
+      with:
+        role-to-assume: ${{ inputs.ecr-role-to-assume }}
+        aws-region: ${{ inputs.ecr-region }}
+
+    - name: Docker login to ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@376925c9d111252e87ae59691e5a442dd100ef6a #v2.1.3
+      with:
+        mask-password: 'true'
+
+    - name: Extract release name
+      id: extract_release_name
+      uses: ./.github/actions/get_release_name
+
+    - name: Build
+      shell: bash
+      run: |
+        docker build \
+          --label build.git.sha=${{ github.sha }} \
+          --label build.git.branch=${{ github.ref }} \
+          --label build.date=${{ env.BUILD_DATE }} \
+          --build-arg APP_BUILD_DATE=${{ env.BUILD_DATE }} \
+          --build-arg APP_BUILD_TAG=${{ github.ref }} \
+          --build-arg APP_GIT_COMMIT=${{ github.sha }} \
+          --build-arg APP_BRANCH=${{ steps.extract_release_name.outputs.release-name }} \
+          --pull \
+          --tag app .
+
+    - name: Push to ECR
+      id: push_to_ecr
+      shell: bash
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ inputs.ecr-repository }}
+        GIT_SHA: ${{ github.sha }}
+      run: |
+        docker tag app "${ECR_REGISTRY}/${ECR_REPOSITORY}:${GIT_SHA}"
+        docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:${GIT_SHA}"
+
+        if [ ${{ github.ref }} == 'refs/heads/main' ]; then
+          docker tag app "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+          docker push "${ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+        fi
+
+        echo "image=${ECR_REGISTRY}/${ECR_REPOSITORY}:${GIT_SHA}" >> $GITHUB_OUTPUT

@@ -1,0 +1,260 @@
+name: CI and CD
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions: {}
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 #--v1.316.0
+        with:
+          bundler-cache: true
+
+      - name: Run rubocop
+        run: |
+          bundle exec rubocop
+
+  rspec:
+    runs-on: ubuntu-latest
+    env:
+      RACK_ENV: test
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_DB: cfe-civil-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d cfe-civil-test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 #--v1.316.0
+        with:
+          bundler-cache: true
+
+      - name: Setup test database
+        run: bin/rails db:prepare
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coverage-report
+          path: coverage
+          retention-days: 7
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    env:
+      RACK_ENV: test
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_DB: cfe-civil-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d cfe-civil-test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 #--v1.316.0
+        with:
+          bundler-cache: true
+
+      - name: Setup test database
+        run: bin/rails db:prepare
+
+      - name: Run tests
+        run: bundle exec cucumber
+
+  check-swagger:
+    runs-on: ubuntu-latest
+    env:
+      RACK_ENV: test
+      RAILS_ENV: test
+      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+
+    services:
+      postgres:
+        image: postgres:18.3-alpine
+        env:
+          POSTGRES_DB: cfe-civil-test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d cfe-civil-test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Setup Ruby and install gems
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 #--v1.316.0
+        with:
+          bundler-cache: true
+
+      - name: Setup test database
+        run: bin/rails db:prepare
+
+      - name: Run tests
+        run: bundle exec rails check_swaggerization
+
+  build:
+    if: github.actor != 'dependabot[bot]'
+    needs: [rubocop, rspec, integration-tests, check-swagger]
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+
+    outputs:
+      image: ${{ steps.build_and_push.outputs.image }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Build and push
+        id: build_and_push
+        uses: ./.github/actions/build_and_push
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+
+  end-to-end:
+    needs: build
+
+    permissions:
+      contents: read
+      id-token: write
+
+    uses: ./.github/workflows/end2end-reusable.yml
+
+    with:
+      cfe-image: ${{ needs.build.outputs.image }}
+      ccq-ref: main
+      ecr-region: ${{ vars.ECR_REGION }}
+
+    secrets:
+      ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+
+  deploy-uat:
+    runs-on: ubuntu-latest
+    needs: build
+    environment: uat
+    permissions:
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Deploy UAT branch
+        id: deploy_uat_branch
+        uses: ./.github/actions/deploy_branch
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          kube-cert: ${{ secrets.K8S_GHA_UAT_CLUSTER_CERT }}
+          kube-token: ${{ secrets.K8S_GHA_UAT_TOKEN }}
+          kube-cluster: ${{ secrets.K8S_GHA_UAT_CLUSTER_NAME }}
+          kube-namespace: ${{ secrets.K8S_GHA_UAT_NAMESPACE }}
+          app-environment: uat
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: build
+    environment: staging
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Deploy staging
+        id: deploy_staging
+        uses: ./.github/actions/deploy
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          kube-cert: ${{ secrets.KUBE_STAGING_CERT }}
+          kube-token: ${{ secrets.KUBE_STAGING_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_STAGING_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_STAGING_NAMESPACE }}
+          app-environment: staging
+
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+      - name: Deploy production
+        id: deploy_production
+        uses: ./.github/actions/deploy
+        with:
+          ecr-region: ${{ vars.ECR_REGION }}
+          ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          kube-cert: ${{ secrets.KUBE_PRODUCTION_CERT }}
+          kube-token: ${{ secrets.KUBE_PRODUCTION_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_PRODUCTION_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_PRODUCTION_NAMESPACE }}
+          app-environment: production

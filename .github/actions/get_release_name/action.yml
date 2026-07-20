@@ -1,0 +1,36 @@
+name: "Get release name"
+description: 'Get a release name'
+
+outputs:
+  branch-name:
+    description: "Extracted branch name"
+    value: ${{ steps.extract_branch.outputs.branch_name }}
+  release-name:
+    description: "Extracted release name"
+    value: ${{ steps.extract_release.outputs.release_name }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+
+    - name: Extract branch name
+      id: extract_branch
+      shell: bash
+      run: |
+        if [ $GITHUB_EVENT_NAME == "pull_request" ]
+        then
+          branch=$GITHUB_HEAD_REF
+        else
+          branch=${GITHUB_REF#refs/heads/}
+        fi
+        echo "branch_name=$branch" >> $GITHUB_OUTPUT
+
+    - name: Extract release name
+      id: extract_release
+      shell: bash
+      run: |
+        branch_name=${{ steps.extract_branch.outputs.branch_name }}
+        truncated_branch=$(echo $branch_name | tr '[:upper:]' '[:lower:]' | sed 's:^\w*\/::' | tr -s ' _/[]().' '-' | cut -c1-30 | sed 's/-$//')
+        echo "release_name=${truncated_branch}" >> $GITHUB_OUTPUT
