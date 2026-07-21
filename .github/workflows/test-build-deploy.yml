@@ -13,10 +13,12 @@ jobs:
   rubocop:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - &checkout-code
+        name: Checkout code
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
 
-      - name: Setup Ruby and install gems
+      - &setup-ruby
+        name: Setup Ruby and install gems
         uses: ruby/setup-ruby@6e5d382445ae5590b7449d8b3bc8cb1c2c27f617 #--v1.317.0
         with:
           bundler-cache: true
@@ -27,13 +29,13 @@ jobs:
 
   rspec:
     runs-on: ubuntu-latest
-    env:
+    env: &test-env
       RACK_ENV: test
       RAILS_ENV: test
       DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
 
     services:
-      postgres:
+      postgres: &postgres-service
         image: postgres:18.3-alpine
         env:
           POSTGRES_DB: cfe-civil-test
@@ -48,15 +50,12 @@ jobs:
           --health-retries 20
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
 
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@6e5d382445ae5590b7449d8b3bc8cb1c2c27f617 #--v1.317.0
-        with:
-          bundler-cache: true
+      - *checkout-code
+      - *setup-ruby
 
-      - name: Setup test database
+      - &prepare-database
+        name: Setup test database
         run: bin/rails db:prepare
 
       - name: Run tests
@@ -71,74 +70,30 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    env:
-      RACK_ENV: test
-      RAILS_ENV: test
-      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+    env: *test-env
 
     services:
-      postgres:
-        image: postgres:18.3-alpine
-        env:
-          POSTGRES_DB: cfe-civil-test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d cfe-civil-test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
+      postgres: *postgres-service
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
-
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@6e5d382445ae5590b7449d8b3bc8cb1c2c27f617 #--v1.317.0
-        with:
-          bundler-cache: true
-
-      - name: Setup test database
-        run: bin/rails db:prepare
+      - *checkout-code
+      - *setup-ruby
+      - *prepare-database
 
       - name: Run tests
         run: bundle exec cucumber
 
   check-swagger:
     runs-on: ubuntu-latest
-    env:
-      RACK_ENV: test
-      RAILS_ENV: test
-      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+    env: *test-env
 
     services:
-      postgres:
-        image: postgres:18.3-alpine
-        env:
-          POSTGRES_DB: cfe-civil-test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres -d cfe-civil-test"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
+      postgres: *postgres-service
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
-
-      - name: Setup Ruby and install gems
-        uses: ruby/setup-ruby@6e5d382445ae5590b7449d8b3bc8cb1c2c27f617 #--v1.317.0
-        with:
-          bundler-cache: true
-
-      - name: Setup test database
-        run: bin/rails db:prepare
+      - *checkout-code
+      - *setup-ruby
+      - *prepare-database
 
       - name: Run tests
         run: bundle exec rails check_swaggerization
@@ -155,8 +110,7 @@ jobs:
       image: ${{ steps.build_and_push.outputs.image }}
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+      - *checkout-code
 
       - name: Build and push
         id: build_and_push
@@ -191,8 +145,7 @@ jobs:
       id-token: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+      - *checkout-code
 
       - name: Deploy UAT branch
         id: deploy_uat_branch
@@ -217,8 +170,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+      - *checkout-code
 
       - name: Deploy staging
         id: deploy_staging
@@ -243,8 +195,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 #--v7.0.0
+      - *checkout-code
 
       - name: Deploy production
         id: deploy_production
