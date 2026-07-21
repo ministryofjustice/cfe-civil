@@ -27,7 +27,7 @@ jobs:
 
   rspec:
     runs-on: ubuntu-latest
-    env:
+    env: &test-env
       RACK_ENV: test
       RAILS_ENV: test
       DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
@@ -71,10 +71,7 @@ jobs:
 
   integration-tests:
     runs-on: ubuntu-latest
-    env:
-      RACK_ENV: test
-      RAILS_ENV: test
-      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+    env: *test-env
 
     services:
       postgres: *postgres-service
@@ -96,10 +93,7 @@ jobs:
 
   check-swagger:
     runs-on: ubuntu-latest
-    env:
-      RACK_ENV: test
-      RAILS_ENV: test
-      DATABASE_URL: "postgresql://postgres:postgres@127.0.0.1/cfe-civil-test"
+    env: *test-env
 
     services:
       postgres: *postgres-service
