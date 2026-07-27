@@ -139,14 +139,14 @@ jobs:
           exit 1
 
       - name: Checkout CCQ
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: ministryofjustice/laa-check-client-qualifies
           ref: ${{ inputs.ccq-ref }}
           path: ccq
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@6e5d382445ae5590b7449d8b3bc8cb1c2c27f617
+        uses: ruby/setup-ruby@003a5c4d8d6321bd302e38f6f0ec593f77f06600
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
