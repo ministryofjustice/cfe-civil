@@ -25,7 +25,7 @@ jobs:
 
   run-sast-tooling:
     needs: get-main-sha
-    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/sast.yml@8e0e6bbaa7d9075660c044b2e2c934a966c56570 # main as of 03/06/2026
+    uses: ministryofjustice/laa-reusable-github-actions/.github/workflows/sast.yml@932ee576d65d9992ca82955a5823e3d55e888417 # main as of 28/07/2026
     permissions:
       id-token: write
       contents: read
