@@ -49,14 +49,16 @@ RUN adduser --disabled-password rails -u 1001 && \
 # (Numeric user needs to be used to show that it's non-root)
 USER 1001
 
-# expect ping environment variables
-ARG BUILD_DATE
-ARG BUILD_TAG
-ARG APP_BRANCH
 # set ping environment variables
-ENV BUILD_DATE=${BUILD_DATE}
-ENV BUILD_TAG=${BUILD_TAG}
+ARG APP_BUILD_DATE
+ENV APP_BUILD_DATE=${APP_BUILD_DATE}
+ARG APP_BUILD_TAG
+ENV APP_BUILD_TAG=${APP_BUILD_TAG}
+ARG APP_GIT_COMMIT
+ENV APP_GIT_COMMIT=${APP_GIT_COMMIT}
+ARG APP_BRANCH
 ENV APP_BRANCH=${APP_BRANCH}
+
 # allow public files to be served
 ENV RAILS_SERVE_STATIC_FILES=true
 
