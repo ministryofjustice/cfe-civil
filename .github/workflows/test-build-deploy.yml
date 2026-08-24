@@ -108,13 +108,15 @@ jobs:
 
     outputs:
       image: ${{ steps.build_and_push.outputs.image }}
+      branch-name: ${{ steps.build_and_push.outputs.branch-name }}
+      release-name: ${{ steps.build_and_push.outputs.release-name }}
 
     steps:
       - *checkout-code
 
       - name: Build and push
         id: build_and_push
-        uses: ./.github/actions/build_and_push
+        uses: ministryofjustice/laa-civil-apply-build-and-push@8a157dbc3ec3b1d2366d6a676272cc26a57e9439 # main on 24/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
