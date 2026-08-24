@@ -151,15 +151,19 @@ jobs:
 
       - name: Deploy UAT branch
         id: deploy_uat_branch
-        uses: ./.github/actions/deploy_branch
+        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main on 24/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
+          ecr-registry: ${{ vars.ECR_REGISTRY }}
           kube-cert: ${{ secrets.K8S_GHA_UAT_CLUSTER_CERT }}
           kube-token: ${{ secrets.K8S_GHA_UAT_TOKEN }}
           kube-cluster: ${{ secrets.K8S_GHA_UAT_CLUSTER_NAME }}
           kube-namespace: ${{ secrets.K8S_GHA_UAT_NAMESPACE }}
+          branch-name: ${{ needs.build.outputs.branch-name }}
+          release-name: ${{ needs.build.outputs.release-name }}
+          script-path: ./bin/deploy
           app-environment: uat
 
   deploy-staging:
