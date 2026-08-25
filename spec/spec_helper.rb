@@ -20,10 +20,10 @@ SimpleCov.formatter = SimpleCov::Formatter::MergedFormatter
 
 unless ENV["NOCOVERAGE"]
   SimpleCov.start do
-    add_filter "spec/"
-    add_filter "config/initializers/sentry.rb"
-    add_filter "app/services/request_rerunner.rb"
-    add_filter "app/reports/assessment_stats.rb"
+    skip "spec/"
+    skip "config/initializers/sentry.rb"
+    skip "app/services/request_rerunner.rb"
+    skip "app/reports/assessment_stats.rb"
 
     enable_coverage :branch
     primary_coverage :branch
