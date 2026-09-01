@@ -1545,6 +1545,7 @@ components:
             - PBM37
             - PBM38
             - PBM39
+            - PBM47
             - PBM01A
             - PBM02A
             - PBM04A
@@ -1604,6 +1605,7 @@ components:
             - PBM37E
             - PBM38E
             - PBM39E
+            - PBM47E
             - IM030
             - IA031
             - SE003E
@@ -1709,6 +1711,7 @@ components:
             - PBM37
             - PBM38
             - PBM39
+            - PBM47
             - PBM01A
             - PBM02A
             - PBM04A
@@ -1768,6 +1771,7 @@ components:
             - PBM37E
             - PBM38E
             - PBM39E
+            - PBM47E
             - IM030
             - IA031
             - SE003E
