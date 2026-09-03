@@ -9,8 +9,8 @@ resources:
     cpu: 500m
     memory: 500Mi
   requests:
-    cpu: 100m
-    memory: 125Mi
+    cpu: 200m
+    memory: 250Mi
 
 ingress:
   className: modsec-non-prod

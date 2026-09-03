@@ -10,7 +10,7 @@ resources:
     memory: 500Mi
   requests:
     cpu: 200m
-    memory: 200Mi
+    memory: 250Mi
 
 ingress:
   className: modsec
