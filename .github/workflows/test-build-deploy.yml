@@ -185,10 +185,10 @@ jobs:
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
           ecr-registry: ${{ vars.ECR_REGISTRY }}
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
-          kube-cert: ${{ secrets.K8S_GHA_STAGING_CLUSTER_CERT }}
-          kube-token: ${{ secrets.K8S_GHA_STAGING_TOKEN }}
-          kube-cluster: ${{ secrets.K8S_GHA_STAGING_CLUSTER_NAME }}
-          kube-namespace: ${{ secrets.K8S_GHA_STAGING_NAMESPACE }}
+          kube-cert: ${{ secrets.KUBE_STAGING_CERT }}
+          kube-token: ${{ secrets.KUBE_STAGING_TOKEN }}
+          kube-cluster: ${{ secrets.KUBE_STAGING_CLUSTER }}
+          kube-namespace: ${{ secrets.KUBE_STAGING_NAMESPACE }}
           script-path: ./bin/deploy
           app-environment: staging
 
