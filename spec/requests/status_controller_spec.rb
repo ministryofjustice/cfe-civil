@@ -60,12 +60,13 @@ RSpec.describe StatusController, type: :request do
         {
           "build_date" => "20150721",
           "build_tag" => "test",
+          "app_git_commit" => "some-git-sha",
           "app_branch" => "test_branch",
         }
       end
 
       before do
-        allow(Rails.configuration.x.status).to receive_messages(build_date: "20150721", build_tag: "test", app_branch: "test_branch")
+        allow(Rails.configuration.x.status).to receive_messages(build_date: "20150721", build_tag: "test", app_git_commit: "some-git-sha", app_branch: "test_branch")
 
         get("/ping")
       end

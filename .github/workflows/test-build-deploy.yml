@@ -108,13 +108,15 @@ jobs:
 
     outputs:
       image: ${{ steps.build_and_push.outputs.image }}
+      branch-name: ${{ steps.build_and_push.outputs.branch-name }}
+      release-name: ${{ steps.build_and_push.outputs.release-name }}
 
     steps:
       - *checkout-code
 
       - name: Build and push
         id: build_and_push
-        uses: ./.github/actions/build_and_push
+        uses:  ministryofjustice/laa-civil-apply-build-and-push@8a157dbc3ec3b1d2366d6a676272cc26a57e9439 # main as at 21/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
@@ -149,15 +151,19 @@ jobs:
 
       - name: Deploy UAT branch
         id: deploy_uat_branch
-        uses: ./.github/actions/deploy_branch
+        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-registry: ${{ vars.ECR_REGISTRY }}
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
           kube-cert: ${{ secrets.K8S_GHA_UAT_CLUSTER_CERT }}
           kube-token: ${{ secrets.K8S_GHA_UAT_TOKEN }}
           kube-cluster: ${{ secrets.K8S_GHA_UAT_CLUSTER_NAME }}
           kube-namespace: ${{ secrets.K8S_GHA_UAT_NAMESPACE }}
+          branch-name: ${{ needs.build.outputs.branch-name }}
+          release-name: ${{ needs.build.outputs.release-name }}
+          script-path: ./bin/deploy
           app-environment: uat
 
   deploy-staging:
@@ -167,45 +173,47 @@ jobs:
     environment: staging
     permissions:
       id-token: write
-      contents: read
 
     steps:
       - *checkout-code
 
-      - name: Deploy staging
-        id: deploy_staging
-        uses: ./.github/actions/deploy
+      - name: Deploy Staging branch
+        id: deploy_staging_branch
+        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-registry: ${{ vars.ECR_REGISTRY }}
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
-          kube-cert: ${{ secrets.KUBE_STAGING_CERT }}
-          kube-token: ${{ secrets.KUBE_STAGING_TOKEN }}
-          kube-cluster: ${{ secrets.KUBE_STAGING_CLUSTER }}
-          kube-namespace: ${{ secrets.KUBE_STAGING_NAMESPACE }}
+          kube-cert: ${{ secrets.K8S_GHA_STAGING_CLUSTER_CERT }}
+          kube-token: ${{ secrets.K8S_GHA_STAGING_TOKEN }}
+          kube-cluster: ${{ secrets.K8S_GHA_STAGING_CLUSTER_NAME }}
+          kube-namespace: ${{ secrets.K8S_GHA_STAGING_NAMESPACE }}
+          script-path: ./bin/deploy
           app-environment: staging
 
   deploy-production:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: deploy-staging
+    needs: build
     environment: production
     permissions:
       id-token: write
-      contents: read
 
     steps:
       - *checkout-code
 
-      - name: Deploy production
-        id: deploy_production
-        uses: ./.github/actions/deploy
+      - name: Deploy Production branch
+        id: deploy_production_branch
+        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
+          ecr-registry: ${{ vars.ECR_REGISTRY }}
           ecr-repository: ${{ vars.ECR_REPOSITORY }}
           kube-cert: ${{ secrets.KUBE_PRODUCTION_CERT }}
           kube-token: ${{ secrets.KUBE_PRODUCTION_TOKEN }}
           kube-cluster: ${{ secrets.KUBE_PRODUCTION_CLUSTER }}
           kube-namespace: ${{ secrets.KUBE_PRODUCTION_NAMESPACE }}
+          script-path: ./bin/deploy
           app-environment: production
