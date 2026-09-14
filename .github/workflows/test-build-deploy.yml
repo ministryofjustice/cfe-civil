@@ -116,7 +116,7 @@ jobs:
 
       - name: Build and push
         id: build_and_push
-        uses:  ministryofjustice/laa-civil-apply-build-and-push@8a157dbc3ec3b1d2366d6a676272cc26a57e9439 # main as at 21/08/2026
+        uses:  ministryofjustice/laa-civil-apply-build-and-push@65b3fbf7dcd495deae754c28fc138fef00dcaf3c # main as at 08/09/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
@@ -151,7 +151,7 @@ jobs:
 
       - name: Deploy UAT branch
         id: deploy_uat_branch
-        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
+        uses: ministryofjustice/laa-civil-apply-deploy@c473117aec381567948e19dc6a80059aed9c2d6b # main as at 07/09/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
@@ -179,7 +179,7 @@ jobs:
 
       - name: Deploy Staging branch
         id: deploy_staging_branch
-        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
+        uses: ministryofjustice/laa-civil-apply-deploy@c473117aec381567948e19dc6a80059aed9c2d6b # main as at 07/09/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
@@ -205,7 +205,7 @@ jobs:
 
       - name: Deploy Production branch
         id: deploy_production_branch
-        uses: ministryofjustice/laa-civil-apply-deploy@505f9c7d9a232b8fa1d601344d6d91a67b961def # main as at 21/08/2026
+        uses: ministryofjustice/laa-civil-apply-deploy@c473117aec381567948e19dc6a80059aed9c2d6b # main as at 07/09/2026
         with:
           ecr-region: ${{ vars.ECR_REGION }}
           ecr-role-to-assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
