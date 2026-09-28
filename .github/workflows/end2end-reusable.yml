@@ -73,7 +73,7 @@ jobs:
 
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd
         with:
           role-to-assume: ${{ secrets.ecr-role-to-assume }}
           aws-region: ${{ inputs.ecr-region }}
@@ -146,7 +146,7 @@ jobs:
           path: ccq
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@bec3f19a76460dbe12f60def7d1a77585f07516c
+        uses: ruby/setup-ruby@e8944e80fb94b20106697132f8c20c665fab29e9
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
