@@ -7,7 +7,7 @@ ruby file: ".ruby-version"
 gem "rails"
 # Use postgresql as the database for Active Record
 # pg 1.5 introduces a deprecation warning that hasn't been fixed in Rails yet
-gem "pg", "< 1.7"
+gem "pg", "< 1.8"
 # Use Puma as the app server
 gem "puma", "~> 8.0"
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
@@ -33,14 +33,14 @@ gem "sentry-ruby"
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", ">= 1.1.0", require: false
 
-gem "business", "~> 2.3"
+gem "business", "~> 3.1"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
 
 gem "date_validator"
 
 gem "api_error_handler"
-gem "json-schema", "~> 6.2.0"
+gem "json-schema", "~> 6.2.1"
 
 # Seeding tools
 gem "dibber"
