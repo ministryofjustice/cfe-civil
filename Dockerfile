@@ -17,8 +17,8 @@ RUN set -ex
 
 # Install packages needed to build gems
 RUN apk --no-cache add build-base  \
-                       yaml-dev \
-                       postgresql-dev
+                       postgresql-dev \
+                       yaml-dev
 
 RUN apk add --no-cache --upgrade \
     ca-certificates \
