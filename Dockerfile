@@ -20,10 +20,6 @@ RUN apk --no-cache add build-base  \
                        yaml-dev \
                        postgresql-dev
 
-RUN apk add --no-cache --upgrade \
-    ca-certificates \
-    ca-certificates-bundle
-
 # Install application gems
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
@@ -42,6 +38,10 @@ FROM base
 # Install packages needed for deployment
 RUN apk --no-cache add postgresql-client
 
+RUN apk add --no-cache --upgrade \
+    ca-certificates \
+    ca-certificates-bundle
+
 COPY --from=build /usr/local/bundle/ /usr/local/bundle/
 COPY . /myapp
 
@@ -50,6 +50,8 @@ WORKDIR /myapp
 # Run and own only the runtime files as a non-root user for security
 RUN adduser --disabled-password rails -u 1001 && \
     chown -R rails:rails /myapp
+
+
 # (Numeric user needs to be used to show that it's non-root)
 USER 1001
 
