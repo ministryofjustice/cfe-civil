@@ -20,6 +20,10 @@ RUN apk --no-cache add build-base  \
                        yaml-dev \
                        postgresql-dev
 
+RUN apk add --no-cache --upgrade \
+    ca-certificates \
+    ca-certificates-bundle
+
 # Install application gems
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
